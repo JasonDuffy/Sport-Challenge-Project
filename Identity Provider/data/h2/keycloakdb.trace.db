@@ -14,3 +14,119 @@ SELECT COUNT(*) FROM PUBLIC.DATABASECHANGELOGLOCK [42104-214]
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabelle "DATABASECHANGELOG" nicht gefunden
 Table "DATABASECHANGELOG" not found; SQL statement:
 SELECT COUNT(*) FROM PUBLIC.DATABASECHANGELOG [42102-214]
+2023-04-13 18:16:55 database: flush
+org.h2.message.DbException: Allgemeiner Fehler: "org.h2.mvstore.MVStoreException: Could not open file F:/OneDrive/OneDrive - bwedu/Dokumente/Studium/SoSe 23/Module/Projektarbeit/GitLab/Sport-Challenge-Projekt/Identity Provider/data/h2/keycloakdb.mv.db [2.1.214/1]"
+General error: "org.h2.mvstore.MVStoreException: Could not open file F:/OneDrive/OneDrive - bwedu/Dokumente/Studium/SoSe 23/Module/Projektarbeit/GitLab/Sport-Challenge-Projekt/Identity Provider/data/h2/keycloakdb.mv.db [2.1.214/1]" [50000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.message.DbException.convert(DbException.java:395)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:125)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3318)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:593)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:469)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.jdbcx.JdbcDataSource.getXAConnection(JdbcDataSource.java:322)
+	at io.agroal.pool.ConnectionFactory.createConnection(ConnectionFactory.java:232)
+	at io.agroal.pool.ConnectionPool$CreateConnectionTask.call(ConnectionPool.java:536)
+	at io.agroal.pool.ConnectionPool$CreateConnectionTask.call(ConnectionPool.java:517)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at io.agroal.pool.util.PriorityScheduledExecutor.beforeExecute(PriorityScheduledExecutor.java:75)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1589)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Allgemeiner Fehler: "org.h2.mvstore.MVStoreException: Could not open file F:/OneDrive/OneDrive - bwedu/Dokumente/Studium/SoSe 23/Module/Projektarbeit/GitLab/Sport-Challenge-Projekt/Identity Provider/data/h2/keycloakdb.mv.db [2.1.214/1]"
+General error: "org.h2.mvstore.MVStoreException: Could not open file F:/OneDrive/OneDrive - bwedu/Dokumente/Studium/SoSe 23/Module/Projektarbeit/GitLab/Sport-Challenge-Projekt/Identity Provider/data/h2/keycloakdb.mv.db [2.1.214/1]" [50000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 23 more
+Caused by: org.h2.mvstore.MVStoreException: Could not open file F:/OneDrive/OneDrive - bwedu/Dokumente/Studium/SoSe 23/Module/Projektarbeit/GitLab/Sport-Challenge-Projekt/Identity Provider/data/h2/keycloakdb.mv.db [2.1.214/1]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:185)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	... 17 more
+Caused by: java.nio.channels.ClosedByInterruptException
+	at java.base/java.nio.channels.spi.AbstractInterruptibleChannel.end(AbstractInterruptibleChannel.java:199)
+	at java.base/sun.nio.ch.FileChannelImpl.endBlocking(FileChannelImpl.java:177)
+	at java.base/sun.nio.ch.FileChannelImpl.size(FileChannelImpl.java:436)
+	at org.h2.mvstore.FileStore.open(FileStore.java:182)
+	... 19 more
+2023-04-13 18:16:55 database: opening F:/OneDrive/OneDrive - bwedu/Dokumente/Studium/SoSe 23/Module/Projektarbeit/GitLab/Sport-Challenge-Projekt/Identity Provider/data/h2/keycloakdb
+org.h2.message.DbException: Eingabe/Ausgabe Fehler: "F:/OneDrive/OneDrive - bwedu/Dokumente/Studium/SoSe 23/Module/Projektarbeit/GitLab/Sport-Challenge-Projekt/Identity Provider/data/h2/keycloakdb.mv.db"
+IO Exception: "F:/OneDrive/OneDrive - bwedu/Dokumente/Studium/SoSe 23/Module/Projektarbeit/GitLab/Sport-Challenge-Projekt/Identity Provider/data/h2/keycloakdb.mv.db" [90028-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.mvstore.db.Store.convertMVStoreException(Store.java:171)
+	at org.h2.mvstore.db.Store.<init>(Store.java:145)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.jdbcx.JdbcDataSource.getXAConnection(JdbcDataSource.java:322)
+	at io.agroal.pool.ConnectionFactory.createConnection(ConnectionFactory.java:232)
+	at io.agroal.pool.ConnectionPool$CreateConnectionTask.call(ConnectionPool.java:536)
+	at io.agroal.pool.ConnectionPool$CreateConnectionTask.call(ConnectionPool.java:517)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at io.agroal.pool.util.PriorityScheduledExecutor.beforeExecute(PriorityScheduledExecutor.java:75)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1589)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Eingabe/Ausgabe Fehler: "F:/OneDrive/OneDrive - bwedu/Dokumente/Studium/SoSe 23/Module/Projektarbeit/GitLab/Sport-Challenge-Projekt/Identity Provider/data/h2/keycloakdb.mv.db"
+IO Exception: "F:/OneDrive/OneDrive - bwedu/Dokumente/Studium/SoSe 23/Module/Projektarbeit/GitLab/Sport-Challenge-Projekt/Identity Provider/data/h2/keycloakdb.mv.db" [90028-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:554)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 18 more
+Caused by: org.h2.mvstore.MVStoreException: Could not open file F:/OneDrive/OneDrive - bwedu/Dokumente/Studium/SoSe 23/Module/Projektarbeit/GitLab/Sport-Challenge-Projekt/Identity Provider/data/h2/keycloakdb.mv.db [2.1.214/1]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:185)
+	at org.h2.mvstore.FileStore.open(FileStore.java:128)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:452)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4082)
+	at org.h2.mvstore.db.Store.<init>(Store.java:136)
+	... 15 more
+Caused by: java.nio.channels.ClosedByInterruptException
+	at java.base/java.nio.channels.spi.AbstractInterruptibleChannel.end(AbstractInterruptibleChannel.java:199)
+	at java.base/sun.nio.ch.FileChannelImpl.endBlocking(FileChannelImpl.java:177)
+	at java.base/sun.nio.ch.FileChannelImpl.size(FileChannelImpl.java:436)
+	at org.h2.mvstore.FileStore.open(FileStore.java:182)
+	... 19 more
+2023-04-13 18:16:55 database: opening F:/OneDrive/OneDrive - bwedu/Dokumente/Studium/SoSe 23/Module/Projektarbeit/GitLab/Sport-Challenge-Projekt/Identity Provider/data/h2/keycloakdb
+org.h2.message.DbException: Fehler beim Öffnen der Datenbank: "Sleep interrupted"
+Error opening database: "Sleep interrupted" [8000-214]
+	at org.h2.message.DbException.get(DbException.java:212)
+	at org.h2.store.FileLock.getExceptionFatal(FileLock.java:429)
+	at org.h2.store.FileLock.sleep(FileLock.java:424)
+	at org.h2.store.FileLock.lockFile(FileLock.java:334)
+	at org.h2.store.FileLock.lock(FileLock.java:110)
+	at org.h2.engine.Database.<init>(Database.java:315)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.jdbcx.JdbcDataSource.getXAConnection(JdbcDataSource.java:322)
+	at io.agroal.pool.ConnectionFactory.createConnection(ConnectionFactory.java:232)
+	at io.agroal.pool.ConnectionPool$CreateConnectionTask.call(ConnectionPool.java:536)
+	at io.agroal.pool.ConnectionPool$CreateConnectionTask.call(ConnectionPool.java:517)
+	at java.base/java.util.concurrent.FutureTask.run(FutureTask.java:317)
+	at io.agroal.pool.util.PriorityScheduledExecutor.beforeExecute(PriorityScheduledExecutor.java:75)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:642)
+	at java.base/java.lang.Thread.run(Thread.java:1589)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientConnectionException: Fehler beim Öffnen der Datenbank: "Sleep interrupted"
+Error opening database: "Sleep interrupted" [8000-214]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:504)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:477)
+	... 20 more
+Caused by: java.lang.InterruptedException: sleep interrupted
+	at java.base/java.lang.Thread.sleep0(Native Method)
+	at java.base/java.lang.Thread.sleep(Thread.java:465)
+	at org.h2.store.FileLock.sleep(FileLock.java:422)
+	... 17 more

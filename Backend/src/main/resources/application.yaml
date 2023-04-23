@@ -38,7 +38,6 @@ spring:
                 - private-key-location: "classpath:credentials/backend-private.key"
                   certificate-location: "classpath:credentials/backend-certificate.cer"
             singlelogout:
-              url: http://localhost:8080/realms/SportChallenge/protocol/saml
               binding: POST
               response-url: "{baseUrl}/logout/saml2/slo"
             assertingparty:

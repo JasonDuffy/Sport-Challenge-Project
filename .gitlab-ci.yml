@@ -1,0 +1,25 @@
+stages:
+  - build
+#  - deploy
+
+maven-backend:
+  image: maven:3.8.3-openjdk-17
+  stage: build
+  script:
+    - cd Backend
+    - mvn clean install
+  artifacts:
+     paths:
+       - Backend/target/*.jar  
+
+#docker:
+#  image: docker:23.0
+#  stage: deploy
+#  services:
+#        - name: docker:23.0-dind
+#  script:
+#    - docker build . -t scp
+#  artifacts:
+#     paths:
+#       - target/docker/ 
+

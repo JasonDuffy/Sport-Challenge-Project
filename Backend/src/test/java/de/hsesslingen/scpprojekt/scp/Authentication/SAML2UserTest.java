@@ -2,6 +2,7 @@ package de.hsesslingen.scpprojekt.scp.Authentication;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -10,6 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  * @author Jason Patrick Duffy
  */
 
+@ActiveProfiles("test")
 @SpringBootTest
 public class SAML2UserTest {
 

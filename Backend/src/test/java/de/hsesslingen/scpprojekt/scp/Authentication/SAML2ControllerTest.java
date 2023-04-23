@@ -7,6 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
+import org.springframework.test.context.ActiveProfiles;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -15,6 +16,7 @@ import static org.mockito.Mockito.*;
  * Tests of the SAML2Controller class
  * @author Jason Patrick Duffy
  */
+@ActiveProfiles("test")
 @SpringBootTest
 class SAML2ControllerTest {
 

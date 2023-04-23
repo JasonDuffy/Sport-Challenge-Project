@@ -1,0 +1,16 @@
+logging:
+  level:
+    root: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.security.saml: DEBUG
+
+spring:
+  security:
+    saml2:
+      relyingparty:
+        registration:
+          keycloak:
+            signing:
+            assertingparty:
+              metadata-uri: "https://dev-41762717.okta.com/app/exk9854o9iglQusfM5d7/sso/saml/metadata"

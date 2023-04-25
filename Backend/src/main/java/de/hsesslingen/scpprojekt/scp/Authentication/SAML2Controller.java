@@ -6,12 +6,14 @@ import org.springframework.security.saml2.provider.service.authentication.Saml2A
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 /**
  * REST Controller for SAML2.
  *
  * @author Jason Patrick Duffy
  */
+//@CrossOrigin(origins="http://localhost:3000", allowedHeaders = "*")
 @RestController
 @RequestMapping(path = "/saml", produces = "application/json")
 public class SAML2Controller {

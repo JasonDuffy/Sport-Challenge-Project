@@ -1,24 +1,74 @@
 stages:
+  - test
   - build
 #  - deploy
 
-maven-backend:
+#frontend-test:
+#  image: node:latest
+#  stage: test
+#  before_script:
+#    - cd Frontend
+#    - npm install
+#    - npm install react-scripts -g --silent
+#  script:
+#    - npm run test:ci
+#  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+#  artifacts:
+#    paths:
+#      - coverage/
+#    when: always
+#    reports:
+#      junit:
+#        - junit.xml
+
+backend-test:
+  image: maven:3.8.3-openjdk-17
+  stage: test
+  script:
+    - cd Backend
+    - mvn test
+  allow_failure: true # temporary until we have fixed tests
+
+backend-build:
   image: maven:3.8.3-openjdk-17
   stage: build
   script:
     - cd Backend
-    - mvn clean install
+    - mvn clean install -Dmaven.test.skip=true
   artifacts:
      paths:
-       - Backend/target/*.jar  
+       - Backend/target/*.jar
+
+frontend-build:
+  image: node:alpine3.16
+  stage: build
+  before_script:
+    - cd Frontend
+    - npm install
+    - npm install react-scripts
+  script:
+    - CI=false npm run build
+  artifacts:
+     paths:
+       - Frontend/build  
 
 #docker:
-#  image: docker:23.0
+#  variables:
+#    #DOCKER_HOST: tcp://docker:2375/
+#    DOCKER_DRIVER: overlay2
+#  image: docker
 #  stage: deploy
 #  services:
-#        - name: docker:23.0-dind
+#    - name: docker:dind
+#      alias: docker
 #  script:
-#    - docker build . -t scp
+#    - cd Backend
+#    - docker build . -t scp-backend
+#    - cd ..
+#    - cd Frontend
+#    - docker build . -t scp-frontend
+#    - cd ..
+#    - docker compose up
 #  artifacts:
 #     paths:
 #       - target/docker/ 

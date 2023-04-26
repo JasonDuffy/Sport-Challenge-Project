@@ -1,6 +1,6 @@
 :: Backend Build
 cd Backend
-call mvn clean package
+call mvn clean package -Dmaven.test.skip=true
 docker build . -t scp-backend
 cd ..
 

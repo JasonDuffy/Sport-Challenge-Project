@@ -1,0 +1,12 @@
+:: Backend Build
+cd Backend
+call mvn clean package
+docker build . -t scp-backend
+cd ..
+
+:: Frontend Build
+cd Frontend
+docker build . -t scp-frontend
+
+:: Start Backend Server
+docker compose up

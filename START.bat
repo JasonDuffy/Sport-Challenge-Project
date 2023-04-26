@@ -8,5 +8,5 @@ cd ..
 cd Frontend
 docker build . -t scp-frontend
 
-:: Start Backend Server
+:: Start Docker
 docker compose up

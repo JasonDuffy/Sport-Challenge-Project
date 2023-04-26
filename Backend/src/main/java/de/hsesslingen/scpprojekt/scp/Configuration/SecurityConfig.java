@@ -41,7 +41,8 @@ public class SecurityConfig {
                 .saml2Login(withDefaults())
                 .saml2Logout(withDefaults())
                 .addFilterBefore(filter, Saml2WebSsoAuthenticationFilter.class);
-        http.cors().and().csrf().disable();
+        http.cors().disable();
+        http.csrf().disable();
 
         return http.build();
     }

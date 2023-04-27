@@ -62,7 +62,22 @@ html {
     --doubleslash-accent-red: #C63328;
 }
 
+a{
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--doubleslash-text-grey);
+    transition: color .15s ease;
+}
+
+a:hover{
+    color: var(--doubleslash-orange);
+}
+
 .center_content{
     display: flex;
     justify-content: center;
+}
+
+.visible{
+    visibility: visible !important;
 }

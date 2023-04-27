@@ -791,6 +791,18 @@ html {
   --doubleslash-accent-red: #C63328;
 }
 
+a {
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--doubleslash-text-grey);
+  -webkit-transition: color .15s ease;
+  transition: color .15s ease;
+}
+
+a:hover {
+  color: var(--doubleslash-orange);
+}
+
 .center_content {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -798,5 +810,9 @@ html {
   -webkit-box-pack: center;
       -ms-flex-pack: center;
           justify-content: center;
+}
+
+.visible {
+  visibility: visible !important;
 }
 /*# sourceMappingURL=root.css.map */

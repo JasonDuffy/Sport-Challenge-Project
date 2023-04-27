@@ -7,6 +7,13 @@ function Navbar() {
   return (
     <header className="top_nav">
       <nav className="top_nav_item_container">
+        <div className="mobile_nav_icon">
+          <div className="mobile_nav_bars">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
+        </div>
         <ul className="top_nav_item_list">
           <li>
             <a href="/">Home</a>
@@ -18,7 +25,7 @@ function Navbar() {
             <div className="top_nav_dropdown" id="top_nav_management">
               <span>Management</span>
               <FontAwesomeIcon
-                className="top_nav_dropdown_icon"
+                className="nav_dropdown_icon"
                 icon={faCaretDown}
               />
               <div
@@ -35,7 +42,7 @@ function Navbar() {
                   Add Bonus
                 </a>
                 <a className="top_nav_dropdown_item" href="/Add/Sport">
-                  Add Sportart
+                  Add Sport
                 </a>
                 <a className="top_nav_dropdown_item" href="/Profile">
                   Userprofile
@@ -45,6 +52,45 @@ function Navbar() {
           </li>
         </ul>
       </nav>
+      <nav className="mobile_nav">
+        <div className="mobile_nav_list">
+          <div className="mobile_nav_list_item">
+            <a>Home</a>
+          </div>
+          <div className="mobile_nav_list_item">
+            <a>My Challenges</a>
+          </div>
+          <div className="mobile_nav_list_item">
+            <span className="mobile_nav_dropdown">
+              Management
+              <FontAwesomeIcon
+                className="nav_dropdown_icon"
+                icon={faCaretDown}
+              />
+            </span>
+            <div className="mobile_nav_dropdown_menu">
+              <ul>
+                <li>
+                  <a>Add Challenge</a>
+                </li>
+                <li>
+                  <a>Add Team</a>
+                </li>
+                <li>
+                  <a>Add Bonus</a>
+                </li>
+                <li>
+                  <a>Add Sport</a>
+                </li>
+                <li>
+                  <a>Userprofile</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </nav>
+      <div className="moible_nav_close"></div>
     </header>
   );
 }

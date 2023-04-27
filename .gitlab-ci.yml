@@ -27,7 +27,6 @@ backend-test:
   script:
     - cd Backend
     - mvn test
-  allow_failure: true # temporary until we have fixed tests
 
 backend-build:
   image: maven:3.8.3-openjdk-17

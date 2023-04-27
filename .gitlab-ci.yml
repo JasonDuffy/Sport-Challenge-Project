@@ -3,23 +3,24 @@ stages:
   - build
 #  - deploy
 
-#frontend-test:
-#  image: node:latest
-#  stage: test
-#  before_script:
-#    - cd Frontend
-#    - npm install
-#    - npm install react-scripts -g --silent
-#  script:
-#    - npm run test:ci
-#  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
-#  artifacts:
-#    paths:
-#      - coverage/
-#    when: always
-#    reports:
-#      junit:
-#        - junit.xml
+frontend-test:
+  image: node:latest
+  stage: test
+  before_script:
+    - cd Frontend
+    - npm install
+    - npm install react-scripts -g --silent
+  script:
+    - npm run test:ci
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+  artifacts:
+    paths:
+      - coverage/
+    when: always
+    reports:
+      junit:
+        - junit.xml
+  allow_failure: true # temporary until tests are introduced to React
 
 backend-test:
   image: maven:3.8.3-openjdk-17
@@ -52,23 +53,20 @@ frontend-build:
        - Frontend/build  
 
 #docker:
-#  variables:
-#    #DOCKER_HOST: tcp://docker:2375/
-#    DOCKER_DRIVER: overlay2
 #  image: docker
 #  stage: deploy
-#  services:
-#    - name: docker:dind
-#      alias: docker
+#  before_script:
+#    - docker info
+#    - docker inspect --format='{{.HostConfig.Privileged}}' [container_id]
 #  script:
 #    - cd Backend
-#    - docker build . -t scp-backend
+#    - docker buildx build . -t scp-backend
 #    - cd ..
 #    - cd Frontend
-#    - docker build . -t scp-frontend
-#    - cd ..
-#    - docker compose up
+#    - docker buildx build . -t scp-frontend
+#    - docker save scp-backend > backend.tar
+#    - docker save scp-frontend > frontend.tar
 #  artifacts:
 #     paths:
-#       - target/docker/ 
+#        - ./*.tar  
 

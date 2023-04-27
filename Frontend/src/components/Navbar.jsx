@@ -55,10 +55,10 @@ function Navbar() {
       <nav className="mobile_nav">
         <div className="mobile_nav_list">
           <div className="mobile_nav_list_item">
-            <a>Home</a>
+            <a href="/">Home</a>
           </div>
           <div className="mobile_nav_list_item">
-            <a>My Challenges</a>
+            <a href="/My-Challenges">My Challenges</a>
           </div>
           <div className="mobile_nav_list_item">
             <span className="mobile_nav_dropdown">
@@ -71,19 +71,19 @@ function Navbar() {
             <div className="mobile_nav_dropdown_menu">
               <ul>
                 <li>
-                  <a>Add Challenge</a>
+                  <a href="/Add/Challenge">Add Challenge</a>
                 </li>
                 <li>
-                  <a>Add Team</a>
+                  <a href="/Add/Team">Add Team</a>
                 </li>
                 <li>
-                  <a>Add Bonus</a>
+                  <a href="/Add/Bonus">Add Bonus</a>
                 </li>
                 <li>
-                  <a>Add Sport</a>
+                  <a href="/Add/Sport">Add Sport</a>
                 </li>
                 <li>
-                  <a>Userprofile</a>
+                  <a href="/Profile">Userprofile</a>
                 </li>
               </ul>
             </div>

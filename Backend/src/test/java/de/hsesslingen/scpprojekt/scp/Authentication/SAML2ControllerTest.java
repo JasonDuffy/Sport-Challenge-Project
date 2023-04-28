@@ -65,9 +65,9 @@ class SAML2ControllerTest {
         verify(saml2AuthenticatedPrincipalMock).getFirstAttribute("urn:oid:2.5.4.4");
     }
 
-    @Mock
-    HttpSession mockHttpSession;
-
+    /**
+     * Tests if isLoggedIn returns true when logged in
+     */
     @Test
     void isLoggedInTestTrue(){
         MockHttpServletRequest req = new MockHttpServletRequest();
@@ -77,6 +77,10 @@ class SAML2ControllerTest {
 
         assertTrue(SAML2Controller.isLoggedIn(req));
     }
+
+    /**
+     * Tests if isLoggedIn returns false when there is no session
+     */
     @Test
     void isLoggedInTestFalseOne(){
         MockHttpServletRequest req = new MockHttpServletRequest();
@@ -86,6 +90,9 @@ class SAML2ControllerTest {
         assertFalse(SAML2Controller.isLoggedIn(req));
     }
 
+    /**
+     * Tests if isLoggedIn returns false when user is not logged in
+     */
     @Test
     void isLoggedInTestFalseTwo(){
         MockHttpServletRequest req = new MockHttpServletRequest();
@@ -96,6 +103,9 @@ class SAML2ControllerTest {
         assertFalse(SAML2Controller.isLoggedIn(req));
     }
 
+    /**
+     * Tests if the redirection of login works
+     */
     @Test
     void testLogin(){
         ResponseEntity<Void> res = new SAML2Controller().login();
@@ -105,6 +115,9 @@ class SAML2ControllerTest {
         assertEquals(res.getStatusCode(), HttpStatus.MOVED_PERMANENTLY);
     }
 
+    /**
+     * Tests if user data is returned correctly when logged in
+     */
     @Test
     void testUserDataRestLoggedIn(){
         when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
@@ -131,6 +144,9 @@ class SAML2ControllerTest {
         assertEquals(result.getBody().getLastName(), "Mustermann");
     }
 
+    /**
+     * Tests if user is correctly rejected when not logged in
+     */
     @Test
     void testUserDataRestLoggedOut(){
         MockHttpServletRequest request = new MockHttpServletRequest();

@@ -11,15 +11,12 @@ frontend-test:
     - npm install
     - npm install react-scripts -g --silent
   script:
-    - npm test
+    - npm test -- --coverage
   coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
   artifacts:
     paths:
       - coverage/
     when: always
-    reports:
-      junit:
-        - junit.xml
 
 backend-test:
   image: maven:3.8.3-openjdk-17

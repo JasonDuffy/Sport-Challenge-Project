@@ -49,6 +49,7 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
 		<dependency> <!-- Internal DB for testing purposes -->
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>

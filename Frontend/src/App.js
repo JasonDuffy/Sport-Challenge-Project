@@ -10,7 +10,6 @@ import Login from "./components/Login";
 import MyChallenges from "./components/MyChallenges";
 import Navbar from "./components/Navbar";
 import Userprofile from "./components/Userprofile";
-import './main.js';
 
 function App() {
   return (

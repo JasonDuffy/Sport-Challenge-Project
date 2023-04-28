@@ -15,7 +15,7 @@ frontend-test:
   coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
   artifacts:
     paths:
-      - coverage/
+      - Frontend/coverage/
     when: always
 
 backend-test:

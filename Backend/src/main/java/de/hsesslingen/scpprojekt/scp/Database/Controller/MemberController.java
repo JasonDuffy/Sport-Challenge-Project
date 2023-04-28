@@ -44,8 +44,7 @@ public class MemberController {
     public ResponseEntity<Member> createMember(@RequestBody Member member, HttpServletRequest request) {
         if (SAML2Controller.isLoggedIn(request)){
             try {
-                Member _member = memberRepository
-                        .save(new Member(/*member.getFirstName(), member.getLastName(), false*/));
+                Member _member = memberRepository.save(new Member(member.getFirstName(), member.getLastName()));
                 return new ResponseEntity<>(_member, HttpStatus.CREATED);
             } catch (Exception e) {
                 return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);

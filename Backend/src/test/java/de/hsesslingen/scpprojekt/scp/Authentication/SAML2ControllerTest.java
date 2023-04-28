@@ -1,5 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.Authentication;
 
+import de.hsesslingen.scpprojekt.scp.Authentication.Controller.SAML2Controller;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;

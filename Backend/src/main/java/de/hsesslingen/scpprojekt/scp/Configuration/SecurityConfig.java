@@ -13,15 +13,10 @@ import org.springframework.security.saml2.provider.service.web.DefaultRelyingPar
 import org.springframework.security.saml2.provider.service.web.Saml2MetadataFilter;
 import org.springframework.security.saml2.provider.service.web.authentication.Saml2WebSsoAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.List;
 
 /**
- * Security config that only allows access after authorization by SAML2
- * @author Jason Patrick Duffy, Robin Hackh, baeldung (https://www.baeldung.com/spring-security-saml)
+ * Security config that allows access after authentication by SAML2
+ * @author Jason Patrick Duffy, baeldung (https://www.baeldung.com/spring-security-saml)
  * @see https://www.baeldung.com/spring-security-saml
  */
 @Configuration
@@ -31,32 +26,28 @@ public class SecurityConfig {
     @Autowired
     private RelyingPartyRegistrationRepository relyingPartyRegistrationRepository;
 
+    /**
+     * Security chain that defines how HTTP calls are handled
+     *
+     * @param http HttpSecurity object that is being used
+     * @return HTTP filter chain
+     * @throws Exception
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         DefaultRelyingPartyRegistrationResolver relyingPartyRegistrationResolver = new DefaultRelyingPartyRegistrationResolver(this.relyingPartyRegistrationRepository);
         Saml2MetadataFilter filter = new Saml2MetadataFilter(relyingPartyRegistrationResolver, new OpenSamlMetadataResolver());
 
-        http.authorizeHttpRequests(authorize -> authorize.anyRequest()
-                        .authenticated())
+        http.authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/saml/login/").authenticated()
+                        .anyRequest().permitAll())
                 .saml2Login(withDefaults())
                 .saml2Logout(withDefaults())
                 .addFilterBefore(filter, Saml2WebSsoAuthenticationFilter.class);
-        http.cors().disable();
+
         http.csrf().disable();
+        http.cors().disable();
 
         return http.build();
-    }
-
-    //Needed for REST, currently unused
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource(){
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:3000", "http://localhost:8081"));
-        configuration.setAllowedMethods(List.of("GET","POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
-        //configuration.setAllowCredentials(true);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
     }
 }

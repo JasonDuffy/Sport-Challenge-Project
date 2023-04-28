@@ -1,11 +1,16 @@
-package de.hsesslingen.scpprojekt.scp.DataBase.Entities;
+package de.hsesslingen.scpprojekt.scp.Database.Entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.TableGenerator;
 import jakarta.persistence.Table;
 import org.springframework.data.annotation.Id;
+
+/**
+ * Member Entity
+ * TODO: @Mason Kommentiere die Klasse ordentlich - siehe SAML2Controller
+ * @author Mason Schönherr
+ */
 
 //generates table of members
 @Entity

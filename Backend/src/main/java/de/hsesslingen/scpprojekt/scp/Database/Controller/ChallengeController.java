@@ -56,7 +56,7 @@ public class ChallengeController {
             @ApiResponse(responseCode = "404", description = "Challenge not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @GetMapping("/{id}")
+    @GetMapping(path = "/{id}" , produces = "application/json")
     public ResponseEntity<Challenge> getChallengeById(@PathVariable("id") long id, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             Optional<Challenge> challengeData = challengeRepository.findById(id);
@@ -83,7 +83,7 @@ public class ChallengeController {
                                 array = @ArraySchema(schema = @Schema(implementation = Challenge.class)))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @GetMapping("/getAllChallenges")
+    @GetMapping(path = "/getAllChallenges", produces = "application/json")
     public ResponseEntity<List<Challenge>> getAllChallenges(HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             List<Challenge> challenges = challengeRepository.findAll();
@@ -106,7 +106,7 @@ public class ChallengeController {
                             array = @ArraySchema(schema = @Schema(implementation = Challenge.class)))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @GetMapping("/getCurrentChallenges")
+    @GetMapping(path = "/getCurrentChallenges", produces = "application/json")
     public ResponseEntity<List<Challenge>> getCurrentChallenges(HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             List<Challenge> challenges = challengeRepository.findAll();
@@ -115,7 +115,7 @@ public class ChallengeController {
             for (Challenge challenge: challenges){
                 Date today = new Date();
 
-                if(challenge.getEndDate().before(today)){
+                if(challenge.getEndDate().after(today) && today.after(challenge.getStartDate())){
                     currentChallenges.add(challenge);
                 }
             }
@@ -138,7 +138,7 @@ public class ChallengeController {
                             array = @ArraySchema(schema = @Schema(implementation = Challenge.class)))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @GetMapping("/getPastChallenges")
+    @GetMapping(path = "/getPastChallenges", produces = "application/json")
     public ResponseEntity<List<Challenge>> getPastChallenges(HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             List<Challenge> challenges = challengeRepository.findAll();
@@ -147,7 +147,7 @@ public class ChallengeController {
             for (Challenge challenge: challenges){
                 Date today = new Date();
 
-                if(challenge.getEndDate().after(today)){
+                if(challenge.getEndDate().before(today)){
                     pastChallenges.add(challenge);
                 }
             }
@@ -173,7 +173,7 @@ public class ChallengeController {
             @ApiResponse(responseCode = "417", description = "Something went wrong creating the new Challenge", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @PostMapping(path = "/addChallenge", consumes = "multipart/form-data")
+    @PostMapping(path = "/addChallenge", consumes = "multipart/form-data", produces = "application/json")
     public ResponseEntity<Challenge> addChallenge(@RequestParam("file") MultipartFile file, @RequestBody Challenge challenge, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             try {

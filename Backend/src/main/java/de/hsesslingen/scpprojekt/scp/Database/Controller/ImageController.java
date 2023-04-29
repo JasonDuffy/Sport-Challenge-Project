@@ -77,7 +77,7 @@ public class ImageController {
             @ApiResponse(responseCode = "404", description = "File not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @GetMapping("/")
+    @GetMapping(path = "/" , produces = "application/json")
     public ResponseEntity<Image> getImageById(@RequestParam long id, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             Optional<Image> imageData = imageRepository.findById(id);

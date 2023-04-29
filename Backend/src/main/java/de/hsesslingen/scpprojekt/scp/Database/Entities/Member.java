@@ -15,7 +15,7 @@ import jakarta.persistence.*;
 public class Member{
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     @Column(name = "first_name", nullable = false)
     private String firstName;

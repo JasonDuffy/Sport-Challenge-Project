@@ -1,6 +1,12 @@
 package de.hsesslingen.scpprojekt.scp.Authentication.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2User;
+import io.swagger.v3.oas.annotations.Hidden;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpHeaders;
@@ -31,6 +37,14 @@ public class SAML2Controller {
      *
      * @return A SAML2 user object containing the user data on REST API.
      */
+    @Operation(summary = "Get user data provided by SAML2")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "User is logged in.",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = SAML2User.class))}),
+            @ApiResponse(responseCode = "403", description = "User is not logged in.",
+                    content = @Content)
+    })
     @GetMapping("/user/")
     public ResponseEntity<SAML2User> userDataREST(HttpServletRequest request){
         if (isLoggedIn(request)) {
@@ -45,6 +59,12 @@ public class SAML2Controller {
      *
      * @return ResponsEntity that redirects the user to the frontend
      */
+    @Hidden // Hidden as it should not be used in an API request
+    @Operation(summary = "Redirect user to Frontend")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "301", description = "Redirection successful.",
+                    content = @Content)
+    })
     @GetMapping("/login/")
     public ResponseEntity<Void> login(){
         HttpHeaders headers = new HttpHeaders();

@@ -26,6 +26,7 @@ spring:
   sql:
     init:
       platform: postgres
+      encoding: UTF-8
 
   security:
     saml2:

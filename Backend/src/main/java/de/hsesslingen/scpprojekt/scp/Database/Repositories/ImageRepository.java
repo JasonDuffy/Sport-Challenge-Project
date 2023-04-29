@@ -10,6 +10,6 @@ import org.springframework.stereotype.Repository;
  * @author Robin Hackh
  */
 @Repository
-public interface ImageRepository extends JpaRepository<Image, String> {
+public interface ImageRepository extends JpaRepository<Image, Long> {
 
 }

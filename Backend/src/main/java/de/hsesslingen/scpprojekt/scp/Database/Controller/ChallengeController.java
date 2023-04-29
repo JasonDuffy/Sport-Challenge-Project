@@ -1,6 +1,7 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.Controller.SAML2Controller;
+import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
@@ -57,7 +58,7 @@ public class ChallengeController {
     })
     @GetMapping("/{id}")
     public ResponseEntity<Challenge> getChallengeById(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Controller.isLoggedIn(request)){
+        if (SAML2Functions.isLoggedIn(request)){
             Optional<Challenge> challengeData = challengeRepository.findById(id);
             if (challengeData.isPresent()) {
                 return new ResponseEntity<>(challengeData.get(), HttpStatus.OK);
@@ -84,7 +85,7 @@ public class ChallengeController {
     })
     @GetMapping("/getAllChallenges")
     public ResponseEntity<List<Challenge>> getAllChallenges(HttpServletRequest request) {
-        if (SAML2Controller.isLoggedIn(request)){
+        if (SAML2Functions.isLoggedIn(request)){
             List<Challenge> challenges = challengeRepository.findAll();
             return new ResponseEntity<>(challenges, HttpStatus.OK);
         } else {
@@ -107,7 +108,7 @@ public class ChallengeController {
     })
     @GetMapping("/getCurrentChallenges")
     public ResponseEntity<List<Challenge>> getCurrentChallenges(HttpServletRequest request) {
-        if (SAML2Controller.isLoggedIn(request)){
+        if (SAML2Functions.isLoggedIn(request)){
             List<Challenge> challenges = challengeRepository.findAll();
             List<Challenge> currentChallenges = new ArrayList<>();
 
@@ -139,7 +140,7 @@ public class ChallengeController {
     })
     @GetMapping("/getPastChallenges")
     public ResponseEntity<List<Challenge>> getPastChallenges(HttpServletRequest request) {
-        if (SAML2Controller.isLoggedIn(request)){
+        if (SAML2Functions.isLoggedIn(request)){
             List<Challenge> challenges = challengeRepository.findAll();
             List<Challenge> pastChallenges = new ArrayList<>();
 
@@ -174,7 +175,7 @@ public class ChallengeController {
     })
     @PostMapping(path = "/addChallenge", consumes = "multipart/form-data")
     public ResponseEntity<Challenge> addChallenge(@RequestParam("file") MultipartFile file, @RequestBody Challenge challenge, HttpServletRequest request) {
-        if (SAML2Controller.isLoggedIn(request)){
+        if (SAML2Functions.isLoggedIn(request)){
             try {
                 Image challengeImage = imageStorageService.store(file);
 

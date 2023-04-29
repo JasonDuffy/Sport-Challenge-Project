@@ -1,5 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.Database.Entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.util.Date;
@@ -35,6 +36,7 @@ public class Challenge {
 
     @ManyToOne
     @JoinColumn(name = "image_id")
+    @JsonIgnore
     private Image image;
     @Column(name = "target_distance", nullable = false)
     private float targetDistance;

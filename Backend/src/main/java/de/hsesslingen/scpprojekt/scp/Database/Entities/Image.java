@@ -12,6 +12,7 @@ import jakarta.persistence.*;
  *
  * @author Robin Hackh
  */
+
 @Entity
 @Table(name = "Image")
 public class Image {

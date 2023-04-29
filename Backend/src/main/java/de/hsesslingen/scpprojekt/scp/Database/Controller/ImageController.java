@@ -1,6 +1,7 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.Controller.SAML2Controller;
+import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ImageRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Service.ImageStorageService;
@@ -48,7 +49,7 @@ public class ImageController {
     })
     @PostMapping(path = "/upload/", consumes = "multipart/form-data")
     public ResponseEntity<HttpStatus> uploadImage(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
-        if (SAML2Controller.isLoggedIn(request)){
+        if (SAML2Functions.isLoggedIn(request)){
             try {
                 imageStorageService.store(file);
 
@@ -76,10 +77,10 @@ public class ImageController {
             @ApiResponse(responseCode = "404", description = "File not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @GetMapping("/{id}")
-    public ResponseEntity<Image> getImageById(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Controller.isLoggedIn(request)){
-            Optional<Image> imageData = imageRepository.findById(String.valueOf(id));
+    @GetMapping("/")
+    public ResponseEntity<Image> getImageById(@RequestParam long id, HttpServletRequest request) {
+        if (SAML2Functions.isLoggedIn(request)){
+            Optional<Image> imageData = imageRepository.findById(id);
             if (imageData.isPresent()) {
                 return new ResponseEntity<>(imageData.get(), HttpStatus.OK);
             } else {

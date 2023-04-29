@@ -10,6 +10,7 @@ import Login from "./components/Login";
 import MyChallenges from "./components/MyChallenges";
 import Navbar from "./components/Navbar";
 import Userprofile from "./components/Userprofile";
+import Test from "./components/Test";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/Test" element={<Test />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/Challenge" element={<Challenge />} />
         <Route path="/My-Challenges" element={<MyChallenges />} />

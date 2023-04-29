@@ -81,3 +81,45 @@ a:hover{
 .visible{
     visibility: visible !important;
 }
+
+.background_white{
+    background-color: #fff;
+}
+
+.background_lightblue{
+    background-color: var(--doubleslash-lightblue);
+}
+
+.section_container{
+    max-width: 88em;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.section_content{
+    padding: 6rem 0;
+}
+
+.heading_underline_center{
+    text-align: center;
+}
+
+.underline_center{
+    font-size: 50px;
+    text-align: center;
+    font-weight: 700;
+    margin: 0 auto;
+    padding: 0;
+    position: relative;
+}
+
+.underline_center:after {
+    content: "____";
+    font-size: 100px;
+    letter-spacing: -2px;
+    font-family: "Segoe UI",sans-serif;
+    color: var(--doubleslash-orange);
+    display: block;
+    line-height: .01em;
+    margin-top: -40px;
+}

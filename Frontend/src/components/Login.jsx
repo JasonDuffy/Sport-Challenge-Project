@@ -1,29 +1,26 @@
 import React from "react";
 import Button from "./Button";
-import { useState, useEffect } from "react";
+import "./css/Login.css";
 
-const userAction = async () => {
-    const res = await fetch("http://localhost:8081/saml/user/", { method:"GET", credentials: "include" });
-    console.log(res);
-    const data = await res.json();
-    console.log(data);
-}
-const userAction2 = () => {
-    window.open("http://localhost:8081/saml/login/", "_self")
-}
-const userAction3 = async () => {
-    const res = await fetch("http://localhost:8081/member/0", { method: "GET", credentials: "include" });
-    console.log(res);
-    const data = await res.json();
-    console.log(data);
-}
+function Login() {
+  function loginUser(){
+    window.open("http://localhost:8081/saml/login/", "_self");
+  };
 
-function Login(){
-    return <div className="mg_t_8">
-        <Button color="orange" txt="samlAPI" action={userAction} />
-        <Button color="orange" txt="restAPI" action={userAction3} />
-        <Button color="orange" txt="Login" action={userAction2} />
-    </div>
+  return (
+    <section className="background_white">
+      <div className="section_container">
+        <div className="section_content">
+          <div className="center_content mg_t_10">
+            <img className="login_logo" src={require("../images/Challenge-Overlay.png")}></img>
+          </div>
+          <div className="center_content mg_t_2">
+            <Button color="orange" txt="Login" action={loginUser} />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
 }
 
 export default Login;

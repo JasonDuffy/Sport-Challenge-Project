@@ -3,6 +3,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 import java.util.Optional;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.Controller.SAML2Controller;
+import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.MemberRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,7 +28,7 @@ public class MemberController {
     //gets member by id
     @GetMapping("/{id}")
     public ResponseEntity<Member> getMemberById(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Controller.isLoggedIn(request)){
+        if (SAML2Functions.isLoggedIn(request)){
             Optional<Member> memberData = memberRepository.findById(id);
             if (memberData.isPresent()) {
                 return new ResponseEntity<>(memberData.get(), HttpStatus.OK);
@@ -42,7 +43,7 @@ public class MemberController {
     //creates member
     @PostMapping("/")
     public ResponseEntity<Member> createMember(@RequestBody Member member, HttpServletRequest request) {
-        if (SAML2Controller.isLoggedIn(request)){
+        if (SAML2Functions.isLoggedIn(request)){
             try {
                 Member _member = memberRepository.save(new Member(member.getFirstName(), member.getLastName()));
                 return new ResponseEntity<>(_member, HttpStatus.CREATED);
@@ -57,7 +58,7 @@ public class MemberController {
     //edits member
     @PutMapping("/{id}")
     public ResponseEntity<Member> updateMember(@PathVariable("id") long id, @RequestBody Member member, HttpServletRequest request) {
-        if (SAML2Controller.isLoggedIn(request)){
+        if (SAML2Functions.isLoggedIn(request)){
             Optional<Member> memberData = memberRepository.findById(id);
 
             if (memberData.isPresent()) {
@@ -77,7 +78,7 @@ public class MemberController {
     //delete member
     @DeleteMapping("/{id}")
     public ResponseEntity<HttpStatus> deleteMember(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Controller.isLoggedIn(request)){
+        if (SAML2Functions.isLoggedIn(request)){
             try {
                 memberRepository.deleteById(id);
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -92,7 +93,7 @@ public class MemberController {
     //deletes all members
     @DeleteMapping("/")
     public ResponseEntity<HttpStatus> deleteAllMembers(HttpServletRequest request) {
-        if (SAML2Controller.isLoggedIn(request)){
+        if (SAML2Functions.isLoggedIn(request)){
             try {
                 memberRepository.deleteAll();
                 return new ResponseEntity<>(HttpStatus.NO_CONTENT);

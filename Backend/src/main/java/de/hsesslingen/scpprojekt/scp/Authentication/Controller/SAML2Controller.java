@@ -1,5 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.Authentication.Controller;
 
+import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2User;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,13 +9,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpSession;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,8 +44,8 @@ public class SAML2Controller {
     })
     @GetMapping("/user/")
     public ResponseEntity<SAML2User> userDataREST(HttpServletRequest request){
-        if (isLoggedIn(request)) {
-            return ResponseEntity.ok().body(getCurrentSAMLUser());
+        if (SAML2Functions.isLoggedIn(request)) {
+            return ResponseEntity.ok().body(SAML2Functions.getCurrentSAMLUser());
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -70,40 +67,5 @@ public class SAML2Controller {
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("http://localhost:3000/"));
         return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
-    }
-
-    /**
-     * Prepares SAML2 user object with correct information and returns data as SAML2User object.
-     *
-     * @return A SAML2 user object containing the user data
-     */
-    public SAML2User getCurrentSAMLUser() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        Saml2AuthenticatedPrincipal principal = (Saml2AuthenticatedPrincipal) authentication.getPrincipal();
-
-        //Save data to strings
-        String emailAddress = principal.getFirstAttribute("urn:oid:1.2.840.113549.1.9.1");
-        String firstName = principal.getFirstAttribute("urn:oid:2.5.4.42");
-        String lastName = principal.getFirstAttribute("urn:oid:2.5.4.4");
-
-        SAML2User thisUser = new SAML2User(emailAddress, firstName, lastName);
-
-        return thisUser;
-    }
-
-    /**
-     * Returns if the user's session is valid
-     * Has to be called from HTTP request!
-     *
-     * @param request, automatically filled by browser
-     * @return True/false depending on the user's login state
-     */
-    public static boolean isLoggedIn(HttpServletRequest request){
-        HttpSession session = request.getSession(false);
-        if (session != null && session.getAttribute("SPRING_SECURITY_CONTEXT") != null) {
-            return true;
-        } else {
-            return false;
-        }
     }
 }

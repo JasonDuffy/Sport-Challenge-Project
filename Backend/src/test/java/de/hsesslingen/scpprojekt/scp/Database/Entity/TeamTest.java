@@ -18,9 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ActiveProfiles("test")
 @SpringBootTest
 public class TeamTest {
-    /**
-     * Test if the Team Entity is correctly created
-     */
     private byte[] aChallenge = {100,123,124};
     private byte[] bTeam = {10,11,12};
     private Image imageChallenge = new Image("Challenge laufen","PNG",aChallenge);
@@ -28,7 +25,9 @@ public class TeamTest {
     private Date startdate = new Date(2023,1,27);
     private Date enddate = new Date(2023,4,27);
     private Challenge challenge = new Challenge("Laufen", "Man läuft", startdate, enddate, imageChallenge, 2);
-
+    /**
+     * Test if the Team is correctly created
+     */
     @Test
     void TeamTest(){
         Team teamTest = new Team("HasenHüppfer",imageTeam, challenge);

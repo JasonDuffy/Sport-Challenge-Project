@@ -11,6 +11,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test if the Activity Entity is correctly created
+ *
+ * @author  Tom Nguyen Dinh
  */
 @ActiveProfiles("test")
 @SpringBootTest

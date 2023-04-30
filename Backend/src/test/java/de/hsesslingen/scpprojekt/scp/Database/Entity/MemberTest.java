@@ -1,10 +1,4 @@
 package de.hsesslingen.scpprojekt.scp.Database.Entity;
-
-/**
- * Member class tests
- * @author Jason Patrick Duffy
- */
-
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

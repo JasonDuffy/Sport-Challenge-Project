@@ -14,6 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test if the ChallengeSport Entity is correctly created
+ *
+ * @author  Tom Nguyen Dinh
  */
 
 @ActiveProfiles("test")

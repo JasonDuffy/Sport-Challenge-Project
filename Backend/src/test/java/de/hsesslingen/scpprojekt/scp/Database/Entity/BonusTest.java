@@ -12,6 +12,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Test if the Bonus Entity is correctly created
+ *
+ * @author  Tom Nguyen Dinh
  */
 @ActiveProfiles("test")
 @SpringBootTest

@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 public class SportTest {
     /**
-     * Test if the Member Sport is correctly created
+     * Test if the Sport is correctly created
      */
 
     @Test

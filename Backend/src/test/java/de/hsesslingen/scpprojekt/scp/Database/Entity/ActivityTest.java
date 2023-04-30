@@ -19,14 +19,11 @@ public class ActivityTest {
     private Image image = new Image("Laufen","png",a);
     private Date startdate = new Date(2023,1,27);
     private Date enddate = new Date(2023,4,27);
-    /**
-     * Test if the ChallengeSport Entity is correctly created
-     */
-    Sport sport= new Sport("Laufen",3);
-    Challenge challenge = new Challenge("Laufen ins dritte Jahundert", "Man läuft", startdate, enddate, image, 2);
+    private Sport sport= new Sport("Laufen",3);
+    private Challenge challenge = new Challenge("Laufen ins dritte Jahundert", "Man läuft", startdate, enddate, image, 2);
 
-    ChallengeSport challengeSport = new ChallengeSport(3,challenge,sport);
-    Member member = new Member("doofen@email.com","Doof","EnSChmert");
+    private  ChallengeSport challengeSport = new ChallengeSport(3,challenge,sport);
+    private  Member member = new Member("doofen@email.com","Doof","EnSChmert");
     /**
      * Test if the Activity Entity is correctly created
      */

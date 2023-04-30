@@ -22,9 +22,9 @@ public class BonusTest {
     private Date Chaenddate = new Date(2023,4,27);
     private Date Bonusstartdate = new Date(2023,2,27);
     private Date Bonusenddate = new Date(2023,3,27);
-    Sport sport= new Sport("Laufen",3);
-    Challenge challenge = new Challenge("Laufen ins dritte Jahundert", "Man läuft", Chastartdate, Chaenddate, image, 2);
-    ChallengeSport challengeSport = new ChallengeSport(3,challenge,sport);
+    private Sport sport= new Sport("Laufen",3);
+    private Challenge challenge = new Challenge("Laufen ins dritte Jahundert", "Man läuft", Chastartdate, Chaenddate, image, 2);
+    private ChallengeSport challengeSport = new ChallengeSport(3,challenge,sport);
     /**
      * Test if the Bonus Entity is correctly created
      */

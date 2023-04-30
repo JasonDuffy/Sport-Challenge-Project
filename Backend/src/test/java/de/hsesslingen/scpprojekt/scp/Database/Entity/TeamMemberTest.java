@@ -27,6 +27,9 @@ public class TeamMemberTest {
     private Team team =  new Team("Rasender",imageTeam, challenge);
     private Member member =new Member("JaxL@email.com","Jax","Laterne");
 
+    /**
+     * Test if the TeamMember is correctly created
+     */
     @Test
     void testTeamMember(){
         TeamMember teamMemberTest = new TeamMember(team,member);

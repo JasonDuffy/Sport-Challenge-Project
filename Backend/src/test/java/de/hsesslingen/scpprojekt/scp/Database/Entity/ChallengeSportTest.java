@@ -23,11 +23,12 @@ public class ChallengeSportTest {
     private Image image = new Image("Laufen","png",a);
     private Date startdate = new Date(2023,1,27);
     private Date enddate = new Date(2023,4,27);
+    private  Sport sport= new Sport("Laufen",3);
+    private Challenge challenge = new Challenge("Laufen ins dritte Jahundert", "Man läuft", startdate, enddate, image, 2);
     /**
      * Test if the ChallengeSport Entity is correctly created
      */
-    Sport sport= new Sport("Laufen",3);
-    Challenge challenge = new Challenge("Laufen ins dritte Jahundert", "Man läuft", startdate, enddate, image, 2);
+
     @Test
     void ChallengeSportTest(){
         ChallengeSport challengeSportTest = new ChallengeSport(3,challenge,sport);

@@ -14,10 +14,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 @ActiveProfiles("test")
 @SpringBootTest
 public class ImageTest {
+    private byte[] a =  {12,12,123};
     /**
      * Test if the Image is correctly created
      */
-    private byte[] a =  {12,12,123};
     @Test
     void ImageTest(){
         Image imageTest = new Image("Laufen","Png",a);

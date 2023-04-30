@@ -1,0 +1,45 @@
+server:
+  port: 8081
+  servlet:
+    context-path:
+
+logging:
+level:
+root: DEBUG
+org.springframework.web: DEBUG
+org.springframework.security: DEBUG
+org.springframework.security.saml: DEBUG
+
+spring:
+  application:
+    name: Sport Challenge Projekt
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+  datasource:
+    url: jdbc:postgresql://localhost:5432/scp
+    username: postgres
+    password: password
+    driverClassName: org.postgresql.Driver
+  sql:
+    init:
+      platform: postgres
+      encoding: UTF-8
+
+  security:
+    saml2:
+      relyingparty:
+        registration:
+          keycloak:
+            entity-id: scp
+            signing:
+              credentials:
+                - private-key-location: "classpath:credentials/backend-private.key"
+                  certificate-location: "classpath:credentials/backend-certificate.cer"
+            singlelogout:
+              binding: POST
+              response-url: "{baseUrl}/logout/saml2/slo"
+            assertingparty:
+              metadata-uri: "http://localhost:8080/realms/SportChallenge/protocol/saml/descriptor"

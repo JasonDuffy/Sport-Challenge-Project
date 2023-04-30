@@ -1,0 +1,70 @@
+version: '2.4'
+
+services:
+  backend:
+    image: 'scp-backend:latest'
+    build:
+      context: .
+    container_name: backend
+    ports:
+      - 8081:8081
+    depends_on:
+      db:
+         condition: service_healthy
+      keycloak:
+         condition: service_started
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/scp
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_SECURITY_SAML2_RELYINGPARTY_REGISTRATION_KEYCLOAK_ASSERTINGPARTY_METADATA-URI=http://kubernetes.docker.internal:8080/realms/SportChallenge/protocol/saml/descriptor
+    networks:
+      - main_net
+      
+  db:
+    image: 'postgres:latest'
+    ports:
+      - 5432:5432
+    container_name: db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: scp
+      PGUSER: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "scp"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    # sourced from https://github.com/peter-evans/docker-compose-healthcheck
+    networks:
+      - main_net
+
+  keycloak:
+    image: 'quay.io/keycloak/keycloak'
+    command: start-dev
+    container_name: keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - 8080:8080
+    restart: always
+    volumes:
+      - ./.data/keycloak:/opt/keycloak/data/
+    networks:
+      - main_net
+      
+  frontend:
+    image: 'scp-frontend:latest'
+    build:
+      context: .
+    container_name: frontend
+    ports:
+      - 3000:3000
+    networks:
+      - main_net
+      
+networks:
+  main_net:

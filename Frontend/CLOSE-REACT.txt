@@ -1,0 +1,2 @@
+Kann benutzt werden um React zu Beenden.
+taskkill -F -IM node.exe

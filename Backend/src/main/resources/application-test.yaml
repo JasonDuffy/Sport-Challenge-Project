@@ -1,0 +1,29 @@
+logging:
+  level:
+    root: DEBUG
+    org.springframework.web: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.security.saml: DEBUG
+
+spring:
+  h2:
+    console:
+      enabled: true
+  jpa:
+    database: H2
+  datasource:
+    url: jdbc:h2:mem:scp
+    username: sa
+    password: password
+    driverClassName: org.h2.Driver
+  sql:
+    init:
+      platform: org.hibernate.dialect.H2Dialect
+  security:
+    saml2:
+      relyingparty:
+        registration:
+          keycloak:
+            signing:
+            assertingparty:
+              metadata-uri: "https://dev-41762717.okta.com/app/exk9854o9iglQusfM5d7/sso/saml/metadata"

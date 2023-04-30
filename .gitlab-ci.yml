@@ -1,0 +1,74 @@
+stages:
+  - test
+  - build
+#  - deploy
+
+frontend-test:
+  image: node:latest
+  stage: test
+  before_script:
+    - cd Frontend
+    - npm install
+    - npm install react-scripts -g --silent
+  script:
+    - npm test -- --coverage
+  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+  artifacts:
+    paths:
+      - Frontend/coverage/
+    when: always
+
+backend-test:
+  image: maven:3.8.3-openjdk-17
+  stage: test
+  script:
+    - cd Backend
+    - mvn test
+    - cat target/site/jacoco/index.html | grep -o 'Total[^%]*%'
+  coverage: '/Total.*?([0-9]{1,3})%/'
+  artifacts:
+    paths:
+      - Backend/target/site/
+    when: always
+
+backend-build:
+  image: maven:3.8.3-openjdk-17
+  stage: build
+  script:
+    - cd Backend
+    - mvn clean install -Dmaven.test.skip=true
+  artifacts:
+     paths:
+       - Backend/target/*.jar
+
+frontend-build:
+  image: node:alpine3.16
+  stage: build
+  before_script:
+    - cd Frontend
+    - npm install
+    - npm install react-scripts
+  script:
+    - CI=false npm run build
+  artifacts:
+     paths:
+       - Frontend/build  
+
+#docker:
+#  image: docker
+#  stage: deploy
+#  before_script:
+#    - docker info
+#    - docker inspect --format='{{.HostConfig.Privileged}}' [container_id]
+#  script:
+#    - cd Backend
+#    - docker buildx build . -t scp-backend
+#    - cd ..
+#    - cd Frontend
+#    - docker buildx build . -t scp-frontend
+#    - docker save scp-backend > backend.tar
+#    - docker save scp-frontend > frontend.tar
+#  artifacts:
+#     paths:
+#        - ./*.tar  
+

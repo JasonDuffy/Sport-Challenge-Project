@@ -1,6 +1,5 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
-import de.hsesslingen.scpprojekt.scp.Authentication.Controller.SAML2Controller;
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ImageRepository;

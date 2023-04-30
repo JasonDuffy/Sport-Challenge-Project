@@ -3,9 +3,13 @@ package de.hsesslingen.scpprojekt.scp.Database.Entities;
 import jakarta.persistence.*;
 
 /**
- * Member Entity
- * TODO: @Mason Kommentiere die Klasse ordentlich - siehe SAML2Controller
- * @author Mason Schönherr
+ * Challenge entity for Database
+ * Colums:
+ *      email: Primary key (Email of the user)
+ *      first_name: User first name
+ *      last_name: User first name
+ *
+ * @author Mason Schönherr, Robin Hackh
  */
 
 //generates table of members
@@ -15,8 +19,7 @@ import jakarta.persistence.*;
 public class Member{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private String email;
     @Column(name = "first_name", nullable = false)
     private String firstName;
     @Column(name = "last_name", nullable = false)
@@ -24,17 +27,18 @@ public class Member{
 
     public Member(){}
 
-    public Member(String firstName, String lastName) {
+    public Member(String email, String firstName, String lastName) {
+        this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public String getEmail() {
+        return email;
     }
 
-    public Long getId() {
-        return id;
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public void setFirstName(String firstName){

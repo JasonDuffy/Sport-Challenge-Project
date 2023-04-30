@@ -1,10 +1,8 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
-import de.hsesslingen.scpprojekt.scp.Authentication.Controller.SAML2Controller;
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Service.ImageStorageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,7 +12,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

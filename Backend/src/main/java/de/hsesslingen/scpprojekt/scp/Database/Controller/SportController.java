@@ -122,7 +122,7 @@ public class SportController {
      */
     @Operation(summary = "Deleted the sport")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Deleted sport",
+            @ApiResponse(responseCode = "204", description = "Deleted sport",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = Challenge.class))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)

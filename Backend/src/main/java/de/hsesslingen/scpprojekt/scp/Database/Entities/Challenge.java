@@ -3,6 +3,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Entities;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -30,9 +31,9 @@ public class Challenge {
     @Column(name = "description", nullable = false)
     private String description;
     @Column(name = "start_date", nullable = false)
-    private Date startDate;
+    private LocalDate startDate;
     @Column(name = "end_date", nullable = false)
-    private Date endDate;
+    private LocalDate endDate;
 
     @ManyToOne
     @JoinColumn(name = "image_id")
@@ -43,7 +44,7 @@ public class Challenge {
 
     public Challenge() {}
 
-    public Challenge(String name, String description, Date startDate, Date endDate, Image image, float targetDistance) {
+    public Challenge(String name, String description, LocalDate startDate, LocalDate endDate, Image image, float targetDistance) {
         this.name = name;
         this.description = description;
         this.startDate = startDate;
@@ -76,19 +77,19 @@ public class Challenge {
         this.description = description;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 

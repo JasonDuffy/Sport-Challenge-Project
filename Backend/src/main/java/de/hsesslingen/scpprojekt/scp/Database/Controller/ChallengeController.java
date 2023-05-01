@@ -12,12 +12,18 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -110,9 +116,9 @@ public class ChallengeController {
             List<Challenge> currentChallenges = new ArrayList<>();
 
             for (Challenge challenge: challenges){
-                Date today = new Date();
+                LocalDate today = LocalDate.now();
 
-                if(challenge.getEndDate().after(today) && today.after(challenge.getStartDate())){
+                if(challenge.getEndDate().isAfter(today) && today.isAfter(challenge.getStartDate())){
                     currentChallenges.add(challenge);
                 }
             }
@@ -142,9 +148,9 @@ public class ChallengeController {
             List<Challenge> pastChallenges = new ArrayList<>();
 
             for (Challenge challenge: challenges){
-                Date today = new Date();
+                LocalDate today =  LocalDate.now();
 
-                if(challenge.getEndDate().before(today)){
+                if(challenge.getEndDate().isBefore(today)){
                     pastChallenges.add(challenge);
                 }
             }
@@ -155,11 +161,23 @@ public class ChallengeController {
     }
 
     /**
+     * Internal Problem of Swagger Ui/ Spring  to upload file with json object
+     * creates new Converter due fal
+     *
+     */
+    @Bean
+    public MappingJackson2HttpMessageConverter octetStreamJsonConverter() {
+        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
+        converter.setSupportedMediaTypes(List.of(new MediaType("application", "octet-stream")));
+        return converter;
+    }
+
+    /**
      * REST API for adding a new Challenge
      *
      * @param file Image that should be stored for the Challenge
      * @param request automatically filled by browser
-     * @param challenge Challenge data for the new Challenge
+     *
      * @return A 201 Code and the Challenge data if it worked 417 otherwise
      */
     @Operation(summary = "Adds the new Challenge")
@@ -171,11 +189,10 @@ public class ChallengeController {
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PostMapping(path = "/addChallenge", consumes = "multipart/form-data", produces = "application/json")
-    public ResponseEntity<Challenge> addChallenge(@RequestParam("file") MultipartFile file, @RequestBody Challenge challenge, HttpServletRequest request) {
+    public ResponseEntity<Challenge> addChallenge(@RequestParam("file") MultipartFile file, @RequestPart("json") @Valid Challenge challenge, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             try {
                 Image challengeImage = imageStorageService.store(file);
-
                 Challenge newChallenge = challengeRepository.save(
                         new Challenge(challenge.getName(), challenge.getDescription(), challenge.getStartDate(), challenge.getEndDate(), challengeImage, challenge.getTargetDistance()));
                 return new ResponseEntity<>(newChallenge, HttpStatus.CREATED);
@@ -186,4 +203,5 @@ public class ChallengeController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
 }

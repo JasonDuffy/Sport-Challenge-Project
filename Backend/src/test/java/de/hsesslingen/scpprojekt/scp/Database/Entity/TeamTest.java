@@ -26,7 +26,7 @@ public class TeamTest {
     private Date enddate = new Date(2023,4,27);
     private Challenge challenge = new Challenge("Laufen", "Man läuft", startdate, enddate, imageChallenge, 2);
     /**
-     * Test if the Team is correctly created
+     * Test if the Team  is correctly created
      */
     @Test
     void TeamTest(){

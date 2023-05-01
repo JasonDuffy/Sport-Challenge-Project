@@ -2,6 +2,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Entities;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -28,9 +29,9 @@ public class Bonus {
     @JoinColumn(name = "challenge_sport_id")
     private ChallengeSport challengeSport;
     @Column(name = "start_date", nullable = false)
-    private Date startDate;
+    private LocalDate startDate;
     @Column(name = "end_date", nullable = false)
-    private Date endDate;
+    private LocalDate endDate;
     @Column(name = "factor", nullable = false)
     private float factor;
     @Column(name = "name", nullable = false)
@@ -38,9 +39,9 @@ public class Bonus {
     @Column(name = "description", nullable = false)
     private String description;
 
-    public Bonus(){}
+    public Bonus(ChallengeSport challengeSport, LocalDate bonusstartdate, LocalDate bonusenddate, int factor, String jahresfeier, String zurFeierUnserenJahresTages){}
 
-    public Bonus(ChallengeSport challengeSport, Date startDate, Date endDate, float factor, String name, String description) {
+    public Bonus(ChallengeSport challengeSport, LocalDate startDate, LocalDate endDate, float factor, String name, String description) {
         this.challengeSport = challengeSport;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -65,19 +66,19 @@ public class Bonus {
         this.challengeSport = challengeSport;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,8 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class ChallengeTest {
     private byte[] a = {100,123,23,21};
     private Image image = new Image("Laufen","png",a);
-    private  Date startdate = new Date(2023,1,27);
-    private Date enddate = new Date(2023,4,27);
+    private LocalDate startdate = LocalDate.of(2023,1,27);
+    private LocalDate enddate =  LocalDate.of(2023,4,27);
     /**
      * Test if the Member Entity is correctly created
      */

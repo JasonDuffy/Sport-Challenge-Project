@@ -1,6 +1,5 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.SportRepository;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,11 +19,11 @@ import java.util.Optional;
 /**
  * Rest Controller for Sport
  *
- * @author Tom Nguyen Dinh
+ * @author Tom Nguyen Dinh, Jason Patrick Duffy
  */
 @CrossOrigin(origins="http://localhost:3000", allowedHeaders = "*", allowCredentials = "true")
 @RestController
-@RequestMapping("/Sport")
+@RequestMapping("/sport")
 public class SportController {
 
     @Autowired
@@ -35,25 +34,25 @@ public class SportController {
      *
      * @param sport  sport data for the created one
      * @param request automatically filled by browser
-     * @return A 201 Code and the Challenge data if it worked 417 otherwise
+     * @return A 201 Code and the sport data if it worked 417 otherwise
      */
-    @Operation(summary = "Adds the new Challenge")
+    @Operation(summary = "Adds the new sport")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Sport successfully added",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = Sport.class))}),
-            @ApiResponse(responseCode = "417", description = "Something went wrong creating the new sport", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Something went wrong creating the new sport", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @PostMapping(path = "/addSport",produces = "application/json")
-    public ResponseEntity<Sport>addSport(@RequestBody Sport sport, HttpServletRequest request){
+    @PostMapping(path = "/add/",produces = "application/json")
+    public ResponseEntity<Sport>addSport(@RequestParam String name, @RequestParam float factor, HttpServletRequest request){
         if (SAML2Functions.isLoggedIn(request)){
             try {
                 Sport newsport = sportRepository.save(
-                        new Sport( sport.getName(),sport.getFactor()));
+                        new Sport(name, factor));
                 return new ResponseEntity<>(newsport, HttpStatus.CREATED);
             }catch (Exception e){
-                return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -68,7 +67,7 @@ public class SportController {
      * @param request automatically filled by browser
      * @return Sport data corresponding to the given ID 404 otherwise
      */
-    @Operation(summary = "Get challenge by ID")
+    @Operation(summary = "Get sport by ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Sport found",
                     content = { @Content(mediaType = "application/json",
@@ -76,8 +75,8 @@ public class SportController {
             @ApiResponse(responseCode = "404", description = "Sport not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @GetMapping(path = "/{id}" , produces = "application/json")
-    public ResponseEntity<Sport> getChallengeById(@PathVariable("id") long id, HttpServletRequest request) {
+    @GetMapping(path = "/{id}/" , produces = "application/json")
+    public ResponseEntity<Sport> getSportById(@PathVariable("id") long id, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             Optional<Sport> sportData = sportRepository.findById(id);
             if (sportData.isPresent()) {
@@ -94,16 +93,16 @@ public class SportController {
      * Rest API for Returning all Sport
      *
      *  @param request automatically filled by browser
-     * @return Challenge data of all Challenges
+     * @return Sport data of all sports
      */
     @Operation(summary = "Get all sports")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "All sports that were found",
+            @ApiResponse(responseCode = "200", description = "Search successful",
                     content = {@Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = Sport.class)))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @GetMapping(path = "/getAllSports", produces = "application/json")
+    @GetMapping(path = "/all/", produces = "application/json")
     public ResponseEntity<List<Sport>> getAllSports(HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             List<Sport> sports = sportRepository.findAll();
@@ -124,10 +123,10 @@ public class SportController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "Deleted sport",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Challenge.class))}),
+                            schema = @Schema(implementation = Sport.class))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @DeleteMapping(path = "/{id}")
+    @DeleteMapping(path = "/{id}/")
     public ResponseEntity<HttpStatus> deleteSport(@PathVariable("id") long id, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             try {

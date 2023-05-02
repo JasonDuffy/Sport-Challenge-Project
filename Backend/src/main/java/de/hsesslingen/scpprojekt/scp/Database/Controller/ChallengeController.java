@@ -32,11 +32,11 @@ import java.util.Optional;
 /**
  * REST controller for Challenge.
  *
- * @author Robin Hackh
+ * @author Robin Hackh, Jason Patrick Duffy
  */
 @CrossOrigin(origins="http://localhost:3000", allowedHeaders = "*", allowCredentials = "true")
 @RestController
-@RequestMapping("/Challenge")
+@RequestMapping("/challenge")
 public class ChallengeController {
 
     @Autowired
@@ -59,7 +59,7 @@ public class ChallengeController {
             @ApiResponse(responseCode = "404", description = "Challenge not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @GetMapping(path = "/{id}" , produces = "application/json")
+    @GetMapping(path = "/{id}/" , produces = "application/json")
     public ResponseEntity<Challenge> getChallengeById(@PathVariable("id") long id, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             Optional<Challenge> challengeData = challengeRepository.findById(id);
@@ -81,12 +81,12 @@ public class ChallengeController {
      */
     @Operation(summary = "Get all challenges")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "All challenges that were found",
+            @ApiResponse(responseCode = "200", description = "Search successful",
                     content = {@Content(mediaType = "application/json",
                                 array = @ArraySchema(schema = @Schema(implementation = Challenge.class)))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @GetMapping(path = "/getAllChallenges", produces = "application/json")
+    @GetMapping(path = "/all/", produces = "application/json")
     public ResponseEntity<List<Challenge>> getAllChallenges(HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             List<Challenge> challenges = challengeRepository.findAll();
@@ -104,12 +104,12 @@ public class ChallengeController {
      */
     @Operation(summary = "Get current challenges")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Current challenges",
+            @ApiResponse(responseCode = "200", description = "Search successful",
                     content = {@Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = Challenge.class)))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @GetMapping(path = "/getCurrentChallenges", produces = "application/json")
+    @GetMapping(path = "/current/", produces = "application/json")
     public ResponseEntity<List<Challenge>> getCurrentChallenges(HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             List<Challenge> challenges = challengeRepository.findAll();
@@ -136,12 +136,12 @@ public class ChallengeController {
      */
     @Operation(summary = "Get past challenges")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Past challenges",
+            @ApiResponse(responseCode = "200", description = "Search successful",
                     content = {@Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = Challenge.class)))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @GetMapping(path = "/getPastChallenges", produces = "application/json")
+    @GetMapping(path = "/past/", produces = "application/json")
     public ResponseEntity<List<Challenge>> getPastChallenges(HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             List<Challenge> challenges = challengeRepository.findAll();
@@ -161,7 +161,7 @@ public class ChallengeController {
     }
 
     /**
-     * Internal Problem of Swagger Ui/ Spring  to upload file with json object
+     * Internal Problem of Swagger Ui/ Spring to upload file with json object
      * creates new Converter due fal
      *
      */
@@ -188,7 +188,7 @@ public class ChallengeController {
             @ApiResponse(responseCode = "417", description = "Something went wrong creating the new Challenge", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @PostMapping(path = "/addChallenge", consumes = "multipart/form-data", produces = "application/json")
+    @PostMapping(path = "/add/", consumes = "multipart/form-data", produces = "application/json")
     public ResponseEntity<Challenge> addChallenge(@RequestParam("file") MultipartFile file, @RequestPart("json") @Valid Challenge challenge, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             try {

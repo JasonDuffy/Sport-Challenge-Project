@@ -33,7 +33,7 @@ import java.util.Optional;
 /**
  * REST controller for Challenge.
  *
- * @author Robin Hackh, Jason Patrick Duffy
+ * @author Robin Hackh, Jason Patrick Duffy, Tom Nguyen Dinh
  */
 @CrossOrigin(origins="http://localhost:3000", allowedHeaders = "*", allowCredentials = "true")
 @RestController
@@ -162,8 +162,9 @@ public class ChallengeController {
     }
 
     /**
-     * Internal Problem of Swagger Ui/ Spring to upload file with json object
-     * creates new Converter due fal
+     * Internal Problem of Swagger Ui/ Spring to upload a file and a json object
+     * creates a Converter for the  Mediatype which allows octet stream,
+     * so it can have a json format Object
      *
      */
     @Bean

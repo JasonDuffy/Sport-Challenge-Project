@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -116,7 +117,7 @@ public class ChallengeController {
             List<Challenge> currentChallenges = new ArrayList<>();
 
             for (Challenge challenge: challenges){
-                LocalDate today = LocalDate.now();
+                LocalDateTime today = LocalDateTime.now();
 
                 if(challenge.getEndDate().isAfter(today) && today.isAfter(challenge.getStartDate())){
                     currentChallenges.add(challenge);
@@ -148,7 +149,7 @@ public class ChallengeController {
             List<Challenge> pastChallenges = new ArrayList<>();
 
             for (Challenge challenge: challenges){
-                LocalDate today =  LocalDate.now();
+                LocalDateTime today =  LocalDateTime.now();
 
                 if(challenge.getEndDate().isBefore(today)){
                     pastChallenges.add(challenge);

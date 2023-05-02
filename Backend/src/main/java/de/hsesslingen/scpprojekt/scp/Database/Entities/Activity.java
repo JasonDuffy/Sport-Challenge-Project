@@ -2,6 +2,8 @@ package de.hsesslingen.scpprojekt.scp.Database.Entities;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 /**
  * Challenge entity for Database
  * Colums:
@@ -9,8 +11,9 @@ import jakarta.persistence.*;
  *      challenge_sport_id: Foreign key of ChallengeSport entity
  *      member_id: Foreign key of Member entity
  *      distance: Distance traveled
+ *      date: Date of the activity
  *
- * @author Robin Hackh
+ * @author Robin Hackh, Jason Patrick Duffy
  */
 @Entity
 @Table(name = "Activity")
@@ -28,12 +31,16 @@ public class Activity {
     @Column(name = "distance", nullable = false)
     private float distance;
 
+    @Column(name = "date", nullable = false)
+    private LocalDateTime date;
+
     public Activity() {}
 
-    public Activity(ChallengeSport challengeSport, Member member, float distance) {
+    public Activity(ChallengeSport challengeSport, Member member, float distance, LocalDateTime date) {
         this.challengeSport = challengeSport;
         this.member = member;
         this.distance = distance;
+        this.date = date;
     }
 
     public long getId() {
@@ -66,5 +73,13 @@ public class Activity {
 
     public void setDistance(float distance) {
         this.distance = distance;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDateTime date) {
+        this.date = date;
     }
 }

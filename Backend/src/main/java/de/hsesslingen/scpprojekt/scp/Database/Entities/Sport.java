@@ -12,6 +12,7 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "sport")
 public class Sport {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;

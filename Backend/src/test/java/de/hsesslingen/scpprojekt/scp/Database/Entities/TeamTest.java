@@ -5,6 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -19,8 +20,8 @@ public class TeamTest {
     private byte[] bTeam = {10,11,12};
     private Image imageChallenge = new Image("Challenge laufen","PNG",aChallenge);
     private Image imageTeam = new Image("Laufen", "PNG",bTeam);
-    private LocalDate startdate =  LocalDate.of(2023,1,27);
-    private LocalDate enddate =  LocalDate.of(2023,4,27);
+    private LocalDateTime startdate =  LocalDateTime.of(2023,1,27, 10, 0);
+    private LocalDateTime enddate =  LocalDateTime.of(2023,4,27, 10, 0);
     private Challenge challenge = new Challenge("Laufen", "Man läuft", startdate, enddate, imageChallenge, 2);
     /**
      * Test if the Team  is correctly created

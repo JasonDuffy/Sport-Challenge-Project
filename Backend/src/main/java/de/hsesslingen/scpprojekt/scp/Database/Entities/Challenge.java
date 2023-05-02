@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -17,7 +18,7 @@ import java.util.Date;
  *      image_id: Foreign key of Image entity
  *      target_distance: Distance gaol for defined for the Challenge
  *
- * @author Robin Hackh
+ * @author Robin Hackh, Jason Patrick Duffy
  */
 @Entity
 @Table(name = "Challenge")
@@ -31,9 +32,9 @@ public class Challenge {
     @Column(name = "description", nullable = false)
     private String description;
     @Column(name = "start_date", nullable = false)
-    private LocalDate startDate;
+    private LocalDateTime startDate;
     @Column(name = "end_date", nullable = false)
-    private LocalDate endDate;
+    private LocalDateTime endDate;
 
     @ManyToOne
     @JoinColumn(name = "image_id")
@@ -44,7 +45,7 @@ public class Challenge {
 
     public Challenge() {}
 
-    public Challenge(String name, String description, LocalDate startDate, LocalDate endDate, Image image, float targetDistance) {
+    public Challenge(String name, String description, LocalDateTime startDate, LocalDateTime endDate, Image image, float targetDistance) {
         this.name = name;
         this.description = description;
         this.startDate = startDate;
@@ -77,19 +78,19 @@ public class Challenge {
         this.description = description;
     }
 
-    public LocalDate getStartDate() {
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(LocalDate startDate) {
+    public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
-    public LocalDate getEndDate() {
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(LocalDate endDate) {
+    public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
     }
 

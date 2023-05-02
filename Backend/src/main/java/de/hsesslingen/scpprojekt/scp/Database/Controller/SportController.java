@@ -45,11 +45,11 @@ public class SportController {
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PostMapping(path = "/add/",produces = "application/json")
-    public ResponseEntity<Sport>addSport(@RequestParam String name, @RequestParam float factor, HttpServletRequest request){
+    public ResponseEntity<Sport>addSport(@RequestBody Sport sport, HttpServletRequest request){
         if (SAML2Functions.isLoggedIn(request)){
             try {
                 Sport newsport = sportRepository.save(
-                        new Sport(name, factor));
+                        new Sport(sport.getName(), sport.getFactor()));
                 return new ResponseEntity<>(newsport, HttpStatus.CREATED);
             }catch (Exception e){
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

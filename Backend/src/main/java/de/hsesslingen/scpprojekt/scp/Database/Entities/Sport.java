@@ -4,7 +4,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Entities;
  * Colums:
  *      id: Primary key
  *      name: Sport name
- *      factor: Faktor of the sport
+ *      factor: Factor of the sport
  *
  * @author Tom Nguyen Dinh
  */

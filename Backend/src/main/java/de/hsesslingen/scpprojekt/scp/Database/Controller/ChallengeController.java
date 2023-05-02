@@ -3,6 +3,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Service.ImageStorageService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -200,6 +201,75 @@ public class ChallengeController {
                 return new ResponseEntity<>(newChallenge, HttpStatus.CREATED);
             }catch (Exception e){
                 return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
+     * Rest API for updating a challenge
+     *
+     * @param ID of Challenge which should be deleted
+     * @param challenge challenge data for the Challenge update
+     * @param request automatically filled by browser
+     * @return A 200 Code and the Member data if it worked 404 otherwise
+     */
+    @Operation(summary = "Updates a challenge")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Challenge successfully updated",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Challenge.class))}),
+            @ApiResponse(responseCode = "404", description = "Challenge not found", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @PutMapping(path = "/", produces = "application/json")
+    public ResponseEntity<Challenge> updateChallenge(@RequestParam("id") Long ID, @RequestBody Challenge challenge, HttpServletRequest request) {
+        if (SAML2Functions.isLoggedIn(request)){
+            Optional<Challenge> challengeData = challengeRepository.findById(ID);
+
+            if (challengeData.isPresent()) {
+                Challenge newChallenge = challengeData.get();
+                newChallenge.setName(challenge.getName());
+                newChallenge.setDescription(challenge.getDescription());
+                newChallenge.setStartDate(challenge.getStartDate());
+                newChallenge.setEndDate(challenge.getEndDate());
+                newChallenge.setImage(challenge.getImage());
+                newChallenge.setTargetDistance(challenge.getTargetDistance());
+
+
+                return new ResponseEntity<>(challengeRepository.save(newChallenge), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+
+    /**
+     * Rest API for deleting challenge
+     *
+     * @param ID Challenge with the ID should be deleted
+     * @param request automatically filled by browser
+     * @return A code 200 and the challenge data if it worked otherwise 404
+     */
+    @Operation(summary = "Delete a challenge ")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Challenge successfully deleted"),
+            @ApiResponse(responseCode = "404", description = "Challenge not found", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @DeleteMapping(path = "/",produces = "application/json")
+    public ResponseEntity<HttpStatus> deleteChallenge(@RequestParam("id")Long ID,HttpServletRequest request){
+        if (SAML2Functions.isLoggedIn(request)){
+            Optional<Challenge>challengeData = challengeRepository.findById(ID);
+            if(challengeData.isPresent()) {
+                challengeRepository.deleteById(ID);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } else  {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

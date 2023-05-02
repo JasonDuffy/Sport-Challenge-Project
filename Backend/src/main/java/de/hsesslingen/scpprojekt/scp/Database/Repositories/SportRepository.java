@@ -3,7 +3,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Repositories;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
 import org.springframework.data.jpa.repository.JpaRepository;
 /**
- * Challenge Repository
+ * Sport Repository
  *
  * @author Tom Nguyen Dinh
  */

@@ -1,15 +1,15 @@
 package de.hsesslingen.scpprojekt.scp.Database.Repositories;
 
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 /**
- * Sport Repository
+ * Bonus Repository
  *
- * @author Tom Nguyen Dinh
+ * @author Tom Nguyen Dinh, Mason Schönherr
  */
 @Repository
-public interface SportRepository extends JpaRepository<Sport,Long> {
+public interface BonusRepository extends JpaRepository<Bonus,Long> {
 
 }

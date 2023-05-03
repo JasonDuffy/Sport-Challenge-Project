@@ -1,6 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.Database.Entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 /**
@@ -28,7 +28,7 @@ public class Member{
 
     @ManyToOne
     @JoinColumn(name = "image_id", nullable = true)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Image image;
 
     public Member(){}

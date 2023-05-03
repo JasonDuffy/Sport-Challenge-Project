@@ -1,5 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.Database.Entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 /**
@@ -18,11 +19,13 @@ public class Team {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
     @Column(name = "name", nullable = false)
     private String name;
     @ManyToOne
     @JoinColumn(name = "image_id")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Image image;
     @ManyToOne
     @JoinColumn(name = "challenge_id")

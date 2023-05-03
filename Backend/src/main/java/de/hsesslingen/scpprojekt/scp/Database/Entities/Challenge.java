@@ -1,11 +1,10 @@
 package de.hsesslingen.scpprojekt.scp.Database.Entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * Challenge entity for Database
@@ -26,6 +25,7 @@ public class Challenge {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
     @Column(name = "name", nullable = false)
     private String name;
@@ -38,7 +38,7 @@ public class Challenge {
 
     @ManyToOne
     @JoinColumn(name = "image_id")
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Image image;
     @Column(name = "target_distance", nullable = false)
     private float targetDistance;
@@ -78,6 +78,7 @@ public class Challenge {
         this.description = description;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy,HH:mm")
     public LocalDateTime getStartDate() {
         return startDate;
     }
@@ -86,6 +87,7 @@ public class Challenge {
         this.startDate = startDate;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy,HH:mm")
     public LocalDateTime getEndDate() {
         return endDate;
     }

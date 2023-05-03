@@ -1,5 +1,7 @@
 package de.hsesslingen.scpprojekt.scp.Database.Entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -25,6 +27,7 @@ public class Bonus {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
     @ManyToOne
     @JoinColumn(name = "challenge_sport_id")
@@ -67,6 +70,7 @@ public class Bonus {
         this.challengeSport = challengeSport;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy,HH:mm")
     public LocalDateTime getStartDate() {
         return startDate;
     }
@@ -75,6 +79,7 @@ public class Bonus {
         this.startDate = startDate;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy,HH:mm")
     public LocalDateTime getEndDate() {
         return endDate;
     }

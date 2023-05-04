@@ -3,7 +3,6 @@ package de.hsesslingen.scpprojekt.scp.Database.Filler;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -12,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 
 @Component
-public class Filler implements CommandLineRunner {
+public class Filler {
     @Autowired
     private MemberRepository memberRepository;
     @Autowired
@@ -32,22 +31,22 @@ public class Filler implements CommandLineRunner {
     @Autowired
     private TeamMemberRepository teamMemberRepository;
 
-    private byte[] type1 = {2,3,4};
-    private byte[] type2 = {2,3,4};
-    private byte[] type3 = {2,3,4};
-    private byte[] type4 = {2,3,4};
-    private byte[] type5 = {2,3,4};
+    final private byte[] type1 = {2,3,4};
+    final private byte[] type2 = {2,3,4};
+    final private byte[] type3 = {2,3,4};
+    final private byte[] type4 = {2,3,4};
+    final private byte[] type5 = {2,3,4};
 
-    private LocalDateTime date1Start = LocalDateTime.of(2023,5,4,12,00);
-    private LocalDateTime date1End = LocalDateTime.of(2023,5,7,12,00);
-    private LocalDateTime date2Start = LocalDateTime.of(2023,2,15,12,00);
-    private LocalDateTime date2End = LocalDateTime.of(2023,6,15,12,00);
-    private LocalDateTime date3Start = LocalDateTime.of(2022,6,10,12,00);
-    private LocalDateTime date3End = LocalDateTime.of(2022,12,10,12,00);
-    private LocalDateTime date4Start = LocalDateTime.of(2023,1,1,12,00);
-    private LocalDateTime date4End = LocalDateTime.of(2023,12,31,12,00);
-    private LocalDateTime date5Start = LocalDateTime.of(2022,8,1,12,00);
-    private LocalDateTime date5End = LocalDateTime.of(2022,8,31,12,00);
+    final private LocalDateTime date1Start = LocalDateTime.of(2023,5,4,12,0);
+    final private LocalDateTime date1End = LocalDateTime.of(2023,5,7,12,0);
+    final private LocalDateTime date2Start = LocalDateTime.of(2023,2,15,12,0);
+    final private LocalDateTime date2End = LocalDateTime.of(2023,6,15,12,0);
+    final private LocalDateTime date3Start = LocalDateTime.of(2022,6,10,12,0);
+    final private LocalDateTime date3End = LocalDateTime.of(2022,12,10,12,0);
+    final private LocalDateTime date4Start = LocalDateTime.of(2023,1,1,12,0);
+    final private LocalDateTime date4End = LocalDateTime.of(2023,12,31,12,0);
+    final private LocalDateTime date5Start = LocalDateTime.of(2022,8,1,12,0);
+    final private LocalDateTime date5End = LocalDateTime.of(2022,8,31,12,0);
 
     Member joe = new Member("Joe.Doe@gmail.com", "Joe", "Doe");
     Member hanna = new Member("Hanna.Montana@biz.de", "Hannah", "Montana");
@@ -57,9 +56,9 @@ public class Filler implements CommandLineRunner {
 
     Image pic1 = new Image("Hustle", "type1", type1);
     Image pic2 = new Image("Bustle", "type2", type2);
-    Image pic3 = new Image("Rad", "type3", type2);
-    Image pic4 = new Image("Kanoo", "type4", type3);
-    Image pic5 = new Image("Skateboard", "type5", type4);
+    Image pic3 = new Image("Rad", "type3", type3);
+    Image pic4 = new Image("Kanoo", "type4", type4);
+    Image pic5 = new Image("Skateboard", "type5", type5);
 
     Challenge hustle = new Challenge("Hustle", "Welches Team kann mehr Km an 3 Tagen zurücklegen?", date1Start, date1End, pic1, 2000);
     Challenge bustle = new Challenge("Bustle", "Welches Team erreicht das Ziel näher während dem Ausflug?", date2Start, date2End, pic2, 1000);
@@ -102,9 +101,9 @@ public class Filler implements CommandLineRunner {
     Bonus holi = new Bonus(cp3, date3Start, date3End, 4, "Holiday Event", "Während den Ferien gibt es mehr KM!");
     Bonus finish = new Bonus(cp4, date4Start, date4End, 2, "Finished Project", "Aufgrund des beendeten Projekts gibt es mehr Kilometere für alle!");
     Bonus lucky = new Bonus(cp5, date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
+
     @EventListener(ApplicationReadyEvent.class)
-    @Override
-    public void run(String... args) throws Exception {
+    public void fillDb() {
         memberRepository.saveAll(Arrays.asList(
                 joe, hanna, god, jack, anakin
         ));
@@ -140,7 +139,6 @@ public class Filler implements CommandLineRunner {
         bonusRepository.saveAll(Arrays.asList(
                 doub, anni, holi, finish, lucky
         ));
-
     }
 }
 

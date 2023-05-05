@@ -212,6 +212,7 @@ public class ChallengeController {
      *
      * @param ID of Challenge which should be deleted
      * @param challenge challenge data for the Challenge update
+     * @param file Image which should be stored
      * @param request automatically filled by browser
      * @return A 200 Code and the Member data if it worked 404 otherwise
      */
@@ -221,24 +222,28 @@ public class ChallengeController {
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = Challenge.class))}),
             @ApiResponse(responseCode = "404", description = "Challenge not found", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
+            @ApiResponse(responseCode = "417", description = "Something went wrong updating the  Challenge", content = @Content),
+
     })
-    @PutMapping(path = "/", produces = "application/json")
-    public ResponseEntity<Challenge> updateChallenge(@RequestParam("id") Long ID, @RequestBody Challenge challenge, HttpServletRequest request) {
+    @PutMapping(path = "/",consumes = "multipart/form-data", produces = "application/json")
+    public ResponseEntity<Challenge> updateChallenge(@RequestParam("file") MultipartFile file,@RequestParam("id") Long ID,  @RequestPart("json") @Valid Challenge challenge, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             Optional<Challenge> challengeData = challengeRepository.findById(ID);
-
             if (challengeData.isPresent()) {
-                Challenge newChallenge = challengeData.get();
-                newChallenge.setName(challenge.getName());
-                newChallenge.setDescription(challenge.getDescription());
-                newChallenge.setStartDate(challenge.getStartDate());
-                newChallenge.setEndDate(challenge.getEndDate());
-                newChallenge.setImage(challenge.getImage());
-                newChallenge.setTargetDistance(challenge.getTargetDistance());
-
-
-                return new ResponseEntity<>(challengeRepository.save(newChallenge), HttpStatus.OK);
+                try{
+                    Image challengeImage = imageStorageService.store(file);
+                    Challenge newChallenge = challengeData.get();
+                    newChallenge.setName(challenge.getName());
+                    newChallenge.setDescription(challenge.getDescription());
+                    newChallenge.setStartDate(challenge.getStartDate());
+                    newChallenge.setEndDate(challenge.getEndDate());
+                    newChallenge.setImage(challengeImage);
+                    newChallenge.setTargetDistance(challenge.getTargetDistance());
+                    return new ResponseEntity<>(challengeRepository.save(newChallenge), HttpStatus.OK);
+                }catch (Exception e){
+                    return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+                }
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }

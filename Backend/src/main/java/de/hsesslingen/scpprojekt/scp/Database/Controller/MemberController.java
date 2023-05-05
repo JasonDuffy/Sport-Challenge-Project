@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 /**
  * REST controller for Member.
  *
- * @author Mason Schönherr, Jason Patrick Duffy, Robin Hackh
+ * @author Mason Schönherr, Jason Patrick Duffy, Robin Hackh, Tom Nguyen Dinh
  */
 @CrossOrigin(origins="http://localhost:3000", allowedHeaders = "*", allowCredentials = "true")
 @RestController
@@ -127,22 +127,25 @@ public class MemberController {
      *
      * @param email Email of the Member that should be deleted
      * @param request automatically filled by browser
-     * @return A 200 Code and the Member data if it worked 500 otherwise
+     * @return A 200 Code and the Member data if it worked
+     * otherwise if member not found 404
      */
     @Operation(summary = "Deleting a member")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Member successfully deleted"),
-            @ApiResponse(responseCode = "500", description = "Something went wrong deleting the member", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Member not found", content = @Content)
+
     })
     @DeleteMapping(path = "/", produces = "application/json")
     public ResponseEntity<HttpStatus> deleteMember(@RequestParam("email") String email, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
-            try {
+            Optional<Member> memberData = memberRepository.findById(email);
+            if (memberData.isPresent()){
                 memberRepository.deleteById(email);
                 return new ResponseEntity<>(HttpStatus.OK);
-            } catch (Exception e) {
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

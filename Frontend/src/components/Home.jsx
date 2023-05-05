@@ -1,39 +1,70 @@
-import React from "react";
+import React, { Component } from "react";
 import "./css/Home.css";
-import ChallengeList from "./ChallengeList";
 import Button from "./Button";
+import ChallengeOverview from "./ChallengeOverview";
 
-function Home() {
-  return (
-    <>
-      <section className="background_white">
-        <div className="section_container">
-          <div className="section_content">
-            <div className="heading_underline_center mg_b_8">
-              <span className="underline_center">Aktive Challenges</span>
-            </div>
-            <ChallengeList />
-            <div className="center_content mg_t_2">
-              <Button color="orange" txt="Neue Challenge" />
+/**
+ * Home page of the App
+ * 
+ * @author Robin Hackh
+ */
+class Home extends Component {
+  constructor() {
+    super();
+    this.state = { currentChallenge: [], pastChallenge: [] };
+  }
+
+  async componentDidMount() {
+    let response = await fetch("http://localhost:8081/challenge/current/", { method: "GET", credentials: "include" });
+    let resData = await response.json();
+    this.setState({ currentChallenge: resData });
+    response = await fetch("http://localhost:8081/challenge/past/", { method: "GET", credentials: "include" });
+    resData = await response.json();
+    this.setState({ pastChallenge: resData });
+  }
+
+  render() {
+    return (
+      <>
+        <section className="background_white">
+          <div className="section_container">
+            <div className="section_content">
+              <div className="heading_underline_center mg_b_8">
+                <span className="underline_center">Aktive Challenges</span>
+              </div>
+              <ul className="col challenge_list">
+                {this.state.currentChallenge.map(item => (
+                  <li className="challenge_list_item" key={item.id}>
+                    <ChallengeOverview id={item.id}/>
+                  </li>
+                ))}
+              </ul>
+              <div className="center_content mg_t_2">
+                <Button color="orange" txt="Neue Challenge" />
+              </div>
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="background_lightblue">
-        <div className="section_container">
-          <div className="section_content">
-            <div className="heading_underline_center mg_b_8">
-              <span className="underline_center">
-                Vorhergegangene Challenges
-              </span>
+        <section className="background_lightblue">
+          <div className="section_container">
+            <div className="section_content">
+              <div className="heading_underline_center mg_b_8">
+                <span className="underline_center">Vorhergegangene Challenges</span>
+              </div>
+              <ul className="col challenge_list">
+              {this.state.pastChallenge.map(item => (
+                  <li className="challenge_list_item" key={item.id}>
+                    <ChallengeOverview id={item.id}/>
+                  </li>
+                ))}
+              </ul>
             </div>
-            <ChallengeList />
           </div>
-        </div>
-      </section>
-    </>
-  );
+        </section>
+      </>
+    );
+  }
 }
 
 export default Home;

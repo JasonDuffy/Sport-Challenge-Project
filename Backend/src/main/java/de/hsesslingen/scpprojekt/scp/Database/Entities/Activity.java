@@ -1,6 +1,10 @@
 package de.hsesslingen.scpprojekt.scp.Database.Entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+
+import java.time.LocalDateTime;
 
 /**
  * Challenge entity for Database
@@ -9,8 +13,9 @@ import jakarta.persistence.*;
  *      challenge_sport_id: Foreign key of ChallengeSport entity
  *      member_id: Foreign key of Member entity
  *      distance: Distance traveled
+ *      date: Date of the activity
  *
- * @author Robin Hackh
+ * @author Robin Hackh, Jason Patrick Duffy
  */
 @Entity
 @Table(name = "Activity")
@@ -18,6 +23,7 @@ public class Activity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
     @ManyToOne
     @JoinColumn(name = "challenge_sport_id")
@@ -28,12 +34,16 @@ public class Activity {
     @Column(name = "distance", nullable = false)
     private float distance;
 
+    @Column(name = "date", nullable = false)
+    private LocalDateTime date;
+
     public Activity() {}
 
-    public Activity(ChallengeSport challengeSport, Member member, float distance) {
+    public Activity(ChallengeSport challengeSport, Member member, float distance, LocalDateTime date) {
         this.challengeSport = challengeSport;
         this.member = member;
         this.distance = distance;
+        this.date = date;
     }
 
     public long getId() {
@@ -66,5 +76,14 @@ public class Activity {
 
     public void setDistance(float distance) {
         this.distance = distance;
+    }
+
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy,HH:mm")
+    public void setDate(LocalDateTime date) {
+        this.date = date;
     }
 }

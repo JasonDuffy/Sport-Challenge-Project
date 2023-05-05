@@ -1,5 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.Database.Entities;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 /**
@@ -9,7 +10,7 @@ import jakarta.persistence.*;
  *      first_name: User first name
  *      last_name: User first name
  *
- * @author Mason Schönherr, Robin Hackh
+ * @author Mason Schönherr, Robin Hackh, Jason Patrick Duffy
  */
 
 //generates table of members
@@ -25,12 +26,26 @@ public class Member{
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
+    @ManyToOne
+    @JoinColumn(name = "image_id", nullable = true)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Image image;
+
     public Member(){}
 
+    public Member(String email, String firstName, String lastName, Image image) {
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.image = image;
+    }
+
+    //No image provided
     public Member(String email, String firstName, String lastName) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.image = null;
     }
 
     public String getEmail() {
@@ -55,5 +70,13 @@ public class Member{
 
     public String getLastName(){
         return lastName;
+    }
+
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) {
+        this.image = image;
     }
 }

@@ -11,13 +11,17 @@ org.springframework.security: DEBUG
 org.springframework.security.saml: DEBUG
 
 spring:
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
   application:
     name: Sport Challenge Projekt
   jpa:
     database: POSTGRESQL
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
   datasource:
     url: jdbc:postgresql://localhost:5432/scp
     username: postgres

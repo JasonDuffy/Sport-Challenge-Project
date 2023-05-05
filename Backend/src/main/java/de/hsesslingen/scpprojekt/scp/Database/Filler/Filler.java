@@ -7,8 +7,19 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+
+/**
+ * Fills the Database with some test data
+ *
+ * @author Robin Hackh, Mason Schönherr
+ */
 
 @Component
 public class Filler {
@@ -54,11 +65,11 @@ public class Filler {
     Member jack = new Member("Jack.Sparrow@googlemail.com", "Jack", "Sparrow");
     Member anakin = new Member("Anakin.Skywalker@hs-esslingen.de", "Anakin", "Skywalker");
 
-    Image pic1 = new Image("Hustle", "type1", type1);
-    Image pic2 = new Image("Bustle", "type2", type2);
-    Image pic3 = new Image("Rad", "type3", type3);
-    Image pic4 = new Image("Kanoo", "type4", type4);
-    Image pic5 = new Image("Skateboard", "type5", type5);
+    Image pic1 = new Image("Hustle", "image/jpg", type1);
+    Image pic2 = new Image("Bustle", "image/jpg", type2);
+    Image pic3 = new Image("Rad", "image/jpg", type3);
+    Image pic4 = new Image("Kanoo", "image/jpg", type4);
+    Image pic5 = new Image("Skateboard", "image/jpg", type5);
 
     Challenge hustle = new Challenge("Hustle", "Welches Team kann mehr Km an 3 Tagen zurücklegen?", date1Start, date1End, pic1, 2000);
     Challenge bustle = new Challenge("Bustle", "Welches Team erreicht das Ziel näher während dem Ausflug?", date2Start, date2End, pic2, 1000);
@@ -104,6 +115,20 @@ public class Filler {
 
     @EventListener(ApplicationReadyEvent.class)
     public void fillDb() {
+        try {
+            Image[] imgArray = {pic1, pic2, pic3, pic4, pic5};
+
+            for (int i = 0; i < imgArray.length; i++) {
+                InputStream ip = new FileInputStream("src/main/java/de/hsesslingen/scpprojekt/scp/Database/Filler/Images/image-" + (i + 1) + ".jpg");
+                BufferedImage bi = ImageIO.read(ip);
+                ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                ImageIO.write(bi, "jpg", baos);
+                imgArray[i].setData(baos.toByteArray());
+            }
+        } catch (Exception e){
+            System.out.println(e.getMessage());
+        }
+
         memberRepository.saveAll(Arrays.asList(
                 joe, hanna, god, jack, anakin
         ));

@@ -11,6 +11,7 @@
     "jquery": "^3.6.4",
     "react": "^18.2.0",
     "react-animate-height": "^3.1.1",
+    "react-async": "^10.0.1",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
     "react-router-dom": "^6.10.0",

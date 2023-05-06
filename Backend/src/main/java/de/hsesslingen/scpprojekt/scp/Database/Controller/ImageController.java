@@ -21,7 +21,7 @@ import java.util.Optional;
 /**
  * REST controller for Image.
  *
- * @author Robin Hackh
+ * @author Robin Hackh, Tom Nguyen Dinh
  */
 @CrossOrigin(origins="http://localhost:3000", allowedHeaders = "*", allowCredentials = "true")
 @RestController
@@ -87,6 +87,47 @@ public class ImageController {
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+
         }
     }
+
+    /**
+     *
+     * @param id ID of the image which should be updated
+     * @param file Image which should be stored
+     * @param request automatically filled by browser
+     * @return Image data corresponding to ID else 404 for not Found or 417 for something went wrong
+     */
+    @Operation(summary = "Updates a image")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Image successfully updated",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Image.class))}),
+            @ApiResponse(responseCode = "404", description = "File not found", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
+            @ApiResponse(responseCode = "417", description = "Something went wrong updating the image", content = @Content)
+    })
+    @PutMapping(path= "/",consumes = "multipart/form-data",produces= "application/json")
+    public ResponseEntity<Image> updateImage(@RequestParam long id ,@RequestParam("file") MultipartFile file , HttpServletRequest request){
+        if (SAML2Functions.isLoggedIn(request)){
+            Optional<Image> imageData = imageRepository.findById(id);
+            if(imageData.isPresent()){
+            try {
+                Image newImage = imageData.get();
+                newImage.setData(file.getBytes());
+                newImage.setName(file.getOriginalFilename());
+                newImage.setType(file.getContentType());
+
+                return new ResponseEntity<>(imageRepository.save(newImage),HttpStatus.OK);
+            }catch (Exception e){
+                return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+            }
+            }else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
 }

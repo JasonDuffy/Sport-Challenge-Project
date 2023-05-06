@@ -4,6 +4,7 @@ logging:
     org.springframework.web: DEBUG
     org.springframework.security: DEBUG
     org.springframework.security.saml: DEBUG
+    org.hibernate.internal.util: INFO
 
 spring:
   h2:

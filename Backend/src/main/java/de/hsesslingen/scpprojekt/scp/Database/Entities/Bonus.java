@@ -1,7 +1,11 @@
 package de.hsesslingen.scpprojekt.scp.Database.Entities;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -23,14 +27,15 @@ public class Bonus {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
     @ManyToOne
     @JoinColumn(name = "challenge_sport_id")
     private ChallengeSport challengeSport;
     @Column(name = "start_date", nullable = false)
-    private Date startDate;
+    private LocalDateTime startDate;
     @Column(name = "end_date", nullable = false)
-    private Date endDate;
+    private LocalDateTime endDate;
     @Column(name = "factor", nullable = false)
     private float factor;
     @Column(name = "name", nullable = false)
@@ -38,9 +43,7 @@ public class Bonus {
     @Column(name = "description", nullable = false)
     private String description;
 
-    public Bonus(){}
-
-    public Bonus(ChallengeSport challengeSport, Date startDate, Date endDate, float factor, String name, String description) {
+    public Bonus(ChallengeSport challengeSport, LocalDateTime startDate, LocalDateTime endDate, float factor, String name, String description) {
         this.challengeSport = challengeSport;
         this.startDate = startDate;
         this.endDate = endDate;
@@ -48,6 +51,8 @@ public class Bonus {
         this.name = name;
         this.description = description;
     }
+
+    public Bonus() { }
 
     public long getId() {
         return id;
@@ -65,19 +70,21 @@ public class Bonus {
         this.challengeSport = challengeSport;
     }
 
-    public Date getStartDate() {
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy,HH:mm")
+    public LocalDateTime getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDateTime startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy,HH:mm")
+    public LocalDateTime getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
     }
 

@@ -7,6 +7,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
 
+/**
+ * Functions concerning SAML2.
+ *
+ * @author Jason Patrick Duffy
+ */
 public class SAML2Functions {
 
     /**

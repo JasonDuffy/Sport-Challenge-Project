@@ -209,7 +209,7 @@ public class ActivityController {
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @DeleteMapping("/")
-    public ResponseEntity<HttpStatus> deleteAllActivities(HttpServletRequest request) {
+    public ResponseEntity<Void> deleteAllActivities(HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             try {
                 activityRepository.deleteAll();

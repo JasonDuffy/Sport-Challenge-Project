@@ -42,7 +42,7 @@ public class SAML2Controller {
             @ApiResponse(responseCode = "403", description = "User is not logged in.",
                     content = @Content)
     })
-    @GetMapping("/user/")
+    @GetMapping("/")
     public ResponseEntity<SAML2User> userDataREST(HttpServletRequest request){
         if (SAML2Functions.isLoggedIn(request)) {
             return ResponseEntity.ok().body(SAML2Functions.getCurrentSAMLUser());

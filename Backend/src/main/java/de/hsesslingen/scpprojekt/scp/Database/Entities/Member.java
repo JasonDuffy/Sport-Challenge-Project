@@ -2,11 +2,13 @@ package de.hsesslingen.scpprojekt.scp.Database.Entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import org.checkerframework.common.aliasing.qual.Unique;
 
 /**
  * Challenge entity for Database
  * Colums:
- *      email: Primary key (Email of the user)
+ *      id: Primary key
+ *      email: Unique Email of the user
  *      first_name: User first name
  *      last_name: User first name
  *
@@ -20,6 +22,10 @@ import jakarta.persistence.*;
 public class Member{
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private long id;
+    @Column(name = "email", nullable = false)
+    @Unique
     private String email;
     @Column(name = "first_name", nullable = false)
     private String firstName;
@@ -47,6 +53,8 @@ public class Member{
         this.lastName = lastName;
         this.image = null;
     }
+
+    public long getId() {return id; }
 
     public String getEmail() {
         return email;

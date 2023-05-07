@@ -12,7 +12,7 @@ import java.util.List;
  * @author Mason Schönherr, Robin Hackh
  */
 @Repository
-public interface MemberRepository extends JpaRepository<Member, String> {
+public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findByFirstName(String firstName);
     List<Member> findByLastName(String lastName);
 }

@@ -27,9 +27,11 @@ public class Activity {
     private long id;
     @ManyToOne
     @JoinColumn(name = "challenge_sport_id")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private ChallengeSport challengeSport;
     @ManyToOne
     @JoinColumn(name = "member_id")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Member member;
     @Column(name = "distance", nullable = false)
     private float distance;
@@ -78,6 +80,7 @@ public class Activity {
         this.distance = distance;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy,HH:mm")
     public LocalDateTime getDate() {
         return date;
     }

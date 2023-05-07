@@ -32,11 +32,11 @@ public class MemberController {
     /**
      * REST API for returning Member data of a given ID
      *
-     * @param email Email(ID) of the Member that should be returned
+     * @param id id of the Member that should be returned
      * @param request automatically filled by browser
      * @return Member data corresponding to the given ID 404 otherwise
      */
-    @Operation(summary = "Get member by email(ID)")
+    @Operation(summary = "Get member by ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Member found",
                     content = { @Content(mediaType = "application/json",

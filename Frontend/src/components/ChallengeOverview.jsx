@@ -26,7 +26,7 @@ function ChallengeOverview(props) {
 
   useEffect(() => {
     async function getChallengeData(){
-      const result = await fetch("http://localhost:8081/challenge/" + props.id + "/", { method: "GET", credentials: "include" });
+      const result = await fetch("http://localhost:8081/challenges/" + props.id + "/", { method: "GET", credentials: "include" });
       const resData = await result.json();
 
       setChallengeName(resData.name);

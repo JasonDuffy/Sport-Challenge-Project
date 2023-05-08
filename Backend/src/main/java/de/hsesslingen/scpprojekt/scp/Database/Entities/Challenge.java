@@ -3,6 +3,8 @@ package de.hsesslingen.scpprojekt.scp.Database.Entities;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
@@ -17,7 +19,7 @@ import java.time.LocalDateTime;
  *      image_id: Foreign key of Image entity
  *      target_distance: Distance gaol for defined for the Challenge
  *
- * @author Robin Hackh, Jason Patrick Duffy
+ * @author Robin Hackh, Jason Patrick Duffy, Tom Nguyen Dinh
  */
 @Entity
 @Table(name = "Challenge")
@@ -37,6 +39,7 @@ public class Challenge {
     private LocalDateTime endDate;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "image_id")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Image image;

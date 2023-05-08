@@ -3,6 +3,8 @@ package de.hsesslingen.scpprojekt.scp.Database.Entities;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.checkerframework.common.aliasing.qual.Unique;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * Challenge entity for Database
@@ -12,7 +14,7 @@ import org.checkerframework.common.aliasing.qual.Unique;
  *      first_name: User first name
  *      last_name: User first name
  *
- * @author Mason Schönherr, Robin Hackh, Jason Patrick Duffy
+ * @author Mason Schönherr, Robin Hackh, Jason Patrick Duffy , Tom Nguyen Dinh
  */
 
 //generates table of members
@@ -33,6 +35,7 @@ public class Member{
     private String lastName;
 
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "image_id", nullable = true)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Image image;

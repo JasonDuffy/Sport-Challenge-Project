@@ -2,6 +2,8 @@ package de.hsesslingen.scpprojekt.scp.Database.Entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * Challenge entity for Database
@@ -11,7 +13,7 @@ import jakarta.persistence.*;
  *      image_id: Foreign key of Image entity
  *      challenge_id: Foreign key of Challenge entity
  *
- * @author Robin Hackh
+ * @author Robin Hackh, Tom Nguyen Dinh
  */
 @Entity
 @Table(name = "Team")
@@ -24,10 +26,12 @@ public class Team {
     @Column(name = "name", nullable = false)
     private String name;
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "image_id")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Image image;
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "challenge_id")
     private Challenge challenge;
 

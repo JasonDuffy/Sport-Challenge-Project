@@ -62,6 +62,26 @@ public class APIFunctions {
     }
 
     /**
+     * Returns all activities of a given user in a given challenge
+     * @param challengeID Challenge ID of the requested activities
+     * @param userID User ID of the requested activities
+     * @return All Activities with the given User & Challenge IDs
+     */
+    public List<Activity> getActitivitesForUserInChallenge(Long challengeID, Long userID){
+        List<Activity> allUserActivities = getActivitiesForUser(userID);
+
+        List<Activity> userChallengeActivities = new ArrayList<>();
+
+        for(Activity activity : allUserActivities){
+            if (activity.getChallengeSport().getChallenge().getId() == challengeID){
+                userChallengeActivities.add(activity);
+            }
+        }
+
+        return userChallengeActivities;
+    }
+
+    /**
      * Returns for activity distance without bonuses
      * @param activities List of activities for which the distance should be calculated. All have to be part of the same challenge.
      * @return Distance of activity without bonuses

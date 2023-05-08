@@ -66,7 +66,7 @@ public class ActivityController {
     /**
      * REST API for returning Activity data of a given ID
      *
-     * @param email ID of the Activity that should be returned
+     * @param id ID of the Activity that should be returned
      * @param request automatically filled by browser
      * @return Activity data corresponding to the given ID, 404 otherwise
      */

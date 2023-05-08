@@ -1,4 +1,4 @@
-package de.hsesslingen.scpprojekt.scp.Controller;
+package de.hsesslingen.scpprojekt.scp.API.Controller;
 
 import de.hsesslingen.scpprojekt.scp.API.APIFunctions;
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
@@ -102,7 +102,7 @@ public class API {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Activities for User found.",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Activity.class))}),
+                            schema = @Schema(implementation = Float.class))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "500", description = "Not all activities are part of the same challenge.", content = @Content)
     })
@@ -123,7 +123,7 @@ public class API {
     }
 
     /**
-     * Get distance of challenge with any bonuses applied
+     * Get distance of challenge with bonuses applied
      * @param challengeID ID of the challenge to be checked
      * @param request automatically filled by browser
      * @return Distance covered in distance with bonuses
@@ -132,7 +132,7 @@ public class API {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Activities for User found.",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Activity.class))}),
+                            schema = @Schema(implementation = Float.class))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "500", description = "Not all activities are part of the same challenge.", content = @Content)
     })
@@ -143,6 +143,68 @@ public class API {
                 List<Activity> activities = functions.getActivitiesForChallenge(challengeID);
 
                 return new ResponseEntity<>(functions.getDistanceForActivities(activities), HttpStatus.OK);
+            } catch (InvalidActivitiesException e){
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
+     * Get distance of user in challenge with bonuses applied
+     * @param challengeID ID of the challenge to be checked
+     * @param userID ID of the user to be checked
+     * @param request automatically filled by browser
+     * @return Distance covered by user in challenge with bonuses
+     */
+    @Operation(summary = "Get distance of user in challenge with bonuses applied")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Distance successfully calculated",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Float.class))}),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Not all activities are part of the same challenge.", content = @Content)
+    })
+    @GetMapping(path = "/challengeDistanceForUser/", produces = "application/json")
+    public ResponseEntity<Float> getDistanceForChallengeForUser(@RequestParam Long challengeID, @RequestParam Long userID, HttpServletRequest request) {
+        if (SAML2Functions.isLoggedIn(request)){
+            try{
+                List<Activity> activities = functions.getActitivitesForUserInChallenge(challengeID, userID);
+
+                return new ResponseEntity<>(functions.getDistanceForActivities(activities), HttpStatus.OK);
+            } catch (InvalidActivitiesException e){
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
+     * Get distance of user in challenge without any bonuses applied
+     * @param challengeID ID of the challenge to be checked
+     * @param userID ID of the user to be checked
+     * @param request automatically filled by browser
+     * @return Distance covered by user in challenge without bonuses
+     */
+    @Operation(summary = "Get distance of user in challenge without bonuses applied")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Distance successfully calculated",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Float.class))}),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Not all activities are part of the same challenge.", content = @Content)
+    })
+    @GetMapping(path = "/rawChallengeDistanceForUser/", produces = "application/json")
+    public ResponseEntity<Float> getRawDistanceForChallengeForUser(@RequestParam Long challengeID, @RequestParam Long userID, HttpServletRequest request) {
+        if (SAML2Functions.isLoggedIn(request)){
+            try{
+                List<Activity> activities = functions.getActitivitesForUserInChallenge(challengeID, userID);
+
+                return new ResponseEntity<>(functions.getRawDistanceForActivities(activities), HttpStatus.OK);
             } catch (InvalidActivitiesException e){
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

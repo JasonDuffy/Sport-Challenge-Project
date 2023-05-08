@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { useState } from "react";
 import Button from "./Button";
 import "./css/AddChallenge.css";
+import "./css/Form.css";
 
 /**
  * Add Challenge page of the App
@@ -11,15 +12,17 @@ import "./css/AddChallenge.css";
 class AddChallenge extends Component {
   constructor() {
     super();
+    //state for the input elements
     this.state = {
       challengeName: "",
       challengeDescription: "",
-      challengeDistanceGoal: 0,
+      challengeDistanceGoal: 1,
       challengeStartDate: "",
       challengeEndDate: "",
-      allSport: []
+      allSport: [],
     };
 
+    //bind is needed for changing the state
     this.challengeNameChange = this.challengeNameChange.bind(this);
     this.challengeDescriptionChange = this.challengeDescriptionChange.bind(this);
     this.challengeDistanceGoalChange = this.challengeDistanceGoalChange.bind(this);
@@ -28,47 +31,96 @@ class AddChallenge extends Component {
     this.submitHandle = this.submitHandle.bind(this);
   }
 
-  challengeNameChange(event){
-    this.setState({challengeName: event.target.value});
+  challengeNameChange(event) {
+    this.setState({ challengeName: event.target.value });
   }
 
-  challengeDescriptionChange(event){
-    this.setState({challengeDescription: event.target.value});
+  challengeDescriptionChange(event) {
+    this.setState({ challengeDescription: event.target.value });
   }
-  challengeDistanceGoalChange(event){
-    this.setState({challengeDistanceGoal: event.target.value});
+  challengeDistanceGoalChange(event) {
+    if (event.target.value >= 1) {
+      this.setState({ challengeDistanceGoal: event.target.value });
+    } else if (event.target.value == 0) {
+      this.setState({ challengeDistanceGoal: 1 });
+    }
   }
-  challengeStartDateChange(event){
-    this.setState({challengeStartDate: event.target.value});
+  challengeStartDateChange(event) {
+    this.setState({ challengeStartDate: event.target.value });
+    this.setState({ challengeEndDate: "" });
   }
-  challengeEndDateChange(event){
-    this.setState({challengeEndDate: event.target.value});
+  challengeEndDateChange(event) {
+    this.setState({ challengeEndDate: event.target.value });
   }
 
   async submitHandle(event) {
     event.preventDefault();
-    let response = await fetch("http://localhost:8081/sport/all/", { method: "GET", credentials: "include" });
-    let resData = await response.json();
-    console.log(resData);
+
     const challengeImageEl = document.getElementById("challenge_image");
     const sportCheckboxEl = document.getElementsByClassName("form_sport_checkbox");
-  
-    for (const iterator of sportCheckboxEl) {
-      console.log("value: " + iterator.checked + "  id: " + iterator.dataset.sportId);
+    const sportNumberEl = document.getElementsByClassName("form_sport_number");
+    const dateOptions = { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" };
+
+    let startDate = new Date(this.state.challengeStartDate);
+    let endDate = new Date(this.state.challengeEndDate);
+    let startDateFormat = startDate.toLocaleDateString("de-GE", dateOptions).replace(" ", "");
+    let endDateFormat = endDate.toLocaleDateString("de-GE", dateOptions).replace(" ", "");
+    let sportCheckedId = [];
+    let sportCheckedFactor = [];
+
+    if (this.state.challengeName == "") {
+      alert("Bitte gebe deiner Challenge einen Namen!");
+      return;
     }
 
-    console.log("Name " + this.state.challengeName);
-    console.log("Iamge " + challengeImageEl.files[0].size);
-    console.log("Description " + this.state.challengeDescription);
-    console.log("Distance Goal " + this.state.challengeDistanceGoal);
-    console.log("Start date " + this.state.challengeStartDate);
-    console.log("End date " + this.state.challengeEndDate);
+    //Checks if the file is null and smaller than 10MB
+    if (challengeImageEl.files[0] == null) {
+      alert("Bitte lade für deine Challenge ein Bild hoch!");
+      return;
+    }else if(challengeImageEl.files[0].size > 10000000){
+      alert("Das Bild darf nicht größer als 10Mb sein!");
+      return;
+    }
+
+    for (let i = 0; i < sportCheckboxEl.length; i++) {
+      if (sportCheckboxEl[i].checked) {
+        sportCheckedId.push(sportCheckboxEl[i].dataset.sportId);
+        sportCheckedFactor.push(sportNumberEl[i].value);
+      }
+    }
+
+    //Checks if min one Sport is checked
+    if (sportCheckedId.length == 0) {
+      alert("Du musst mindestens eine Sportart für deine Challenge auswählen");
+      return;
+    }
+
+    //Creates the JSON object corresponding to the Challenge object in the Backend
+    let challengeJsonObj = new Object();
+    challengeJsonObj.name = this.state.challengeName;
+    challengeJsonObj.description = this.state.challengeDescription;
+    challengeJsonObj.startDate = startDateFormat;
+    challengeJsonObj.endDate = endDateFormat;
+    challengeJsonObj.targetDistance = this.state.challengeDistanceGoal;
+
+    //Creates body data for the fetch
+    let fetchBodyData = new FormData();
+    fetchBodyData.append("sportId", sportCheckedId);
+    fetchBodyData.append("sportFactor", sportCheckedFactor);
+    fetchBodyData.append("file", challengeImageEl.files[0]);
+    fetchBodyData.append("json", JSON.stringify(challengeJsonObj));
+
+    //Gives data to the Backend and writes it into the DB
+    let response = await fetch("http://localhost:8081/challenges/", { method: "POST", body: fetchBodyData, credentials: "include" });
+    let resData = await response.json();
+    console.log(resData);
   }
 
-  async componentDidMount(){
-    let response = await fetch("http://localhost:8081/sport/all/", { method: "GET", credentials: "include" });
+  async componentDidMount() {
+    //Loads all the Sports and writes them in to the table below 
+    let response = await fetch("http://localhost:8081/sports/", { method: "GET", credentials: "include" });
     let resData = await response.json();
-    this.setState({allSport: resData});
+    this.setState({ allSport: resData });
   }
 
   render() {
@@ -87,6 +139,7 @@ class AddChallenge extends Component {
                     className="mg_t_2"
                     type="text"
                     value={this.state.challengeName}
+                    maxLength={15}
                     onChange={this.challengeNameChange}
                     placeholder="Challenge Name"
                   ></input>
@@ -121,7 +174,6 @@ class AddChallenge extends Component {
                   <input
                     className="mg_t_2"
                     type="number"
-                    min={0}
                     value={this.state.challengeDistanceGoal}
                     onChange={this.challengeDistanceGoalChange}
                     placeholder="Kilometer"
@@ -138,14 +190,26 @@ class AddChallenge extends Component {
                       </tr>
                     </thead>
                     <tbody>
-                      {this.state.allSport.map(item => (
-                      <tr key={item.id}>
-                      <td>{item.name}</td>
-                      <td>{item.factor}</td>
-                      <td>
-                        <input className="form_table_checkbox form_sport_checkbox" data-sport-id={item.id} type="checkbox"></input>
-                      </td>
-                    </tr>
+                      {this.state.allSport.map((item) => (
+                        <tr key={item.id}>
+                          <td>{item.name}</td>
+                          <td>
+                            <input
+                              className="form_sport_number"
+                              data-sport-id={item.id}
+                              type="number"
+                              defaultValue={item.factor}
+                              min={1}
+                            ></input>
+                          </td>
+                          <td>
+                            <input
+                              className="form_table_checkbox form_sport_checkbox"
+                              data-sport-id={item.id}
+                              type="checkbox"
+                            ></input>
+                          </td>
+                        </tr>
                       ))}
                     </tbody>
                   </table>
@@ -157,6 +221,7 @@ class AddChallenge extends Component {
                       <input
                         id="form_input_start_date"
                         type="datetime-local"
+                        required="required"
                         value={this.state.challengeStartDate}
                         onChange={this.challengeStartDateChange}
                       ></input>
@@ -164,6 +229,8 @@ class AddChallenge extends Component {
                       <input
                         id="form_input_end_date"
                         type="datetime-local"
+                        required="required"
+                        min={this.state.challengeStartDate}
                         value={this.state.challengeEndDate}
                         onChange={this.challengeEndDateChange}
                       ></input>

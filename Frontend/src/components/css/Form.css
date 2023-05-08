@@ -1,0 +1,84 @@
+.form_input_container {
+    background-color: var(--doubleslash-lightblue);
+}
+
+.form_input_description {
+    color: var(--doubleslash-text-grey);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.form_input_description_content {
+    display: flex;
+}
+
+textarea{
+    padding: 5px;
+    border: 2px var(--doubleslash-blue) solid;
+    resize: none;
+    color: var(--doubleslash-text-grey);
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+textarea:focus {
+    outline: 0;
+}
+
+input[type="text"]{
+    border: 0;
+    border-bottom: 2px var(--doubleslash-text-grey) solid;
+    color: var(--doubleslash-text-grey);
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    background-color: var(--doubleslash-lightblue);
+}
+
+input[type="text"]:focus{
+    outline: 0;
+}
+
+input[type="file"]{
+    width: 350px;
+    color: var(--doubleslash-text-grey);
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+}
+
+input[type="file"]::file-selector-button{
+    display: inline-block;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0.5rem 1rem;
+    margin-right: 10px;
+    border-radius: 5px;
+    transition: .25s color ease-in-out;
+    transition: .25s background-color ease-in-out;
+    background-color: var(--doubleslash-blue);
+    outline: solid 2px var(--doubleslash-blue);
+    outline-offset: -2px;
+}
+
+input[type="file"]:hover::file-selector-button{
+    background-color: white;
+    color: var(--doubleslash-blue);
+}
+
+input[type="number"]{
+    border: 0;
+    border-bottom: 2px var(--doubleslash-text-grey) solid;
+    color: var(--doubleslash-text-grey);
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    background-color: var(--doubleslash-lightblue);
+}
+
+input[type="number"]:focus{
+    outline: 0;
+}

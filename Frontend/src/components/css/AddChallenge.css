@@ -1,33 +1,7 @@
-.form_input_container {
-    background-color: var(--doubleslash-lightblue);
-}
-
-.form_input_description {
-    color: var(--doubleslash-text-grey);
-    font-size: 14px;
-    font-weight: bold;
-}
-
-.form_input_description_content {
-    display: flex;
-}
-
 textarea {
     height: 300px;
     width: 100%;
-    padding: 5px;
-    border: 2px var(--doubleslash-blue) solid;
-    resize: none;
-    color: var(--doubleslash-text-grey);
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
 }
-
-textarea:focus {
-    outline: 0;
-}
-
 
 .form_sport_table {
     border-spacing: 0;
@@ -71,6 +45,13 @@ textarea:focus {
 .form_sport_table>thead>tr>th:nth-child(2) {
     border-left: 2px var(--doubleslash-text-grey) solid;
     border-right: 2px var(--doubleslash-text-grey) solid;
+}
+
+.form_sport_number{
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0) !important;
+    border: 0 !important;
+    width: 100%;
 }
 
 .form_input_date_container {

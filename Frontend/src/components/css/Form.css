@@ -82,3 +82,16 @@ input[type="number"]{
 input[type="number"]:focus{
     outline: 0;
 }
+
+select{
+    background-color: var(--doubleslash-lightblue);
+    border: 0;
+    border-bottom: 2px var(--doubleslash-text-grey) solid;
+    color: var(--doubleslash-text-grey);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+select:focus{
+    outline: 0;
+}

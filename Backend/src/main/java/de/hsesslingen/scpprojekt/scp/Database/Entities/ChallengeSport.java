@@ -28,10 +28,12 @@ public class ChallengeSport {
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "challenge_id")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Challenge challenge;
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "sport_id")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Sport sport;
 
     public ChallengeSport() {}

@@ -16,7 +16,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -171,7 +170,7 @@ public class API {
     public ResponseEntity<Float> getDistanceForChallengeForUser(@RequestParam Long challengeID, @RequestParam Long userID, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             try{
-                List<Activity> activities = functions.getActitivitesForUserInChallenge(challengeID, userID);
+                List<Activity> activities = functions.getActivitiesForUserInChallenge(challengeID, userID);
 
                 return new ResponseEntity<>(functions.getDistanceForActivities(activities), HttpStatus.OK);
             } catch (InvalidActivitiesException e){
@@ -202,7 +201,7 @@ public class API {
     public ResponseEntity<Float> getRawDistanceForChallengeForUser(@RequestParam Long challengeID, @RequestParam Long userID, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             try{
-                List<Activity> activities = functions.getActitivitesForUserInChallenge(challengeID, userID);
+                List<Activity> activities = functions.getActivitiesForUserInChallenge(challengeID, userID);
 
                 return new ResponseEntity<>(functions.getRawDistanceForActivities(activities), HttpStatus.OK);
             } catch (InvalidActivitiesException e){

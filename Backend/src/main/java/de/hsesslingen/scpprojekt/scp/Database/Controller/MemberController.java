@@ -90,7 +90,7 @@ public class MemberController {
     /**
      * REST API for updating a new Member
      *
-     * @param email Email of the Member that should be updated
+     * @param id ID of the Member that should be updated
      * @param member Member data for the Member update
      * @param request automatically filled by browser
      * @return A 200 Code and the Member data if it worked 404 otherwise
@@ -125,7 +125,7 @@ public class MemberController {
     /**
      * REST API for deleting a Member
      *
-     * @param email Email of the Member that should be deleted
+     * @param id ID of the Member that should be deleted
      * @param request automatically filled by browser
      * @return A 200 Code and the Member data if it worked
      * otherwise if member not found 404

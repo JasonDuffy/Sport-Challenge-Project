@@ -28,9 +28,7 @@ public class SAML2Functions {
         String firstName = principal.getFirstAttribute("urn:oid:2.5.4.42");
         String lastName = principal.getFirstAttribute("urn:oid:2.5.4.4");
 
-        SAML2User thisUser = new SAML2User(emailAddress, firstName, lastName);
-
-        return thisUser;
+        return new SAML2User(emailAddress, firstName, lastName);
     }
 
     /**

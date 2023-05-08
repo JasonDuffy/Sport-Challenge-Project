@@ -67,7 +67,7 @@ public class APIFunctions {
      * @param userID User ID of the requested activities
      * @return All Activities with the given User & Challenge IDs
      */
-    public List<Activity> getActitivitesForUserInChallenge(Long challengeID, Long userID){
+    public List<Activity> getActivitiesForUserInChallenge(Long challengeID, Long userID){
         List<Activity> allUserActivities = getActivitiesForUser(userID);
 
         List<Activity> userChallengeActivities = new ArrayList<>();

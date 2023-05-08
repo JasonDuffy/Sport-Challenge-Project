@@ -17,7 +17,6 @@ import org.springframework.security.web.SecurityFilterChain;
 /**
  * Security config that allows access after authentication by SAML2
  * @author Jason Patrick Duffy, baeldung (https://www.baeldung.com/spring-security-saml)
- * @see https://www.baeldung.com/spring-security-saml
  */
 @Configuration
 @EnableWebSecurity

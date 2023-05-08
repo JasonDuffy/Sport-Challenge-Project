@@ -1,10 +1,10 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.SportRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Service.ImageStorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,10 +24,8 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -46,6 +43,10 @@ public class ChallengeController {
     private ImageStorageService imageStorageService;
     @Autowired
     private ChallengeRepository challengeRepository;
+    @Autowired
+    private ChallengeSportRepository challengeSportRepository;
+    @Autowired
+    private SportRepository sportRepository;
 
     /**
      * REST API for returning Challenge data of a given ID
@@ -159,13 +160,20 @@ public class ChallengeController {
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PostMapping(path = "/", consumes = "multipart/form-data", produces = "application/json")
-    public ResponseEntity<Challenge> addChallenge(@RequestParam("file") MultipartFile file, @RequestPart("json") @Valid Challenge challenge, HttpServletRequest request) {
+    public ResponseEntity<Challenge> addChallenge(@RequestPart("file") MultipartFile file, @RequestParam("sportId") long sportId[], @RequestParam("sportFactor") float sportFactor[], @RequestPart("json") @Valid Challenge challenge, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             try {
-                Image challengeImage = imageStorageService.store(file);
-                Challenge newChallenge = challengeRepository.save(
-                        new Challenge(challenge.getName(), challenge.getDescription(), challenge.getStartDate(), challenge.getEndDate(), challengeImage, challenge.getTargetDistance()));
-                return new ResponseEntity<>(newChallenge, HttpStatus.CREATED);
+                if(sportId.length == sportFactor.length){
+                    Image challengeImage = imageStorageService.store(file);
+                    Challenge newChallenge = challengeRepository.save(
+                            new Challenge(challenge.getName(), challenge.getDescription(), challenge.getStartDate(), challenge.getEndDate(), challengeImage, challenge.getTargetDistance()));
+                    for (int i = 0; i < sportId.length; i++) {
+                        challengeSportRepository.save(new ChallengeSport(sportFactor[i], newChallenge, sportRepository.getById(sportId[i])));
+                    }
+                    return new ResponseEntity<>(newChallenge, HttpStatus.CREATED);
+                } else {
+                    throw new Exception();
+                }
             }catch (Exception e){
                 return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
             }

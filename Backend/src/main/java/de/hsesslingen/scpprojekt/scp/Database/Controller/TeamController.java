@@ -156,41 +156,6 @@ public class TeamController {
         }
     }
 
-    /**
-     * Rest API for Get all Teams for a challenge
-     *
-     * @param ChallengeID corresponding ID of Challenge
-     * @param request automatically filled by browser
-     * @return 200 for success or 404 for not finding the challenge
-     */
-    @Operation(summary = "Get all Teams for the Challenge")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Search successful",
-                    content = {@Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = Challenge.class)))}),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Challenge Not Found", content = @Content)
-    })
-    @GetMapping(path = "challenge/{id}/", produces = "application/json")
-    public ResponseEntity<List<Team>> getAllTeamsCha(@PathVariable("id") long  ChallengeID ,HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
-            Optional<Challenge> challenge = challengeRepository.findById(ChallengeID);
-            if(challenge.isPresent()){
-                List<Team> teams = teamRepository.findAll();
-                List<Team> teamChallenge = new ArrayList<>();
-                for (Team team : teams){
-                    if( team.getChallenge().getId() == ChallengeID){
-                        teamChallenge.add(team);
-                    }
-                }
-                return new ResponseEntity<>(teamChallenge, HttpStatus.OK);
-            }else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-    }
 
     /**
      * REST APi for get all Teams
@@ -231,9 +196,7 @@ public class TeamController {
             @ApiResponse(responseCode = "404", description = "Team not found in the challenge", content = @Content),
     })
     @GetMapping(path = "/{id}/", produces = "application/json")
-    public ResponseEntity<Team> getTeamByID(
-            @PathVariable("id") long TeamID,
-            HttpServletRequest request) {
+    public ResponseEntity<Team> getTeamByID(@PathVariable("id") long TeamID, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             Optional<Team> team = teamRepository.findById(TeamID);
                 if(team.isPresent()){
@@ -241,6 +204,26 @@ public class TeamController {
                 }else {
                     return  new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @Operation(summary = "Deletes all Teams")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All teams successfully deleted"),
+            @ApiResponse(responseCode = "500", description = "Something went wrong deleting all teams", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @DeleteMapping("/")
+    public ResponseEntity<HttpStatus> deleteAllMembers(HttpServletRequest request) {
+        if (SAML2Functions.isLoggedIn(request)){
+            try {
+                teamRepository.deleteAll();
+                return new ResponseEntity<>(HttpStatus.OK);
+            } catch (Exception e) {
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

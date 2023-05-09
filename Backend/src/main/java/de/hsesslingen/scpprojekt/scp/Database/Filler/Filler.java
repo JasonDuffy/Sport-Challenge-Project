@@ -90,6 +90,7 @@ public class Filler {
     ChallengeSport cp5 = new ChallengeSport(2, summer, kanoo);
 
     Team red = new Team("Team Red", pic1, hustle);
+    Team RedHater = new Team("Team RedHater", pic1, hustle);
     Team blue = new Team("Team Blue", pic2, bustle);
     Team besten = new Team("Die Besten", pic3, anniversary);
     Team anderen = new Team("Die Anderen", pic4, one);
@@ -100,6 +101,10 @@ public class Filler {
     TeamMember tm3 = new TeamMember(besten, god);
     TeamMember tm4 = new TeamMember(anderen, jack);
     TeamMember tm5 = new TeamMember(musketiere, anakin);
+    TeamMember tm6 = new TeamMember(red, hanna);
+    TeamMember tm7 = new TeamMember(red, god);
+    TeamMember tm8 = new TeamMember( RedHater, jack);
+    TeamMember tm9 = new TeamMember( RedHater, anakin);
 
     Activity act1 = new Activity(cp1, joe, 4, date1Start);
     Activity act2 = new Activity(cp2, hanna, 3, date2Start);
@@ -150,11 +155,11 @@ public class Filler {
         ));
 
         teamRepository.saveAll(Arrays.asList(
-                red, blue, besten, anderen, musketiere
+                red, RedHater, blue, besten, anderen, musketiere
         ));
 
         teamMemberRepository.saveAll(Arrays.asList(
-                tm1, tm2, tm3, tm4, tm5
+                tm1, tm2, tm3, tm4, tm5, tm6, tm7, tm8, tm9
         ));
 
         activityRepository.saveAll(Arrays.asList(

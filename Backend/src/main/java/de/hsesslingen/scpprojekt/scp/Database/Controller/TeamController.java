@@ -20,7 +20,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -208,6 +207,13 @@ public class TeamController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
+    /**
+     * Rest Api for deleting all teams
+     *
+     * @param request automatically filled by browser
+     * @return 200 for success else 500
+     */
 
     @Operation(summary = "Deletes all Teams")
     @ApiResponses(value = {

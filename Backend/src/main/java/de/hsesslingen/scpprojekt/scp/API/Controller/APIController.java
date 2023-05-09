@@ -1,9 +1,11 @@
-package de.hsesslingen.scpprojekt.scp.APIController;
+package de.hsesslingen.scpprojekt.scp.API.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.TeamMember;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.TeamMemberRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.TeamRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -34,6 +36,8 @@ public class APIController {
     ChallengeRepository challengeRepository;
     @Autowired
     TeamRepository teamRepository;
+    @Autowired
+    TeamMemberRepository teamMemberRepository;
 
     /**
      * Rest API for Get all Teams for a challenge
@@ -50,8 +54,8 @@ public class APIController {
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "404", description = "Challenge Not Found", content = @Content)
     })
-    @GetMapping(path = "TeamChallenge/{id}/", produces = "application/json")
-    public ResponseEntity<List<Team>> getAllTeamsCha(@PathVariable("id") long ChallengeID, HttpServletRequest request) {
+    @GetMapping(path = "/TeamsForChallenges/", produces = "application/json")
+    public ResponseEntity<List<Team>> getAllTeamsForChallenge(@RequestParam long ChallengeID, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)) {
             Optional<Challenge> challenge = challengeRepository.findById(ChallengeID);
             if (challenge.isPresent()) {
@@ -71,6 +75,12 @@ public class APIController {
         }
     }
 
+    /**
+     *
+     * @param ChallengeID ID of the corresponding Challenge
+     * @param request automatically filled by browser
+     * @return 200 for success else 404 for not  finding Challenge
+     */
     @Operation(summary = "Delete all Teams fo this Challenge")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "All teams for the challenge deleted",
@@ -80,7 +90,7 @@ public class APIController {
             @ApiResponse(responseCode = "404", description = "Challenge not found", content = @Content)
 
     })
-    @DeleteMapping(path = "TeamsChallenge/", produces = "application/json")
+    @DeleteMapping(path = "/TeamsChallenge/", produces = "application/json")
     public ResponseEntity<HttpStatus> deleteTeamsFromChallenge(@RequestParam long ChallengeID, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)) {
             Optional<Challenge> challenge = challengeRepository.findById(ChallengeID);
@@ -92,6 +102,41 @@ public class APIController {
                     }
                 }
                 return new ResponseEntity<>(HttpStatus.OK);
+            } else {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
+     *
+     * @param ChallengeID ID of the corresponding Challenge
+     * @param request automatically filled by browser
+     * @return 200 for success else 404 for not finding Challenge
+     */
+    @Operation(summary = "Get all Team Member for the Challenge")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Search for the teams successful",
+                    content = {@Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = Challenge.class)))}),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Challenge Not Found", content = @Content)
+    })
+    @GetMapping(path = "/MemberChallenges/{id}/", produces = "application/json")
+    public ResponseEntity<List<TeamMember>> getTeamMembersForChallenge(@PathVariable("id") long ChallengeID, HttpServletRequest request) {
+        if (SAML2Functions.isLoggedIn(request)) {
+            Optional<Challenge> challenge = challengeRepository.findById(ChallengeID);
+            if (challenge.isPresent()) {
+                List<TeamMember> teams = teamMemberRepository.findAll();
+                List<TeamMember> MemberTeam = new ArrayList<>();
+                for (TeamMember teamMember : teams) {
+                    if (teamMember.getTeam().getChallenge().getId() == ChallengeID) {
+                        MemberTeam.add(teamMember);
+                    }
+                }
+                return new ResponseEntity<>(MemberTeam, HttpStatus.OK);
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }

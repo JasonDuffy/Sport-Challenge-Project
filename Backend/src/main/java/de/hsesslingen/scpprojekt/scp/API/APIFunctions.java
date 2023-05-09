@@ -97,7 +97,7 @@ public class APIFunctions {
                     throw new InvalidActivitiesException("Activity by member " + act.getMember().getEmail() + " on " + act.getDate() + " in challenge "
                             + act.getChallengeSport().getChallenge().getName() + "is not part of Challenge " + challenge.getName());
 
-                sum += act.getDistance();
+                sum += act.getDistance() * act.getChallengeSport().getFactor();
             }
         }
 
@@ -121,7 +121,7 @@ public class APIFunctions {
                     throw new InvalidActivitiesException("Activity by member " + act.getMember().getEmail() + " on " + act.getDate() + " in challenge "
                             + act.getChallengeSport().getChallenge().getName() + "is not part of Challenge " + challenge.getName());
 
-                sum += act.getDistance() * getMultiplierFromBonuses(challengeBonuses, act.getDate());
+                sum += act.getDistance() * act.getChallengeSport().getFactor() * getMultiplierFromBonuses(challengeBonuses, act.getDate());
             }
         }
 

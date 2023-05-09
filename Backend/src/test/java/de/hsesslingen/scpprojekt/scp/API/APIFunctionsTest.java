@@ -227,7 +227,7 @@ public class APIFunctionsTest {
         float ch1sum = 0.0f;
 
         for (Activity a : challenge1Acts)
-            ch1sum += a.getDistance();
+            ch1sum += a.getDistance() * a.getChallengeSport().getFactor();
 
         assertEquals(ch1sum, apiFunctions.getRawDistanceForActivities(challenge1Acts));
     }
@@ -279,7 +279,7 @@ public class APIFunctionsTest {
             if (bonusfactor == 0.0f)
                 bonusfactor = 1.0f;
 
-            distance += a.getDistance() * bonusfactor;
+            distance += a.getDistance() * a.getChallengeSport().getFactor() * bonusfactor;
         }
 
         assertEquals(distance, apiFunctions.getDistanceForActivities(challenge1Acts));

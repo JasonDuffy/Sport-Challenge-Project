@@ -104,27 +104,21 @@ public class ActivityController {
             @ApiResponse(responseCode = "201", description = "Activity successfully added",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = Activity.class))}),
-            @ApiResponse(responseCode = "500", description = "Something went wrong creating the new activity", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "404", description = "Member or ChallengeSport not found", content = @Content)
     })
     @PostMapping(path = "/", produces = "application/json")
     public ResponseEntity<Activity> createActivity(@RequestParam Long challengeSportID, @RequestParam Long memberID, @RequestBody Activity activity, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
-            try {
-                Optional<ChallengeSport> challSport = challengeSportRepository.findById(challengeSportID);
-                Optional<Member> mem = memberRepository.findById(memberID);
+            Optional<ChallengeSport> challSport = challengeSportRepository.findById(challengeSportID);
+            Optional<Member> mem = memberRepository.findById(memberID);
 
-                if (challSport.isPresent() && mem.isPresent()){
-                    Activity newActivity = activityRepository.save(new Activity(challSport.get(), mem.get(), activity.getDistance(), activity.getDate()));
-                    return new ResponseEntity<>(newActivity, HttpStatus.CREATED);
-                }
-                else{
-                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-                }
-            } catch (Exception e) {
-                System.out.println(e.getMessage());
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            if (challSport.isPresent() && mem.isPresent()){
+                Activity newActivity = activityRepository.save(new Activity(challSport.get(), mem.get(), activity.getDistance(), activity.getDate()));
+                return new ResponseEntity<>(newActivity, HttpStatus.CREATED);
+            }
+            else{
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -205,18 +199,13 @@ public class ActivityController {
     @Operation(summary = "Deletes all Activities")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "All Activities successfully deleted"),
-            @ApiResponse(responseCode = "500", description = "Something went wrong deleting all Activities", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @DeleteMapping("/")
     public ResponseEntity<Void> deleteAllActivities(HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
-            try {
-                activityRepository.deleteAll();
-                return new ResponseEntity<>(HttpStatus.OK);
-            } catch (Exception e) {
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            activityRepository.deleteAll();
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

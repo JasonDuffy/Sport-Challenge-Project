@@ -6,6 +6,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -155,6 +156,8 @@ public class APIFunctionsTest {
         }
 
         assertEquals(counter, realCounter);
+
+        Mockito.verify(activityRepository).findAll();
     }
 
     /**
@@ -179,6 +182,8 @@ public class APIFunctionsTest {
         }
 
         assertEquals(counter, realCounter);
+
+        Mockito.verify(activityRepository).findAll();
     }
 
     /**
@@ -321,6 +326,8 @@ public class APIFunctionsTest {
         }
 
         assertEquals(counter, realCounter);
+
+        Mockito.verify(bonusRepository).findAll();
     }
 
     /**

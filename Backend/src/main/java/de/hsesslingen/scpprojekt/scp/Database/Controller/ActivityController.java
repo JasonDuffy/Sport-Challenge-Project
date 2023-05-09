@@ -165,7 +165,7 @@ public class ActivityController {
      *
      * @param id ID of the Activity that should be deleted
      * @param request automatically filled by browser
-     * @return A 200 Code and the Activity data if it worked
+     * @return A 200 Code if it worked
      * otherwise if Activity not found 404
      */
     @Operation(summary = "Deletes an Activity")
@@ -178,8 +178,8 @@ public class ActivityController {
     @DeleteMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<Void> deleteActivity(@PathVariable("id") long id, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
-            Optional<Activity> memberData = activityRepository.findById(id);
-            if (memberData.isPresent()){
+            Optional<Activity> activityData = activityRepository.findById(id);
+            if (activityData.isPresent()){
                 activityRepository.deleteById(id);
                 return new ResponseEntity<>(HttpStatus.OK);
             } else {
@@ -194,7 +194,7 @@ public class ActivityController {
      * REST API for deleting all Activities
      *
      * @param request automatically filled by browser
-     * @return A 200 Code and the Activity data if it worked 500 otherwise
+     * @return A 200 Code if it worked
      */
     @Operation(summary = "Deletes all Activities")
     @ApiResponses(value = {

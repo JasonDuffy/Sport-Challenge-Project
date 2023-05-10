@@ -3,8 +3,8 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Service.BonusService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,6 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,10 +44,7 @@ public class BonusControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    BonusRepository bonusRepository;
-
-    @MockBean
-    ChallengeSportRepository challengeSportRepository;
+    BonusService bonusService;
 
     /**
      * Test if all bonuses are returned correctly
@@ -64,7 +60,7 @@ public class BonusControllerTest {
         List<Bonus> bList = new ArrayList<>();
         bList.add(b1); bList.add(b2);
 
-        when(bonusRepository.findAll()).thenReturn(bList);
+        when(bonusService.getAll()).thenReturn(bList);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/bonuses/").accept(MediaType.APPLICATION_JSON);
@@ -85,7 +81,7 @@ public class BonusControllerTest {
         assertEquals(matcher.group(1), "2");
         assertFalse(matcher.find());
 
-        Mockito.verify(bonusRepository).findAll();
+        Mockito.verify(bonusService).getAll();
     }
 
     /**
@@ -113,7 +109,7 @@ public class BonusControllerTest {
         Bonus b1 = new Bonus();
         b1.setId(1);
 
-        when(bonusRepository.findById(1L)).thenReturn(Optional.of(b1));
+        when(bonusService.get(1L)).thenReturn(b1);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/bonuses/1/").accept(MediaType.APPLICATION_JSON);
@@ -132,7 +128,7 @@ public class BonusControllerTest {
         assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(bonusRepository).findById(1L);
+        Mockito.verify(bonusService).get(1L);
     }
 
     /**
@@ -142,6 +138,8 @@ public class BonusControllerTest {
     @Test
     @WithMockUser
     public void getBonusByIDTestNotFound() throws Exception {
+        when(bonusService.get(1L)).thenThrow(NotFoundException.class);
+
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/bonuses/1/").accept(MediaType.APPLICATION_JSON);
 
@@ -179,8 +177,7 @@ public class BonusControllerTest {
         b1.setId(1);
         b1.setChallengeSport(cs1);
 
-        when(challengeSportRepository.findById(2L)).thenReturn(Optional.of(cs1));
-        when(bonusRepository.save(any(Bonus.class))).thenReturn(b1);
+        when(bonusService.add(any(Long.class), any(Bonus.class))).thenReturn(b1);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .post("/bonuses/").accept(MediaType.APPLICATION_JSON)
@@ -203,8 +200,7 @@ public class BonusControllerTest {
         assertEquals(matcher.group(1), "2");
         assertFalse(matcher.find());
 
-        Mockito.verify(challengeSportRepository).findById(2L);
-        Mockito.verify(bonusRepository).save(any(Bonus.class));
+        Mockito.verify(bonusService).add(any(Long.class), any(Bonus.class));
     }
 
     /**
@@ -221,7 +217,7 @@ public class BonusControllerTest {
         b1.setId(1);
         b1.setChallengeSport(cs1);
 
-        when(bonusRepository.save(any(Bonus.class))).thenReturn(b1);
+        when(bonusService.add(any(Long.class), any(Bonus.class))).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .post("/bonuses/").accept(MediaType.APPLICATION_JSON)
@@ -233,7 +229,7 @@ public class BonusControllerTest {
                 .andExpect(status().isNotFound())
                 .andReturn();
 
-        Mockito.verify(challengeSportRepository).findById(2L);
+        Mockito.verify(bonusService).add(any(Long.class), any(Bonus.class));
     }
 
     /**
@@ -268,11 +264,11 @@ public class BonusControllerTest {
         Bonus b1 = new Bonus();
         b1.setId(1);
 
-        when(bonusRepository.findById(1L)).thenReturn(Optional.of(b1));
-        when(bonusRepository.save(any(Bonus.class))).thenReturn(b1);
+        when(bonusService.update(any(Long.class), any(Long.class), any(Bonus.class))).thenReturn(b1);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/bonuses/1/").accept(MediaType.APPLICATION_JSON)
+                .param("challengeSportID", "2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(b1));
 
@@ -281,7 +277,6 @@ public class BonusControllerTest {
                 .andReturn();
 
         String content = res.getResponse().getContentAsString();
-        System.out.println(content);
 
         Pattern pattern = Pattern.compile("\\{\"id\":(\\d),");
         Matcher matcher = pattern.matcher(content);
@@ -290,8 +285,7 @@ public class BonusControllerTest {
         assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(bonusRepository).findById(1L);
-        Mockito.verify(bonusRepository).save(any(Bonus.class));
+        Mockito.verify(bonusService).update(any(Long.class), any(Long.class), any(Bonus.class));
     }
 
     /**
@@ -304,8 +298,11 @@ public class BonusControllerTest {
         Bonus b1 = new Bonus();
         b1.setId(1);
 
+        when(bonusService.update(any(Long.class), any(Long.class), any(Bonus.class))).thenThrow(NotFoundException.class);
+
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/bonuses/1/").accept(MediaType.APPLICATION_JSON)
+                .param("challengeSportID", "2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(b1));
 
@@ -313,7 +310,7 @@ public class BonusControllerTest {
                 .andExpect(status().isNotFound())
                 .andReturn();
 
-        Mockito.verify(bonusRepository).findById(1L);
+        Mockito.verify(bonusService).update(any(Long.class), any(Long.class), any(Bonus.class));
     }
 
     /**
@@ -328,6 +325,7 @@ public class BonusControllerTest {
 
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/bonuses/1/").accept(MediaType.APPLICATION_JSON)
+                .param("challengeSportID", "2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(b1));
 
@@ -346,8 +344,6 @@ public class BonusControllerTest {
         Bonus b1 = new Bonus();
         b1.setId(1);
 
-        when(bonusRepository.findById(1L)).thenReturn(Optional.of(b1));
-
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/bonuses/1/").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
@@ -356,8 +352,7 @@ public class BonusControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Mockito.verify(bonusRepository).findById(1L);
-        Mockito.verify(bonusRepository).deleteById(1L);
+        Mockito.verify(bonusService).delete(1L);
     }
 
     /**
@@ -367,6 +362,8 @@ public class BonusControllerTest {
     @Test
     @WithMockUser
     public void deleteBonusTestNotFound() throws Exception {
+        doThrow(NotFoundException.class).when(bonusService).delete(1L);
+
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/bonuses/1/").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
@@ -375,7 +372,7 @@ public class BonusControllerTest {
                 .andExpect(status().isNotFound())
                 .andReturn();
 
-        Mockito.verify(bonusRepository).findById(1L);
+        Mockito.verify(bonusService).delete(1L);
     }
 
     /**
@@ -409,7 +406,7 @@ public class BonusControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Mockito.verify(bonusRepository).deleteAll();
+        Mockito.verify(bonusService).deleteAll();
     }
 
     /**

@@ -5,6 +5,8 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Service.BonusService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,12 +30,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/bonuses")
 public class BonusController {
-
     @Autowired
-    BonusRepository bonusRepository;
-
-    @Autowired
-    ChallengeSportRepository challengeSportRepository;
+    BonusService bonusService;
 
     /**
      * REST API for returning all bonuses
@@ -51,8 +49,7 @@ public class BonusController {
     @GetMapping(path = "/", produces = "application/json")
     public ResponseEntity<List<Bonus>> getBonuses(HttpServletRequest request){
         if (SAML2Functions.isLoggedIn(request)){
-            List<Bonus> bonuses = bonusRepository.findAll();
-            return new ResponseEntity<>(bonuses, HttpStatus.OK);
+            return new ResponseEntity<>(bonusService.getAll(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -76,10 +73,10 @@ public class BonusController {
     @GetMapping(path ="/{id}/", produces = "application/json")
     public ResponseEntity<Bonus> getBonusByID(@PathVariable("id") long id, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
-            Optional<Bonus> bonusData = bonusRepository.findById(id);
-            if (bonusData.isPresent()) {
-                return new ResponseEntity<>(bonusData.get(), HttpStatus.OK);
-            } else {
+            try{
+                return new ResponseEntity<>(bonusService.get(id), HttpStatus.OK);
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
@@ -105,13 +102,10 @@ public class BonusController {
     @PostMapping(path = "/", produces = "application/json")
     public ResponseEntity<Bonus> createBonus(@RequestParam Long challengeSportID, @RequestBody Bonus bonus, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
-            Optional<ChallengeSport> challSport = challengeSportRepository.findById(challengeSportID);
-
-            if (challSport.isPresent()){
-                Bonus newBonus = bonusRepository.save(new Bonus(challSport.get(), bonus.getStartDate(), bonus.getEndDate(), bonus.getFactor(), bonus.getName(), bonus.getDescription()));
-                return new ResponseEntity<>(newBonus, HttpStatus.CREATED);
-            }
-            else{
+            try{
+                return new ResponseEntity<>(bonusService.add(challengeSportID, bonus), HttpStatus.CREATED);
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
@@ -135,20 +129,12 @@ public class BonusController {
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PutMapping(path = "/{id}/", produces = "application/json")
-    public ResponseEntity<Bonus> updateBonus(@PathVariable("id") long id, @RequestBody Bonus bonus, HttpServletRequest request) {
+    public ResponseEntity<Bonus> updateBonus(@PathVariable("id") long id, @RequestParam Long challengeSportID, @RequestBody Bonus bonus, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
-            Optional<Bonus> bonusData = bonusRepository.findById(id);
-
-            if (bonusData.isPresent()) {
-                Bonus newBonus = bonusData.get();
-                newBonus.setFactor(bonus.getFactor());
-                newBonus.setStartDate(bonus.getStartDate());
-                newBonus.setEndDate(bonus.getEndDate());
-                newBonus.setDescription(bonus.getDescription());
-                newBonus.setName(bonus.getName());
-                newBonus.setChallengeSport(bonus.getChallengeSport());
-                return new ResponseEntity<>(bonusRepository.save(newBonus), HttpStatus.OK);
-            } else {
+            try{
+                return new ResponseEntity<>(bonusService.update(id, challengeSportID, bonus), HttpStatus.OK);
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
@@ -174,11 +160,11 @@ public class BonusController {
     @DeleteMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<Void> deleteBonus(@PathVariable("id") long id, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
-            Optional<Bonus> bonusData = bonusRepository.findById(id);
-            if (bonusData.isPresent()){
-                bonusRepository.deleteById(id);
+            try{
+                bonusService.delete(id);
                 return new ResponseEntity<>(HttpStatus.OK);
-            } else {
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
@@ -200,7 +186,7 @@ public class BonusController {
     @DeleteMapping("/")
     public ResponseEntity<Void> deleteAllBonuses(HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
-            bonusRepository.deleteAll();
+            bonusService.deleteAll();
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

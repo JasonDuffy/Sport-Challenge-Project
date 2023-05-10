@@ -7,6 +7,9 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.TeamRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Service.ImageStorageService;
+import de.hsesslingen.scpprojekt.scp.Database.Service.TeamMemberService;
+import de.hsesslingen.scpprojekt.scp.Database.Service.TeamService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,6 +18,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,12 +36,9 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/teams")
 public class TeamController {
+
     @Autowired
-    private TeamRepository teamRepository;
-    @Autowired
-    private  ImageStorageService imageStorageService;
-    @Autowired
-    private ChallengeRepository challengeRepository;
+    TeamService teamService;
 
     /**
      * Rest API for creating a Team for a challenge
@@ -64,18 +65,11 @@ public class TeamController {
                                         HttpServletRequest request){
         if (SAML2Functions.isLoggedIn(request)){
             try{
-                Optional<Challenge> challenge1 = challengeRepository.findById(challengeID);
-                if(challenge1.isPresent()) {
-                    Image teamImage = imageStorageService.store(file);
-                    Team newteam = teamRepository.save(
-                            new Team(team.getName(), teamImage, challenge1.get()));
-                    return new ResponseEntity<>(newteam, HttpStatus.CREATED);
-                }else {
-                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-                }
-            }catch (Exception e){
-                return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-            }
+                return new ResponseEntity<>(teamService.add(file,challengeID,team), HttpStatus.OK);
+            }catch (NotFoundException e){
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -106,20 +100,10 @@ public class TeamController {
                                            @RequestPart("json") @Valid Team team,
                                            HttpServletRequest request){
         if (SAML2Functions.isLoggedIn(request)){
-            Optional<Team> teamData = teamRepository.findById(TeamID);
-            Optional<Challenge> challengeData = challengeRepository.findById(ChallengeID);
-            if (teamData.isPresent()&& challengeData.isPresent()){
-                try {
-                    Image teamImage = imageStorageService.store(file);
-                    Team newTeam = teamData.get();
-                    newTeam.setName(team.getName());
-                    newTeam.setImage(teamImage);
-                    newTeam.setChallenge(challengeData.get());
-                    return new ResponseEntity<>(teamRepository.save(newTeam),HttpStatus.OK);
-                } catch (Exception e) {
-                    return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-                }
-            }else {
+           try{
+               return new ResponseEntity<>(teamService.update(file,TeamID, ChallengeID, team), HttpStatus.OK);
+            }catch (NotFoundException e){
+               System.out.println((e.getMessage()));
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         }else {
@@ -141,13 +125,13 @@ public class TeamController {
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @DeleteMapping(path = "/{id}/",produces = "application/json")
-    public ResponseEntity<HttpStatus> deleteTeam(@PathVariable("id") long ID,HttpServletRequest request){
+    public ResponseEntity<HttpStatus> deleteTeam(@PathVariable("id")long ID,HttpServletRequest request){
         if (SAML2Functions.isLoggedIn(request)){
-            Optional<Team>teamData = teamRepository.findById(ID);
-            if(teamData.isPresent()) {
-                teamRepository.deleteById(ID);
+            try{
+                teamService.delete(ID);
                 return new ResponseEntity<>(HttpStatus.OK);
-            } else  {
+            }catch (NotFoundException e){
+                System.out.println((e.getMessage()));
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
@@ -172,8 +156,7 @@ public class TeamController {
     @GetMapping(path = "/", produces = "application/json")
     public ResponseEntity<List<Team>> getAllTeams(HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
-                List<Team> teams = teamRepository.findAll();
-                return new ResponseEntity<>(teams, HttpStatus.OK);
+            return new ResponseEntity<>(teamService.getAll(),HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -197,12 +180,12 @@ public class TeamController {
     @GetMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<Team> getTeamByID(@PathVariable("id") long TeamID, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
-            Optional<Team> team = teamRepository.findById(TeamID);
-                if(team.isPresent()){
-                    return new ResponseEntity<>(team.get(),HttpStatus.OK);
-                }else {
-                    return  new ResponseEntity<>(HttpStatus.NOT_FOUND);
-                }
+            try{
+                return new ResponseEntity<>(teamService.get(TeamID),HttpStatus.OK);
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -225,7 +208,7 @@ public class TeamController {
     public ResponseEntity<HttpStatus> deleteAllMembers(HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             try {
-                teamRepository.deleteAll();
+                teamService.deleteAll();
                 return new ResponseEntity<>(HttpStatus.OK);
             } catch (Exception e) {
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

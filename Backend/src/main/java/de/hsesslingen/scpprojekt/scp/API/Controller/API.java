@@ -1,6 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.API.Controller;
 
-import de.hsesslingen.scpprojekt.scp.API.APIFunctions;
+import de.hsesslingen.scpprojekt.scp.API.Service.APIService;
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
@@ -28,7 +28,7 @@ import java.util.List;
 @RequestMapping("/API")
 public class API {
     @Autowired
-    APIFunctions functions;
+    APIService functions;
 
     @Autowired
     ActivityRepository activityRepository;

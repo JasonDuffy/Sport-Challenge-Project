@@ -1,5 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.API;
 
+import de.hsesslingen.scpprojekt.scp.API.Service.APIService;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
@@ -27,9 +28,9 @@ import static org.mockito.Mockito.when;
  */
 @ActiveProfiles("test")
 @SpringBootTest
-public class APIFunctionsTest {
+public class APIServiceTest {
     @Autowired
-    APIFunctions apiFunctions;
+    APIService apiService;
 
     @MockBean
     ActivityRepository activityRepository;
@@ -139,7 +140,7 @@ public class APIFunctionsTest {
      */
     @Test
     public void getActivitiesForChallengeTest(){
-        List<Activity> acts = apiFunctions.getActivitiesForChallenge(1L);
+        List<Activity> acts = apiService.getActivitiesForChallenge(1L);
 
         int counter = 0;
 
@@ -165,7 +166,7 @@ public class APIFunctionsTest {
      */
     @Test
     public void getActivitiesForUserTest(){
-        List<Activity> acts = apiFunctions.getActivitiesForUser(1L);
+        List<Activity> acts = apiService.getActivitiesForUser(1L);
 
         int counter = 0;
 
@@ -191,7 +192,7 @@ public class APIFunctionsTest {
      */
     @Test
     public void getActivitiesForUserInChallengeTest(){
-        List<Activity> acts = apiFunctions.getActivitiesForUserInChallenge(1L, 1L);
+        List<Activity> acts = apiService.getActivitiesForUserInChallenge(1L, 1L);
 
         int counter = 0;
 
@@ -229,7 +230,7 @@ public class APIFunctionsTest {
         for (Activity a : challenge1Acts)
             ch1sum += a.getDistance() * a.getChallengeSport().getFactor();
 
-        assertEquals(ch1sum, apiFunctions.getRawDistanceForActivities(challenge1Acts));
+        assertEquals(ch1sum, apiService.getRawDistanceForActivities(challenge1Acts));
     }
 
     /**
@@ -238,7 +239,7 @@ public class APIFunctionsTest {
      */
     @Test
     public void getRawDistanceForActivitiesTestEmpty() throws InvalidActivitiesException {
-        assertEquals(apiFunctions.getRawDistanceForActivities(new ArrayList<>()), 0.0f);
+        assertEquals(apiService.getRawDistanceForActivities(new ArrayList<>()), 0.0f);
     }
 
     /**
@@ -247,7 +248,7 @@ public class APIFunctionsTest {
     @Test
     public void getRawDistanceForActivitiesTestException() {
         assertThrows(InvalidActivitiesException.class, () -> {
-            apiFunctions.getRawDistanceForActivities(activityList);
+            apiService.getRawDistanceForActivities(activityList);
         });
     }
 
@@ -282,7 +283,7 @@ public class APIFunctionsTest {
             distance += a.getDistance() * a.getChallengeSport().getFactor() * bonusfactor;
         }
 
-        assertEquals(distance, apiFunctions.getDistanceForActivities(challenge1Acts));
+        assertEquals(distance, apiService.getDistanceForActivities(challenge1Acts));
     }
 
     /**
@@ -291,7 +292,7 @@ public class APIFunctionsTest {
      */
     @Test
     public void getDistanceForActivitiesTestEmpty() throws InvalidActivitiesException {
-        assertEquals(apiFunctions.getDistanceForActivities(new ArrayList<>()), 0.0f);
+        assertEquals(apiService.getDistanceForActivities(new ArrayList<>()), 0.0f);
     }
 
     /**
@@ -300,7 +301,7 @@ public class APIFunctionsTest {
     @Test
     public void getDistanceForActivitiesTestException() {
         assertThrows(InvalidActivitiesException.class, () -> {
-            apiFunctions.getDistanceForActivities(activityList);
+            apiService.getDistanceForActivities(activityList);
         });
     }
 
@@ -309,7 +310,7 @@ public class APIFunctionsTest {
      */
     @Test
     public void getChallengeBonusesTest(){
-        List<Bonus> bonuses = apiFunctions.getChallengeBonuses(challengeList.get(0));
+        List<Bonus> bonuses = apiService.getChallengeBonuses(challengeList.get(0));
 
         int counter = 0;
 
@@ -348,7 +349,7 @@ public class APIFunctionsTest {
         if (bonusfactor == 0.0f)
             bonusfactor = 1.0f;
 
-        assertEquals(apiFunctions.getMultiplierFromBonuses(bonusList, currentDate), bonusfactor);
+        assertEquals(apiService.getMultiplierFromBonuses(bonusList, currentDate), bonusfactor);
     }
 
     /**
@@ -357,6 +358,6 @@ public class APIFunctionsTest {
     @Test
     public void getMultiplierFromBonusesEmpty(){
         LocalDateTime currentDate = LocalDateTime.of(2023, 5, 1, 15, 0);
-        assertEquals(apiFunctions.getMultiplierFromBonuses(new ArrayList<>(), currentDate), 1.0f);
+        assertEquals(apiService.getMultiplierFromBonuses(new ArrayList<>(), currentDate), 1.0f);
     }
 }

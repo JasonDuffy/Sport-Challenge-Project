@@ -1,4 +1,4 @@
-package de.hsesslingen.scpprojekt.scp.API;
+package de.hsesslingen.scpprojekt.scp.API.Service;
 
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
@@ -20,7 +20,7 @@ import java.util.List;
  * @author Jason Patrick Duffy
  */
 @Component
-public class APIFunctions {
+public class APIService {
     @Autowired
     ActivityRepository activityRepository;
 

@@ -1,6 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.API.Controller;
 
-import de.hsesslingen.scpprojekt.scp.API.APIFunctions;
+import de.hsesslingen.scpprojekt.scp.API.Service.APIService;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
@@ -42,7 +42,7 @@ public class APITest {
     private MockMvc mockMvc;
 
     @MockBean
-    APIFunctions functions;
+    APIService functions;
 
     @MockBean
     ActivityRepository activityRepository;

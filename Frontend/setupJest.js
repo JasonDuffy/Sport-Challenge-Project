@@ -1,0 +1,1 @@
+requestAnimationFrame('jest-fetch-mock').enableMocks()

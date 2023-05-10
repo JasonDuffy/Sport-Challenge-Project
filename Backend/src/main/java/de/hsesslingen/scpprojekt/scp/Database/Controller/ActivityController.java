@@ -7,6 +7,8 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.MemberRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Service.ActivityService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -30,15 +32,8 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/activities")
 public class ActivityController {
-
     @Autowired
-    ActivityRepository activityRepository;
-
-    @Autowired
-    ChallengeSportRepository challengeSportRepository;
-
-    @Autowired
-    MemberRepository memberRepository;
+    ActivityService activityService;
 
     /**
      * REST API for returning all activities
@@ -56,8 +51,7 @@ public class ActivityController {
     @GetMapping(path = "/", produces = "application/json")
     public ResponseEntity<List<Activity>> getActivities(HttpServletRequest request){
         if (SAML2Functions.isLoggedIn(request)){
-            List<Activity> activities = activityRepository.findAll();
-            return new ResponseEntity<>(activities, HttpStatus.OK);
+            return new ResponseEntity<>(activityService.getAll(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -81,10 +75,10 @@ public class ActivityController {
     @GetMapping(path ="/{id}/", produces = "application/json")
     public ResponseEntity<Activity> getActivityByID(@PathVariable("id") long id, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
-            Optional<Activity> activityData = activityRepository.findById(id);
-            if (activityData.isPresent()) {
-                return new ResponseEntity<>(activityData.get(), HttpStatus.OK);
-            } else {
+            try{
+                return new ResponseEntity<>(activityService.get(id), HttpStatus.OK);
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
@@ -110,14 +104,10 @@ public class ActivityController {
     @PostMapping(path = "/", produces = "application/json")
     public ResponseEntity<Activity> createActivity(@RequestParam Long challengeSportID, @RequestParam Long memberID, @RequestBody Activity activity, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
-            Optional<ChallengeSport> challSport = challengeSportRepository.findById(challengeSportID);
-            Optional<Member> mem = memberRepository.findById(memberID);
-
-            if (challSport.isPresent() && mem.isPresent()){
-                Activity newActivity = activityRepository.save(new Activity(challSport.get(), mem.get(), activity.getDistance(), activity.getDate()));
-                return new ResponseEntity<>(newActivity, HttpStatus.CREATED);
-            }
-            else{
+            try{
+                return new ResponseEntity<>(activityService.add(challengeSportID, memberID, activity), HttpStatus.CREATED);
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
@@ -141,18 +131,12 @@ public class ActivityController {
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PutMapping(path = "/{id}/", produces = "application/json")
-    public ResponseEntity<Activity> updateActivity(@PathVariable("id") long id, @RequestBody Activity activity, HttpServletRequest request) {
+    public ResponseEntity<Activity> updateActivity(@PathVariable("id") long id, @RequestParam Long memberID, @RequestParam Long challengeSportID, @RequestBody Activity activity, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
-            Optional<Activity> activityData = activityRepository.findById(id);
-
-            if (activityData.isPresent()) {
-                Activity newActivity = activityData.get();
-                newActivity.setMember(activity.getMember());
-                newActivity.setDate(activity.getDate());
-                newActivity.setChallengeSport(activity.getChallengeSport());
-                newActivity.setDistance(activity.getDistance());
-                return new ResponseEntity<>(activityRepository.save(newActivity), HttpStatus.OK);
-            } else {
+            try{
+                return new ResponseEntity<>(activityService.update(id, memberID, challengeSportID, activity), HttpStatus.OK);
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
@@ -178,11 +162,11 @@ public class ActivityController {
     @DeleteMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<Void> deleteActivity(@PathVariable("id") long id, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
-            Optional<Activity> activityData = activityRepository.findById(id);
-            if (activityData.isPresent()){
-                activityRepository.deleteById(id);
+            try{
+                activityService.delete(id);
                 return new ResponseEntity<>(HttpStatus.OK);
-            } else {
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
@@ -204,7 +188,7 @@ public class ActivityController {
     @DeleteMapping("/")
     public ResponseEntity<Void> deleteAllActivities(HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
-            activityRepository.deleteAll();
+            activityService.deleteAll();
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

@@ -5,6 +5,8 @@ import java.util.Optional;
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.MemberRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Service.MemberService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,7 +29,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     @Autowired
-    MemberRepository memberRepository;
+    MemberService memberService;
 
     /**
      * REST API for returning Member data of a given ID
@@ -47,10 +49,10 @@ public class MemberController {
     @GetMapping(path ="/{id}/", produces = "application/json")
     public ResponseEntity<Member> getMemberByID(@PathVariable("id") long id, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
-            Optional<Member> memberData = memberRepository.findById(id);
-            if (memberData.isPresent()) {
-                return new ResponseEntity<>(memberData.get(), HttpStatus.OK);
-            } else {
+            try{
+                return new ResponseEntity<>(memberService.get(id), HttpStatus.OK);
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
@@ -76,11 +78,11 @@ public class MemberController {
     @PostMapping(path = "/", produces = "application/json")
     public ResponseEntity<Member> createMember(@RequestBody Member member, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
-            try {
-                Member newMember = memberRepository.save(new Member(member.getEmail(), member.getFirstName(), member.getLastName()));
-                return new ResponseEntity<>(newMember, HttpStatus.CREATED);
-            } catch (Exception e) {
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            try{
+                return new ResponseEntity<>(memberService.add(member), HttpStatus.CREATED);
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -106,15 +108,10 @@ public class MemberController {
     @PutMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<Member> updateMember(@PathVariable("id") long id, @RequestBody Member member, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
-            Optional<Member> memberData = memberRepository.findById(id);
-
-            if (memberData.isPresent()) {
-                Member newMember = memberData.get();
-                newMember.setEmail(member.getEmail());
-                newMember.setFirstName(member.getFirstName());
-                newMember.setLastName(member.getLastName());
-                return new ResponseEntity<>(memberRepository.save(newMember), HttpStatus.OK);
-            } else {
+            try{
+                return new ResponseEntity<>(memberService.update(id, member), HttpStatus.OK);
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
@@ -140,11 +137,11 @@ public class MemberController {
     @DeleteMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<HttpStatus> deleteMember(@PathVariable("id") long id, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
-            Optional<Member> memberData = memberRepository.findById(id);
-            if (memberData.isPresent()){
-                memberRepository.deleteById(id);
+            try{
+                memberService.delete(id);
                 return new ResponseEntity<>(HttpStatus.OK);
-            } else {
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
@@ -167,12 +164,8 @@ public class MemberController {
     @DeleteMapping("/")
     public ResponseEntity<HttpStatus> deleteAllMembers(HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
-            try {
-                memberRepository.deleteAll();
-                return new ResponseEntity<>(HttpStatus.OK);
-            } catch (Exception e) {
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            memberService.deleteAll();
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

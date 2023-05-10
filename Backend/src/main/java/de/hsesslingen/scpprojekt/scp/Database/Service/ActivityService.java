@@ -6,6 +6,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportReposit
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.MemberRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,15 +16,17 @@ import java.util.Optional;
  *
  * @author Jason Patrick Duffy
  */
+
+@Service
 public class ActivityService implements ActivityServiceInterface {
     @Autowired
     ActivityRepository activityRepository;
 
     @Autowired
-    ChallengeSportRepository challengeSportRepository;
+    ChallengeSportService challengeSportService;
 
     @Autowired
-    MemberRepository memberRepository;
+    MemberService memberService;
 
     /**
      * Returns all activities in database
@@ -60,7 +63,7 @@ public class ActivityService implements ActivityServiceInterface {
      */
     @Override
     public Activity add(Long challengeSportID, Long memberID, Activity activity) throws NotFoundException {
-        return null;
+        return activityRepository.save(new Activity(challengeSportService.get(challengeSportID), memberService.get(memberID), activity.getDistance(), activity.getDate()));
     }
 
     /**
@@ -74,7 +77,14 @@ public class ActivityService implements ActivityServiceInterface {
      */
     @Override
     public Activity update(Long activityID, Long memberID, Long challengeSportID, Activity activity) throws NotFoundException {
-        return null;
+        Activity newActivity = get(activityID);
+
+        newActivity.setMember(memberService.get(memberID));
+        newActivity.setChallengeSport(challengeSportService.get(challengeSportID));
+        newActivity.setDistance(activity.getDistance());
+        newActivity.setDate(activity.getDate());
+
+        return activityRepository.save(newActivity);
     }
 
     /**
@@ -84,7 +94,8 @@ public class ActivityService implements ActivityServiceInterface {
      */
     @Override
     public void delete(Long activityID) throws NotFoundException {
-
+        get(activityID);
+        activityRepository.deleteById(activityID);
     }
 
     /**
@@ -92,6 +103,6 @@ public class ActivityService implements ActivityServiceInterface {
      */
     @Override
     public void deleteAll() {
-
+        activityRepository.deleteAll();
     }
 }

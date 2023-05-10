@@ -2,11 +2,14 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.MemberRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Service.ActivityService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,13 +50,7 @@ public class ActivityControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    ActivityRepository activityRepository;
-
-    @MockBean
-    ChallengeSportRepository challengeSportRepository;
-
-    @MockBean
-    MemberRepository memberRepository;
+    ActivityService activityService;
 
     /**
      * Test if all activities are returned correctly
@@ -69,7 +66,7 @@ public class ActivityControllerTest {
         List<Activity> aList = new ArrayList<>();
         aList.add(a1); aList.add(a2);
 
-        when(activityRepository.findAll()).thenReturn(aList);
+        when(activityService.getAll()).thenReturn(aList);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/activities/").accept(MediaType.APPLICATION_JSON);
@@ -90,7 +87,7 @@ public class ActivityControllerTest {
         assertEquals(matcher.group(1), "2");
         assertFalse(matcher.find());
 
-        Mockito.verify(activityRepository).findAll();
+        Mockito.verify(activityService).getAll();
     }
 
     /**
@@ -118,7 +115,7 @@ public class ActivityControllerTest {
         Activity a1 = new Activity();
         a1.setId(1);
 
-        when(activityRepository.findById(1L)).thenReturn(Optional.of(a1));
+        when(activityService.get(1L)).thenReturn(a1);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/activities/1/").accept(MediaType.APPLICATION_JSON);
@@ -137,7 +134,7 @@ public class ActivityControllerTest {
         assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(activityRepository).findById(1L);
+        Mockito.verify(activityService).get(1L);
     }
 
     /**
@@ -147,6 +144,8 @@ public class ActivityControllerTest {
     @Test
     @WithMockUser
     public void getActivityByIDTestNotFound() throws Exception {
+        when(activityService.get(1L)).thenThrow(NotFoundException.class);
+
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/activities/1/").accept(MediaType.APPLICATION_JSON);
 
@@ -186,9 +185,7 @@ public class ActivityControllerTest {
         a1.setChallengeSport(cs1);
         a1.setMember(m1);
 
-        when(memberRepository.findById(0L)).thenReturn(Optional.of(m1));
-        when(challengeSportRepository.findById(2L)).thenReturn(Optional.of(cs1));
-        when(activityRepository.save(any(Activity.class))).thenReturn(a1);
+        when(activityService.add(any(Long.class), any(Long.class), any(Activity.class))).thenReturn(a1);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .post("/activities/").accept(MediaType.APPLICATION_JSON)
@@ -214,9 +211,7 @@ public class ActivityControllerTest {
         assertEquals(matcher.group(1), "0");
         assertFalse(matcher.find());
 
-        Mockito.verify(challengeSportRepository).findById(2L);
-        Mockito.verify(memberRepository).findById(0L);
-        Mockito.verify(activityRepository).save(any(Activity.class));
+        Mockito.verify(activityService).add(any(Long.class), any(Long.class), any(Activity.class));
     }
 
     /**
@@ -225,7 +220,7 @@ public class ActivityControllerTest {
      */
     @Test
     @WithMockUser
-    public void createActivityTestNotFound1() throws Exception {
+    public void createActivityTestNotFound() throws Exception {
         ChallengeSport cs1 = new ChallengeSport();
         cs1.setId(2L);
         Member m1 = new Member();
@@ -235,8 +230,7 @@ public class ActivityControllerTest {
         a1.setChallengeSport(cs1);
         a1.setMember(m1);
 
-        when(challengeSportRepository.findById(2L)).thenReturn(Optional.of(cs1));
-        when(activityRepository.save(any(Activity.class))).thenReturn(a1);
+        when(activityService.add(any(Long.class), any(Long.class), any(Activity.class))).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .post("/activities/").accept(MediaType.APPLICATION_JSON)
@@ -249,73 +243,7 @@ public class ActivityControllerTest {
                 .andExpect(status().isNotFound())
                 .andReturn();
 
-        Mockito.verify(challengeSportRepository).findById(2L);
-    }
-
-    /**
-     * Test if 404 is returned when challenge sport is not found
-     * @throws Exception by mockMvc
-     */
-    @Test
-    @WithMockUser
-    public void createActivityTestNotFound2() throws Exception {
-        ChallengeSport cs1 = new ChallengeSport();
-        cs1.setId(2L);
-        Member m1 = new Member();
-
-        Activity a1 = new Activity();
-        a1.setId(1);
-        a1.setChallengeSport(cs1);
-        a1.setMember(m1);
-
-        when(memberRepository.findById(0L)).thenReturn(Optional.of(m1));
-        when(activityRepository.save(any(Activity.class))).thenReturn(a1);
-
-        RequestBuilder request = MockMvcRequestBuilders
-                .post("/activities/").accept(MediaType.APPLICATION_JSON)
-                .param("challengeSportID", "2")
-                .param("memberID", "0")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(a1));
-
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isNotFound())
-                .andReturn();
-
-        Mockito.verify(memberRepository).findById(0L);
-    }
-
-    /**
-     * Test if 404 is returned when challenge sport and member are not found
-     * @throws Exception by mockMvc
-     */
-    @Test
-    @WithMockUser
-    public void createActivityTestNotFound3() throws Exception {
-        ChallengeSport cs1 = new ChallengeSport();
-        cs1.setId(2L);
-        Member m1 = new Member();
-
-        Activity a1 = new Activity();
-        a1.setId(1);
-        a1.setChallengeSport(cs1);
-        a1.setMember(m1);
-
-        when(activityRepository.save(any(Activity.class))).thenReturn(a1);
-
-        RequestBuilder request = MockMvcRequestBuilders
-                .post("/activities/").accept(MediaType.APPLICATION_JSON)
-                .param("challengeSportID", "2")
-                .param("memberID", "0")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsString(a1));
-
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isNotFound())
-                .andReturn();
-
-        Mockito.verify(challengeSportRepository).findById(2L);
-        Mockito.verify(memberRepository).findById(0L);
+        Mockito.verify(activityService).add(any(Long.class), any(Long.class), any(Activity.class));
     }
 
     /**
@@ -350,11 +278,12 @@ public class ActivityControllerTest {
         Activity a1 = new Activity();
         a1.setId(1);
 
-        when(activityRepository.findById(1L)).thenReturn(Optional.of(a1));
-        when(activityRepository.save(any(Activity.class))).thenReturn(a1);
+        when(activityService.update(any(Long.class), any(Long.class), any(Long.class), any(Activity.class))).thenReturn(a1);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/activities/1/").accept(MediaType.APPLICATION_JSON)
+                .param("memberID", "0")
+                .param("challengeSportID", "2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(a1));
 
@@ -372,8 +301,7 @@ public class ActivityControllerTest {
         assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(activityRepository).findById(1L);
-        Mockito.verify(activityRepository).save(any(Activity.class));
+        Mockito.verify(activityService).update(any(Long.class), any(Long.class), any(Long.class), any(Activity.class));
     }
 
     /**
@@ -386,8 +314,12 @@ public class ActivityControllerTest {
         Activity a1 = new Activity();
         a1.setId(1);
 
+        when(activityService.update(any(Long.class), any(Long.class), any(Long.class), any(Activity.class))).thenThrow(NotFoundException.class);
+
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/activities/1/").accept(MediaType.APPLICATION_JSON)
+                .param("memberID", "0")
+                .param("challengeSportID", "2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(a1));
 
@@ -395,7 +327,7 @@ public class ActivityControllerTest {
                 .andExpect(status().isNotFound())
                 .andReturn();
 
-        Mockito.verify(activityRepository).findById(1L);
+        Mockito.verify(activityService).update(any(Long.class), any(Long.class), any(Long.class), any(Activity.class));
     }
 
     /**
@@ -410,6 +342,8 @@ public class ActivityControllerTest {
 
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/activities/1/").accept(MediaType.APPLICATION_JSON)
+                .param("memberID", "0")
+                .param("challengeSportID", "2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(a1));
 
@@ -428,8 +362,6 @@ public class ActivityControllerTest {
         Activity a1 = new Activity();
         a1.setId(1);
 
-        when(activityRepository.findById(1L)).thenReturn(Optional.of(a1));
-
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/activities/1/").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
@@ -438,8 +370,7 @@ public class ActivityControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Mockito.verify(activityRepository).findById(1L);
-        Mockito.verify(activityRepository).deleteById(1L);
+        Mockito.verify(activityService).delete(1L);
     }
 
     /**
@@ -449,6 +380,8 @@ public class ActivityControllerTest {
     @Test
     @WithMockUser
     public void deleteActivityTestNotFound() throws Exception {
+        doThrow(NotFoundException.class).when(activityService).delete(1L);
+
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/activities/1/").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
@@ -457,7 +390,7 @@ public class ActivityControllerTest {
                 .andExpect(status().isNotFound())
                 .andReturn();
 
-        Mockito.verify(activityRepository).findById(1L);
+        Mockito.verify(activityService).delete(1L);
     }
 
     /**
@@ -491,7 +424,7 @@ public class ActivityControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Mockito.verify(activityRepository).deleteAll();
+        Mockito.verify(activityService).deleteAll();
     }
 
     /**

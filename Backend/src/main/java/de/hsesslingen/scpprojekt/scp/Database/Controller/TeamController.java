@@ -101,7 +101,7 @@ public class TeamController {
     })
     @PutMapping(path = "/{id}/",consumes = "multipart/form-data", produces = "application/json")
     public ResponseEntity<Team> updateTeam(@RequestParam("file")MultipartFile file,
-                                           @RequestParam long TeamID,
+                                           @PathVariable("id") long TeamID,
                                            @RequestParam long ChallengeID,
                                            @RequestPart("json") @Valid Team team,
                                            HttpServletRequest request){

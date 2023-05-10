@@ -1,6 +1,9 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.ImageRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.TeamRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Service.ImageStorageService;
 import org.junit.jupiter.api.Test;
@@ -8,6 +11,8 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.mock.web.MockMultipartFile;
 
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -18,12 +23,12 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,6 +45,8 @@ public class TeamControllerTest {
     private TeamRepository teamRepository;
     @MockBean
     private ChallengeRepository challengeRepository;
+    @MockBean
+    private ImageRepository imageRepository;
     @Autowired
     private MockMvc mockMvc;
     @MockBean
@@ -194,6 +201,230 @@ public class TeamControllerTest {
         MvcResult result = mockMvc.perform(request)
                 .andExpect(status().isForbidden())
                 .andReturn();
+    }
+
+    @Test
+    @WithMockUser
+    public void addTeamSucess()throws Exception{
+        Challenge challenge = new Challenge();
+        challenge.setName("Annas");
+        Image image = new Image();
+        challenge.setId(2L);
+
+        Team team = new Team();
+        team.setId(1L);
+        team.setName("Hansen");
+        team.setChallenge(challenge);
+
+        MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
+        MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\"}".getBytes());
+
+        when(imageRepository.findById(3L)).thenReturn(Optional.of(image));
+        when(challengeRepository.findById(2L)).thenReturn(Optional.of(challenge));
+        when(teamRepository.save(team)).thenReturn(team);
+
+        RequestBuilder request =
+                MockMvcRequestBuilders.multipart("/teams/")
+                        .file(file)
+                        .file(jsonFile)
+                        .param("challengeID", "2")
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON);
+
+       mockMvc.perform(request)
+               .andExpect(status().isCreated())
+               .andReturn();
+
+
+    }
+    @Test
+    @WithMockUser
+    public void addTeamNotFound()throws Exception{
+        Challenge challenge = new Challenge();
+        challenge.setName("Annas");
+        Image image = new Image();
+        challenge.setId(2L);
+
+        Team team = new Team();
+        team.setId(1L);
+        team.setName("Hansen");
+        team.setChallenge(challenge);
+
+        MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
+        MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\"}".getBytes());
+
+        when(imageRepository.findById(3L)).thenReturn(Optional.of(image));
+        when(challengeRepository.findById(2L)).thenReturn(Optional.of(challenge));
+        when(teamRepository.save(team)).thenReturn(team);
+
+        RequestBuilder request =
+                MockMvcRequestBuilders.multipart("/teams/")
+                        .file(file)
+                        .file(jsonFile)
+                        .param("challengeID", "4")
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(request)
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+
+    }
+    @Test
+    @WithAnonymousUser
+    public void addTeamLogOut()throws Exception{
+        Challenge challenge = new Challenge();
+        challenge.setName("Annas");
+        Image image = new Image();
+        challenge.setId(2L);
+
+        Team team = new Team();
+        team.setId(1L);
+        team.setName("Hansen");
+        team.setChallenge(challenge);
+
+        MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
+        MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\"}".getBytes());
+
+        when(imageRepository.findById(3L)).thenReturn(Optional.of(image));
+        when(challengeRepository.findById(2L)).thenReturn(Optional.of(challenge));
+        when(teamRepository.save(team)).thenReturn(team);
+
+        RequestBuilder request =
+                MockMvcRequestBuilders.multipart("/teams/")
+                        .file(file)
+                        .file(jsonFile)
+                        .param("challengeID", "4")
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON);
+
+        mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+
+
+    }
+    @Test
+    @WithMockUser
+    public void updateTeamSuccess()throws Exception{
+        Challenge challenge = new Challenge();
+        challenge.setName("Annas");
+        challenge.setId(2L);
+
+        Team team = new Team();
+        team.setId(1L);
+        team.setName("Hansen");
+        team.setChallenge(challenge);
+
+        MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
+        MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\"}".getBytes());
+
+        when(challengeRepository.findById(2L)).thenReturn(Optional.of(challenge));
+        when(teamRepository.findById(1L)).thenReturn(Optional.of(team));
+        when(teamRepository.save(team)).thenReturn(team);
+
+        MockMultipartHttpServletRequestBuilder builder =
+                MockMvcRequestBuilders.multipart("/teams/1/");
+        builder.with(new RequestPostProcessor() {
+            @Override
+            public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+                request.setMethod("PUT");
+                return request;
+            }
+        });
+        mockMvc.perform(builder
+                        .file(file)
+                .file(jsonFile)
+                .param("ChallengeID", "2")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
+                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+    }
+
+    @Test
+    @WithMockUser
+    public void updateTeamNotFound()throws Exception{
+        Challenge challenge = new Challenge();
+        challenge.setName("Annas");
+        Image image = new Image();
+        challenge.setId(2L);
+
+        Team team = new Team();
+        team.setId(1L);
+        team.setName("Hansen");
+        team.setChallenge(challenge);
+
+        MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
+        MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\"}".getBytes());
+
+        when(imageRepository.findById(3L)).thenReturn(Optional.of(image));
+        when(challengeRepository.findById(2L)).thenReturn(Optional.of(challenge));
+        when(teamRepository.findById(1L)).thenReturn(Optional.of(team));
+        when(teamRepository.save(team)).thenReturn(team);
+
+        MockMultipartHttpServletRequestBuilder builder =
+                MockMvcRequestBuilders.multipart("/teams/1/");
+        builder.with(new RequestPostProcessor() {
+            @Override
+            public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+                request.setMethod("PUT");
+                return request;
+            }
+        });
+        mockMvc.perform(builder
+                        .file(file)
+                        .file(jsonFile)
+                        .param("ChallengeID", "3")
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isNotFound())
+                .andReturn();
+
+    }
+
+    @Test
+    @WithAnonymousUser
+    public void updateTeamLogOut()throws Exception{
+        Challenge challenge = new Challenge();
+        challenge.setName("Annas");
+        challenge.setId(2L);
+
+        Team team = new Team();
+        team.setId(1L);
+        team.setName("Hansen");
+        team.setChallenge(challenge);
+
+        MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
+        MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\"}".getBytes());
+
+        when(challengeRepository.findById(2L)).thenReturn(Optional.of(challenge));
+        when(teamRepository.findById(1L)).thenReturn(Optional.of(team));
+        when(teamRepository.save(team)).thenReturn(team);
+
+        MockMultipartHttpServletRequestBuilder builder =
+                MockMvcRequestBuilders.multipart("/teams/1/");
+        builder.with(new RequestPostProcessor() {
+            @Override
+            public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
+                request.setMethod("PUT");
+                return request;
+            }
+        });
+        mockMvc.perform(builder
+                        .file(file)
+                        .file(jsonFile)
+                        .param("ChallengeID", "3")
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isForbidden())
+                .andReturn();
+
     }
 
 }

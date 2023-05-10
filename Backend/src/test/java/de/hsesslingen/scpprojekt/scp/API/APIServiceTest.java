@@ -1,10 +1,15 @@
 package de.hsesslingen.scpprojekt.scp.API;
 
 import de.hsesslingen.scpprojekt.scp.API.Service.APIService;
+import de.hsesslingen.scpprojekt.scp.Database.DTO.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTO.BonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTO.Converter.BonusConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Service.ChallengeSportService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
+import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -37,6 +42,12 @@ public class APIServiceTest {
 
     @MockBean
     BonusRepository bonusRepository;
+
+    @Autowired
+    BonusConverter bonusConverter;
+
+    @Autowired
+    ChallengeSportService challengeSportService;
 
     List<Activity> activityList = new ArrayList<>();
     List<Challenge> challengeList = new ArrayList<>();
@@ -139,14 +150,14 @@ public class APIServiceTest {
      * Tests if activities for challenges are returned correctly
      */
     @Test
-    public void getActivitiesForChallengeTest(){
-        List<Activity> acts = apiService.getActivitiesForChallenge(1L);
+    public void getActivitiesForChallengeTest() throws NotFoundException {
+        List<ActivityDTO> acts = apiService.getActivitiesForChallenge(1L);
 
         int counter = 0;
 
-        for(Activity a : acts){
+        for(ActivityDTO a : acts){
             counter++;
-            assertEquals(a.getChallengeSport().getChallenge().getId(), 1L);
+            assertEquals(challengeSportService.get(a.getChallengeSportID()).getChallenge().getId(), 1L);
         }
 
         int realCounter = 0;
@@ -166,13 +177,13 @@ public class APIServiceTest {
      */
     @Test
     public void getActivitiesForUserTest(){
-        List<Activity> acts = apiService.getActivitiesForUser(1L);
+        List<ActivityDTO> acts = apiService.getActivitiesForUser(1L);
 
         int counter = 0;
 
-        for(Activity a : acts){
+        for(ActivityDTO a : acts){
             counter++;
-            assertEquals(a.getMember().getId(), 1L);
+            assertEquals(a.getMemberID(), 1L);
         }
 
         int realCounter = 0;
@@ -191,15 +202,15 @@ public class APIServiceTest {
      * Tests if activities for users in challenge are returned correctly
      */
     @Test
-    public void getActivitiesForUserInChallengeTest(){
-        List<Activity> acts = apiService.getActivitiesForUserInChallenge(1L, 1L);
+    public void getActivitiesForUserInChallengeTest() throws NotFoundException {
+        List<ActivityDTO> acts = apiService.getActivitiesForUserInChallenge(1L, 1L);
 
         int counter = 0;
 
-        for(Activity a : acts){
+        for(ActivityDTO a : acts){
             counter++;
-            assertEquals(a.getMember().getId(), 1L);
-            assertEquals(a.getChallengeSport().getChallenge().getId(), 1L);
+            assertEquals(a.getMemberID(), 1L);
+            assertEquals(a.getChallengeSportID(), 1L);
         }
 
         int realCounter = 0;
@@ -257,7 +268,7 @@ public class APIServiceTest {
      * @throws InvalidActivitiesException Thrown when not all Activities are part of the same challenge
      */
     @Test
-    public void getDistanceForActivitiesTest() throws InvalidActivitiesException {
+    public void getDistanceForActivitiesTest() throws InvalidActivitiesException, NotFoundException {
         List<Activity> challenge1Acts = new ArrayList<>();
 
         for(Activity a : activityList){
@@ -291,7 +302,7 @@ public class APIServiceTest {
      * @throws InvalidActivitiesException Thrown when not all Activities are part of the same challenge
      */
     @Test
-    public void getDistanceForActivitiesTestEmpty() throws InvalidActivitiesException {
+    public void getDistanceForActivitiesTestEmpty() throws InvalidActivitiesException, NotFoundException {
         assertEquals(apiService.getDistanceForActivities(new ArrayList<>()), 0.0f);
     }
 
@@ -309,13 +320,13 @@ public class APIServiceTest {
      * Tests if all bonuses are correctly returned
      */
     @Test
-    public void getChallengeBonusesTest(){
-        List<Bonus> bonuses = apiService.getChallengeBonuses(challengeList.get(0));
+    public void getChallengeBonusesTest() throws NotFoundException {
+        List<BonusDTO> bonuses = apiService.getChallengeBonuses(challengeList.get(0));
 
         int counter = 0;
 
-        for(Bonus b : bonuses){
-            assertEquals(1L, b.getChallengeSport().getChallenge().getId());
+        for(BonusDTO b : bonuses){
+            assertEquals(1L, bonusConverter.convertDtoToEntity(b).getChallengeSport().getChallenge().getId());
             counter++;
         }
 

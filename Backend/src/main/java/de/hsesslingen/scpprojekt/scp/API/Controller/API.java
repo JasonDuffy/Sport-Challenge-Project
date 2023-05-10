@@ -2,9 +2,12 @@ package de.hsesslingen.scpprojekt.scp.API.Controller;
 
 import de.hsesslingen.scpprojekt.scp.API.Service.APIService;
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
+import de.hsesslingen.scpprojekt.scp.Database.DTO.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTO.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
+import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -31,7 +34,7 @@ public class API {
     APIService functions;
 
     @Autowired
-    ActivityRepository activityRepository;
+    ActivityConverter activityConverter;
 
     /**
      * Get all activities for a given Challenge ID
@@ -43,14 +46,14 @@ public class API {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Activities for Challenge found.",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Activity.class))}),
+                            schema = @Schema(implementation = ActivityDTO.class))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "404", description = "No activities found.", content = @Content)
     })
     @GetMapping(path = "/challengeActivities/", produces = "application/json")
-    public ResponseEntity<List<Activity>> getAllActivitiesForChallenge(@RequestParam Long challengeID, HttpServletRequest request){
+    public ResponseEntity<List<ActivityDTO>> getAllActivitiesForChallenge(@RequestParam Long challengeID, HttpServletRequest request){
         if (SAML2Functions.isLoggedIn(request)){
-            List<Activity> challengeActivities = functions.getActivitiesForChallenge(challengeID);
+            List<ActivityDTO> challengeActivities = functions.getActivitiesForChallenge(challengeID);
 
             if(!challengeActivities.isEmpty()){
                 return new ResponseEntity<>(challengeActivities, HttpStatus.OK);
@@ -72,14 +75,14 @@ public class API {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Activities for User found.",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Activity.class))}),
+                            schema = @Schema(implementation = ActivityDTO.class))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "404", description = "No activities found.", content = @Content)
     })
     @GetMapping(path = "/userActivities/", produces = "application/json")
-    public ResponseEntity<List<Activity>> getAllActivitiesForUser(@RequestParam Long userID, HttpServletRequest request){
+    public ResponseEntity<List<ActivityDTO>> getAllActivitiesForUser(@RequestParam Long userID, HttpServletRequest request){
         if (SAML2Functions.isLoggedIn(request)){
-            List<Activity> userActivities = functions.getActivitiesForUser(userID);
+            List<ActivityDTO> userActivities = functions.getActivitiesForUser(userID);
 
             if(!userActivities.isEmpty()){
                 return new ResponseEntity<>(userActivities, HttpStatus.OK);
@@ -109,10 +112,10 @@ public class API {
     public ResponseEntity<Float> getRawDistanceForChallenge(@RequestParam Long challengeID, HttpServletRequest request){
         if (SAML2Functions.isLoggedIn(request)){
             try{
-                List<Activity> activities = functions.getActivitiesForChallenge(challengeID);
+                List<Activity> activities = activityConverter.convertDtoListToEntityList(functions.getActivitiesForChallenge(challengeID));
 
                 return new ResponseEntity<>(functions.getRawDistanceForActivities(activities), HttpStatus.OK);
-            } catch (InvalidActivitiesException e){
+            } catch (InvalidActivitiesException | NotFoundException e){
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -139,10 +142,10 @@ public class API {
     public ResponseEntity<Float> getDistanceForChallenge(@RequestParam Long challengeID, HttpServletRequest request){
         if (SAML2Functions.isLoggedIn(request)){
             try{
-                List<Activity> activities = functions.getActivitiesForChallenge(challengeID);
+                List<Activity> activities = activityConverter.convertDtoListToEntityList(functions.getActivitiesForChallenge(challengeID));
 
                 return new ResponseEntity<>(functions.getDistanceForActivities(activities), HttpStatus.OK);
-            } catch (InvalidActivitiesException e){
+            } catch (InvalidActivitiesException | NotFoundException e){
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -170,10 +173,10 @@ public class API {
     public ResponseEntity<Float> getDistanceForChallengeForUser(@RequestParam Long challengeID, @RequestParam Long userID, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             try{
-                List<Activity> activities = functions.getActivitiesForUserInChallenge(challengeID, userID);
+                List<Activity> activities = activityConverter.convertDtoListToEntityList(functions.getActivitiesForUserInChallenge(challengeID, userID));
 
                 return new ResponseEntity<>(functions.getDistanceForActivities(activities), HttpStatus.OK);
-            } catch (InvalidActivitiesException e){
+            } catch (InvalidActivitiesException | NotFoundException e){
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
@@ -201,10 +204,10 @@ public class API {
     public ResponseEntity<Float> getRawDistanceForChallengeForUser(@RequestParam Long challengeID, @RequestParam Long userID, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             try{
-                List<Activity> activities = functions.getActivitiesForUserInChallenge(challengeID, userID);
+                List<Activity> activities = activityConverter.convertDtoListToEntityList(functions.getActivitiesForUserInChallenge(challengeID, userID));
 
                 return new ResponseEntity<>(functions.getRawDistanceForActivities(activities), HttpStatus.OK);
-            } catch (InvalidActivitiesException e){
+            } catch (InvalidActivitiesException | NotFoundException e){
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }

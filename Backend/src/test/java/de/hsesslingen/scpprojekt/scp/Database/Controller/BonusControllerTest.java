@@ -1,6 +1,9 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hsesslingen.scpprojekt.scp.Database.DTO.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTO.BonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTO.Converter.BonusConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Service.BonusService;
@@ -53,11 +56,11 @@ public class BonusControllerTest {
     @Test
     @WithMockUser
     public void getBonusesTestSuccess() throws Exception {
-        Bonus b1 = new Bonus();
+        BonusDTO b1 = new BonusDTO();
         b1.setId(1);
-        Bonus b2 = new Bonus();
+        BonusDTO b2 = new BonusDTO();
         b2.setId(2);
-        List<Bonus> bList = new ArrayList<>();
+        List<BonusDTO> bList = new ArrayList<>();
         bList.add(b1); bList.add(b2);
 
         when(bonusService.getAll()).thenReturn(bList);
@@ -106,7 +109,7 @@ public class BonusControllerTest {
     @Test
     @WithMockUser
     public void getBonusByIDTestSuccess() throws Exception {
-        Bonus b1 = new Bonus();
+        BonusDTO b1 = new BonusDTO();
         b1.setId(1);
 
         when(bonusService.get(1L)).thenReturn(b1);
@@ -170,14 +173,11 @@ public class BonusControllerTest {
     @Test
     @WithMockUser
     public void createBonusTestSuccess() throws Exception {
-        ChallengeSport cs1 = new ChallengeSport();
-        cs1.setId(2L);
-
-        Bonus b1 = new Bonus();
+        BonusDTO b1 = new BonusDTO();
         b1.setId(1);
-        b1.setChallengeSport(cs1);
+        b1.setChallengeSportID(2L);
 
-        when(bonusService.add(any(Long.class), any(Bonus.class))).thenReturn(b1);
+        when(bonusService.add(any(BonusDTO.class))).thenReturn(b1);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .post("/bonuses/").accept(MediaType.APPLICATION_JSON)
@@ -191,16 +191,12 @@ public class BonusControllerTest {
 
         String content = res.getResponse().getContentAsString();
 
-        Pattern pattern = Pattern.compile("\\{\"id\":(\\d),");
-        Matcher matcher = pattern.matcher(content);
+        BonusDTO result = new ObjectMapper().readValue(content, BonusDTO.class);
 
-        matcher.find();
-        assertEquals(matcher.group(1), "1");
-        matcher.find();
-        assertEquals(matcher.group(1), "2");
-        assertFalse(matcher.find());
+        assertEquals(result.getId(), 1L);
+        assertEquals(result.getChallengeSportID(), 2L);
 
-        Mockito.verify(bonusService).add(any(Long.class), any(Bonus.class));
+        Mockito.verify(bonusService).add(any(BonusDTO.class));
     }
 
     /**
@@ -210,14 +206,11 @@ public class BonusControllerTest {
     @Test
     @WithMockUser
     public void createBonusTestNotFound() throws Exception {
-        ChallengeSport cs1 = new ChallengeSport();
-        cs1.setId(2L);
-
-        Bonus b1 = new Bonus();
+        BonusDTO b1 = new BonusDTO();
         b1.setId(1);
-        b1.setChallengeSport(cs1);
+        b1.setChallengeSportID(2L);
 
-        when(bonusService.add(any(Long.class), any(Bonus.class))).thenThrow(NotFoundException.class);
+        when(bonusService.add(any(BonusDTO.class))).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .post("/bonuses/").accept(MediaType.APPLICATION_JSON)
@@ -229,7 +222,7 @@ public class BonusControllerTest {
                 .andExpect(status().isNotFound())
                 .andReturn();
 
-        Mockito.verify(bonusService).add(any(Long.class), any(Bonus.class));
+        Mockito.verify(bonusService).add(any(BonusDTO.class));
     }
 
     /**
@@ -239,7 +232,7 @@ public class BonusControllerTest {
     @Test
     @WithAnonymousUser
     public void createBonusTestNotLoggedIn() throws Exception {
-        Bonus b1 = new Bonus();
+        BonusDTO b1 = new BonusDTO();
         b1.setId(1);
 
         RequestBuilder request = MockMvcRequestBuilders
@@ -261,10 +254,10 @@ public class BonusControllerTest {
     @Test
     @WithMockUser
     public void updateBonusTestSuccess() throws Exception {
-        Bonus b1 = new Bonus();
+        BonusDTO b1 = new BonusDTO();
         b1.setId(1);
 
-        when(bonusService.update(any(Long.class), any(Long.class), any(Bonus.class))).thenReturn(b1);
+        when(bonusService.update(any(Long.class), any(BonusDTO.class))).thenReturn(b1);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/bonuses/1/").accept(MediaType.APPLICATION_JSON)
@@ -285,7 +278,7 @@ public class BonusControllerTest {
         assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(bonusService).update(any(Long.class), any(Long.class), any(Bonus.class));
+        Mockito.verify(bonusService).update(any(Long.class), any(BonusDTO.class));
     }
 
     /**
@@ -295,10 +288,10 @@ public class BonusControllerTest {
     @Test
     @WithMockUser
     public void updateBonusTestSuccessNotFound() throws Exception {
-        Bonus b1 = new Bonus();
+        BonusDTO b1 = new BonusDTO();
         b1.setId(1);
 
-        when(bonusService.update(any(Long.class), any(Long.class), any(Bonus.class))).thenThrow(NotFoundException.class);
+        when(bonusService.update(any(Long.class), any(BonusDTO.class))).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/bonuses/1/").accept(MediaType.APPLICATION_JSON)
@@ -310,7 +303,7 @@ public class BonusControllerTest {
                 .andExpect(status().isNotFound())
                 .andReturn();
 
-        Mockito.verify(bonusService).update(any(Long.class), any(Long.class), any(Bonus.class));
+        Mockito.verify(bonusService).update(any(Long.class), any(BonusDTO.class));
     }
 
     /**
@@ -320,7 +313,7 @@ public class BonusControllerTest {
     @Test
     @WithAnonymousUser
     public void updateBonusTestNotLoggedIn() throws Exception {
-        Bonus b1 = new Bonus();
+        BonusDTO b1 = new BonusDTO();
         b1.setId(1);
 
         RequestBuilder request = MockMvcRequestBuilders
@@ -341,9 +334,6 @@ public class BonusControllerTest {
     @Test
     @WithMockUser
     public void deleteBonusTestSuccess() throws Exception {
-        Bonus b1 = new Bonus();
-        b1.setId(1);
-
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/bonuses/1/").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);

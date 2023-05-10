@@ -1,6 +1,9 @@
 package de.hsesslingen.scpprojekt.scp.Database.Service;
 
+import de.hsesslingen.scpprojekt.scp.Database.DTO.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTO.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
@@ -43,23 +46,33 @@ public class ActivityServiceTest {
     @Autowired
     ActivityService activityService;
 
+    @Autowired
+    ActivityConverter activityConverter;
+
     List<Activity> activityList;
 
     /**
      * Sets up tests
      */
     @BeforeEach
-    public void setup(){
+    public void setup() throws NotFoundException {
         activityList = new ArrayList<>();
+
+        ChallengeSport cs = new ChallengeSport();
+        cs.setId(2L);
+        Member m = new Member();
 
         for (long i = 0; i < 10; i++){
             Activity a = new Activity();
             a.setId(i);
+            a.setChallengeSport(cs);
+            a.setMember(m);
             activityList.add(a);
             when(activityRepository.findById(i)).thenReturn(Optional.of(a));
         }
 
         when(activityRepository.findAll()).thenReturn(activityList);
+        when(challengeSportService.get(2L)).thenReturn(cs);
 
         when(activityRepository.save(any(Activity.class))).then(AdditionalAnswers.returnsFirstArg()); //Return given bonus class
     }
@@ -68,11 +81,19 @@ public class ActivityServiceTest {
      * Test if getAll works correctly
      */
     @Test
-    public void getAllTest(){
-        List<Activity> activities = activityService.getAll();
+    public void getAllTest() throws NotFoundException {
+        List<Activity> activities = activityConverter.convertDtoListToEntityList(activityService.getAll());
 
-        for(Activity a : activities)
-            assertTrue(activityList.contains(a));
+        for(Activity a : activities){
+            boolean test = false;
+            for (Activity a1 : activityList){
+                if (a1.getId() == a.getId() && a1.getChallengeSport().getId() == a.getChallengeSport().getId()) {
+                    test = true;
+                    break;
+                }
+            }
+            assertTrue(test);
+        }
 
         assertEquals(activityList.size(), activities.size());
 
@@ -86,7 +107,7 @@ public class ActivityServiceTest {
     @Test
     public void getTestSuccess() throws NotFoundException {
         for(Activity a : activityList){
-            assertEquals(a, activityService.get(a.getId()));
+            assertEquals(activityConverter.convertEntityToDto(a).getId(), activityService.get(a.getId()).getId());
             verify(activityRepository).findById(a.getId());
         }
     }
@@ -114,11 +135,14 @@ public class ActivityServiceTest {
         Member m = new Member();
         when(memberService.get(0L)).thenReturn(m);
 
-        Activity newActivity = activityService.add(1L, 0L, activityList.get(0));
+        activityList.get(0).setChallengeSport(cs);
+        activityList.get(0).setMember(m);
+
+        ActivityDTO newActivity = activityService.add(activityConverter.convertEntityToDto(activityList.get(0)));
 
         assertEquals(newActivity.getId(), activityList.get(0).getId());
-        assertEquals(newActivity.getChallengeSport(), cs);
-        assertEquals(newActivity.getMember(), m);
+        assertEquals(newActivity.getChallengeSportID(), cs.getId());
+        assertEquals(newActivity.getMemberID(), m.getId());
 
         verify(activityRepository).save(any(Activity.class));
         verify(challengeSportService).get(1L);
@@ -134,7 +158,7 @@ public class ActivityServiceTest {
         when(challengeSportService.get(any(Long.class))).thenThrow(NotFoundException.class);
 
         assertThrows(NotFoundException.class, () -> {
-            activityService.add(1L, 0L, activityList.get(0));
+            activityService.add(activityConverter.convertEntityToDto(activityList.get(0)));
         });
     }
 
@@ -152,13 +176,15 @@ public class ActivityServiceTest {
         when(memberService.get(0L)).thenReturn(m);
 
         activityList.get(1).setDistance(20.9f);
+        activityList.get(1).setChallengeSport(cs);
+        activityList.get(1).setMember(m);
 
-        Activity newActivity = activityService.update(0L, 0L, 1L, activityList.get(1));
+        ActivityDTO newActivity = activityService.update(0L, activityConverter.convertEntityToDto(activityList.get(1)));
 
         assertEquals(newActivity.getId(), activityList.get(0).getId());
         assertEquals(newActivity.getDistance(), activityList.get(1).getDistance());
-        assertEquals(newActivity.getChallengeSport(), cs);
-        assertEquals(newActivity.getMember(), m);
+        assertEquals(newActivity.getChallengeSportID(), cs.getId());
+        assertEquals(newActivity.getMemberID(), m.getId());
 
         verify(activityRepository).save(any(Activity.class));
         verify(challengeSportService).get(1L);
@@ -174,7 +200,7 @@ public class ActivityServiceTest {
         when(challengeSportService.get(any(Long.class))).thenThrow(NotFoundException.class);
 
         assertThrows(NotFoundException.class, () -> {
-            activityService.update(0L, 0L, 1L, activityList.get(0));
+            activityService.update(0L, activityConverter.convertEntityToDto(activityList.get(0)));
         });
     }
 

@@ -1,5 +1,7 @@
 package de.hsesslingen.scpprojekt.scp.Database.Service;
 
+import de.hsesslingen.scpprojekt.scp.Database.DTO.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTO.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
@@ -8,6 +10,7 @@ import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,14 +31,18 @@ public class ActivityService implements ActivityServiceInterface {
     @Autowired
     MemberService memberService;
 
+    @Autowired
+    ActivityConverter activityConverter;
+
     /**
      * Returns all activities in database
      *
      * @return List of all activities in DB
      */
     @Override
-    public List<Activity> getAll() {
-        return activityRepository.findAll();
+    public List<ActivityDTO> getAll() {
+        List<Activity> activities = activityRepository.findAll();
+        return activityConverter.convertEntityListToDtoList(activities);
     }
 
     /**
@@ -46,45 +53,50 @@ public class ActivityService implements ActivityServiceInterface {
      * @throws NotFoundException Activity can not be found
      */
     @Override
-    public Activity get(Long activityID) throws NotFoundException {
+    public ActivityDTO get(Long activityID) throws NotFoundException {
         Optional<Activity> activity = activityRepository.findById(activityID);
         if(activity.isPresent())
-            return activity.get();
+            return activityConverter.convertEntityToDto(activity.get());
         throw new NotFoundException("Activity with ID " + activityID + " is not present in DB.");
     }
 
     /**
      * Adds a given activity to the DB
      *
-     * @param challengeSportID ID of the associated challenge sport for the activity
-     * @param memberID         ID of the associated member for the activity
-     * @param activity         Activity object to be added to DB
-     * @return Added Activity object
+     * @param activity         ActivityDTO object to be added to DB
+     * @return Added Activity DTO object
      */
     @Override
-    public Activity add(Long challengeSportID, Long memberID, Activity activity) throws NotFoundException {
-        return activityRepository.save(new Activity(challengeSportService.get(challengeSportID), memberService.get(memberID), activity.getDistance(), activity.getDate()));
+    public ActivityDTO add(ActivityDTO activity) throws NotFoundException {
+        Activity a = activityConverter.convertDtoToEntity(activity);
+        Activity savedActivity = activityRepository.save(a);
+        return activityConverter.convertEntityToDto(savedActivity);
     }
 
     /**
      * Updates an activity
      *
      * @param activityID       ID of the activity to be updated
-     * @param memberID         ID of the associated member
-     * @param challengeSportID ID of the ChallengeSport object to be associated
-     * @param activity         Activity object that overwrites the old activity
+     * @param activity         ActivityDTO object that overwrites the old activity
      * @return Updated Activity object
      */
     @Override
-    public Activity update(Long activityID, Long memberID, Long challengeSportID, Activity activity) throws NotFoundException {
-        Activity newActivity = get(activityID);
+    public ActivityDTO update(Long activityID, ActivityDTO activity) throws NotFoundException {
+        Optional<Activity> optionalActivity = activityRepository.findById(activityID);
+        Activity convertedActivity = activityConverter.convertDtoToEntity(activity);
 
-        newActivity.setMember(memberService.get(memberID));
-        newActivity.setChallengeSport(challengeSportService.get(challengeSportID));
-        newActivity.setDistance(activity.getDistance());
-        newActivity.setDate(activity.getDate());
+        if(optionalActivity.isPresent()){
+            Activity newActivity = optionalActivity.get();
+            newActivity.setMember(convertedActivity.getMember());
+            newActivity.setChallengeSport(convertedActivity.getChallengeSport());
+            newActivity.setDistance(convertedActivity.getDistance());
+            newActivity.setDate(convertedActivity.getDate());
 
-        return activityRepository.save(newActivity);
+            Activity savedActivity = activityRepository.save(newActivity);
+            return activityConverter.convertEntityToDto(savedActivity);
+        }
+
+        throw new NotFoundException("Activity with ID " + activityID + " is not present in DB.");
     }
 
     /**

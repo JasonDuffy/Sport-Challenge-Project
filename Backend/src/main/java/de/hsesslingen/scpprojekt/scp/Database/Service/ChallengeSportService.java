@@ -41,7 +41,7 @@ public class ChallengeSportService implements ChallengeSportServiceInterface {
         Optional<ChallengeSport> challengeSport = challengeSportRepository.findById(challengeSportID);
         if(challengeSport.isPresent())
             return challengeSport.get();
-        throw new NotFoundException("ChallengeSport with ID " + challengeSport + " is not present in DB.");
+        throw new NotFoundException("ChallengeSport with ID " + challengeSportID + " is not present in DB.");
     }
 
     /**

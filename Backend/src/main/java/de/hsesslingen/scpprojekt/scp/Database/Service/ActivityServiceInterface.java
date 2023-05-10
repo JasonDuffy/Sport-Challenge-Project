@@ -1,5 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.Database.Service;
 
+import de.hsesslingen.scpprojekt.scp.Database.DTO.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 
@@ -15,7 +16,7 @@ public interface ActivityServiceInterface {
      * Returns all activities in database
      * @return List of all activities in DB
      */
-    public List<Activity> getAll();
+    public List<ActivityDTO> getAll();
 
     /**
      * Returns activities with given ID in DB
@@ -23,26 +24,22 @@ public interface ActivityServiceInterface {
      * @return Activity with given ID
      * @throws NotFoundException Activity can not be found
      */
-    public Activity get(Long activityID) throws NotFoundException;
+    public ActivityDTO get(Long activityID) throws NotFoundException;
 
     /**
      * Adds a given activity to the DB
-     * @param challengeSportID ID of the associated challenge sport for the activity
-     * @param memberID ID of the associated member for the activity
      * @param activity Activity object to be added to DB
-     * @return Added Activity object
+     * @return Added Activity DTO object
      */
-    public Activity add(Long challengeSportID, Long memberID, Activity activity) throws NotFoundException;
+    public ActivityDTO add(ActivityDTO activity) throws NotFoundException;
 
     /**
      * Updates an activity
      * @param activityID ID of the activity to be updated
-     * @param challengeSportID ID of the ChallengeSport object to be associated
-     * @param memberID ID of the associated member
      * @param activity Activity object that overwrites the old activity
      * @return Updated Activity object
      */
-    public Activity update(Long activityID, Long memberID, Long challengeSportID, Activity activity) throws NotFoundException;
+    public ActivityDTO update(Long activityID, ActivityDTO activity) throws NotFoundException;
 
     /**
      * Deletes a specific Activity from the DB

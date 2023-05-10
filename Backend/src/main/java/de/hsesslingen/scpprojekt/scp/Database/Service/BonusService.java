@@ -1,5 +1,9 @@
 package de.hsesslingen.scpprojekt.scp.Database.Service;
 
+import de.hsesslingen.scpprojekt.scp.Database.DTO.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTO.BonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTO.Converter.BonusConverter;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
@@ -7,6 +11,7 @@ import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,14 +29,18 @@ public class BonusService implements BonusServiceInterface{
     @Autowired
     ChallengeSportService challengeSportService;
 
+    @Autowired
+    BonusConverter bonusConverter;
+
     /**
      * Returns all bonuses in database
      *
      * @return List of all Bonuses in DB
      */
     @Override
-    public List<Bonus> getAll() {
-        return bonusRepository.findAll();
+    public List<BonusDTO> getAll() {
+        List<Bonus> bonusList = bonusRepository.findAll();
+        return bonusConverter.convertEntityListToDtoList(bonusList);
     }
 
     /**
@@ -42,23 +51,24 @@ public class BonusService implements BonusServiceInterface{
      * @throws NotFoundException Bonus can not be found
      */
     @Override
-    public Bonus get(Long bonusID) throws NotFoundException {
+    public BonusDTO get(Long bonusID) throws NotFoundException {
         Optional<Bonus> bonus = bonusRepository.findById(bonusID);
         if(bonus.isPresent())
-            return bonus.get();
+            return bonusConverter.convertEntityToDto(bonus.get());
         throw new NotFoundException("Bonus with ID " + bonusID + " is not present in DB.");
     }
 
     /**
      * Adds a given bonus to the DB
      *
-     * @param challengeSportID ID of the associated challenge sport for the bonus
      * @param bonus            Bonus object to be added to DB
      * @return Added bonus object
      */
     @Override
-    public Bonus add(Long challengeSportID, Bonus bonus) throws NotFoundException{
-        return bonusRepository.save(new Bonus(challengeSportService.get(challengeSportID), bonus.getStartDate(), bonus.getEndDate(), bonus.getFactor(), bonus.getName(), bonus.getDescription()));
+    public BonusDTO add(BonusDTO bonus) throws NotFoundException{
+        Bonus b = bonusConverter.convertDtoToEntity(bonus);
+        Bonus savedBonus = bonusRepository.save(b);
+        return bonusConverter.convertEntityToDto(savedBonus);
     }
 
     /**
@@ -69,17 +79,26 @@ public class BonusService implements BonusServiceInterface{
      * @return Updated bonus object
      */
     @Override
-    public Bonus update(Long bonusID, Long challengeSportID, Bonus bonus) throws NotFoundException{
-        Bonus newBonus = get(bonusID);
+    public BonusDTO update(Long bonusID, BonusDTO bonus) throws NotFoundException{
+        Optional<Bonus> optionalBonus = bonusRepository.findById(bonusID);
+        Bonus convertedBonus = bonusConverter.convertDtoToEntity(bonus);
 
-        newBonus.setFactor(bonus.getFactor());
-        newBonus.setStartDate(bonus.getStartDate());
-        newBonus.setEndDate(bonus.getEndDate());
-        newBonus.setDescription(bonus.getDescription());
-        newBonus.setName(bonus.getName());
-        newBonus.setChallengeSport(challengeSportService.get(challengeSportID));
+        if(optionalBonus.isPresent()){
+            Bonus newBonus = optionalBonus.get();
 
-        return bonusRepository.save(newBonus);
+            newBonus.setFactor(bonus.getFactor());
+            newBonus.setName(bonus.getName());
+            newBonus.setDescription(bonus.getDescription());
+            newBonus.setEndDate(bonus.getEndDate());
+            newBonus.setStartDate(bonus.getStartDate());
+            newBonus.setId(bonus.getId());
+            newBonus.setChallengeSport(challengeSportService.get(bonus.getChallengeSportID()));
+
+            Bonus savedBonus = bonusRepository.save(newBonus);
+            return bonusConverter.convertEntityToDto(savedBonus);
+        }
+
+        throw new NotFoundException("Bonus with ID " + bonusID + " is not present in DB.");
     }
 
     /**

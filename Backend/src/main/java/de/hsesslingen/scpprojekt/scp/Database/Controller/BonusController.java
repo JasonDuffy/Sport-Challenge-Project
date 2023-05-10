@@ -1,6 +1,7 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
+import de.hsesslingen.scpprojekt.scp.Database.DTO.BonusDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
@@ -43,11 +44,11 @@ public class BonusController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Search successful",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Bonus.class))}),
+                            schema = @Schema(implementation = BonusDTO.class))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @GetMapping(path = "/", produces = "application/json")
-    public ResponseEntity<List<Bonus>> getBonuses(HttpServletRequest request){
+    public ResponseEntity<List<BonusDTO>> getBonuses(HttpServletRequest request){
         if (SAML2Functions.isLoggedIn(request)){
             return new ResponseEntity<>(bonusService.getAll(), HttpStatus.OK);
         } else {
@@ -66,12 +67,12 @@ public class BonusController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Bonus found",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Bonus.class))}),
+                            schema = @Schema(implementation = BonusDTO.class))}),
             @ApiResponse(responseCode = "404", description = "Bonus not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @GetMapping(path ="/{id}/", produces = "application/json")
-    public ResponseEntity<Bonus> getBonusByID(@PathVariable("id") long id, HttpServletRequest request) {
+    public ResponseEntity<BonusDTO> getBonusByID(@PathVariable("id") long id, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(bonusService.get(id), HttpStatus.OK);
@@ -95,15 +96,15 @@ public class BonusController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Bonus successfully added",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Bonus.class))}),
+                            schema = @Schema(implementation = BonusDTO.class))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "404", description = "ChallengeSport not found", content = @Content)
     })
     @PostMapping(path = "/", produces = "application/json")
-    public ResponseEntity<Bonus> createBonus(@RequestParam Long challengeSportID, @RequestBody Bonus bonus, HttpServletRequest request) {
+    public ResponseEntity<BonusDTO> createBonus(@RequestBody BonusDTO bonus, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             try{
-                return new ResponseEntity<>(bonusService.add(challengeSportID, bonus), HttpStatus.CREATED);
+                return new ResponseEntity<>(bonusService.add(bonus), HttpStatus.CREATED);
             } catch (NotFoundException e) {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -124,15 +125,15 @@ public class BonusController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Bonus successfully updated",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Bonus.class))}),
+                            schema = @Schema(implementation = BonusDTO.class))}),
             @ApiResponse(responseCode = "404", description = "Bonus not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PutMapping(path = "/{id}/", produces = "application/json")
-    public ResponseEntity<Bonus> updateBonus(@PathVariable("id") long id, @RequestParam Long challengeSportID, @RequestBody Bonus bonus, HttpServletRequest request) {
+    public ResponseEntity<BonusDTO> updateBonus(@PathVariable("id") long id, @RequestBody BonusDTO bonus, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             try{
-                return new ResponseEntity<>(bonusService.update(id, challengeSportID, bonus), HttpStatus.OK);
+                return new ResponseEntity<>(bonusService.update(id, bonus), HttpStatus.OK);
             } catch (NotFoundException e) {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

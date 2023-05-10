@@ -1,6 +1,7 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
+import de.hsesslingen.scpprojekt.scp.Database.DTO.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
@@ -45,11 +46,11 @@ public class ActivityController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Search successful",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Activity.class))}),
+                            schema = @Schema(implementation = ActivityDTO.class))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @GetMapping(path = "/", produces = "application/json")
-    public ResponseEntity<List<Activity>> getActivities(HttpServletRequest request){
+    public ResponseEntity<List<ActivityDTO>> getActivities(HttpServletRequest request){
         if (SAML2Functions.isLoggedIn(request)){
             return new ResponseEntity<>(activityService.getAll(), HttpStatus.OK);
         } else {
@@ -68,12 +69,12 @@ public class ActivityController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Activity found",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Activity.class))}),
+                            schema = @Schema(implementation = ActivityDTO.class))}),
             @ApiResponse(responseCode = "404", description = "Activity not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @GetMapping(path ="/{id}/", produces = "application/json")
-    public ResponseEntity<Activity> getActivityByID(@PathVariable("id") long id, HttpServletRequest request) {
+    public ResponseEntity<ActivityDTO> getActivityByID(@PathVariable("id") long id, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(activityService.get(id), HttpStatus.OK);
@@ -97,15 +98,15 @@ public class ActivityController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Activity successfully added",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Activity.class))}),
+                            schema = @Schema(implementation = ActivityDTO.class))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "404", description = "Member or ChallengeSport not found", content = @Content)
     })
     @PostMapping(path = "/", produces = "application/json")
-    public ResponseEntity<Activity> createActivity(@RequestParam Long challengeSportID, @RequestParam Long memberID, @RequestBody Activity activity, HttpServletRequest request) {
+    public ResponseEntity<ActivityDTO> createActivity(@RequestBody ActivityDTO activity, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             try{
-                return new ResponseEntity<>(activityService.add(challengeSportID, memberID, activity), HttpStatus.CREATED);
+                return new ResponseEntity<>(activityService.add(activity), HttpStatus.CREATED);
             } catch (NotFoundException e) {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -126,15 +127,15 @@ public class ActivityController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Activity successfully updated",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Activity.class))}),
+                            schema = @Schema(implementation = ActivityDTO.class))}),
             @ApiResponse(responseCode = "404", description = "Activity not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PutMapping(path = "/{id}/", produces = "application/json")
-    public ResponseEntity<Activity> updateActivity(@PathVariable("id") long id, @RequestParam Long memberID, @RequestParam Long challengeSportID, @RequestBody Activity activity, HttpServletRequest request) {
+    public ResponseEntity<ActivityDTO> updateActivity(@PathVariable("id") long id, @RequestBody ActivityDTO activity, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             try{
-                return new ResponseEntity<>(activityService.update(id, memberID, challengeSportID, activity), HttpStatus.OK);
+                return new ResponseEntity<>(activityService.update(id, activity), HttpStatus.OK);
             } catch (NotFoundException e) {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

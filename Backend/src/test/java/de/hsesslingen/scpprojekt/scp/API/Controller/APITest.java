@@ -1,6 +1,8 @@
 package de.hsesslingen.scpprojekt.scp.API.Controller;
 
 import de.hsesslingen.scpprojekt.scp.API.Service.APIService;
+import de.hsesslingen.scpprojekt.scp.Database.DTO.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTO.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
@@ -26,6 +28,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -47,6 +50,9 @@ public class APITest {
     @MockBean
     ActivityRepository activityRepository;
 
+    @MockBean
+    ActivityConverter activityConverter;
+
     /**
      * Test if all activities are returned correctly
      * @throws Exception by mockMvc
@@ -54,11 +60,11 @@ public class APITest {
     @Test
     @WithMockUser
     public void getAllActivitiesForChallengeTestSuccess() throws Exception {
-        Activity a1 = new Activity();
+        ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
-        Activity a2 = new Activity();
+        ActivityDTO a2 = new ActivityDTO();
         a2.setId(2);
-        List<Activity> aList = new ArrayList<>();
+        List<ActivityDTO> aList = new ArrayList<>();
         aList.add(a1); aList.add(a2);
 
         when(functions.getActivitiesForChallenge(1L)).thenReturn(aList);
@@ -127,11 +133,11 @@ public class APITest {
     @Test
     @WithMockUser
     public void getAllActivitiesForUserTestSuccess() throws Exception {
-        Activity a1 = new Activity();
+        ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
-        Activity a2 = new Activity();
+        ActivityDTO a2 = new ActivityDTO();
         a2.setId(2);
-        List<Activity> aList = new ArrayList<>();
+        List<ActivityDTO> aList = new ArrayList<>();
         aList.add(a1); aList.add(a2);
 
         when(functions.getActivitiesForUser(1L)).thenReturn(aList);
@@ -200,15 +206,15 @@ public class APITest {
     @Test
     @WithMockUser
     public void getRawDistanceForChallengeTestSuccess() throws Exception {
-        Activity a1 = new Activity();
+        ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
-        Activity a2 = new Activity();
+        ActivityDTO a2 = new ActivityDTO();
         a2.setId(2);
-        List<Activity> aList = new ArrayList<>();
+        List<ActivityDTO> aList = new ArrayList<>();
         aList.add(a1); aList.add(a2);
 
         when(functions.getActivitiesForChallenge(1L)).thenReturn(aList);
-        when(functions.getRawDistanceForActivities(aList)).thenReturn(4.0f);
+        when(functions.getRawDistanceForActivities(any())).thenReturn(4.0f);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/API/rawChallengeDistance/").accept(MediaType.APPLICATION_JSON)
@@ -223,7 +229,7 @@ public class APITest {
         assertEquals(content, "4.0");
 
         Mockito.verify(functions).getActivitiesForChallenge(1L);
-        Mockito.verify(functions).getRawDistanceForActivities(aList);
+        Mockito.verify(functions).getRawDistanceForActivities(any());
     }
 
     /**
@@ -249,15 +255,15 @@ public class APITest {
     @Test
     @WithMockUser
     public void getRawDistanceForChallengeTestServerError() throws Exception {
-        Activity a1 = new Activity();
+        ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
-        Activity a2 = new Activity();
+        ActivityDTO a2 = new ActivityDTO();
         a2.setId(2);
-        List<Activity> aList = new ArrayList<>();
+        List<ActivityDTO> aList = new ArrayList<>();
         aList.add(a1); aList.add(a2);
 
         when(functions.getActivitiesForChallenge(1L)).thenReturn(aList);
-        when(functions.getRawDistanceForActivities(aList)).thenThrow(InvalidActivitiesException.class);
+        when(functions.getRawDistanceForActivities(any())).thenThrow(InvalidActivitiesException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/API/rawChallengeDistance/").accept(MediaType.APPLICATION_JSON)
@@ -268,7 +274,7 @@ public class APITest {
                 .andReturn();
 
         Mockito.verify(functions).getActivitiesForChallenge(1L);
-        Mockito.verify(functions).getRawDistanceForActivities(aList);
+        Mockito.verify(functions).getRawDistanceForActivities(any());
     }
 
     /**
@@ -278,15 +284,15 @@ public class APITest {
     @Test
     @WithMockUser
     public void getDistanceForChallengeTestSuccess() throws Exception {
-        Activity a1 = new Activity();
+        ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
-        Activity a2 = new Activity();
+        ActivityDTO a2 = new ActivityDTO();
         a2.setId(2);
-        List<Activity> aList = new ArrayList<>();
+        List<ActivityDTO> aList = new ArrayList<>();
         aList.add(a1); aList.add(a2);
 
         when(functions.getActivitiesForChallenge(1L)).thenReturn(aList);
-        when(functions.getDistanceForActivities(aList)).thenReturn(4.0f);
+        when(functions.getDistanceForActivities(any())).thenReturn(4.0f);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/API/challengeDistance/").accept(MediaType.APPLICATION_JSON)
@@ -301,7 +307,7 @@ public class APITest {
         assertEquals(content, "4.0");
 
         Mockito.verify(functions).getActivitiesForChallenge(1L);
-        Mockito.verify(functions).getDistanceForActivities(aList);
+        Mockito.verify(functions).getDistanceForActivities(any());
     }
 
     /**
@@ -327,15 +333,15 @@ public class APITest {
     @Test
     @WithMockUser
     public void getDistanceForChallengeTestServerError() throws Exception {
-        Activity a1 = new Activity();
+        ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
-        Activity a2 = new Activity();
+        ActivityDTO a2 = new ActivityDTO();
         a2.setId(2);
-        List<Activity> aList = new ArrayList<>();
+        List<ActivityDTO> aList = new ArrayList<>();
         aList.add(a1); aList.add(a2);
 
         when(functions.getActivitiesForChallenge(1L)).thenReturn(aList);
-        when(functions.getDistanceForActivities(aList)).thenThrow(InvalidActivitiesException.class);
+        when(functions.getDistanceForActivities(any())).thenThrow(InvalidActivitiesException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/API/challengeDistance/").accept(MediaType.APPLICATION_JSON)
@@ -346,7 +352,7 @@ public class APITest {
                 .andReturn();
 
         Mockito.verify(functions).getActivitiesForChallenge(1L);
-        Mockito.verify(functions).getDistanceForActivities(aList);
+        Mockito.verify(functions).getDistanceForActivities(any());
     }
 
     /**
@@ -356,15 +362,15 @@ public class APITest {
     @Test
     @WithMockUser
     public void getDistanceForChallengeForUserTestSuccess() throws Exception {
-        Activity a1 = new Activity();
+        ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
-        Activity a2 = new Activity();
+        ActivityDTO a2 = new ActivityDTO();
         a2.setId(2);
-        List<Activity> aList = new ArrayList<>();
+        List<ActivityDTO> aList = new ArrayList<>();
         aList.add(a1); aList.add(a2);
 
         when(functions.getActivitiesForUserInChallenge(1L, 1L)).thenReturn(aList);
-        when(functions.getDistanceForActivities(aList)).thenReturn(4.0f);
+        when(functions.getDistanceForActivities(any())).thenReturn(4.0f);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/API/challengeDistanceForUser/").accept(MediaType.APPLICATION_JSON)
@@ -380,7 +386,7 @@ public class APITest {
         assertEquals(content, "4.0");
 
         Mockito.verify(functions).getActivitiesForUserInChallenge(1L, 1L);
-        Mockito.verify(functions).getDistanceForActivities(aList);
+        Mockito.verify(functions).getDistanceForActivities(any());
     }
 
     /**
@@ -407,15 +413,15 @@ public class APITest {
     @Test
     @WithMockUser
     public void getDistanceForChallengeForUserTestServerError() throws Exception {
-        Activity a1 = new Activity();
+        ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
-        Activity a2 = new Activity();
+        ActivityDTO a2 = new ActivityDTO();
         a2.setId(2);
-        List<Activity> aList = new ArrayList<>();
+        List<ActivityDTO> aList = new ArrayList<>();
         aList.add(a1); aList.add(a2);
 
         when(functions.getActivitiesForUserInChallenge(1L, 1L)).thenReturn(aList);
-        when(functions.getDistanceForActivities(aList)).thenThrow(InvalidActivitiesException.class);
+        when(functions.getDistanceForActivities(any())).thenThrow(InvalidActivitiesException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/API/challengeDistanceForUser/").accept(MediaType.APPLICATION_JSON)
@@ -427,7 +433,7 @@ public class APITest {
                 .andReturn();
 
         Mockito.verify(functions).getActivitiesForUserInChallenge(1L, 1L);
-        Mockito.verify(functions).getDistanceForActivities(aList);
+        Mockito.verify(functions).getDistanceForActivities(any());
     }
 
     /**
@@ -437,15 +443,15 @@ public class APITest {
     @Test
     @WithMockUser
     public void getRawDistanceForChallengeForUserTestSuccess() throws Exception {
-        Activity a1 = new Activity();
+        ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
-        Activity a2 = new Activity();
+        ActivityDTO a2 = new ActivityDTO();
         a2.setId(2);
-        List<Activity> aList = new ArrayList<>();
+        List<ActivityDTO> aList = new ArrayList<>();
         aList.add(a1); aList.add(a2);
 
         when(functions.getActivitiesForUserInChallenge(1L, 1L)).thenReturn(aList);
-        when(functions.getRawDistanceForActivities(aList)).thenReturn(4.0f);
+        when(functions.getRawDistanceForActivities(any())).thenReturn(4.0f);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/API/rawChallengeDistanceForUser/").accept(MediaType.APPLICATION_JSON)
@@ -461,7 +467,7 @@ public class APITest {
         assertEquals(content, "4.0");
 
         Mockito.verify(functions).getActivitiesForUserInChallenge(1L, 1L);
-        Mockito.verify(functions).getRawDistanceForActivities(aList);
+        Mockito.verify(functions).getRawDistanceForActivities(any());
     }
 
     /**
@@ -488,15 +494,15 @@ public class APITest {
     @Test
     @WithMockUser
     public void getRawDistanceForChallengeForUserTestServerError() throws Exception {
-        Activity a1 = new Activity();
+        ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
-        Activity a2 = new Activity();
+        ActivityDTO a2 = new ActivityDTO();
         a2.setId(2);
-        List<Activity> aList = new ArrayList<>();
+        List<ActivityDTO> aList = new ArrayList<>();
         aList.add(a1); aList.add(a2);
 
         when(functions.getActivitiesForUserInChallenge(1L, 1L)).thenReturn(aList);
-        when(functions.getRawDistanceForActivities(aList)).thenThrow(InvalidActivitiesException.class);
+        when(functions.getRawDistanceForActivities(any())).thenThrow(InvalidActivitiesException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/API/rawChallengeDistanceForUser/").accept(MediaType.APPLICATION_JSON)
@@ -508,7 +514,7 @@ public class APITest {
                 .andReturn();
 
         Mockito.verify(functions).getActivitiesForUserInChallenge(1L, 1L);
-        Mockito.verify(functions).getRawDistanceForActivities(aList);
+        Mockito.verify(functions).getRawDistanceForActivities(any());
     }
 
 }

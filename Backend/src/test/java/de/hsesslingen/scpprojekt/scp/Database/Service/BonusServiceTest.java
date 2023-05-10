@@ -1,5 +1,7 @@
 package de.hsesslingen.scpprojekt.scp.Database.Service;
 
+import de.hsesslingen.scpprojekt.scp.Database.DTO.BonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTO.Converter.BonusConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
@@ -18,8 +20,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests of BonusService
@@ -38,23 +39,31 @@ public class BonusServiceTest {
     @Autowired
     BonusService bonusService;
 
+    @Autowired
+    BonusConverter bonusConverter;
+
     List<Bonus> bonusList;
 
     /**
      * Sets up tests
      */
     @BeforeEach
-    public void setup(){
+    public void setup() throws NotFoundException {
         bonusList = new ArrayList<>();
+
+        ChallengeSport cs = new ChallengeSport();
+        cs.setId(1);
 
         for (long i = 0; i < 10; i++){
             Bonus b = new Bonus();
             b.setId(i);
+            b.setChallengeSport(cs);
             bonusList.add(b);
             when(bonusRepository.findById(i)).thenReturn(Optional.of(b));
         }
 
         when(bonusRepository.findAll()).thenReturn(bonusList);
+        when(challengeSportService.get(1L)).thenReturn(cs);
 
         when(bonusRepository.save(any(Bonus.class))).then(AdditionalAnswers.returnsFirstArg()); //Return given bonus class
     }
@@ -63,11 +72,19 @@ public class BonusServiceTest {
      * Test if getAll works correctly
      */
     @Test
-    public void getAllTest(){
-        List<Bonus> bonuses = bonusService.getAll();
+    public void getAllTest() throws NotFoundException {
+        List<BonusDTO> bonuses = bonusService.getAll();
 
-        for(Bonus b : bonuses)
-            assertTrue(bonusList.contains(b));
+        for(BonusDTO b : bonuses){
+            boolean test = false;
+            for (Bonus b1 : bonusList){
+                if (b1.getId() == b.getId() && b1.getChallengeSport().getId() == b.getChallengeSportID()) {
+                    test = true;
+                    break;
+                }
+            }
+            assertTrue(test);
+        }
 
         assertEquals(bonusList.size(), bonuses.size());
 
@@ -81,7 +98,7 @@ public class BonusServiceTest {
     @Test
     public void getTestSuccess() throws NotFoundException {
         for(Bonus b : bonusList){
-            assertEquals(b, bonusService.get(b.getId()));
+            assertEquals(bonusConverter.convertEntityToDto(b).getId(), bonusService.get(b.getId()).getId());
             verify(bonusRepository).findById(b.getId());
         }
     }
@@ -106,10 +123,10 @@ public class BonusServiceTest {
         cs.setId(1);
         when(challengeSportService.get(1L)).thenReturn(cs);
 
-        Bonus newBonus = bonusService.add(1L, bonusList.get(0));
+        BonusDTO newBonus = bonusService.add(bonusConverter.convertEntityToDto(bonusList.get(0)));
 
         assertEquals(newBonus.getId(), bonusList.get(0).getId());
-        assertEquals(newBonus.getChallengeSport(), cs);
+        assertEquals(newBonus.getChallengeSportID(), cs.getId());
 
         verify(bonusRepository).save(any(Bonus.class));
         verify(challengeSportService).get(1L);
@@ -124,7 +141,7 @@ public class BonusServiceTest {
         when(challengeSportService.get(any(Long.class))).thenThrow(NotFoundException.class);
 
         assertThrows(NotFoundException.class, () -> {
-           bonusService.add(1L, bonusList.get(0));
+           bonusService.add(new BonusDTO(0L, 0L, null, null, 1.0f, null, null));
         });
     }
 
@@ -140,14 +157,14 @@ public class BonusServiceTest {
 
         bonusList.get(1).setFactor(10.5f);
 
-        Bonus newBonus = bonusService.update(0L, 1L, bonusList.get(1));
+        BonusDTO newBonus = bonusService.update(0L, bonusConverter.convertEntityToDto(bonusList.get(1)));
 
         assertEquals(newBonus.getId(), bonusList.get(0).getId());
         assertEquals(newBonus.getFactor(), bonusList.get(1).getFactor());
-        assertEquals(newBonus.getChallengeSport(), cs);
+        assertEquals(newBonus.getChallengeSportID(), cs.getId());
 
         verify(bonusRepository).save(any(Bonus.class));
-        verify(challengeSportService).get(1L);
+        verify(challengeSportService, times(2)).get(1L);
     }
 
     /**
@@ -159,7 +176,7 @@ public class BonusServiceTest {
         when(challengeSportService.get(any(Long.class))).thenThrow(NotFoundException.class);
 
         assertThrows(NotFoundException.class, () -> {
-            bonusService.update(0L, 1L, bonusList.get(0));
+            bonusService.update(0L, bonusConverter.convertEntityToDto(bonusList.get(0)));
         });
     }
 

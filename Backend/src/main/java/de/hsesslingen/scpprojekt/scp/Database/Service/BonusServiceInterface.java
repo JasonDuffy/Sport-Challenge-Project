@@ -1,5 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.Database.Service;
 
+import de.hsesslingen.scpprojekt.scp.Database.DTO.BonusDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 
@@ -15,7 +16,7 @@ public interface BonusServiceInterface {
      * Returns all bonuses in database
      * @return List of all Bonuses in DB
      */
-    public List<Bonus> getAll();
+    public List<BonusDTO> getAll();
 
     /**
      * Returns bonus with given ID in DB
@@ -23,23 +24,22 @@ public interface BonusServiceInterface {
      * @return Bonus with given ID
      * @throws NotFoundException Bonus can not be found
      */
-    public Bonus get(Long bonusID) throws NotFoundException;
+    public BonusDTO get(Long bonusID) throws NotFoundException;
 
     /**
      * Adds a given bonus to the DB
-     * @param challengeSportID ID of the associated challenge sport for the bonus
      * @param bonus Bonus object to be added to DB
      * @return Added bonus object
      */
-    public Bonus add(Long challengeSportID, Bonus bonus) throws  NotFoundException;
+    public BonusDTO add(BonusDTO bonus) throws  NotFoundException;
 
     /**
      * Updates a bonus
      * @param bonusID ID of the bonus to be updated
-     * @param bonus Bonus object that overwrites the old bonus
+     * @param bonus BonusDTO object that overwrites the old bonus
      * @return Updated bonus object
      */
-    public Bonus update(Long bonusID, Long challengeSportID, Bonus bonus) throws NotFoundException;
+    public BonusDTO update(Long bonusID, BonusDTO bonus) throws NotFoundException;
 
     /**
      * Deletes a specific bonus from the DB

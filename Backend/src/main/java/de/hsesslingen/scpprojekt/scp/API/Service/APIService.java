@@ -1,11 +1,16 @@
 package de.hsesslingen.scpprojekt.scp.API.Service;
 
+import de.hsesslingen.scpprojekt.scp.Database.DTO.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTO.BonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTO.Converter.ActivityConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTO.Converter.BonusConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
+import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -27,12 +32,18 @@ public class APIService {
     @Autowired
     BonusRepository bonusRepository;
 
+    @Autowired
+    ActivityConverter activityConverter;
+
+    @Autowired
+    BonusConverter bonusConverter;
+
     /**
      * Return all Activities for given Challenge ID
      * @param challengeID Challenge ID for returned activities
      * @return All activities concerning the given challenge ID
      */
-    public List<Activity> getActivitiesForChallenge(Long challengeID){
+    public List<ActivityDTO> getActivitiesForChallenge(Long challengeID){
         List<Activity> allActivities = activityRepository.findAll();
         List<Activity> challengeActivities = new ArrayList<>();
 
@@ -41,7 +52,7 @@ public class APIService {
                 challengeActivities.add(activity);
         }
 
-        return challengeActivities;
+        return activityConverter.convertEntityListToDtoList(challengeActivities);
     }
 
     /**
@@ -49,7 +60,7 @@ public class APIService {
      * @param userID User ID for returned activities
      * @return All activities by the given user ID
      */
-    public List<Activity> getActivitiesForUser(Long userID){
+    public List<ActivityDTO> getActivitiesForUser(Long userID){
         List<Activity> allActivities = activityRepository.findAll();
         List<Activity> userActivities = new ArrayList<>();
 
@@ -58,7 +69,7 @@ public class APIService {
                 userActivities.add(activity);
         }
 
-        return userActivities;
+        return activityConverter.convertEntityListToDtoList(userActivities);
     }
 
     /**
@@ -67,8 +78,8 @@ public class APIService {
      * @param userID User ID of the requested activities
      * @return All Activities with the given User & Challenge IDs
      */
-    public List<Activity> getActivitiesForUserInChallenge(Long challengeID, Long userID){
-        List<Activity> allUserActivities = getActivitiesForUser(userID);
+    public List<ActivityDTO> getActivitiesForUserInChallenge(Long challengeID, Long userID) throws NotFoundException {
+        List<Activity> allUserActivities = activityConverter.convertDtoListToEntityList(getActivitiesForUser(userID));
 
         List<Activity> userChallengeActivities = new ArrayList<>();
 
@@ -78,7 +89,7 @@ public class APIService {
             }
         }
 
-        return userChallengeActivities;
+        return activityConverter.convertEntityListToDtoList(userChallengeActivities);
     }
 
     /**
@@ -109,12 +120,12 @@ public class APIService {
      * @param activities List of activities for which the distance should be calculated. All have to be part of the same challenge.
      * @return Distance of activities with bonuses
      */
-    public float getDistanceForActivities(List<Activity> activities) throws InvalidActivitiesException {
+    public float getDistanceForActivities(List<Activity> activities) throws InvalidActivitiesException, NotFoundException {
         float sum = 0.0f;
 
         if(!activities.isEmpty()){
             Challenge challenge = activities.get(0).getChallengeSport().getChallenge();
-            List<Bonus> challengeBonuses = getChallengeBonuses(challenge);
+            List<Bonus> challengeBonuses = bonusConverter.convertDtoListToEntityList(getChallengeBonuses(challenge));
 
             for (Activity act : activities){
                 if(act.getChallengeSport().getChallenge().getId() != challenge.getId()) //Checks if all activities are part of the same challenge
@@ -133,7 +144,7 @@ public class APIService {
      * @param challenge The challenge for which the bonuses should be returned
      * @return The bonuses for the challenge
      */
-    public List<Bonus> getChallengeBonuses(Challenge challenge){
+    public List<BonusDTO> getChallengeBonuses(Challenge challenge){
         List<Bonus> bonuses = bonusRepository.findAll();
         List<Bonus> validBonuses = new ArrayList<>();
 
@@ -142,7 +153,7 @@ public class APIService {
                 validBonuses.add(bonus);
         }
 
-        return validBonuses;
+        return bonusConverter.convertEntityListToDtoList(validBonuses);
     }
 
     /**

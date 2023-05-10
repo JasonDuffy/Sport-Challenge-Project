@@ -37,6 +37,11 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+/**
+ * Test for the TeamController
+ *
+ * @author Tom Nguyen Dinh
+ */
 @ActiveProfiles("test")
 @WebMvcTest(TeamController.class)
 @AutoConfigureMockMvc(addFilters = false)
@@ -52,6 +57,10 @@ public class TeamControllerTest {
     @MockBean
     ImageStorageService imageStorageService;
 
+    /**
+     * Test for get team by ID SUCCESS
+     * @throws Exception Exception by mockMvc
+     */
     @Test
     @WithMockUser
     public void getTeamByIDSuccess() throws Exception {
@@ -79,6 +88,11 @@ public class TeamControllerTest {
 
         Mockito.verify(teamRepository).findById(1L);
     }
+
+    /**
+     * Test for get team by ID not found
+     * @throws Exception Exception by mockMvc
+     */
     @Test
     @WithMockUser
     public void getTeamByIDNotFound() throws Exception{
@@ -89,6 +103,11 @@ public class TeamControllerTest {
                 .andExpect(status().isNotFound())
                 .andReturn();
     }
+
+    /**
+     * Test for get team by ID not login
+     * @throws Exception Exception by mockMvc
+     */
     @Test
     @WithAnonymousUser
     public void getTeamByIDLoggedOut() throws Exception {
@@ -99,6 +118,10 @@ public class TeamControllerTest {
                 .andReturn();
     }
 
+    /**
+     * Test for getting all teams Success
+     * @throws Exception Exception by mockMvc
+     */
     @Test
     @WithMockUser
     public void getALLTeamsSuccess() throws Exception{
@@ -132,6 +155,11 @@ public class TeamControllerTest {
 
         Mockito.verify(teamRepository).findAll();
     }
+
+    /**
+     * Test for getting all teams not login
+     * @throws Exception Exception by mockMvc
+     */
     @Test
     @WithAnonymousUser
     public void getALLTeamsLogOut() throws Exception {
@@ -142,6 +170,11 @@ public class TeamControllerTest {
                 .andExpect(status().isForbidden())
                 .andReturn();
     }
+
+    /**
+     * Test for deleting a team success
+     * @throws Exception Exception by mockMvc
+     */
     @Test
     @WithMockUser
     public void deleteATeamSuccess()throws Exception{
@@ -158,6 +191,10 @@ public class TeamControllerTest {
         Mockito.verify(teamRepository).deleteById(1L);
     }
 
+    /**
+     * Test for deleting a team not found
+     * @throws Exception Exception by mockMvc
+     */
     @Test
     @WithMockUser
     public void deleteATeamNotFound()throws Exception{
@@ -169,6 +206,10 @@ public class TeamControllerTest {
                 .andReturn();
     }
 
+    /**
+     * Test for deleting a team not login
+     * @throws Exception Exception by mockMvc
+     */
     @Test
     @WithAnonymousUser
     public void deleteATeamLogOut()throws Exception{
@@ -180,6 +221,10 @@ public class TeamControllerTest {
                 .andReturn();
     }
 
+    /**
+     * Test for deleting all team success
+     * @throws Exception Exception by mockMvc
+     */
     @Test
     @WithMockUser
     public void deleteALLTeamSuccess()throws Exception{
@@ -192,6 +237,10 @@ public class TeamControllerTest {
         Mockito.verify(teamRepository).deleteAll();
     }
 
+    /**
+     * Test for deleting all team not found
+     * @throws Exception Exception by mockMvc
+     */
     @Test
     @WithAnonymousUser
     public void deleteALLTeamLogOut()throws Exception{
@@ -203,6 +252,10 @@ public class TeamControllerTest {
                 .andReturn();
     }
 
+    /**
+     * Test for creating a team  Success
+     * @throws Exception Exception by mockMvc
+     */
     @Test
     @WithMockUser
     public void addTeamSucess()throws Exception{
@@ -237,6 +290,10 @@ public class TeamControllerTest {
 
 
     }
+    /**
+     * Test for creating a team not found
+     * @throws Exception Exception by mockMvc
+     */
     @Test
     @WithMockUser
     public void addTeamNotFound()throws Exception{
@@ -271,6 +328,11 @@ public class TeamControllerTest {
 
 
     }
+
+    /**
+     * Test for creating a team not login
+     * @throws Exception Exception by mockMvc
+     */
     @Test
     @WithAnonymousUser
     public void addTeamLogOut()throws Exception{
@@ -305,6 +367,11 @@ public class TeamControllerTest {
 
 
     }
+
+    /**
+     * Test for updating a team success
+     * @throws Exception Exception by mockMvc
+     */
     @Test
     @WithMockUser
     public void updateTeamSuccess()throws Exception{
@@ -345,6 +412,10 @@ public class TeamControllerTest {
 
     }
 
+    /**
+     * Test for updating a team not found
+     * @throws Exception Exception by mockMvc
+     */
     @Test
     @WithMockUser
     public void updateTeamNotFound()throws Exception{
@@ -387,6 +458,10 @@ public class TeamControllerTest {
 
     }
 
+    /**
+     * Test for updating a team not login
+     * @throws Exception Exception by mockMvc
+     */
     @Test
     @WithAnonymousUser
     public void updateTeamLogOut()throws Exception{

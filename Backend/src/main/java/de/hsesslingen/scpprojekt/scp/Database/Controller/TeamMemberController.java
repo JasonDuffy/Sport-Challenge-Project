@@ -1,7 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.TeamMember;
@@ -23,6 +22,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Rest for TeamMembers
+ *
+ * @author Tom Nguyen Dinh
+ */
+
 @CrossOrigin(origins="http://localhost:3000", allowedHeaders = "*", allowCredentials = "true")
 @RestController
 @RequestMapping("/teamMembers")
@@ -36,6 +41,7 @@ public class TeamMemberController {
     TeamMemberRepository teamMemberRepository;
 
     /**
+     *Rest API for adding a Member to a Team
      *
      * @param TeamID ID of the Team
      * @param MemberID ID of the Member who should be added to the Team
@@ -47,7 +53,7 @@ public class TeamMemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Member successfully added to Team",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Team.class))}),
+                            schema = @Schema(implementation = TeamMember.class))}),
             @ApiResponse(responseCode = "500", description = "Something went wrong adding the Team to Member", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "404", description = "Team and Member not found", content = @Content)
@@ -71,11 +77,19 @@ public class TeamMemberController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
+    /**
+     * Rest API for getting all Member of a team
+     *
+     * @param TeamID ID of the team
+     * @param request automatically filled by browser
+     * @return 200 for success
+     */
     @Operation(summary = "Get all Team members")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Search successful",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ChallengeSport.class))}),
+                            schema = @Schema(implementation = TeamMember.class))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @GetMapping(path = "/{id}/" , produces = "application/json")
@@ -98,14 +112,23 @@ public class TeamMemberController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
-    @Operation(summary = "Deletes a Team member")
+
+    /**
+     * Rest API for deleting a Member of a team
+     *
+     * @param ID of the TeamMember
+     * @param request automatically filled by browser
+     * @return 200 Success else 404 for not found TeamMember
+     */
+    @Operation(summary = "Deletes a TeamMember")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Search successful",
+            @ApiResponse(responseCode = "200", description = "Delete successful",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Team.class))}),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+                            schema = @Schema(implementation = TeamMember.class))}),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
+            @ApiResponse(responseCode = "404", description = "TeamMember not found", content = @Content)
     })
-    @DeleteMapping(path = "/",produces = "application/json")
+    @DeleteMapping(path = "/{id}/",produces = "application/json")
     public ResponseEntity<HttpStatus> deleteATeamMember(@PathVariable("id") long ID,HttpServletRequest request){
         if (SAML2Functions.isLoggedIn(request)){
             Optional<TeamMember>teamData = teamMemberRepository.findById(ID);

@@ -217,7 +217,7 @@ public class MemberControllerTest {
                 .delete("/members/1/").accept(MediaType.APPLICATION_JSON);
 
         MvcResult res = mockMvc.perform(request)
-                .andExpect(status().is(204))
+                .andExpect(status().is(200))
                 .andReturn();
 
         Mockito.verify(memberRepository).findById(1L);

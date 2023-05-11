@@ -90,4 +90,8 @@ public class Member{
     public void setImage(Image image) {
         this.image = image;
     }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 }

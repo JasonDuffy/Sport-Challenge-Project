@@ -2,9 +2,14 @@ import React from "react";
 import "./css/MyChallengeOverview.css";
 import "./css/Form.css";
 import Button from "./Button";
+import { useNavigate } from "react-router-dom";
 
-function MyChallengeOverview() {
-  function openChallenge() {}
+function MyChallengeOverview(props) {
+  const navigate = useNavigate();
+  
+  function openChallenge() {
+    navigate("/Challenge/" + props.id);
+  }
 
   return (
     <div className="my_challenge_container">
@@ -21,13 +26,13 @@ function MyChallengeOverview() {
           magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kas
         </div>
         <div className="my_challenge_btns">
-          <Button color="white" txt="Infos Anzeigen" action={openChallenge} />
+          <Button color="white" txt="Infos anzeigen" action={openChallenge} />
         </div>
       </div>
       <div className="my_challenge_form_container pd_1">
         <form>
           <h2>Wie viel Kilometer hast du zurückgelegt?</h2>
-          <input className="mg_t_1" type="number" value={60}></input>
+          <input className="mg_t_1" type="number" defaultValue={60}></input>
           <div className="mg_t_2">
             <h2>Sportart auswählen</h2>
             <select className="mg_t_1">

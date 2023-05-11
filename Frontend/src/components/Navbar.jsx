@@ -43,16 +43,16 @@ function Navbar() {
               <span>Management</span>
               <FontAwesomeIcon className="nav_dropdown_icon" icon={faCaretDown} />
               <AnimateHeight duration={200} height={height} className="top_nav_dropdown_menu">
-                <a className="top_nav_dropdown_item" href="/Add/Challenge">
+                <a className="top_nav_dropdown_item" href="/Add/Challenge/0">
                   Add Challenge
                 </a>
-                <a className="top_nav_dropdown_item" href="/Add/Team">
+                <a className="top_nav_dropdown_item" href="/Add/Team/0">
                   Add Team
                 </a>
-                <a className="top_nav_dropdown_item" href="/Add/Bonus">
+                <a className="top_nav_dropdown_item" href="/Add/Bonus/0">
                   Add Bonus
                 </a>
-                <a className="top_nav_dropdown_item" href="/Add/Sport">
+                <a className="top_nav_dropdown_item" href="/Add/Sport/0">
                   Add Sport
                 </a>
                 <a className="top_nav_dropdown_item" href="/Profile">
@@ -79,16 +79,16 @@ function Navbar() {
             <AnimateHeight duration={200} height={height} className="mobile_nav_dropdown_menu">
               <ul>
                 <li>
-                  <a href="/Add/Challenge">Add Challenge</a>
+                  <a href="/Add/Challenge/0">Add Challenge</a>
                 </li>
                 <li>
-                  <a href="/Add/Team">Add Team</a>
+                  <a href="/Add/Team/0">Add Team</a>
                 </li>
                 <li>
-                  <a href="/Add/Bonus">Add Bonus</a>
+                  <a href="/Add/Bonus/0">Add Bonus</a>
                 </li>
                 <li>
-                  <a href="/Add/Sport">Add Sport</a>
+                  <a href="/Add/Sport/0">Add Sport</a>
                 </li>
                 <li>
                   <a href="/Profile">Userprofile</a>

@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import withRouter from "./withRouter";
 import Button from "./Button";
 import "./css/AddChallenge.css";
 import "./css/Form.css";
@@ -302,4 +303,4 @@ class AddChallenge extends Component {
   }
 }
 
-export default AddChallenge;
+export default withRouter(AddChallenge);

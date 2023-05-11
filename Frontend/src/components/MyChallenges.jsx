@@ -12,13 +12,13 @@ function MyChallenges() {
           </div>
           <ul className="col my_challenge_list">
             <li className="my_challenge_list_item">
-                <MyChallengeOverview />
+                <MyChallengeOverview id={1} />
             </li>
             <li className="my_challenge_list_item">
-                <MyChallengeOverview />
+                <MyChallengeOverview id={2} />
             </li>
             <li className="my_challenge_list_item">
-                <MyChallengeOverview />
+                <MyChallengeOverview id={3} />
             </li>
           </ul>
         </div>

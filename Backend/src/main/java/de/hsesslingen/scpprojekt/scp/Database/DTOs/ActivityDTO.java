@@ -1,7 +1,6 @@
-package de.hsesslingen.scpprojekt.scp.Database.DTO;
+package de.hsesslingen.scpprojekt.scp.Database.DTOs;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 
 import java.time.LocalDateTime;
 

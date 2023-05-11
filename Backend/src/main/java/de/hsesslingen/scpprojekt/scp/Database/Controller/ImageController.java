@@ -3,7 +3,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ImageRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Service.ImageStorageService;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ImageStorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

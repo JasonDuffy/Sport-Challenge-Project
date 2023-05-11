@@ -1,8 +1,8 @@
-package de.hsesslingen.scpprojekt.scp.Database.DTO.Converter;
+package de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter;
 
-import de.hsesslingen.scpprojekt.scp.Database.DTO.BonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
-import de.hsesslingen.scpprojekt.scp.Database.Service.ChallengeSportService;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

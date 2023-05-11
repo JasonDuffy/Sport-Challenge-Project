@@ -1,9 +1,9 @@
-package de.hsesslingen.scpprojekt.scp.API.Service;
+package de.hsesslingen.scpprojekt.scp.API.Services;
 
-import de.hsesslingen.scpprojekt.scp.Database.DTO.ActivityDTO;
-import de.hsesslingen.scpprojekt.scp.Database.DTO.BonusDTO;
-import de.hsesslingen.scpprojekt.scp.Database.DTO.Converter.ActivityConverter;
-import de.hsesslingen.scpprojekt.scp.Database.DTO.Converter.BonusConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;

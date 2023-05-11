@@ -1,16 +1,13 @@
-package de.hsesslingen.scpprojekt.scp.Database.Service;
+package de.hsesslingen.scpprojekt.scp.Database.Services;
 
-import de.hsesslingen.scpprojekt.scp.Database.DTO.ActivityDTO;
-import de.hsesslingen.scpprojekt.scp.Database.DTO.Converter.ActivityConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.MemberRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,7 +18,7 @@ import java.util.Optional;
  */
 
 @Service
-public class ActivityService implements ActivityServiceInterface {
+public class ActivityService {
     @Autowired
     ActivityRepository activityRepository;
 
@@ -39,7 +36,6 @@ public class ActivityService implements ActivityServiceInterface {
      *
      * @return List of all activities in DB
      */
-    @Override
     public List<ActivityDTO> getAll() {
         List<Activity> activities = activityRepository.findAll();
         return activityConverter.convertEntityListToDtoList(activities);
@@ -52,7 +48,6 @@ public class ActivityService implements ActivityServiceInterface {
      * @return Activity with given ID
      * @throws NotFoundException Activity can not be found
      */
-    @Override
     public ActivityDTO get(Long activityID) throws NotFoundException {
         Optional<Activity> activity = activityRepository.findById(activityID);
         if(activity.isPresent())
@@ -66,7 +61,6 @@ public class ActivityService implements ActivityServiceInterface {
      * @param activity         ActivityDTO object to be added to DB
      * @return Added Activity DTO object
      */
-    @Override
     public ActivityDTO add(ActivityDTO activity) throws NotFoundException {
         Activity a = activityConverter.convertDtoToEntity(activity);
         Activity savedActivity = activityRepository.save(a);
@@ -80,7 +74,6 @@ public class ActivityService implements ActivityServiceInterface {
      * @param activity         ActivityDTO object that overwrites the old activity
      * @return Updated Activity object
      */
-    @Override
     public ActivityDTO update(Long activityID, ActivityDTO activity) throws NotFoundException {
         Optional<Activity> optionalActivity = activityRepository.findById(activityID);
         Activity convertedActivity = activityConverter.convertDtoToEntity(activity);
@@ -104,7 +97,6 @@ public class ActivityService implements ActivityServiceInterface {
      *
      * @param activityID ID of the Activity to be deleted
      */
-    @Override
     public void delete(Long activityID) throws NotFoundException {
         get(activityID);
         activityRepository.deleteById(activityID);
@@ -113,7 +105,6 @@ public class ActivityService implements ActivityServiceInterface {
     /**
      * Deletes all Activities from the DB
      */
-    @Override
     public void deleteAll() {
         activityRepository.deleteAll();
     }

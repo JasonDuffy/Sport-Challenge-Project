@@ -1,12 +1,8 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
-import de.hsesslingen.scpprojekt.scp.Database.DTO.BonusDTO;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Service.BonusService;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.Services.BonusService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,7 +16,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * REST controller for Bonus.

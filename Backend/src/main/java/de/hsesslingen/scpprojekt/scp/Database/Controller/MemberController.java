@@ -1,11 +1,8 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
-import java.util.Optional;
-
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.MemberRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Service.MemberService;
+import de.hsesslingen.scpprojekt.scp.Database.Services.MemberService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

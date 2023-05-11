@@ -1,4 +1,4 @@
-package de.hsesslingen.scpprojekt.scp.Database.Service;
+package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ImageRepository;
@@ -10,7 +10,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.stream.Stream;
 
 
 /**

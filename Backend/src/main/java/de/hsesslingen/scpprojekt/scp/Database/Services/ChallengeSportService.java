@@ -1,4 +1,4 @@
-package de.hsesslingen.scpprojekt.scp.Database.Service;
+package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
@@ -15,7 +15,7 @@ import java.util.Optional;
  * @author Jason Patrick Duffy
  */
 @Service
-public class ChallengeSportService implements ChallengeSportServiceInterface {
+public class ChallengeSportService {
     @Autowired
     ChallengeSportRepository challengeSportRepository;
 
@@ -24,7 +24,6 @@ public class ChallengeSportService implements ChallengeSportServiceInterface {
      *
      * @return List of all ChallengeSports in DB
      */
-    @Override
     public List<ChallengeSport> getAll() {
         return challengeSportRepository.findAll();
     }
@@ -36,7 +35,6 @@ public class ChallengeSportService implements ChallengeSportServiceInterface {
      * @return ChallengeSport with given ID
      * @throws NotFoundException ChallengeSport can not be found
      */
-    @Override
     public ChallengeSport get(Long challengeSportID) throws NotFoundException {
         Optional<ChallengeSport> challengeSport = challengeSportRepository.findById(challengeSportID);
         if(challengeSport.isPresent())
@@ -50,7 +48,6 @@ public class ChallengeSportService implements ChallengeSportServiceInterface {
      * @param challengeSport ChallengeSport object to be added to DB
      * @return Added ChallengeSport object
      */
-    @Override
     public ChallengeSport add(ChallengeSport challengeSport) {
         return null;
     }
@@ -62,7 +59,6 @@ public class ChallengeSportService implements ChallengeSportServiceInterface {
      * @param challengeSport   ChallengeSport object that overwrites the old ChallengeSport
      * @return Updated ChallengeSport object
      */
-    @Override
     public ChallengeSport update(Long challengeSportID, ChallengeSport challengeSport) {
         return null;
     }
@@ -72,7 +68,6 @@ public class ChallengeSportService implements ChallengeSportServiceInterface {
      *
      * @param challengeSportID ID of the ChallengeSport to be deleted
      */
-    @Override
     public void delete(Long challengeSportID) {
 
     }
@@ -80,7 +75,6 @@ public class ChallengeSportService implements ChallengeSportServiceInterface {
     /**
      * TODO: Deletes all bonuses from the DB
      */
-    @Override
     public void deleteAll() {
 
     }

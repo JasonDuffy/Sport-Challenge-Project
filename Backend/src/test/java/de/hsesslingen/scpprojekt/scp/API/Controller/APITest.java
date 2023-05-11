@@ -1,9 +1,8 @@
 package de.hsesslingen.scpprojekt.scp.API.Controller;
 
-import de.hsesslingen.scpprojekt.scp.API.Service.APIService;
-import de.hsesslingen.scpprojekt.scp.Database.DTO.ActivityDTO;
-import de.hsesslingen.scpprojekt.scp.Database.DTO.Converter.ActivityConverter;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
+import de.hsesslingen.scpprojekt.scp.API.Services.APIService;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import org.junit.jupiter.api.Test;

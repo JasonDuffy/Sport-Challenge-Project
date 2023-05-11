@@ -1,17 +1,13 @@
-package de.hsesslingen.scpprojekt.scp.Database.Service;
+package de.hsesslingen.scpprojekt.scp.Database.Services;
 
-import de.hsesslingen.scpprojekt.scp.Database.DTO.ActivityDTO;
-import de.hsesslingen.scpprojekt.scp.Database.DTO.BonusDTO;
-import de.hsesslingen.scpprojekt.scp.Database.DTO.Converter.BonusConverter;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,7 +18,7 @@ import java.util.Optional;
  */
 
 @Service
-public class BonusService implements BonusServiceInterface{
+public class BonusService {
     @Autowired
     BonusRepository bonusRepository;
 
@@ -37,7 +33,6 @@ public class BonusService implements BonusServiceInterface{
      *
      * @return List of all Bonuses in DB
      */
-    @Override
     public List<BonusDTO> getAll() {
         List<Bonus> bonusList = bonusRepository.findAll();
         return bonusConverter.convertEntityListToDtoList(bonusList);
@@ -50,7 +45,6 @@ public class BonusService implements BonusServiceInterface{
      * @return Bonus with given ID
      * @throws NotFoundException Bonus can not be found
      */
-    @Override
     public BonusDTO get(Long bonusID) throws NotFoundException {
         Optional<Bonus> bonus = bonusRepository.findById(bonusID);
         if(bonus.isPresent())
@@ -64,7 +58,6 @@ public class BonusService implements BonusServiceInterface{
      * @param bonus            Bonus object to be added to DB
      * @return Added bonus object
      */
-    @Override
     public BonusDTO add(BonusDTO bonus) throws NotFoundException{
         Bonus b = bonusConverter.convertDtoToEntity(bonus);
         Bonus savedBonus = bonusRepository.save(b);
@@ -78,7 +71,6 @@ public class BonusService implements BonusServiceInterface{
      * @param bonus   Bonus object that overwrites the old bonus
      * @return Updated bonus object
      */
-    @Override
     public BonusDTO update(Long bonusID, BonusDTO bonus) throws NotFoundException{
         Optional<Bonus> optionalBonus = bonusRepository.findById(bonusID);
         Bonus convertedBonus = bonusConverter.convertDtoToEntity(bonus);
@@ -106,7 +98,6 @@ public class BonusService implements BonusServiceInterface{
      *
      * @param bonusID ID of the bonus to be deleted
      */
-    @Override
     public void delete(Long bonusID) throws NotFoundException {
         get(bonusID);
         bonusRepository.deleteById(bonusID);
@@ -115,7 +106,6 @@ public class BonusService implements BonusServiceInterface{
     /**
      * Deletes all bonuses from the DB
      */
-    @Override
     public void deleteAll() {
         bonusRepository.deleteAll();
     }

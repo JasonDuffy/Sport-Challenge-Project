@@ -1,13 +1,13 @@
-package de.hsesslingen.scpprojekt.scp.API;
+package de.hsesslingen.scpprojekt.scp.API.Services;
 
-import de.hsesslingen.scpprojekt.scp.API.Service.APIService;
-import de.hsesslingen.scpprojekt.scp.Database.DTO.ActivityDTO;
-import de.hsesslingen.scpprojekt.scp.Database.DTO.BonusDTO;
-import de.hsesslingen.scpprojekt.scp.Database.DTO.Converter.BonusConverter;
+import de.hsesslingen.scpprojekt.scp.API.Services.APIService;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Service.ChallengeSportService;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;

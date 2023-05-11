@@ -1,4 +1,4 @@
-package de.hsesslingen.scpprojekt.scp.Database.Service;
+package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.MemberRepository;
@@ -16,7 +16,7 @@ import java.util.Optional;
  */
 
 @Service
-public class MemberService implements MemberServiceInterface {
+public class MemberService {
     @Autowired
     MemberRepository memberRepository;
     /**
@@ -24,7 +24,6 @@ public class MemberService implements MemberServiceInterface {
      *
      * @return List of all Bonuses in DB
      */
-    @Override
     public List<Member> getAll() {
         return memberRepository.findAll();
     }
@@ -36,7 +35,6 @@ public class MemberService implements MemberServiceInterface {
      * @return Member with given ID
      * @throws NotFoundException Member can not be found
      */
-    @Override
     public Member get(Long memberID) throws NotFoundException {
         Optional<Member> member = memberRepository.findById(memberID);
         if(member.isPresent())
@@ -50,7 +48,6 @@ public class MemberService implements MemberServiceInterface {
      * @param member Member object to be added to DB
      * @return Added member object
      */
-    @Override
     public Member add(Member member) throws NotFoundException {
         return memberRepository.save(new Member(member.getEmail(), member.getFirstName(), member.getLastName(), member.getImage()));
     }
@@ -62,7 +59,6 @@ public class MemberService implements MemberServiceInterface {
      * @param member   Member object that overwrites the old member
      * @return Updated bonus object
      */
-    @Override
     public Member update(Long memberID, Member member) throws NotFoundException {
         Member newMember = get(memberID);
 
@@ -79,7 +75,6 @@ public class MemberService implements MemberServiceInterface {
      *
      * @param memberID ID of the bonus to be deleted
      */
-    @Override
     public void delete(Long memberID) throws NotFoundException {
         get(memberID);
         memberRepository.deleteById(memberID);
@@ -88,7 +83,6 @@ public class MemberService implements MemberServiceInterface {
     /**
      * Deletes all members from the DB
      */
-    @Override
     public void deleteAll() {
         memberRepository.deleteAll();
     }

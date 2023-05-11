@@ -8,13 +8,14 @@
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "jest-fetch-mock": "^3.0.3",
     "jquery": "^3.6.4",
     "react": "^18.2.0",
     "react-animate-height": "^3.1.1",
     "react-async": "^10.0.1",
     "react-dom": "^18.2.0",
     "react-helmet": "^6.1.0",
-    "react-router-dom": "^6.10.0",
+    "react-router-dom": "^6.11.1",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
@@ -44,16 +45,5 @@
   },
   "devDependencies": {
     "@types/jest": "^29.5.1"
-  },
-  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
-  "main": "index.js",
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "jest": {
-    "automock": false,
-    "setupFiles": [
-      "./setupJest.js"
-    ]
   }
 }

@@ -1,6 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
-import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ActivityService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
@@ -44,7 +44,7 @@ public class ActivityController {
     })
     @GetMapping(path = "/", produces = "application/json")
     public ResponseEntity<List<ActivityDTO>> getActivities(HttpServletRequest request){
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             return new ResponseEntity<>(activityService.getAll(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -68,7 +68,7 @@ public class ActivityController {
     })
     @GetMapping(path ="/{id}/", produces = "application/json")
     public ResponseEntity<ActivityDTO> getActivityByID(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(activityService.get(id), HttpStatus.OK);
             } catch (NotFoundException e) {
@@ -97,7 +97,7 @@ public class ActivityController {
     })
     @PostMapping(path = "/", produces = "application/json")
     public ResponseEntity<ActivityDTO> createActivity(@RequestBody ActivityDTO activity, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(activityService.add(activity), HttpStatus.CREATED);
             } catch (NotFoundException e) {
@@ -126,7 +126,7 @@ public class ActivityController {
     })
     @PutMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<ActivityDTO> updateActivity(@PathVariable("id") long id, @RequestBody ActivityDTO activity, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(activityService.update(id, activity), HttpStatus.OK);
             } catch (NotFoundException e) {
@@ -155,7 +155,7 @@ public class ActivityController {
     })
     @DeleteMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<Void> deleteActivity(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             try{
                 activityService.delete(id);
                 return new ResponseEntity<>(HttpStatus.OK);
@@ -181,7 +181,7 @@ public class ActivityController {
     })
     @DeleteMapping("/")
     public ResponseEntity<Void> deleteAllActivities(HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             activityService.deleteAll();
             return new ResponseEntity<>(HttpStatus.OK);
         } else {

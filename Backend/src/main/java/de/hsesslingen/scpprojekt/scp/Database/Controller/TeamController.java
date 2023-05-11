@@ -55,7 +55,7 @@ public class TeamController {
                                         HttpServletRequest request){
         if (SAML2Functions.isLoggedIn(request)){
             try{
-                return new ResponseEntity<>(teamService.add(file,team), HttpStatus.OK);
+                return new ResponseEntity<>(teamService.add(file,team), HttpStatus.CREATED);
             }catch (NotFoundException e){
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

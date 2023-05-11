@@ -1,4 +1,4 @@
-package de.hsesslingen.scpprojekt.scp.Database.Service;
+package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.DTO.Converter.TeamConverter;
 import de.hsesslingen.scpprojekt.scp.DTO.TeamDTO;

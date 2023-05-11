@@ -1,6 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.API.Controller;
 
-import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.TeamMember;
@@ -56,7 +56,7 @@ public class APIController {
     })
     @GetMapping(path = "/TeamsForChallenges/", produces = "application/json")
     public ResponseEntity<List<Team>> getAllTeamsForChallenge(@RequestParam long ChallengeID, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)) {
+        if (SAML2Service.isLoggedIn(request)) {
             Optional<Challenge> challenge = challengeRepository.findById(ChallengeID);
             if (challenge.isPresent()) {
                 List<Team> teams = teamRepository.findAll();
@@ -92,7 +92,7 @@ public class APIController {
     })
     @DeleteMapping(path = "/TeamsChallenge/", produces = "application/json")
     public ResponseEntity<HttpStatus> deleteTeamsFromChallenge(@RequestParam long ChallengeID, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)) {
+        if (SAML2Service.isLoggedIn(request)) {
             Optional<Challenge> challenge = challengeRepository.findById(ChallengeID);
             if (challenge.isPresent()) {
                 List<Team> team = teamRepository.findAll();
@@ -126,7 +126,7 @@ public class APIController {
     })
     @GetMapping(path = "/MemberChallenges/{id}/", produces = "application/json")
     public ResponseEntity<List<TeamMember>> getTeamMembersForChallenge(@PathVariable("id") long ChallengeID, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)) {
+        if (SAML2Service.isLoggedIn(request)) {
             Optional<Challenge> challenge = challengeRepository.findById(ChallengeID);
             if (challenge.isPresent()) {
                 List<TeamMember> teams = teamMemberRepository.findAll();

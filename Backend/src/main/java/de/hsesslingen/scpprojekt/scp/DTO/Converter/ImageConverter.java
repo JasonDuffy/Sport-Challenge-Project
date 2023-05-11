@@ -2,7 +2,7 @@ package de.hsesslingen.scpprojekt.scp.DTO.Converter;
 
 import de.hsesslingen.scpprojekt.scp.DTO.ImageDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
-import de.hsesslingen.scpprojekt.scp.Database.Service.ImageStorageService;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ImageStorageService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

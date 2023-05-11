@@ -1,6 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
-import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.TeamMember;
@@ -60,7 +60,7 @@ public class TeamMemberController {
     })
     @PostMapping(path = "/",produces = "application/json")
     public ResponseEntity<TeamMember> addTeamMember(@RequestParam long TeamID, @RequestParam long MemberID, HttpServletRequest request){
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             try{
                 Optional<Member> memberOptional = memberRepository.findById(MemberID);
                 Optional<Team> teamOptional = teamRepository.findById(TeamID);
@@ -94,7 +94,7 @@ public class TeamMemberController {
     })
     @GetMapping(path = "/{id}/" , produces = "application/json")
     public ResponseEntity<List<TeamMember>> getAllTeamMembers(@PathVariable("id")long TeamID, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             Optional<Team> teamOptional = teamRepository.findById(TeamID);
             if(teamOptional.isPresent()){
                 List<TeamMember> teamMembers = teamMemberRepository.findAll();
@@ -130,7 +130,7 @@ public class TeamMemberController {
     })
     @DeleteMapping(path = "/{id}/",produces = "application/json")
     public ResponseEntity<HttpStatus> deleteATeamMember(@PathVariable("id") long ID,HttpServletRequest request){
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             Optional<TeamMember>teamData = teamMemberRepository.findById(ID);
             if(teamData.isPresent()) {
                 teamMemberRepository.deleteById(ID);

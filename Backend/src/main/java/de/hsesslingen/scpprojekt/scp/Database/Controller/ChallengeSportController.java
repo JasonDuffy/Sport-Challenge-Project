@@ -1,6 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
-import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
@@ -54,7 +54,7 @@ public class ChallengeSportController {
     })
     @GetMapping(path = "/{id}/" , produces = "application/json")
     public ResponseEntity<ChallengeSport> getChallengeSportById(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             Optional<ChallengeSport> challengeSportData = challengeSportRepository.findById(id);
             if (challengeSportData.isPresent()) {
                 return new ResponseEntity<>(challengeSportData.get(), HttpStatus.OK);
@@ -81,7 +81,7 @@ public class ChallengeSportController {
     })
     @GetMapping(path = "/" , produces = "application/json")
     public ResponseEntity<List<ChallengeSport>> getAllChallengeSports(HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             List<ChallengeSport> challengeSports = challengeSportRepository.findAll();
             return new ResponseEntity<>(challengeSports, HttpStatus.OK);
         } else {
@@ -108,7 +108,7 @@ public class ChallengeSportController {
     })
     @PostMapping(path = "/",produces = "application/json")
     public ResponseEntity<ChallengeSport>addChallengeSport(@RequestParam float factor, @RequestParam long sportId, @RequestParam long challengeId, HttpServletRequest request){
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             try {
                 Optional<Sport> foreignSport = sportRepository.findById(sportId);
                 Optional<Challenge> foreignChallenge = challengeRepository.findById(challengeId);
@@ -143,7 +143,7 @@ public class ChallengeSportController {
     })
     @DeleteMapping(path = "/{id}/")
     public ResponseEntity<Void> deleteChallengeSport(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             Optional<ChallengeSport> challengeSportData = challengeSportRepository.findById(id);
             if (challengeSportData.isPresent()){
                 challengeSportRepository.deleteById(id);
@@ -176,7 +176,7 @@ public class ChallengeSportController {
     })
     @PutMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<ChallengeSport> updateChallenge(@PathVariable("id") long id, @RequestParam float factor, @RequestParam long sportId, @RequestParam long challengeId, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             Optional<ChallengeSport> challengeSportData = challengeSportRepository.findById(id);
             Optional<Sport> foreignSportData = sportRepository.findById(sportId);
             Optional<Challenge> foreignChallengeData = challengeRepository.findById(challengeId);

@@ -1,0 +1,33 @@
+.team_member_container{
+    display: flex;
+}
+
+.team_member_content{
+}
+
+.member_available, .member_in_team{
+    overflow: scroll;
+    overflow-x: hidden;
+    height: 200px;
+    width: 300px;
+    border: 1px solid var(--doubleslash-text-grey);
+    border-radius: 5px;
+}
+
+.drag_over{
+    border: 3px dotted var(--doubleslash-text-grey);
+}
+
+.drag_member{
+    cursor: move;
+    font-size: 14px;
+    font-weight: bold;
+    background-color: white;
+    padding: 5px;
+    width: 90%;
+    margin: 0 auto;
+    margin-top: 10px;
+    text-align: center;
+    border: 1px solid var(--doubleslash-text-grey);
+    border-radius: 5px;
+}

@@ -1,11 +1,13 @@
 package de.hsesslingen.scpprojekt.scp.Database.Service;
 
+import de.hsesslingen.scpprojekt.scp.DTO.Converter.TeamConverter;
+import de.hsesslingen.scpprojekt.scp.DTO.TeamDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.ImageRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.TeamRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Service.Interface.TeamServiceInterface;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,74 +18,83 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class TeamService implements TeamServiceInterface {
+public class TeamService {
 
     @Autowired
     TeamRepository teamRepository;
     @Autowired
+    ChallengeService challengeService;
+    @Autowired
     ChallengeRepository challengeRepository;
     @Autowired
-    private  ImageStorageService imageStorageService;
+    ImageStorageService imageStorageService;
+    @Autowired
+    ImageRepository imageRepository;
+    @Autowired
+    TeamConverter teamConverter ;
 
-    @Override
-    public List<Team> getAll() {
-        return teamRepository.findAll();
+
+    public List<TeamDTO> getAll() {
+        List<Team> teamList = teamRepository.findAll();
+        return  teamConverter.convertEntityListToDtoList(teamList);
+
     }
 
-    @Override
-    public Team get(Long TeamID) throws NotFoundException {
+
+    public TeamDTO get(Long TeamID) throws NotFoundException {
         Optional<Team> team = teamRepository.findById(TeamID);
         if(team.isPresent()){
-            return team.get();
+            return  teamConverter.convertEntityToDto(team.get());
         }throw new NotFoundException("Team with ID " +TeamID+" is not present in DB.");
     }
 
-    @Override
-    public Team add(MultipartFile file, long ChallengeID, Team team) throws NotFoundException {
-        Optional<Challenge> challenge1 = challengeRepository.findById(ChallengeID);
-                if(challenge1.isPresent()) {
+
+    public TeamDTO add(MultipartFile file,TeamDTO teamDTO) throws NotFoundException {
                     try {
                         Image teamImage = imageStorageService.store(file);
-                        return teamRepository.save(new Team(team.getName(), teamImage, challenge1.get()));
+                        Team team = teamConverter.convertDtoToEntity(teamDTO);
+                        team.setImage(teamImage);
+                        Team savedTeam = teamRepository.save(team);
+                        return teamConverter.convertEntityToDto(savedTeam);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }
-
-                }throw  new NotFoundException("Challenge with ID " +ChallengeID+" is not present in DB.");
     }
 
 
-    @Override
-    public Team update(MultipartFile file, Long TeamID, long ChallengeID, Team team) throws NotFoundException {
-        Optional<Team> teamData = teamRepository.findById(TeamID);
-        Optional<Challenge> challengeData = challengeRepository.findById(ChallengeID);
-        if (challengeData.isPresent()){
-            if (teamData.isPresent()){
-                try {
-                    Image teamImage = imageStorageService.store(file);
-                    Team updatedTeam = teamData.get();
-                    updatedTeam.setName(team.getName());
-                    updatedTeam.setImage(teamImage);
-                    updatedTeam.setChallenge(challengeData.get());
 
-                    return teamRepository.save(updatedTeam);
+    public TeamDTO update(MultipartFile file, Long TeamID, TeamDTO team) throws NotFoundException {
+        Optional<Team> teamData = teamRepository.findById(TeamID);
+        Team convertedTeam = teamConverter.convertDtoToEntity(team);
+        Optional<Challenge> challengeData = challengeRepository.findById(team.getChallengeID());
+        if (teamData.isPresent()) {
+            if (challengeData.isPresent()) {
+                try {
+                    Team updatedTeam = teamData.get();
+                    Image teamImage = imageStorageService.store(file);
+
+                    updatedTeam.setName(convertedTeam.getName());
+                    updatedTeam.setImage(teamImage);
+                    updatedTeam.setChallenge(challengeService.get(team.getChallengeID()));
+
+                    Team savedTeam = teamRepository.save(updatedTeam);
+                    return teamConverter.convertEntityToDto(savedTeam);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
-                    }
-            }throw  new NotFoundException("Team with ID " +TeamID+" is not present in DB.");
-        }throw  new NotFoundException("Challenge with ID " +ChallengeID+" is not present in DB.");
-
+                }
+            }
+            throw new NotFoundException("Team with ID " + TeamID + " is not present in DB.");
+        }
+        throw new NotFoundException("Challenge with ID " + team.getChallengeID() + " is not present in DB.");
     }
 
-    @Override
+
     public void delete(Long TeamID) throws NotFoundException {
-        Optional<Team> teamData = teamRepository.findById(TeamID);
-        if (teamData.isPresent()){
-            teamRepository.deleteById(TeamID);
-        }throw  new NotFoundException("Team with ID " +TeamID+" is not present in DB.");
+        get(TeamID);
+        teamRepository.deleteById(TeamID);
 }
 
-    @Override
+
     public void deleteAll() {
         teamRepository.deleteAll();
     }

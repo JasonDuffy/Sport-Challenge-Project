@@ -1,13 +1,7 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.TeamRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Service.ImageStorageService;
-import de.hsesslingen.scpprojekt.scp.Database.Service.TeamMemberService;
+import de.hsesslingen.scpprojekt.scp.DTO.TeamDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Service.TeamService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,14 +12,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Rest controller for Teams
@@ -44,7 +36,6 @@ public class TeamController {
      * Rest API for creating a Team for a challenge
      *
      * @param file  Image that should be stored for the Team
-     * @param challengeID ID of the challenge where the team is in
      * @param team  team with the corresponding Data
      * @param request automatically filled by browser
      * @return 201 for success else 404 for mot found or 417 something went wrong
@@ -53,19 +44,18 @@ public class TeamController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Team successfully added",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Team.class))}),
+                            schema = @Schema(implementation = TeamDTO.class))}),
             @ApiResponse(responseCode = "417", description = "Something went wrong creating the Team", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "404", description = "Challenge not found", content = @Content)
     })
     @PostMapping(path = "/", consumes = "multipart/form-data", produces = "application/json")
-    public ResponseEntity<Team> addTeam(@RequestParam("file")MultipartFile file,
-                                        @RequestParam long challengeID,
-                                        @RequestPart("json") @Valid Team team,
+    public ResponseEntity<TeamDTO> addTeam(@RequestParam("file")MultipartFile file,
+                                        @RequestPart("json") @Valid TeamDTO team,
                                         HttpServletRequest request){
         if (SAML2Functions.isLoggedIn(request)){
             try{
-                return new ResponseEntity<>(teamService.add(file,challengeID,team), HttpStatus.OK);
+                return new ResponseEntity<>(teamService.add(file,team), HttpStatus.CREATED);
             }catch (NotFoundException e){
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -88,20 +78,19 @@ public class TeamController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Team successfully updated",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Team.class))}),
+                            schema = @Schema(implementation = TeamDTO.class))}),
             @ApiResponse(responseCode = "404", description = "Team not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "417", description = "Something went wrong updating the Team", content = @Content)
     })
     @PutMapping(path = "/{id}/",consumes = "multipart/form-data", produces = "application/json")
-    public ResponseEntity<Team> updateTeam(@RequestParam("file")MultipartFile file,
+    public ResponseEntity<TeamDTO> updateTeam(@RequestParam("file")MultipartFile file,
                                            @PathVariable("id") long TeamID,
-                                           @RequestParam long ChallengeID,
-                                           @RequestPart("json") @Valid Team team,
+                                           @RequestPart("json") @Valid TeamDTO team,
                                            HttpServletRequest request){
         if (SAML2Functions.isLoggedIn(request)){
            try{
-               return new ResponseEntity<>(teamService.update(file,TeamID, ChallengeID, team), HttpStatus.OK);
+               return new ResponseEntity<>(teamService.update(file,TeamID,team), HttpStatus.OK);
             }catch (NotFoundException e){
                System.out.println((e.getMessage()));
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -150,11 +139,11 @@ public class TeamController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Search successful",
                     content = {@Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = Challenge.class)))}),
+                            array = @ArraySchema(schema = @Schema(implementation = TeamDTO.class)))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @GetMapping(path = "/", produces = "application/json")
-    public ResponseEntity<List<Team>> getAllTeams(HttpServletRequest request) {
+    public ResponseEntity<List<TeamDTO>> getAllTeams(HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             return new ResponseEntity<>(teamService.getAll(),HttpStatus.OK);
         } else {
@@ -173,12 +162,12 @@ public class TeamController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Search successful",
                     content = {@Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = Challenge.class)))}),
+                            array = @ArraySchema(schema = @Schema(implementation = TeamDTO.class)))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "404", description = "Team not found in the challenge", content = @Content),
     })
     @GetMapping(path = "/{id}/", produces = "application/json")
-    public ResponseEntity<Team> getTeamByID(@PathVariable("id") long TeamID, HttpServletRequest request) {
+    public ResponseEntity<TeamDTO> getTeamByID(@PathVariable("id") long TeamID, HttpServletRequest request) {
         if (SAML2Functions.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(teamService.get(TeamID),HttpStatus.OK);

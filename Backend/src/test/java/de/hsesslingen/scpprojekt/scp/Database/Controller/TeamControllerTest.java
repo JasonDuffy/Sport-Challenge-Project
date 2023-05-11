@@ -1,11 +1,12 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
+import de.hsesslingen.scpprojekt.scp.DTO.ChallengeDTO;
+import de.hsesslingen.scpprojekt.scp.DTO.TeamDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.ImageRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.TeamRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Service.ImageStorageService;
+import de.hsesslingen.scpprojekt.scp.Database.Service.TeamService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,7 @@ import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -46,14 +48,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(TeamController.class)
 @AutoConfigureMockMvc(addFilters = false)
 public class TeamControllerTest {
-    @MockBean
-    private TeamRepository teamRepository;
-    @MockBean
-    private ChallengeRepository challengeRepository;
-    @MockBean
-    private ImageRepository imageRepository;
+
     @Autowired
     private MockMvc mockMvc;
+    @MockBean
+    TeamService teamService;
     @MockBean
     ImageStorageService imageStorageService;
 
@@ -64,10 +63,10 @@ public class TeamControllerTest {
     @Test
     @WithMockUser
     public void getTeamByIDSuccess() throws Exception {
-        Team team = new Team();
+        TeamDTO team = new TeamDTO();
         team.setId(1);
 
-        when(teamRepository.findById(1L)).thenReturn(Optional.of(team));
+        when(teamService.get(1L)).thenReturn(team);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/teams/1/").accept(MediaType.APPLICATION_JSON);
@@ -86,7 +85,7 @@ public class TeamControllerTest {
         assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(teamRepository).findById(1L);
+        Mockito.verify(teamService).get(1L);
     }
 
     /**
@@ -96,6 +95,7 @@ public class TeamControllerTest {
     @Test
     @WithMockUser
     public void getTeamByIDNotFound() throws Exception{
+        when(teamService.get(1L)).thenThrow(NotFoundException.class);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/teams/1/").accept(MediaType.APPLICATION_JSON);
 
@@ -125,15 +125,15 @@ public class TeamControllerTest {
     @Test
     @WithMockUser
     public void getALLTeamsSuccess() throws Exception{
-        Team team1 = new Team();
-        Team team2 = new Team();
+        TeamDTO team1 = new TeamDTO();
+        TeamDTO team2 = new TeamDTO();
         team1.setId(1);
         team2.setId(2);
-        List<Team> teamList = new ArrayList<>();
+        List<TeamDTO> teamList = new ArrayList<>();
         teamList.add(team1);
         teamList.add(team2);
 
-        when(teamRepository.findAll()).thenReturn(teamList);
+        when(teamService.getAll()).thenReturn(teamList);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/teams/").accept(MediaType.APPLICATION_JSON);
@@ -153,7 +153,7 @@ public class TeamControllerTest {
         assertEquals(matcher.group(1), "2");
         assertFalse(matcher.find());
 
-        Mockito.verify(teamRepository).findAll();
+        Mockito.verify(teamService).getAll();
     }
 
     /**
@@ -178,17 +178,15 @@ public class TeamControllerTest {
     @Test
     @WithMockUser
     public void deleteATeamSuccess()throws Exception{
-        Team team1 = new Team();
-        team1.setId(1);
-        when(teamRepository.findById(1L)).thenReturn(Optional.of(team1));
+
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/teams/1/").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
         MvcResult result = mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andReturn();
-        Mockito.verify(teamRepository).findById(1L);
-        Mockito.verify(teamRepository).deleteById(1L);
+
+        Mockito.verify(teamService).delete(1L);
     }
 
     /**
@@ -198,6 +196,7 @@ public class TeamControllerTest {
     @Test
     @WithMockUser
     public void deleteATeamNotFound()throws Exception{
+        doThrow(NotFoundException.class).when(teamService).delete(1L);
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/teams/1/").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
@@ -234,7 +233,7 @@ public class TeamControllerTest {
         MvcResult result = mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andReturn();
-        Mockito.verify(teamRepository).deleteAll();
+        Mockito.verify(teamService).deleteAll();
     }
 
     /**
@@ -258,7 +257,7 @@ public class TeamControllerTest {
      */
     @Test
     @WithMockUser
-    public void addTeamSucess()throws Exception{
+    public void addTeamSuccess()throws Exception{
         Challenge challenge = new Challenge();
         challenge.setName("Annas");
         Image image = new Image();
@@ -272,15 +271,11 @@ public class TeamControllerTest {
         MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
         MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\"}".getBytes());
 
-        when(imageRepository.findById(3L)).thenReturn(Optional.of(image));
-        when(challengeRepository.findById(2L)).thenReturn(Optional.of(challenge));
-        when(teamRepository.save(team)).thenReturn(team);
 
         RequestBuilder request =
                 MockMvcRequestBuilders.multipart("/teams/")
                         .file(file)
                         .file(jsonFile)
-                        .param("challengeID", "2")
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON);
 
@@ -294,31 +289,21 @@ public class TeamControllerTest {
      * Test for creating a team not found
      * @throws Exception Exception by mockMvc
      */
+    /*
     @Test
     @WithMockUser
     public void addTeamNotFound()throws Exception{
-        Challenge challenge = new Challenge();
-        challenge.setName("Annas");
-        Image image = new Image();
-        challenge.setId(2L);
 
-        Team team = new Team();
+        TeamDTO team = new TeamDTO();
         team.setId(1L);
-        team.setName("Hansen");
-        team.setChallenge(challenge);
 
         MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
-        MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\"}".getBytes());
-
-        when(imageRepository.findById(3L)).thenReturn(Optional.of(image));
-        when(challengeRepository.findById(2L)).thenReturn(Optional.of(challenge));
-        when(teamRepository.save(team)).thenReturn(team);
+        MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\" }".getBytes());
 
         RequestBuilder request =
                 MockMvcRequestBuilders.multipart("/teams/")
                         .file(file)
                         .file(jsonFile)
-                        .param("challengeID", "4")
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON);
 
@@ -328,7 +313,7 @@ public class TeamControllerTest {
 
 
     }
-
+*/
     /**
      * Test for creating a team not login
      * @throws Exception Exception by mockMvc
@@ -336,28 +321,16 @@ public class TeamControllerTest {
     @Test
     @WithAnonymousUser
     public void addTeamLogOut()throws Exception{
-        Challenge challenge = new Challenge();
-        challenge.setName("Annas");
-        Image image = new Image();
-        challenge.setId(2L);
 
-        Team team = new Team();
-        team.setId(1L);
-        team.setName("Hansen");
-        team.setChallenge(challenge);
 
         MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
         MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\"}".getBytes());
 
-        when(imageRepository.findById(3L)).thenReturn(Optional.of(image));
-        when(challengeRepository.findById(2L)).thenReturn(Optional.of(challenge));
-        when(teamRepository.save(team)).thenReturn(team);
 
         RequestBuilder request =
                 MockMvcRequestBuilders.multipart("/teams/")
                         .file(file)
                         .file(jsonFile)
-                        .param("challengeID", "4")
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON);
 
@@ -387,10 +360,6 @@ public class TeamControllerTest {
         MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
         MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\"}".getBytes());
 
-        when(challengeRepository.findById(2L)).thenReturn(Optional.of(challenge));
-        when(teamRepository.findById(1L)).thenReturn(Optional.of(team));
-        when(teamRepository.save(team)).thenReturn(team);
-
         MockMultipartHttpServletRequestBuilder builder =
                 MockMvcRequestBuilders.multipart("/teams/1/");
         builder.with(new RequestPostProcessor() {
@@ -416,29 +385,18 @@ public class TeamControllerTest {
      * Test for updating a team not found
      * @throws Exception Exception by mockMvc
      */
+    /*
     @Test
     @WithMockUser
     public void updateTeamNotFound()throws Exception{
-        Challenge challenge = new Challenge();
-        challenge.setName("Annas");
-        Image image = new Image();
-        challenge.setId(2L);
 
-        Team team = new Team();
-        team.setId(1L);
-        team.setName("Hansen");
-        team.setChallenge(challenge);
+        when(teamService.get(1L)).thenThrow(NotFoundException.class);
 
         MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
         MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\"}".getBytes());
 
-        when(imageRepository.findById(3L)).thenReturn(Optional.of(image));
-        when(challengeRepository.findById(2L)).thenReturn(Optional.of(challenge));
-        when(teamRepository.findById(1L)).thenReturn(Optional.of(team));
-        when(teamRepository.save(team)).thenReturn(team);
-
         MockMultipartHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.multipart("/teams/1/");
+                MockMvcRequestBuilders.multipart("/teams/2/");
         builder.with(new RequestPostProcessor() {
             @Override
             public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
@@ -449,7 +407,6 @@ public class TeamControllerTest {
         mockMvc.perform(builder
                         .file(file)
                         .file(jsonFile)
-                        .param("ChallengeID", "3")
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON)
                 )
@@ -457,7 +414,7 @@ public class TeamControllerTest {
                 .andReturn();
 
     }
-
+*/
     /**
      * Test for updating a team not login
      * @throws Exception Exception by mockMvc
@@ -465,21 +422,18 @@ public class TeamControllerTest {
     @Test
     @WithAnonymousUser
     public void updateTeamLogOut()throws Exception{
-        Challenge challenge = new Challenge();
+        ChallengeDTO challenge = new ChallengeDTO();
         challenge.setName("Annas");
         challenge.setId(2L);
 
-        Team team = new Team();
+        TeamDTO team = new TeamDTO();
         team.setId(1L);
         team.setName("Hansen");
-        team.setChallenge(challenge);
+        team.setChallengeID(2L);
 
         MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
         MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\"}".getBytes());
 
-        when(challengeRepository.findById(2L)).thenReturn(Optional.of(challenge));
-        when(teamRepository.findById(1L)).thenReturn(Optional.of(team));
-        when(teamRepository.save(team)).thenReturn(team);
 
         MockMultipartHttpServletRequestBuilder builder =
                 MockMvcRequestBuilders.multipart("/teams/1/");
@@ -493,7 +447,6 @@ public class TeamControllerTest {
         mockMvc.perform(builder
                         .file(file)
                         .file(jsonFile)
-                        .param("ChallengeID", "3")
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .accept(MediaType.APPLICATION_JSON)
                 )

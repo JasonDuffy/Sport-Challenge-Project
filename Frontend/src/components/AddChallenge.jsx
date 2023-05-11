@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import { useState } from "react";
 import Button from "./Button";
 import "./css/AddChallenge.css";
 import "./css/Form.css";
@@ -9,9 +8,11 @@ import "./css/Form.css";
  *
  * @author Robin Hackh
  */
+
 class AddChallenge extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
+
     //state for the input elements
     this.state = {
       challengeName: "",
@@ -28,6 +29,7 @@ class AddChallenge extends Component {
     this.challengeDistanceGoalChange = this.challengeDistanceGoalChange.bind(this);
     this.challengeStartDateChange = this.challengeStartDateChange.bind(this);
     this.challengeEndDateChange = this.challengeEndDateChange.bind(this);
+    this.clearAllInputs = this.clearAllInputs.bind(this);
     this.submitHandle = this.submitHandle.bind(this);
   }
 
@@ -41,7 +43,7 @@ class AddChallenge extends Component {
   challengeDistanceGoalChange(event) {
     if (event.target.value >= 1) {
       this.setState({ challengeDistanceGoal: event.target.value });
-    } else if (event.target.value == 0) {
+    } else if (event.target.value === 0) {
       this.setState({ challengeDistanceGoal: 1 });
     }
   }
@@ -53,12 +55,38 @@ class AddChallenge extends Component {
     this.setState({ challengeEndDate: event.target.value });
   }
 
-  async submitHandle(event) {
+  showInputErrorMessage(message) {
+    const infoContainerEl = document.getElementById("form_info_container");
+    const infoMessageEl = document.getElementById("form_info_message");
+    infoContainerEl.classList.add("error");
+    infoMessageEl.innerText = message;
+    window.scrollTo(0, 0);
+  }
+
+  clearAllInputs(){
+    const challengeImageEl = document.getElementById("challenge_image");
+    const sportCheckboxEl = document.getElementsByClassName("form_sport_checkbox");
+
+    challengeImageEl.value = "";
+    this.setState({ challengeName: "" });
+    this.setState({ challengeDescription: "" });
+    this.setState({ challengeDistanceGoal: 1 });
+    this.setState({ challengeStartDate: "" });
+    this.setState({ challengeEndDate: "" });
+
+    for (const element of sportCheckboxEl) {
+      element.checked = false;
+    }
+  }
+
+  submitHandle(event) {
     event.preventDefault();
 
     const challengeImageEl = document.getElementById("challenge_image");
     const sportCheckboxEl = document.getElementsByClassName("form_sport_checkbox");
     const sportNumberEl = document.getElementsByClassName("form_sport_number");
+    const infoContainerEl = document.getElementById("form_info_container");
+    const infoMessageEl = document.getElementById("form_info_message");
     const dateOptions = { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" };
 
     let startDate = new Date(this.state.challengeStartDate);
@@ -68,17 +96,23 @@ class AddChallenge extends Component {
     let sportCheckedId = [];
     let sportCheckedFactor = [];
 
-    if (this.state.challengeName == "") {
-      alert("Bitte gebe deiner Challenge einen Namen!");
+    infoContainerEl.classList.remove("error");
+    infoContainerEl.classList.remove("success");
+
+    if (this.state.challengeName === "") {
+      this.showInputErrorMessage("Bitte gebe deiner Challenge einen Namen!");
       return;
     }
 
     //Checks if the file is null and smaller than 10MB
     if (challengeImageEl.files[0] == null) {
-      alert("Bitte lade für deine Challenge ein Bild hoch!");
+      this.showInputErrorMessage("Bitte lade für deine Challenge ein Bild hoch!");
       return;
-    }else if(challengeImageEl.files[0].size > 10000000){
-      alert("Das Bild darf nicht größer als 10Mb sein!");
+    } else if (challengeImageEl.files[0].size > 10000000) {
+      this.showInputErrorMessage("Das Bild darf nicht größer als 10Mb sein!");
+      return;
+    } else if (/^image/.test(challengeImageEl.files[0].type) === false) {
+      this.showInputErrorMessage("Es sind nur Bilder zum hochladen erlaubt!");
       return;
     }
 
@@ -90,13 +124,13 @@ class AddChallenge extends Component {
     }
 
     //Checks if min one Sport is checked
-    if (sportCheckedId.length == 0) {
-      alert("Du musst mindestens eine Sportart für deine Challenge auswählen");
+    if (sportCheckedId.length === 0) {
+      this.showInputErrorMessage("Du musst mindestens eine Sportart für deine Challenge auswählen!");
       return;
     }
 
     //Creates the JSON object corresponding to the Challenge object in the Backend
-    let challengeJsonObj = new Object();
+    let challengeJsonObj = {};
     challengeJsonObj.name = this.state.challengeName;
     challengeJsonObj.description = this.state.challengeDescription;
     challengeJsonObj.startDate = startDateFormat;
@@ -111,13 +145,28 @@ class AddChallenge extends Component {
     fetchBodyData.append("json", JSON.stringify(challengeJsonObj));
 
     //Gives data to the Backend and writes it into the DB
-    let response = await fetch("http://localhost:8081/challenges/", { method: "POST", body: fetchBodyData, credentials: "include" });
-    let resData = await response.json();
-    console.log(resData);
+    fetch("http://localhost:8081/challenges/", { method: "POST", body: fetchBodyData, credentials: "include" })
+      .then((response) => {
+        if (response.ok) {
+          response.json().then((resData => {
+            infoContainerEl.classList.add("success");
+            infoMessageEl.innerHTML = "Die Challenge wurde erolgreich erstellt! Wenn du möchtests kannst du eine weitere Challenge erstellen oder dir deine erstellte Challenge <a href=\"/Challenge/" + resData.id + "\">hier</a> ansehen";
+            window.scrollTo(0, 0);
+            this.clearAllInputs();
+          }));
+        } else {
+          this.showInputErrorMessage(
+            "Beim erstellen der Challenge ist etwas schief gelaufen: " + response.status + " " + response.statusText + "!"
+          );
+        }
+      })
+      .catch((error) => {
+        this.showInputErrorMessage("Beim erstellen der Challenge ist etwas schief gelaufen: " + error + "!");
+      });
   }
 
   async componentDidMount() {
-    //Loads all the Sports and writes them in to the table below 
+    //Loads all the Sports and writes them in to the table below
     let response = await fetch("http://localhost:8081/sports/", { method: "GET", credentials: "include" });
     let resData = await response.json();
     this.setState({ allSport: resData });
@@ -130,6 +179,9 @@ class AddChallenge extends Component {
           <div className="section_content">
             <div className="heading_underline_center mg_b_10">
               <span className="underline_center">Challenge hinzufügen</span>
+            </div>
+            <div id="form_info_container" className="pd_1 mg_b_2">
+              <span id="form_info_message"></span>
             </div>
             <div className="form_container">
               <form onSubmit={this.submitHandle}>
@@ -153,7 +205,7 @@ class AddChallenge extends Component {
                     Das Bild sollte quadratisch sein.
                   </span>
                   <br />
-                  <input id="challenge_image" className="mg_t_2" type="file"></input>
+                  <input id="challenge_image" className="mg_t_2" type="file" accept="image/*"></input>
                 </div>
                 <div className="form_input_container pd_1 mg_t_2">
                   <h2>Beschreibe deine Challenge</h2>
@@ -198,8 +250,9 @@ class AddChallenge extends Component {
                               className="form_sport_number"
                               data-sport-id={item.id}
                               type="number"
+                              step="0.1"
                               defaultValue={item.factor}
-                              min={1}
+                              min={1.0}
                             ></input>
                           </td>
                           <td>

@@ -1,3 +1,5 @@
+/*Author: Robin Hackh*/
+
 .form_input_container {
     background-color: var(--doubleslash-lightblue);
 }
@@ -94,4 +96,30 @@ select{
 
 select:focus{
     outline: 0;
+}
+
+#form_info_container{
+    display: none;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+}
+
+#form_info_message > a{
+    color: #467834;
+    text-decoration: underline;
+}
+
+.error{
+    display: block !important;
+    background-color: #ffeeee;
+    color: #d2253b;
+    border: 1px solid #d2253b;
+}
+
+.success{
+    display: block !important;
+    background-color: #e7ffe7;
+    color: #64ac4a;
+    border: 1px solid #64ac4a;
 }

@@ -2,7 +2,7 @@ package de.hsesslingen.scpprojekt.scp.DTO.Converter;
 
 import de.hsesslingen.scpprojekt.scp.DTO.ChallengeDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
-import de.hsesslingen.scpprojekt.scp.Database.Service.ChallengeService;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ImageStorageService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;

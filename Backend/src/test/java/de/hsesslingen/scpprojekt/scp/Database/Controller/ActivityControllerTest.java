@@ -171,7 +171,6 @@ public class ActivityControllerTest {
     @WithMockUser
     public void createActivityTestSuccess() throws Exception {
         ActivityDTO a1 = new ActivityDTO();
-        a1.setId(1);
         a1.setChallengeSportID(2L);
         a1.setMemberID(0L);
 
@@ -192,7 +191,6 @@ public class ActivityControllerTest {
 
         ActivityDTO result = new ObjectMapper().readValue(content, ActivityDTO.class);
 
-        assertEquals(result.getId(), 1L);
         assertEquals(result.getChallengeSportID(), 2L);
         assertEquals(result.getMemberID(), 0L);
 

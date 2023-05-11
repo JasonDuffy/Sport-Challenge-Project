@@ -170,7 +170,6 @@ public class BonusControllerTest {
     @WithMockUser
     public void createBonusTestSuccess() throws Exception {
         BonusDTO b1 = new BonusDTO();
-        b1.setId(1);
         b1.setChallengeSportID(2L);
 
         when(bonusService.add(any(BonusDTO.class))).thenReturn(b1);
@@ -189,7 +188,6 @@ public class BonusControllerTest {
 
         BonusDTO result = new ObjectMapper().readValue(content, BonusDTO.class);
 
-        assertEquals(result.getId(), 1L);
         assertEquals(result.getChallengeSportID(), 2L);
 
         Mockito.verify(bonusService).add(any(BonusDTO.class));

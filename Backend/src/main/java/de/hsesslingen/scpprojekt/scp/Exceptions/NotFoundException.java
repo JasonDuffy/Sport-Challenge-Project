@@ -10,4 +10,3 @@ public class NotFoundException extends Exception{
         super(error);
     }
 }
-

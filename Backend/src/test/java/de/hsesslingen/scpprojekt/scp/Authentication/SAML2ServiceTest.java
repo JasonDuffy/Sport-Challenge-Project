@@ -1,6 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.Authentication;
 
-import de.hsesslingen.scpprojekt.scp.Authentication.Controller.SAML2Controller;
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 
 @ActiveProfiles("test")
 @SpringBootTest
-public class SAML2FunctionsTest {
+public class SAML2ServiceTest {
     @Mock
     private SecurityContext securityContextMock;
 
@@ -50,7 +50,7 @@ public class SAML2FunctionsTest {
         SecurityContextHolder.setContext(securityContextMock);
 
         // Call getCurrentSAMLUser() method and verify that the returned SAML2User object has the correct data
-        SAML2User result = new SAML2Functions().getCurrentSAMLUser();
+        SAML2User result = new SAML2Service().getCurrentSAMLUser();
         assertEquals("max@example.com", result.getEmail());
         assertEquals("Max Emilian", result.getFirstName());
         assertEquals("Mustermann", result.getLastName());
@@ -73,7 +73,7 @@ public class SAML2FunctionsTest {
         sess.setAttribute("SPRING_SECURITY_CONTEXT", "SAML2");
         req.setSession(sess);
 
-        assertTrue(SAML2Functions.isLoggedIn(req));
+        assertTrue(SAML2Service.isLoggedIn(req));
     }
 
     /**
@@ -85,7 +85,7 @@ public class SAML2FunctionsTest {
         MockHttpSession sess = null;
         req.setSession(sess);
 
-        assertFalse(SAML2Functions.isLoggedIn(req));
+        assertFalse(SAML2Service.isLoggedIn(req));
     }
 
     /**
@@ -98,6 +98,6 @@ public class SAML2FunctionsTest {
         sess.setAttribute("SPRING_SECURITY_CONTEXT", null);
         req.setSession(sess);
 
-        assertFalse(SAML2Functions.isLoggedIn(req));
+        assertFalse(SAML2Service.isLoggedIn(req));
     }
 }

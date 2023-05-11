@@ -65,7 +65,7 @@ public class ChallengeController {
     })
     @GetMapping(path = "/{id}/" , produces = "application/json")
     public ResponseEntity<Challenge> getChallengeById(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             Optional<Challenge> challengeData = challengeRepository.findById(id);
             if (challengeData.isPresent()) {
                 return new ResponseEntity<>(challengeData.get(), HttpStatus.OK);
@@ -93,7 +93,7 @@ public class ChallengeController {
     })
     @GetMapping(path = "/", produces = "application/json")
     public ResponseEntity<List<Challenge>> getChallenges(@Parameter(description = "Which challenges should be returned. \"current\" for only current challenges, \"past\" for only past and anything else for all") @RequestParam String type, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             List<Challenge> challenges = challengeRepository.findAll();
             switch(type){
                 case "current":
@@ -203,7 +203,7 @@ public class ChallengeController {
     })
     @PutMapping(path = "/{id}/",consumes = "multipart/form-data", produces = "application/json")
     public ResponseEntity<Challenge> updateChallenge(@RequestParam("file") MultipartFile file, @PathVariable("id") long ID,  @RequestPart("json") @Valid Challenge challenge, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             Optional<Challenge> challengeData = challengeRepository.findById(ID);
             if (challengeData.isPresent()) {
                 try{
@@ -243,7 +243,7 @@ public class ChallengeController {
     })
     @DeleteMapping(path = "/{id}/",produces = "application/json")
     public ResponseEntity<HttpStatus> deleteChallenge(@PathVariable("id") long ID,HttpServletRequest request){
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             Optional<Challenge>challengeData = challengeRepository.findById(ID);
             if(challengeData.isPresent()) {
                 challengeRepository.deleteById(ID);

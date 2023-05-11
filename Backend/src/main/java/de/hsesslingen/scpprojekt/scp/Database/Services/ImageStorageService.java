@@ -1,4 +1,4 @@
-package de.hsesslingen.scpprojekt.scp.Database.Service;
+package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.DTO.Converter.ImageConverter;
 import de.hsesslingen.scpprojekt.scp.DTO.ImageDTO;
@@ -10,15 +10,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.util.Optional;
 import java.util.stream.Stream;
+import java.io.InputStream;
 
 
 /**
  * Service functions for the Image class
  *
- * @author Robin Hackh,Tom Nguyen Dinh
+ * @author Robin Hackh, Tom Nguyen Dinh, Jason Patrick Duffy
  */
 @Service
 public class ImageStorageService {
@@ -34,6 +36,9 @@ public class ImageStorageService {
      * @throws IOException
      */
     public Image store(MultipartFile file) throws IOException {
+        if(!checkImage(file))
+            throw new IOException(file.getOriginalFilename() + " is not an image!");
+
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
         Image image = new Image(fileName, file.getContentType(), file.getBytes());
 
@@ -47,4 +52,16 @@ public class ImageStorageService {
         }throw new NotFoundException("Image with ID " +ImageID+" is not present in DB.");
     }
 
+    /**
+     * Tests if given file is an image
+     * @param file File to be tested
+     * @return True if file is an image, false otherwise
+     */
+    public Boolean checkImage(MultipartFile file){
+        try (InputStream input = file.getInputStream()){
+            return ImageIO.read(input) != null;
+        } catch (Exception e){
+            return false;
+        }
+    }
 }

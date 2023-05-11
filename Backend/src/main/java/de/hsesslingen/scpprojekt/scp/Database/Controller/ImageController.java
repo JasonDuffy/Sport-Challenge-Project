@@ -1,9 +1,9 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
-import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ImageRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Service.ImageStorageService;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ImageStorageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -48,7 +48,7 @@ public class ImageController {
     })
     @PostMapping(path = "/", consumes = "multipart/form-data")
     public ResponseEntity<HttpStatus> uploadImage(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             try {
                 imageStorageService.store(file);
 
@@ -78,7 +78,7 @@ public class ImageController {
     })
     @GetMapping(path = "/{id}/" , produces = "application/json")
     public ResponseEntity<Image> getImageById(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             Optional<Image> imageData = imageRepository.findById(id);
             if (imageData.isPresent()) {
                 return new ResponseEntity<>(imageData.get(), HttpStatus.OK);
@@ -109,7 +109,7 @@ public class ImageController {
     })
     @PutMapping(path= "/{id}/",consumes = "multipart/form-data",produces= "application/json")
     public ResponseEntity<Image> updateImage(@PathVariable("id") long id, @RequestParam("file") MultipartFile file, HttpServletRequest request){
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             Optional<Image> imageData = imageRepository.findById(id);
             if(imageData.isPresent()){
             try {

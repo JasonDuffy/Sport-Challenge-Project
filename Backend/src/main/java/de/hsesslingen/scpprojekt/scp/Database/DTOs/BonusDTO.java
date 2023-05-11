@@ -1,6 +1,7 @@
 package de.hsesslingen.scpprojekt.scp.Database.DTOs;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +12,7 @@ import java.time.LocalDateTime;
  * @author Jason Patrick DUffy
  */
 public class BonusDTO {
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
     private Long challengeSportID;
     private LocalDateTime startDate;

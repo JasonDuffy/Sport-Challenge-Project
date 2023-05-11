@@ -1,6 +1,7 @@
 package de.hsesslingen.scpprojekt.scp.Database.DTOs;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDateTime;
 
@@ -8,9 +9,10 @@ import java.time.LocalDateTime;
  * DTO of the Activity entity.
  * Only holds foreign keys and not whole objects.
  *
- * @author Jason Patrick DUffy
+ * @author Jason Patrick Duffy
  */
 public class ActivityDTO  {
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     long id;
     long challengeSportID;
     long memberID;

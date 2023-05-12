@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 /**
+ * Service of the Challenge
  *
+ * @auth Tom Nguyen Dinh
  */
 @Service
 public class ChallengeService {
@@ -27,6 +29,14 @@ public class ChallengeService {
 
     }
 */
+
+    /**
+     * Get Challenge with the ID
+     *
+     * @param ChallengeID ID of Challenge  to be searched
+     * @return Challenge
+     * @throws NotFoundException Not found Challenge
+     */
     public Challenge get(Long ChallengeID) throws NotFoundException {
         Optional<Challenge> challenge = challengeRepository.findById(ChallengeID);
         if(challenge.isPresent()){

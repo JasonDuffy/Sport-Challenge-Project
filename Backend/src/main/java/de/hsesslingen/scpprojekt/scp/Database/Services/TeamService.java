@@ -17,6 +17,11 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Service of Team entity
+ *
+ * @auth Tom Nguyen Dinh
+ */
 @Service
 public class TeamService {
 
@@ -33,14 +38,24 @@ public class TeamService {
     @Autowired
     TeamConverter teamConverter ;
 
-
+    /**
+     * Returns all Teams in DB
+     *
+     * @return List of all Teams in DB
+     */
     public List<TeamDTO> getAll() {
         List<Team> teamList = teamRepository.findAll();
         return  teamConverter.convertEntityListToDtoList(teamList);
 
     }
 
-
+    /**
+     * Returns Team with given ID in DB
+     *
+     * @param TeamID id of desired team
+     * @return Team of ID
+     * @throws NotFoundException Team can not be found
+     */
     public TeamDTO get(Long TeamID) throws NotFoundException {
         Optional<Team> team = teamRepository.findById(TeamID);
         if(team.isPresent()){
@@ -49,6 +64,14 @@ public class TeamService {
     }
 
 
+    /**
+     * Add Team to DB
+     *
+     * @param file Image for the Team
+     * @param teamDTO object to be added to DB
+     * @return added Team
+     * @throws NotFoundException
+     */
     public TeamDTO add(MultipartFile file,TeamDTO teamDTO) throws NotFoundException {
                     try {
                         Image teamImage = imageStorageService.store(file);
@@ -61,14 +84,20 @@ public class TeamService {
                     }
     }
 
-
+    /**
+     * Updates a Team
+     *
+     * @param file updated Image
+     * @param TeamID Id of Team which should be updated
+     * @param team team object with updated values
+     * @return Updated Team
+     * @throws NotFoundException not found Team or Challenge
+     */
 
     public TeamDTO update(MultipartFile file, Long TeamID, TeamDTO team) throws NotFoundException {
         Optional<Team> teamData = teamRepository.findById(TeamID);
         Team convertedTeam = teamConverter.convertDtoToEntity(team);
-        Optional<Challenge> challengeData = challengeRepository.findById(team.getChallengeID());
         if (teamData.isPresent()) {
-            if (challengeData.isPresent()) {
                 try {
                     Team updatedTeam = teamData.get();
                     Image teamImage = imageStorageService.store(file);
@@ -84,17 +113,24 @@ public class TeamService {
                 }
             }
             throw new NotFoundException("Team with ID " + TeamID + " is not present in DB.");
-        }
-        throw new NotFoundException("Challenge with ID " + team.getChallengeID() + " is not present in DB.");
+
     }
 
+    /**
+     * Deletes a Team
+     *
+     * @param TeamID ID of team to be deleted
+     * @throws NotFoundException Not found Team
+     */
 
     public void delete(Long TeamID) throws NotFoundException {
         get(TeamID);
         teamRepository.deleteById(TeamID);
 }
 
-
+    /**
+     * Delete all Teams
+     */
     public void deleteAll() {
         teamRepository.deleteAll();
     }

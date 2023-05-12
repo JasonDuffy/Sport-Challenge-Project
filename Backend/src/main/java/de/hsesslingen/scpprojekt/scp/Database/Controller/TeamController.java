@@ -170,7 +170,7 @@ public class TeamController {
     public ResponseEntity<TeamDTO> getTeamByID(@PathVariable("id") long TeamID, HttpServletRequest request) {
         if (SAML2Service.isLoggedIn(request)){
             try{
-                return new ResponseEntity<>(teamService.get(TeamID),HttpStatus.OK);
+                return new ResponseEntity<>(teamService.getDTO(TeamID),HttpStatus.OK);
             } catch (NotFoundException e) {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

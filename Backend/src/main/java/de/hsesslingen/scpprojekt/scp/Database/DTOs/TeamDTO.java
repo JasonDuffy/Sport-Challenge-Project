@@ -2,6 +2,7 @@ package de.hsesslingen.scpprojekt.scp.Database.DTOs;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
 
 public class TeamDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

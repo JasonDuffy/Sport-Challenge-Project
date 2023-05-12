@@ -48,7 +48,7 @@ public class MemberService {
      * @param member Member object to be added to DB
      * @return Added member object
      */
-    public Member add(Member member) throws NotFoundException {
+    public Member add(Member member) {
         return memberRepository.save(new Member(member.getEmail(), member.getFirstName(), member.getLastName(), member.getImage()));
     }
 

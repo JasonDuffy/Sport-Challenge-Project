@@ -1,7 +1,7 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
-import de.hsesslingen.scpprojekt.scp.DTO.TeamDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Services.TeamService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;

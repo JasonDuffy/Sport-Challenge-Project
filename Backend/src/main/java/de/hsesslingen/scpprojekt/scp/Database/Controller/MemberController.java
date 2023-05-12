@@ -69,18 +69,12 @@ public class MemberController {
             @ApiResponse(responseCode = "201", description = "Member successfully added",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = Member.class))}),
-            @ApiResponse(responseCode = "500", description = "Something went wrong creating the new member", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PostMapping(path = "/", produces = "application/json")
     public ResponseEntity<Member> createMember(@RequestBody Member member, HttpServletRequest request) {
         if (SAML2Service.isLoggedIn(request)){
-            try{
-                return new ResponseEntity<>(memberService.add(member), HttpStatus.CREATED);
-            } catch (NotFoundException e) {
-                System.out.println(e.getMessage());
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
+            return new ResponseEntity<>(memberService.add(member), HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

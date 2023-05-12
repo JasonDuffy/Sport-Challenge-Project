@@ -1,6 +1,6 @@
-package de.hsesslingen.scpprojekt.scp.DTO.Converter;
+package de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter;
 
-import de.hsesslingen.scpprojekt.scp.DTO.ImageDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ImageDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ImageStorageService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;

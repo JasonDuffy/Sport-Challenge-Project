@@ -1,4 +1,4 @@
-package de.hsesslingen.scpprojekt.scp.DTO;
+package de.hsesslingen.scpprojekt.scp.Database.DTOs;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;

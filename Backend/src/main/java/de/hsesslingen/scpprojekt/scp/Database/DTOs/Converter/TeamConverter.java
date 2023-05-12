@@ -1,6 +1,6 @@
-package de.hsesslingen.scpprojekt.scp.DTO.Converter;
+package de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter;
 
-import de.hsesslingen.scpprojekt.scp.DTO.TeamDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ImageStorageService;

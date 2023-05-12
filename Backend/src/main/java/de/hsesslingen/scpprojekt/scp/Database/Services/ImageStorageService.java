@@ -1,7 +1,5 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
-import de.hsesslingen.scpprojekt.scp.DTO.Converter.ImageConverter;
-import de.hsesslingen.scpprojekt.scp.DTO.ImageDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ImageRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
@@ -13,7 +11,6 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.imageio.ImageIO;
 import java.io.IOException;
 import java.util.Optional;
-import java.util.stream.Stream;
 import java.io.InputStream;
 
 

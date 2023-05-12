@@ -1,8 +1,11 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.MemberRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Services.MemberService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +31,14 @@ import java.util.regex.Pattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
  *  MemberController Tests
  *
- * @author Tom Nguyen Dinh
+ * @author Tom Nguyen Dinh, Jason Patrick Duffy
  */
 @ActiveProfiles("test")
 @WebMvcTest(MemberController.class)
@@ -42,7 +46,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class MemberControllerTest {
 
     @MockBean
-    MemberRepository memberRepository;
+    MemberService memberService;
     @Autowired
     private MockMvc mockMvc;
 
@@ -58,7 +62,7 @@ public class MemberControllerTest {
         member.setFirstName("Max");
         member.setLastName("Mustermann");
 
-        when(memberRepository.save(any(Member.class))).thenReturn(member);
+        when(memberService.add(any(Member.class))).thenReturn(member);
         RequestBuilder request = MockMvcRequestBuilders
                 .post("/members/")
                 .content(new ObjectMapper().writeValueAsString(member))
@@ -77,43 +81,22 @@ public class MemberControllerTest {
         assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(memberRepository).save(any(Member.class));
+        Mockito.verify(memberService).add(any(Member.class));
     }
 
-    /**
-     * Test for InternalServerError
-     * @throws Exception Exception by mockMvc
-     */
-    @Test
-    @WithMockUser
-    public void addmemberSomethingWentWrong()throws Exception{
-        Member member  = new Member();
-
-        when(memberRepository.save(any(Member.class))).thenThrow(HttpServerErrorException.InternalServerError.class);
-        RequestBuilder request = MockMvcRequestBuilders
-                .post("/members/")
-                .content(new ObjectMapper().writeValueAsString(member))
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON);
-
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isInternalServerError())
-                .andReturn();
-
-    }
     /**
      *Test for  creating a member with not been login
      * @throws Exception Exception by mockMvc
      */
     @Test
     @WithAnonymousUser
-    public void addMemberNogLogin()throws Exception{
+    public void addMemberNoLogin()throws Exception{
         Member member = new Member();
         member.setId(1);
         member.setFirstName("Max");
          member.setLastName("Mustermann");
 
-        when(memberRepository.save(any(Member.class))).thenReturn(member);
+        when(memberService.add(any(Member.class))).thenReturn(member);
         RequestBuilder request = MockMvcRequestBuilders
                 .post("/members/")
                 .content(new ObjectMapper().writeValueAsString(member))
@@ -132,13 +115,13 @@ public class MemberControllerTest {
 
     @Test
     @WithMockUser
-    public void getmemberByIDSuccess() throws Exception{
+    public void getMemberByIDSuccess() throws Exception{
         Member member = new Member();
         member.setId(1L);
         member.setFirstName("Max");
          member.setLastName("Mustermann");
 
-        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
+        when(memberService.get(1L)).thenReturn(member);
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/members/1/").accept(MediaType.APPLICATION_JSON);
 
@@ -155,7 +138,7 @@ public class MemberControllerTest {
         assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(memberRepository).findById(1L);
+        Mockito.verify(memberService).get(1L);
     }
 
     /**
@@ -164,13 +147,9 @@ public class MemberControllerTest {
      */
     @Test
     @WithMockUser
-    public void getmemberByIDNotFound() throws Exception{
-        Member member = new Member();
-        member.setId(1L);
-        member.setFirstName("Max");
-         member.setLastName("Mustermann");
+    public void getMemberByIDNotFound() throws Exception{
+        when(memberService.get(4L)).thenThrow(NotFoundException.class);
 
-        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/members/4/").accept(MediaType.APPLICATION_JSON);
 
@@ -184,13 +163,7 @@ public class MemberControllerTest {
      */
     @Test
     @WithAnonymousUser
-    public void getmemberByIDLogout() throws Exception{
-        Member member = new Member();
-        member.setId(1L);
-        member.setFirstName("Max");
-         member.setLastName("Mustermann");
-
-        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
+    public void getMemberByIDLogout() throws Exception{
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/members/1/").accept(MediaType.APPLICATION_JSON);
 
@@ -206,13 +179,7 @@ public class MemberControllerTest {
      */
     @Test
     @WithMockUser
-    public void DeletememberByIdSuccess() throws Exception{
-        Member member = new Member();
-        member.setId(1L);
-        member.setFirstName("Max");
-        member.setLastName("Mustermann");
-
-        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
+    public void deleteMemberByIdSuccess() throws Exception{
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/members/1/").accept(MediaType.APPLICATION_JSON);
 
@@ -220,8 +187,7 @@ public class MemberControllerTest {
                 .andExpect(status().is(200))
                 .andReturn();
 
-        Mockito.verify(memberRepository).findById(1L);
-        Mockito.verify(memberRepository).deleteById(1L);
+        Mockito.verify(memberService).delete(1L);
     }
 
     /**
@@ -230,13 +196,9 @@ public class MemberControllerTest {
      */
     @Test
     @WithMockUser
-    public void DeletememberByIdNotFound() throws Exception{
-        Member member = new Member();
-        member.setId(1L);
-        member.setFirstName("Max");
-        member.setLastName("Mustermann");
+    public void deleteMemberByIdNotFound() throws Exception{
+        doThrow(NotFoundException.class).when(memberService).delete(3L);
 
-        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/members/3/").accept(MediaType.APPLICATION_JSON);
 
@@ -250,13 +212,7 @@ public class MemberControllerTest {
      */
     @Test
     @WithAnonymousUser
-    public void DeletememberByIdLogOut() throws Exception{
-        Member member = new Member();
-        member.setId(1L);
-        member.setFirstName("Max");
-        member.setLastName("Mustermann");
-
-        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
+    public void deleteMemberByIdLogOut() throws Exception{
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/members/1/").accept(MediaType.APPLICATION_JSON);
 
@@ -271,14 +227,14 @@ public class MemberControllerTest {
      */
     @Test
     @WithMockUser
-    public void UpdatememberSuccess()throws Exception{
+    public void updateMemberSuccess()throws Exception{
         Member member = new Member();
         member.setId(1L);
         member.setFirstName("Max");
         member.setLastName("Mustermann");
 
-        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-        when(memberRepository.save(any(Member.class))).thenReturn(member);
+        when(memberService.update(any(Long.class), any(Member.class))).thenReturn(member);
+
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/members/1/")
                 .content(new ObjectMapper().writeValueAsString(member))
@@ -298,8 +254,7 @@ public class MemberControllerTest {
         assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(memberRepository).findById(1L);
-        Mockito.verify(memberRepository).save(member);
+        Mockito.verify(memberService).update(any(Long.class), any(Member.class));
     }
     /**
      *Test for updating a non-existing member (Not Found)
@@ -308,14 +263,14 @@ public class MemberControllerTest {
 
     @Test
     @WithMockUser
-    public void UpdatememberNotFound()throws Exception{
+    public void updateMemberNotFound()throws Exception{
         Member member = new Member();
         member.setId(1L);
         member.setFirstName("Max");
         member.setLastName("Mustermann");
 
-        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-        when(memberRepository.save(any(Member.class))).thenReturn(member);
+        when(memberService.update(any(Long.class), any(Member.class))).thenThrow(NotFoundException.class);
+
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/members/4/")
                 .content(new ObjectMapper().writeValueAsString(member))
@@ -339,9 +294,6 @@ public class MemberControllerTest {
         member.setId(1L);
         member.setFirstName("Max");
         member.setLastName("Mustermann");
-
-        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
-        when(memberRepository.save(any(Member.class))).thenReturn(member);
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/members/1/")
                 .content(new ObjectMapper().writeValueAsString(member))
@@ -353,6 +305,5 @@ public class MemberControllerTest {
                 .andReturn();
 
     }
-
 }
 

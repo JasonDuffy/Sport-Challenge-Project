@@ -42,11 +42,47 @@ public class ImageStorageService {
         return imageRepository.save(image);
     }
 
-    public Image get(Long ImageID) throws  NotFoundException {
+    /**
+     * Get Image with ID
+     *
+     * @param ImageID Image with given ID
+     * @return Image
+     * @throws NotFoundException Image not found
+     */
+    public Image get(Long ImageID)  {
         Optional<Image> image =  imageRepository.findById(ImageID);
         if(image.isPresent()){
             return  image.get();
-        }throw new NotFoundException("Image with ID " +ImageID+" is not present in DB.");
+        }
+        return null;
+    }
+
+
+
+    /**
+     *  Delete Image
+     * @param image Object of Image
+     * @throws NotFoundException Image Not found
+     */
+    public void delete(long image) throws NotFoundException{
+       imageRepository.deleteById(image);
+    }
+
+    /**
+     * Updates Image
+     *
+     * @param imageID ID of Image to be updated
+     * @param image new Image
+     * @return updated Image
+     */
+    public Image update(long imageID, Image image) {
+        Image updatedImage = get(imageID);
+
+        updatedImage.setName(image.getName());
+        updatedImage.setType(image.getType());
+        updatedImage.setData(image.getData());
+
+        return imageRepository.save(updatedImage);
     }
 
     /**

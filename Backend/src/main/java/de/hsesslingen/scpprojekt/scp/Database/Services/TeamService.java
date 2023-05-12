@@ -101,9 +101,10 @@ public class TeamService {
                 try {
                     Team updatedTeam = teamData.get();
                     Image teamImage = imageStorageService.store(file);
-
+                    imageStorageService.update(updatedTeam.getImage().getId(),teamImage);
+                    imageStorageService.delete(teamImage.getId());
                     updatedTeam.setName(convertedTeam.getName());
-                    updatedTeam.setImage(teamImage);
+
                     updatedTeam.setChallenge(challengeService.get(team.getChallengeID()));
 
                     Team savedTeam = teamRepository.save(updatedTeam);

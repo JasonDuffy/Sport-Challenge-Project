@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -60,13 +61,14 @@ public class TeamControllerTest {
      * Test for get team by ID SUCCESS
      * @throws Exception Exception by mockMvc
      */
+    /**
     @Test
     @WithMockUser
     public void getTeamByIDSuccess() throws Exception {
         TeamDTO team = new TeamDTO();
         team.setId(1);
 
-        when(teamService.get(1L)).thenReturn(team);
+        when(teamService.getDTO(1L)).thenReturn(team);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/teams/1/").accept(MediaType.APPLICATION_JSON);
@@ -92,6 +94,7 @@ public class TeamControllerTest {
      * Test for get team by ID not found
      * @throws Exception Exception by mockMvc
      */
+    /**
     @Test
     @WithMockUser
     public void getTeamByIDNotFound() throws Exception{

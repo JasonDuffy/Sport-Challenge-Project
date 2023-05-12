@@ -1,12 +1,15 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.SportRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,18 +27,14 @@ import java.util.Optional;
 /**
  * REST controller for ChallengeSport.
  *
- * @author Robin Hackh
+ * @author Robin Hackh, Tom Nguyen Dinh
  */
 @CrossOrigin(origins="http://localhost:3000", allowedHeaders = "*", allowCredentials = "true")
 @RestController
 @RequestMapping("/challenge-sports")
 public class ChallengeSportController {
     @Autowired
-    private ChallengeSportRepository challengeSportRepository;
-    @Autowired
-    private ChallengeRepository challengeRepository;
-    @Autowired
-    private SportRepository sportRepository;
+    private ChallengeSportService challengeSportService;
 
     /**
      * REST API for returning ChallengeSport data of a given ID
@@ -48,17 +47,17 @@ public class ChallengeSportController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "ChallengeSport found",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ChallengeSport.class))}),
+                            schema = @Schema(implementation = ChallengeSportDTO.class))}),
             @ApiResponse(responseCode = "404", description = "ChallengeSport not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @GetMapping(path = "/{id}/" , produces = "application/json")
-    public ResponseEntity<ChallengeSport> getChallengeSportById(@PathVariable("id") long id, HttpServletRequest request) {
+    public ResponseEntity<ChallengeSportDTO> getChallengeSportById(@PathVariable("id") long id, HttpServletRequest request) {
         if (SAML2Service.isLoggedIn(request)){
-            Optional<ChallengeSport> challengeSportData = challengeSportRepository.findById(id);
-            if (challengeSportData.isPresent()) {
-                return new ResponseEntity<>(challengeSportData.get(), HttpStatus.OK);
-            } else {
+            try{
+                return new ResponseEntity<>(challengeSportService.getDTO(id), HttpStatus.OK);
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
@@ -76,14 +75,13 @@ public class ChallengeSportController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Search successful",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ChallengeSport.class))}),
+                            schema = @Schema(implementation = ChallengeSportDTO.class))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @GetMapping(path = "/" , produces = "application/json")
-    public ResponseEntity<List<ChallengeSport>> getAllChallengeSports(HttpServletRequest request) {
+    public ResponseEntity<List<ChallengeSportDTO>> getAllChallengeSports(HttpServletRequest request) {
         if (SAML2Service.isLoggedIn(request)){
-            List<ChallengeSport> challengeSports = challengeSportRepository.findAll();
-            return new ResponseEntity<>(challengeSports, HttpStatus.OK);
+            return new ResponseEntity<>(challengeSportService.getAll(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -92,9 +90,7 @@ public class ChallengeSportController {
     /**
      * Rest API for adding a new ChallengeSport
      *
-     * @param factor Factor for the ChallengeSport
-     * @param sportId Foreign key of the sport
-     * @param challengeId Foreign key of the challenge
+     * @param challengeSportDTO challengeSportDTO  data for the new challengeSport
      * @param request automatically filled by browser
      * @return A 201 Code and the sport data if it worked 417 otherwise
      */
@@ -102,25 +98,18 @@ public class ChallengeSportController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "ChallengeSport successfully added",
                     content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Sport.class))}),
+                            schema = @Schema(implementation = ChallengeSportDTO.class))}),
             @ApiResponse(responseCode = "500", description = "Something went wrong creating the new ChallengeSport", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PostMapping(path = "/",produces = "application/json")
-    public ResponseEntity<ChallengeSport>addChallengeSport(@RequestParam float factor, @RequestParam long sportId, @RequestParam long challengeId, HttpServletRequest request){
+    public ResponseEntity<ChallengeSportDTO>addChallengeSport(@RequestBody ChallengeSportDTO challengeSportDTO, HttpServletRequest request){
         if (SAML2Service.isLoggedIn(request)){
-            try {
-                Optional<Sport> foreignSport = sportRepository.findById(sportId);
-                Optional<Challenge> foreignChallenge = challengeRepository.findById(challengeId);
-
-                if(foreignSport.isPresent() && foreignChallenge.isPresent()){
-                    ChallengeSport newChallengeSport = challengeSportRepository.save(new ChallengeSport(factor, foreignChallenge.get(), foreignSport.get()));
-                    return new ResponseEntity<>(newChallengeSport, HttpStatus.CREATED);
-                }else{
-                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-                }
-            }catch (Exception e){
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            try{
+                return new ResponseEntity<>(challengeSportService.add(challengeSportDTO), HttpStatus.CREATED);
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -144,11 +133,11 @@ public class ChallengeSportController {
     @DeleteMapping(path = "/{id}/")
     public ResponseEntity<Void> deleteChallengeSport(@PathVariable("id") long id, HttpServletRequest request) {
         if (SAML2Service.isLoggedIn(request)){
-            Optional<ChallengeSport> challengeSportData = challengeSportRepository.findById(id);
-            if (challengeSportData.isPresent()){
-                challengeSportRepository.deleteById(id);
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }else {
+            try{
+                challengeSportService.delete(id);
+                return new ResponseEntity<>(HttpStatus.OK);
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
@@ -156,13 +145,26 @@ public class ChallengeSportController {
         }
     }
 
+    @Operation(summary = "Deletes all ChallengeSport")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All ChallengeSport successfully deleted"),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @DeleteMapping("/")
+    public ResponseEntity<Void> deleteAllActivities(HttpServletRequest request) {
+        if (SAML2Service.isLoggedIn(request)){
+            challengeSportService.deleteAll();
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+
     /**
      * Rest API for updating a ChallengeSport
      *
-     * @param id of the ChallengeSport which should be updated
-     * @param factor Factor for the ChallengeSport update
-     * @param sportId Foreign key of the sport update
-     * @param challengeId Foreign key of the challenge update
+     * @param Cs data of ChallengeSport for the update
      * @param request automatically filled by browser
      * @return A 200 Code and the ChallengeSport data if it worked, 404 otherwise
      */
@@ -175,20 +177,12 @@ public class ChallengeSportController {
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PutMapping(path = "/{id}/", produces = "application/json")
-    public ResponseEntity<ChallengeSport> updateChallenge(@PathVariable("id") long id, @RequestParam float factor, @RequestParam long sportId, @RequestParam long challengeId, HttpServletRequest request) {
+    public ResponseEntity<ChallengeSportDTO> updateChallenge(@PathVariable("id") long id,@RequestBody ChallengeSportDTO Cs, HttpServletRequest request) {
         if (SAML2Service.isLoggedIn(request)){
-            Optional<ChallengeSport> challengeSportData = challengeSportRepository.findById(id);
-            Optional<Sport> foreignSportData = sportRepository.findById(sportId);
-            Optional<Challenge> foreignChallengeData = challengeRepository.findById(challengeId);
-
-            if (challengeSportData.isPresent() && foreignChallengeData.isPresent() && foreignSportData.isPresent()) {
-                ChallengeSport newChallengeSport = challengeSportData.get();
-                newChallengeSport.setFactor(factor);
-                newChallengeSport.setChallenge(foreignChallengeData.get());
-                newChallengeSport.setSport(foreignSportData.get());
-
-                return new ResponseEntity<>(challengeSportRepository.save(newChallengeSport), HttpStatus.OK);
-            } else {
+            try{
+                return new ResponseEntity<>(challengeSportService.update(id, Cs), HttpStatus.OK);
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {

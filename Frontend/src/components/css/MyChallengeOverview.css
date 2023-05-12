@@ -1,0 +1,62 @@
+.my_challenge_bg > *{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-top-right-radius: 16px;
+    border-top-left-radius: 16px;
+    outline: solid 4px var(--doubleslash-blue);
+    outline-offset: -4px;
+}
+
+.my_challenge_wrap{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    text-decoration: none;
+    padding: 30px;
+    width: calc(100% - 60px);
+    aspect-ratio: 1;
+    color: var(--doubleslash-text-white);
+}
+
+.my_challenge_bg_color{
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.my_challenge_title{
+    font-size: 36px;
+    font-weight: 600;
+}
+
+.my_challenge_date, .my_challenge_distance, .my_challenge_info{
+    font-weight: 500;
+}
+
+.my_challenge_info, .my_challenge_distance{
+    margin-bottom: 20px;
+    flex-grow: 1;
+}
+
+.my_challenge_btns{
+    display: flex;
+}
+
+.my_challenge_btns > :not(:last-child){
+    margin-right: 10px;
+}
+
+.my_challenge_form_container{
+    background-color: var(--doubleslash-lightblue);
+    width: calc(100% - (2rem + 8px));
+    border-bottom-right-radius: 16px;
+    border-bottom-left-radius: 16px;
+    border-left: solid 4px var(--doubleslash-blue);
+    border-bottom: solid 4px var(--doubleslash-blue);
+    border-right: solid 4px var(--doubleslash-blue);
+}

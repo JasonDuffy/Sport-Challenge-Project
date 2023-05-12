@@ -1,12 +1,13 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
-import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Service.ImageStorageService;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.SportRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ImageStorageService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -15,7 +16,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -24,10 +24,8 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,13 +36,17 @@ import java.util.Optional;
  */
 @CrossOrigin(origins="http://localhost:3000", allowedHeaders = "*", allowCredentials = "true")
 @RestController
-@RequestMapping("/challenge")
+@RequestMapping("/challenges")
 public class ChallengeController {
 
     @Autowired
     private ImageStorageService imageStorageService;
     @Autowired
     private ChallengeRepository challengeRepository;
+    @Autowired
+    private ChallengeSportRepository challengeSportRepository;
+    @Autowired
+    private SportRepository sportRepository;
 
     /**
      * REST API for returning Challenge data of a given ID
@@ -63,7 +65,7 @@ public class ChallengeController {
     })
     @GetMapping(path = "/{id}/" , produces = "application/json")
     public ResponseEntity<Challenge> getChallengeById(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             Optional<Challenge> challengeData = challengeRepository.findById(id);
             if (challengeData.isPresent()) {
                 return new ResponseEntity<>(challengeData.get(), HttpStatus.OK);
@@ -78,85 +80,51 @@ public class ChallengeController {
     /**
      * REST API for returning all Challenges
      *
+     * @param type Which challenges should be returned. "current" for only current challenges, "past" for only past and anything else for all
      * @param request automatically filled by browser
      * @return Challenge data of all Challenges
      */
-    @Operation(summary = "Get all challenges")
+    @Operation(summary = "Get all, current or past challenges")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Search successful",
                     content = {@Content(mediaType = "application/json",
                                 array = @ArraySchema(schema = @Schema(implementation = Challenge.class)))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @GetMapping(path = "/all/", produces = "application/json")
-    public ResponseEntity<List<Challenge>> getAllChallenges(HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
+    @GetMapping(path = "/", produces = "application/json")
+    public ResponseEntity<List<Challenge>> getChallenges(@Parameter(description = "Which challenges should be returned. \"current\" for only current challenges, \"past\" for only past and anything else for all") @RequestParam String type, HttpServletRequest request) {
+        if (SAML2Service.isLoggedIn(request)){
             List<Challenge> challenges = challengeRepository.findAll();
+            switch(type){
+                case "current":
+                    List<Challenge> currentChallenges = new ArrayList<>();
+
+                    for (Challenge challenge: challenges){
+                        LocalDateTime today = LocalDateTime.now();
+
+                        if(challenge.getEndDate().isAfter(today) && today.isAfter(challenge.getStartDate())){
+                            currentChallenges.add(challenge);
+                        }
+                    }
+                    challenges = currentChallenges;
+                    break;
+                case "past":
+                    List<Challenge> pastChallenges = new ArrayList<>();
+
+                    for (Challenge challenge: challenges){
+                        LocalDateTime today =  LocalDateTime.now();
+
+                        if(challenge.getEndDate().isBefore(today)){
+                            pastChallenges.add(challenge);
+                        }
+                    }
+                    challenges = pastChallenges;
+                    break;
+                default: //all challenges
+                    break;
+            }
+
             return new ResponseEntity<>(challenges, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-    }
-
-    /**
-     * REST API for returning all current Challenges
-     *
-     * @param request automatically filled by browser
-     * @return Challenge data of all current Challenges
-     */
-    @Operation(summary = "Get current challenges")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Search successful",
-                    content = {@Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = Challenge.class)))}),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
-    })
-    @GetMapping(path = "/current/", produces = "application/json")
-    public ResponseEntity<List<Challenge>> getCurrentChallenges(HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
-            List<Challenge> challenges = challengeRepository.findAll();
-            List<Challenge> currentChallenges = new ArrayList<>();
-
-            for (Challenge challenge: challenges){
-                LocalDateTime today = LocalDateTime.now();
-
-                if(challenge.getEndDate().isAfter(today) && today.isAfter(challenge.getStartDate())){
-                    currentChallenges.add(challenge);
-                }
-            }
-            return new ResponseEntity<>(currentChallenges, HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-    }
-
-    /**
-     * REST API for returning all past Challenges
-     *
-     * @param request automatically filled by browser
-     * @return Challenge data of all past Challenges
-     */
-    @Operation(summary = "Get past challenges")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Search successful",
-                    content = {@Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = Challenge.class)))}),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
-    })
-    @GetMapping(path = "/past/", produces = "application/json")
-    public ResponseEntity<List<Challenge>> getPastChallenges(HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
-            List<Challenge> challenges = challengeRepository.findAll();
-            List<Challenge> pastChallenges = new ArrayList<>();
-
-            for (Challenge challenge: challenges){
-                LocalDateTime today =  LocalDateTime.now();
-
-                if(challenge.getEndDate().isBefore(today)){
-                    pastChallenges.add(challenge);
-                }
-            }
-            return new ResponseEntity<>(pastChallenges, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -191,14 +159,21 @@ public class ChallengeController {
             @ApiResponse(responseCode = "417", description = "Something went wrong creating the new Challenge", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @PostMapping(path = "/add/", consumes = "multipart/form-data", produces = "application/json")
-    public ResponseEntity<Challenge> addChallenge(@RequestParam("file") MultipartFile file, @RequestPart("json") @Valid Challenge challenge, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
+    @PostMapping(path = "/", consumes = "multipart/form-data", produces = "application/json")
+    public ResponseEntity<Challenge> addChallenge(@RequestPart("file") MultipartFile file, @RequestParam("sportId") long sportId[], @RequestParam("sportFactor") float sportFactor[], @RequestPart("json") @Valid Challenge challenge, HttpServletRequest request) {
+        if (SAML2Service.isLoggedIn(request)){
             try {
-                Image challengeImage = imageStorageService.store(file);
-                Challenge newChallenge = challengeRepository.save(
-                        new Challenge(challenge.getName(), challenge.getDescription(), challenge.getStartDate(), challenge.getEndDate(), challengeImage, challenge.getTargetDistance()));
-                return new ResponseEntity<>(newChallenge, HttpStatus.CREATED);
+                if(sportId.length == sportFactor.length){
+                    Image challengeImage = imageStorageService.store(file);
+                    Challenge newChallenge = challengeRepository.save(
+                            new Challenge(challenge.getName(), challenge.getDescription(), challenge.getStartDate(), challenge.getEndDate(), challengeImage, challenge.getTargetDistance()));
+                    for (int i = 0; i < sportId.length; i++) {
+                        challengeSportRepository.save(new ChallengeSport(sportFactor[i], newChallenge, sportRepository.getById(sportId[i])));
+                    }
+                    return new ResponseEntity<>(newChallenge, HttpStatus.CREATED);
+                } else {
+                    throw new Exception();
+                }
             }catch (Exception e){
                 return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
             }
@@ -226,9 +201,9 @@ public class ChallengeController {
             @ApiResponse(responseCode = "417", description = "Something went wrong updating the  Challenge", content = @Content),
 
     })
-    @PutMapping(path = "/",consumes = "multipart/form-data", produces = "application/json")
-    public ResponseEntity<Challenge> updateChallenge(@RequestParam("file") MultipartFile file,@RequestParam("id") Long ID,  @RequestPart("json") @Valid Challenge challenge, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
+    @PutMapping(path = "/{id}/",consumes = "multipart/form-data", produces = "application/json")
+    public ResponseEntity<Challenge> updateChallenge(@RequestParam("file") MultipartFile file, @PathVariable("id") long ID,  @RequestPart("json") @Valid Challenge challenge, HttpServletRequest request) {
+        if (SAML2Service.isLoggedIn(request)){
             Optional<Challenge> challengeData = challengeRepository.findById(ID);
             if (challengeData.isPresent()) {
                 try{
@@ -266,9 +241,9 @@ public class ChallengeController {
             @ApiResponse(responseCode = "404", description = "Challenge not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @DeleteMapping(path = "/",produces = "application/json")
-    public ResponseEntity<HttpStatus> deleteChallenge(@RequestParam("id")Long ID,HttpServletRequest request){
-        if (SAML2Functions.isLoggedIn(request)){
+    @DeleteMapping(path = "/{id}/",produces = "application/json")
+    public ResponseEntity<HttpStatus> deleteChallenge(@PathVariable("id") long ID,HttpServletRequest request){
+        if (SAML2Service.isLoggedIn(request)){
             Optional<Challenge>challengeData = challengeRepository.findById(ID);
             if(challengeData.isPresent()) {
                 challengeRepository.deleteById(ID);

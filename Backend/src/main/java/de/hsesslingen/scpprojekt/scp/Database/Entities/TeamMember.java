@@ -2,6 +2,8 @@ package de.hsesslingen.scpprojekt.scp.Database.Entities;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 /**
  * ChallengeSport entity for Database
@@ -10,7 +12,7 @@ import jakarta.persistence.*;
  *      team_id: Foreign key of Team entity
  *      member_id: Foreign key of Member entity
  *
- * @author Robin Hackh
+ * @author Robin Hackh, Tom Nguyen Dinh
  */
 @Entity
 @Table(name = "TeamMember")
@@ -21,9 +23,11 @@ public class TeamMember {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "team_id")
     private Team team;
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "member_id")
     private Member member;
 

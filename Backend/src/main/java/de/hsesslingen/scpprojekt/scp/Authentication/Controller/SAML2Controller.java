@@ -1,6 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.Authentication.Controller;
 
-import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2User;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,10 +42,10 @@ public class SAML2Controller {
             @ApiResponse(responseCode = "403", description = "User is not logged in.",
                     content = @Content)
     })
-    @GetMapping("/user/")
+    @GetMapping("/")
     public ResponseEntity<SAML2User> userDataREST(HttpServletRequest request){
-        if (SAML2Functions.isLoggedIn(request)) {
-            return ResponseEntity.ok().body(SAML2Functions.getCurrentSAMLUser());
+        if (SAML2Service.isLoggedIn(request)) {
+            return ResponseEntity.ok().body(SAML2Service.getCurrentSAMLUser());
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

@@ -1,8 +1,8 @@
-package de.hsesslingen.scpprojekt.scp.Authentication;
+package de.hsesslingen.scpprojekt.scp.Authentication.Services;
 
+import de.hsesslingen.scpprojekt.scp.Authentication.SAML2User;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
@@ -12,7 +12,7 @@ import org.springframework.security.saml2.provider.service.authentication.Saml2A
  *
  * @author Jason Patrick Duffy
  */
-public class SAML2Functions {
+public class SAML2Service {
 
     /**
      * Prepares SAML2 user object with correct information and returns data as SAML2User object.
@@ -28,9 +28,7 @@ public class SAML2Functions {
         String firstName = principal.getFirstAttribute("urn:oid:2.5.4.42");
         String lastName = principal.getFirstAttribute("urn:oid:2.5.4.4");
 
-        SAML2User thisUser = new SAML2User(emailAddress, firstName, lastName);
-
-        return thisUser;
+        return new SAML2User(emailAddress, firstName, lastName);
     }
 
     /**

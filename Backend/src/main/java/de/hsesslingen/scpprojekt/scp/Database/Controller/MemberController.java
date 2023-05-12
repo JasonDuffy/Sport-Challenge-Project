@@ -1,10 +1,9 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
-import java.util.Optional;
-
-import de.hsesslingen.scpprojekt.scp.Authentication.SAML2Functions;
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.MemberRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Services.MemberService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,20 +22,20 @@ import org.springframework.web.bind.annotation.*;
  */
 @CrossOrigin(origins="http://localhost:3000", allowedHeaders = "*", allowCredentials = "true")
 @RestController
-@RequestMapping("/member")
+@RequestMapping("/members")
 public class MemberController {
 
     @Autowired
-    MemberRepository memberRepository;
+    MemberService memberService;
 
     /**
      * REST API for returning Member data of a given ID
      *
-     * @param email Email(ID) of the Member that should be returned
+     * @param id id of the Member that should be returned
      * @param request automatically filled by browser
      * @return Member data corresponding to the given ID 404 otherwise
      */
-    @Operation(summary = "Get member by email(ID)")
+    @Operation(summary = "Get member by ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Member found",
                     content = { @Content(mediaType = "application/json",
@@ -44,13 +43,13 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "Member not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @GetMapping(path ="/", produces = "application/json")
-    public ResponseEntity<Member> getMemberByEmail(@RequestParam("email") String email, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
-            Optional<Member> memberData = memberRepository.findById(email);
-            if (memberData.isPresent()) {
-                return new ResponseEntity<>(memberData.get(), HttpStatus.OK);
-            } else {
+    @GetMapping(path ="/{id}/", produces = "application/json")
+    public ResponseEntity<Member> getMemberByID(@PathVariable("id") long id, HttpServletRequest request) {
+        if (SAML2Service.isLoggedIn(request)){
+            try{
+                return new ResponseEntity<>(memberService.get(id), HttpStatus.OK);
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
@@ -70,18 +69,12 @@ public class MemberController {
             @ApiResponse(responseCode = "201", description = "Member successfully added",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = Member.class))}),
-            @ApiResponse(responseCode = "500", description = "Something went wrong creating the new member", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PostMapping(path = "/", produces = "application/json")
     public ResponseEntity<Member> createMember(@RequestBody Member member, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
-            try {
-                Member newMember = memberRepository.save(new Member(member.getEmail(), member.getFirstName(), member.getLastName()));
-                return new ResponseEntity<>(newMember, HttpStatus.CREATED);
-            } catch (Exception e) {
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+        if (SAML2Service.isLoggedIn(request)){
+            return new ResponseEntity<>(memberService.add(member), HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -90,7 +83,7 @@ public class MemberController {
     /**
      * REST API for updating a new Member
      *
-     * @param email Email of the Member that should be updated
+     * @param id ID of the Member that should be updated
      * @param member Member data for the Member update
      * @param request automatically filled by browser
      * @return A 200 Code and the Member data if it worked 404 otherwise
@@ -103,18 +96,13 @@ public class MemberController {
             @ApiResponse(responseCode = "404", description = "Member not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @PutMapping(path = "/", produces = "application/json")
-    public ResponseEntity<Member> updateMember(@RequestParam("email") String email, @RequestBody Member member, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
-            Optional<Member> memberData = memberRepository.findById(email);
-
-            if (memberData.isPresent()) {
-                Member newMember = memberData.get();
-                newMember.setEmail(member.getEmail());
-                newMember.setFirstName(member.getFirstName());
-                newMember.setLastName(member.getLastName());
-                return new ResponseEntity<>(memberRepository.save(newMember), HttpStatus.OK);
-            } else {
+    @PutMapping(path = "/{id}/", produces = "application/json")
+    public ResponseEntity<Member> updateMember(@PathVariable("id") long id, @RequestBody Member member, HttpServletRequest request) {
+        if (SAML2Service.isLoggedIn(request)){
+            try{
+                return new ResponseEntity<>(memberService.update(id, member), HttpStatus.OK);
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
@@ -125,26 +113,26 @@ public class MemberController {
     /**
      * REST API for deleting a Member
      *
-     * @param email Email of the Member that should be deleted
+     * @param id ID of the Member that should be deleted
      * @param request automatically filled by browser
      * @return A 200 Code and the Member data if it worked
      * otherwise if member not found 404
      */
-    @Operation(summary = "Deleting a member")
+    @Operation(summary = "Deletes a member")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Member successfully deleted"),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "404", description = "Member not found", content = @Content)
 
     })
-    @DeleteMapping(path = "/", produces = "application/json")
-    public ResponseEntity<HttpStatus> deleteMember(@RequestParam("email") String email, HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
-            Optional<Member> memberData = memberRepository.findById(email);
-            if (memberData.isPresent()){
-                memberRepository.deleteById(email);
+    @DeleteMapping(path = "/{id}/", produces = "application/json")
+    public ResponseEntity<HttpStatus> deleteMember(@PathVariable("id") long id, HttpServletRequest request) {
+        if (SAML2Service.isLoggedIn(request)){
+            try{
+                memberService.delete(id);
                 return new ResponseEntity<>(HttpStatus.OK);
-            } else {
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
@@ -158,7 +146,7 @@ public class MemberController {
      * @param request automatically filled by browser
      * @return A 200 Code and the Member data if it worked 500 otherwise
      */
-    @Operation(summary = "Deleting all members")
+    @Operation(summary = "Deletes all members")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "All members successfully deleted"),
             @ApiResponse(responseCode = "500", description = "Something went wrong deleting all members", content = @Content),
@@ -166,13 +154,9 @@ public class MemberController {
     })
     @DeleteMapping("/")
     public ResponseEntity<HttpStatus> deleteAllMembers(HttpServletRequest request) {
-        if (SAML2Functions.isLoggedIn(request)){
-            try {
-                memberRepository.deleteAll();
-                return new ResponseEntity<>(HttpStatus.OK);
-            } catch (Exception e) {
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+        if (SAML2Service.isLoggedIn(request)){
+            memberService.deleteAll();
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

@@ -3,6 +3,8 @@ package de.hsesslingen.scpprojekt.scp.Database.Entities;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDateTime;
 
@@ -15,7 +17,7 @@ import java.time.LocalDateTime;
  *      distance: Distance traveled
  *      date: Date of the activity
  *
- * @author Robin Hackh, Jason Patrick Duffy
+ * @author Robin Hackh, Jason Patrick Duffy, Tom Nguyen Dinh
  */
 @Entity
 @Table(name = "Activity")
@@ -26,10 +28,14 @@ public class Activity {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "challenge_sport_id")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private ChallengeSport challengeSport;
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "member_id")
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Member member;
     @Column(name = "distance", nullable = false)
     private float distance;
@@ -78,6 +84,7 @@ public class Activity {
         this.distance = distance;
     }
 
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy,HH:mm")
     public LocalDateTime getDate() {
         return date;
     }

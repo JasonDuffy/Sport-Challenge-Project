@@ -7,11 +7,12 @@ import './css/Button.css';
  * @param color Possible value ( white | orange | blue ) [Required]
  * @param text  String inside the Button [Required]
  * @param action Function which runs onClick
+ * @param type Button type
  */
 
 function Button(props){
     return (
-        <button className={"button_" + props.color + " scp_button"} type="button" onClick={props.action}>{props.txt}</button>
+        <button className={"button_" + props.color + " scp_button"} type={props.type} onClick={props.action}>{props.txt}</button>
     );
 }
 

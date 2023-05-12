@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import Button from "./Button";
 import { useState, useEffect } from "react";
 import "./css/ChallengeOverview.css";
+import { useNavigate } from "react-router-dom";
 
 /**
  * Displays a Challenge with Image, Overlay and Data.
@@ -12,10 +13,7 @@ import "./css/ChallengeOverview.css";
  */
 
 function ChallengeOverview(props) {
-  function openChallenge() {
-    window.location.href = window.location.href + "Challenge";
-  }
-
+  const navigate = useNavigate();
   const [challengeName, setChallengeName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
@@ -24,9 +22,13 @@ function ChallengeOverview(props) {
   const [challengeInfo, setChallengeInfo] = useState("");
   const [imageSource, setImageSource] = useState("");
 
+  function openChallenge() {
+    navigate("/Challenge/" + props.id);
+  }
+
   useEffect(() => {
     async function getChallengeData(){
-      const result = await fetch("http://localhost:8081/challenge/" + props.id + "/", { method: "GET", credentials: "include" });
+      const result = await fetch("http://localhost:8081/challenges/" + props.id + "/", { method: "GET", credentials: "include" });
       const resData = await result.json();
 
       setChallengeName(resData.name);
@@ -58,7 +60,7 @@ function ChallengeOverview(props) {
         </div>
         <div className="challenge_info">{challengeInfo}</div>
         <div className="challenge_btns">
-          <Button color="white" txt="Infos Anzeigen" action={openChallenge} />
+          <Button color="white" txt="Infos anzeigen" action={openChallenge} />
         </div>
       </div>
     </>

@@ -1,0 +1,84 @@
+/*Author: Robin Hackh*/
+
+textarea {
+    height: 300px;
+    width: 100%;
+}
+
+.form_sport_table {
+    border-spacing: 0;
+    width: 100%;
+    color: var(--doubleslash-text-grey);
+    font-size: 14px;
+    font-weight: bold;
+    border: 2px var(--doubleslash-text-grey) solid;
+}
+
+.form_sport_table>tbody>tr:nth-child(odd) {
+    background-color: white;
+}
+
+.form_sport_table>tbody>tr:nth-child(even) {
+    background-color: var(--doubleslash-lightblue);
+}
+
+.form_sport_table>thead>tr {
+    color: white;
+    background-color: var(--doubleslash-blue);
+}
+
+.form_sport_table>thead>tr>th {
+    padding: 5px;
+    width: 25%;
+}
+
+.form_sport_table>tbody>tr>td {
+    text-align: center;
+    padding: 5px;
+}
+
+.form_sport_table>tbody>tr>td:first-child,
+.form_sport_table>thead>tr>th:first-child {
+    text-align: left;
+    width: 50%;
+}
+
+.form_sport_table>tbody>tr>td:nth-child(2),
+.form_sport_table>thead>tr>th:nth-child(2) {
+    border-left: 2px var(--doubleslash-text-grey) solid;
+    border-right: 2px var(--doubleslash-text-grey) solid;
+}
+
+.form_sport_number{
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0) !important;
+    border: 0 !important;
+    width: 100%;
+}
+
+.form_input_date_container {
+    display: flex;
+}
+
+.form_input_date_content {
+    padding: 0.5rem;
+    border: 2px solid var(--doubleslash-text-grey);
+    border-radius: 5px;
+}
+
+.form_input_date_separator {
+    color: var(--doubleslash-text-grey);
+    font-weight: 1000;
+    letter-spacing: -3px;
+}
+
+input[type="datetime-local"] {
+    color: var(--doubleslash-text-grey);
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0.5rem 1rem;
+    background-color: var(--doubleslash-lightblue);
+    border: 0;
+    outline: 0;
+}

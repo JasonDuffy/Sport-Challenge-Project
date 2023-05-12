@@ -3,10 +3,9 @@ package de.hsesslingen.scpprojekt.scp.Database.Entities;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
-
-import java.time.LocalDate;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * Bonus entity for Database
@@ -19,7 +18,7 @@ import java.util.Date;
  *      name: Bonus name
  *      description: Bonus description
  *
- * @author Robin Hackh
+ * @author Robin Hackh, Tom Nguyen Dinh
  */
 @Entity
 @Table(name = "Bonus")
@@ -30,6 +29,7 @@ public class Bonus {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
     @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "challenge_sport_id")
     private ChallengeSport challengeSport;
     @Column(name = "start_date", nullable = false)

@@ -15,10 +15,10 @@ class Home extends Component {
   }
 
   async componentDidMount() {
-    let response = await fetch("http://localhost:8081/challenge/current/", { method: "GET", credentials: "include" });
+    let response = await fetch("http://localhost:8081/challenges/?type=current", { method: "GET", credentials: "include" });
     let resData = await response.json();
     this.setState({ currentChallenge: resData });
-    response = await fetch("http://localhost:8081/challenge/past/", { method: "GET", credentials: "include" });
+    response = await fetch("http://localhost:8081/challenges/?type=past", { method: "GET", credentials: "include" });
     resData = await response.json();
     this.setState({ pastChallenge: resData });
   }

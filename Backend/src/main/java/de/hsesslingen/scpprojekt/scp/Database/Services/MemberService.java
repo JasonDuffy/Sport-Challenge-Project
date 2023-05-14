@@ -1,5 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
@@ -46,6 +47,19 @@ public class MemberService {
         if(member.isPresent())
             return memberConverter.convertEntityToDto(member.get());
         throw new NotFoundException("Member with ID " + memberID + " is not present in DB.");
+    }
+
+    /**
+     * Returns member currently logged in
+     *
+     * @return Member that is logged in
+     * @throws NotFoundException Member can not be found
+     */
+    public MemberDTO getByEmail(String email) throws NotFoundException {
+        Member member = memberRepository.findMemberByEmail(email);
+        if(member == null)
+            throw new NotFoundException("Member with email " + email + " is not present in DB.");
+        return memberConverter.convertEntityToDto(member);
     }
 
     /**

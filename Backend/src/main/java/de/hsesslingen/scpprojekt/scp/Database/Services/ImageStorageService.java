@@ -33,7 +33,7 @@ public class ImageStorageService {
      * @throws IOException
      */
     public Image store(MultipartFile file) throws IOException {
-        if(!checkImage(file))
+        if(!isImage(file))
             throw new IOException(file.getOriginalFilename() + " is not an image!");
 
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
@@ -54,7 +54,7 @@ public class ImageStorageService {
      * @param file File to be tested
      * @return True if file is an image, false otherwise
      */
-    public Boolean checkImage(MultipartFile file){
+    public Boolean isImage(MultipartFile file){
         try (InputStream input = file.getInputStream()){
             return ImageIO.read(input) != null;
         } catch (Exception e){

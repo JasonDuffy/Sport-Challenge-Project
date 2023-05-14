@@ -3,6 +3,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Repositories;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,6 +16,10 @@ import java.util.List;
 public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findByFirstName(String firstName);
     List<Member> findByLastName(String lastName);
+
+    @Transactional
     Member findMemberByEmail(String email);
+
+    @Transactional
     Boolean existsMemberByEmail(String email);
 }

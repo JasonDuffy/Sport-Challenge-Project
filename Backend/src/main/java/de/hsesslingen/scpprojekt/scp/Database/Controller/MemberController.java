@@ -174,4 +174,32 @@ public class MemberController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
+    /**
+     * REST API for returning Member data of logged in user
+     *
+     * @param request automatically filled by browser
+     * @return Member data corresponding to the user, 404 otherwise
+     */
+    @Operation(summary = "Get member currently logged in")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Member found",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = MemberDTO.class))}),
+            @ApiResponse(responseCode = "404", description = "Member not found", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @GetMapping(path ="/loggedIn/", produces = "application/json")
+    public ResponseEntity<MemberDTO> getCurrentMember(HttpServletRequest request) {
+        if (saml2Service.isLoggedIn(request)){
+            try{
+                return new ResponseEntity<>(memberService.getByEmail(saml2Service.getCurrentSAMLUser().getEmail()), HttpStatus.OK);
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
 }

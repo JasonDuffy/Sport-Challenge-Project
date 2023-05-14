@@ -42,7 +42,7 @@ public class ImageStorageService {
         return imageRepository.save(image);
     }
 
-    public Image get(Long ImageID) throws  NotFoundException {
+    public Image get(Long ImageID) throws NotFoundException {
         Optional<Image> image =  imageRepository.findById(ImageID);
         if(image.isPresent()){
             return  image.get();

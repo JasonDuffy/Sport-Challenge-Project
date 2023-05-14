@@ -2,6 +2,7 @@ package de.hsesslingen.scpprojekt.scp.Authentication.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2User;
+import de.hsesslingen.scpprojekt.scp.Database.Services.MemberService;
 import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +30,8 @@ import java.net.URI;
 @RestController
 @RequestMapping(path = "/saml/", produces = "application/json")
 public class SAML2Controller {
+    @Autowired
+    SAML2Service saml2Service;
 
     /**
      * REST API for returning the SAML2 user data
@@ -44,8 +48,8 @@ public class SAML2Controller {
     })
     @GetMapping("/")
     public ResponseEntity<SAML2User> userDataREST(HttpServletRequest request){
-        if (SAML2Service.isLoggedIn(request)) {
-            return ResponseEntity.ok().body(SAML2Service.getCurrentSAMLUser());
+        if (saml2Service.isLoggedIn(request)) {
+            return ResponseEntity.ok().body(saml2Service.getCurrentSAMLUser());
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -54,7 +58,7 @@ public class SAML2Controller {
     /**
      * Logs the user into the IDP and returns them to the frontend
      *
-     * @return ResponsEntity that redirects the user to the frontend
+     * @return ResponseEntity that redirects the user to the frontend
      */
     @Hidden // Hidden as it should not be used in an API request
     @Operation(summary = "Redirect user to Frontend")
@@ -64,6 +68,7 @@ public class SAML2Controller {
     })
     @GetMapping("/login/")
     public ResponseEntity<Void> login(){
+        saml2Service.loginUser();
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("http://localhost:3000/"));
         return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);

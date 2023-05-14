@@ -34,6 +34,8 @@ import java.util.Optional;
 public class TeamMemberController {
 
     @Autowired
+    SAML2Service saml2Service;
+    @Autowired
     TeamRepository teamRepository;
     @Autowired
     MemberRepository memberRepository;
@@ -60,7 +62,7 @@ public class TeamMemberController {
     })
     @PostMapping(path = "/",produces = "application/json")
     public ResponseEntity<TeamMember> addTeamMember(@RequestParam long TeamID, @RequestParam long MemberID, HttpServletRequest request){
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 Optional<Member> memberOptional = memberRepository.findById(MemberID);
                 Optional<Team> teamOptional = teamRepository.findById(TeamID);
@@ -94,7 +96,7 @@ public class TeamMemberController {
     })
     @GetMapping(path = "/{id}/" , produces = "application/json")
     public ResponseEntity<List<TeamMember>> getAllTeamMembers(@PathVariable("id")long TeamID, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             Optional<Team> teamOptional = teamRepository.findById(TeamID);
             if(teamOptional.isPresent()){
                 List<TeamMember> teamMembers = teamMemberRepository.findAll();
@@ -130,7 +132,7 @@ public class TeamMemberController {
     })
     @DeleteMapping(path = "/{id}/",produces = "application/json")
     public ResponseEntity<HttpStatus> deleteATeamMember(@PathVariable("id") long ID,HttpServletRequest request){
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             Optional<TeamMember>teamData = teamMemberRepository.findById(ID);
             if(teamData.isPresent()) {
                 teamMemberRepository.deleteById(ID);

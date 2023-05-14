@@ -29,6 +29,8 @@ import java.util.Optional;
 public class ImageController {
 
     @Autowired
+    private SAML2Service saml2Service;
+    @Autowired
     private ImageStorageService imageStorageService;
     @Autowired
     private ImageRepository imageRepository;
@@ -48,7 +50,7 @@ public class ImageController {
     })
     @PostMapping(path = "/", consumes = "multipart/form-data")
     public ResponseEntity<HttpStatus> uploadImage(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try {
                 imageStorageService.store(file);
 
@@ -78,7 +80,7 @@ public class ImageController {
     })
     @GetMapping(path = "/{id}/" , produces = "application/json")
     public ResponseEntity<Image> getImageById(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             Optional<Image> imageData = imageRepository.findById(id);
             if (imageData.isPresent()) {
                 return new ResponseEntity<>(imageData.get(), HttpStatus.OK);
@@ -109,7 +111,7 @@ public class ImageController {
     })
     @PutMapping(path= "/{id}/",consumes = "multipart/form-data",produces= "application/json")
     public ResponseEntity<Image> updateImage(@PathVariable("id") long id, @RequestParam("file") MultipartFile file, HttpServletRequest request){
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             Optional<Image> imageData = imageRepository.findById(id);
             if(imageData.isPresent()){
             try {

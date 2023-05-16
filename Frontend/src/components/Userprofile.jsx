@@ -232,4 +232,4 @@ class Userprofile extends Component {
     }
 }
 
-export default withRouter(Userprofile);
+export default Userprofile;

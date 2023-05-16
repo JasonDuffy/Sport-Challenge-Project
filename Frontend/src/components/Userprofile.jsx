@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import withRouter from "./withRouter";
 import Button from "./Button";
 import "./css/Form.css";
+import "./css/Userprofile.css";
 /**
  * Page that shows the user profile of the current user and allows editing
  * 
@@ -185,17 +186,19 @@ class Userprofile extends Component {
                         <div className="form_container">
                             <form onSubmit={this.submitHandler}>
                                 <div className="centered pd_1">
-                                    <h2>Wähle ein Bild für deine Visage</h2>
-                                    <div className="">
-                                        <img src={this.state.image} alt="User Image" className=""></img>
+                                    <div className="center_content">
+                                        <img src={this.state.image} alt="User Image" className="round_image"></img>
                                     </div>
+                                </div>
+                                <div className="form_input_container pd_1">
+                                    <h2>Wähle ein Profilbild aus.</h2>
                                     <span className="form_input_description">
                                         Das Bild sollte quadratisch sein.
                                     </span>
                                     <br />
                                     <input id="user_image" className="mg_t_2" type="file" accept="image/*"></input>
                                 </div>
-                                <div className="form_input_container pd_1 mg_t_2">
+                                <div className="form_input_container pd_1 mg_t_1">
                                     <h2>Vorname</h2>
                                     <input
                                         className="mg_t_2"
@@ -206,7 +209,7 @@ class Userprofile extends Component {
                                         placeholder="Vorname"
                                     ></input>
                                 </div>
-                                <div className="form_input_container pd_1 mg_t_2">
+                                <div className="form_input_container pd_1 mg_t_1">
                                     <h2>Nachname</h2>
                                     <input
                                         className="mg_t_2"

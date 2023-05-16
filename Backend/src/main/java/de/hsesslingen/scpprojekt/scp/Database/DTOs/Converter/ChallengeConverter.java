@@ -27,13 +27,13 @@ public class ChallengeConverter {
      */
     public ChallengeDTO convertEntityToDto(Challenge challenge) {
         ChallengeDTO  ChallengeDTO = new ChallengeDTO();
-        ChallengeDTO .setId(challenge.getId());
-        ChallengeDTO .setName(challenge.getName());
-        ChallengeDTO .setImageID(challenge.getImage().getId());
-        ChallengeDTO .setDescription(challenge.getDescription());
-        ChallengeDTO .setStartDate(challenge.getStartDate());
-        ChallengeDTO .setEndDate(challenge.getEndDate());
-        ChallengeDTO .setTargetDistance(challenge.getTargetDistance());
+        ChallengeDTO.setId(challenge.getId());
+        ChallengeDTO.setName(challenge.getName());
+        ChallengeDTO.setImageID(challenge.getImage().getId());
+        ChallengeDTO.setDescription(challenge.getDescription());
+        ChallengeDTO.setStartDate(challenge.getStartDate());
+        ChallengeDTO.setEndDate(challenge.getEndDate());
+        ChallengeDTO.setTargetDistance(challenge.getTargetDistance());
         return ChallengeDTO ;
     }
 

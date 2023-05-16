@@ -6,9 +6,14 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 
 import java.time.LocalDateTime;
 
+/**
+ * DTO for Challenge
+ *
+ * @author Tom Nguyen Dinh
+ */
 public class ChallengeDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
-    long Id;
+    long id;
     String name;
     String description;
     LocalDateTime startDate;
@@ -28,11 +33,11 @@ public class ChallengeDTO {
     }
 
     public long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(long id) {
-        this.Id = Id;
+        this.id = id;
     }
 
     public String getName() {

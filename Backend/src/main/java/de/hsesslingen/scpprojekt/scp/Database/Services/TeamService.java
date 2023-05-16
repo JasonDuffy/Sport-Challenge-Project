@@ -30,11 +30,7 @@ public class TeamService {
     @Autowired
     ChallengeService challengeService;
     @Autowired
-    ChallengeRepository challengeRepository;
-    @Autowired
     ImageStorageService imageStorageService;
-    @Autowired
-    ImageRepository imageRepository;
     @Autowired
     TeamConverter teamConverter ;
 

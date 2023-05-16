@@ -28,8 +28,6 @@ class Userprofile extends Component {
         this.userImageChange = this.userImageChange.bind(this);
 
         this.submitHandler = this.submitHandler.bind(this);
-
-        this.pageLoad();
     }
 
     userFirstNameChange(event) {
@@ -42,8 +40,8 @@ class Userprofile extends Component {
         this.setState({ image: event.target.value });
     }
 
-    //Called by constructor when the page is set up 
-    pageLoad() {
+    //Called automatically when the page is loaded
+    componentDidMount() {
         fetch("http://localhost:8081/members/loggedIn/", { method: "GET", credentials: "include" })
             .then((response) => {
                 if (response.ok) {

@@ -43,10 +43,13 @@ public class ImageStorageService {
     }
 
     public Image get(Long ImageID) throws NotFoundException {
-        Optional<Image> image =  imageRepository.findById(ImageID);
-        if(image.isPresent()){
-            return  image.get();
-        }throw new NotFoundException("Image with ID " +ImageID+" is not present in DB.");
+        if(ImageID != null){
+            Optional<Image> image =  imageRepository.findById(ImageID);
+            if(image.isPresent()){
+                return  image.get();
+            }
+        }
+        throw new NotFoundException("Image with ID " +ImageID+" is not present in DB.");
     }
 
     /**

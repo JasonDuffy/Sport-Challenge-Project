@@ -55,7 +55,6 @@ public class ChallengeSportService {
         throw new NotFoundException("ChallengeSport with ID " + challengeSportID + " is not present in DB.");
     }
 
-
     /**
      * Adds a given ChallengeSport to the DB
      *

@@ -44,7 +44,7 @@ public class ChallengeSportDTO {
     }
 
     public long getSportID(){
-        return challengeID;
+        return sportID;
     }
     public  void  setSportID(long sportID){
         this.sportID = sportID;

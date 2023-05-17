@@ -1,7 +1,7 @@
 package de.hsesslingen.scpprojekt.scp.Exceptions;
 
 /**
- * Exception for when an entry can not be found in the entity
+ * Exception for when an entry can not be found in the DB
  *
  * @author Jason Patrick Duffy
  */

@@ -63,7 +63,7 @@ public class SAML2Controller {
     @Hidden // Hidden as it should not be used in an API request
     @Operation(summary = "Redirect user to Frontend")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "301", description = "Redirection successful.",
+            @ApiResponse(responseCode = "308", description = "Redirection successful.",
                     content = @Content)
     })
     @GetMapping("/login/")
@@ -71,6 +71,6 @@ public class SAML2Controller {
         saml2Service.loginUser();
         HttpHeaders headers = new HttpHeaders();
         headers.setLocation(URI.create("http://localhost:3000/"));
-        return new ResponseEntity<>(headers, HttpStatus.MOVED_PERMANENTLY);
+        return new ResponseEntity<>(headers, HttpStatus.PERMANENT_REDIRECT);
     }
 }

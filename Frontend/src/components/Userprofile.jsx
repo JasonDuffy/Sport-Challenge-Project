@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import withRouter from "./withRouter";
 import Button from "./Button";
 import "./css/Form.css";
 import "./css/Userprofile.css";
@@ -42,6 +41,7 @@ class Userprofile extends Component {
 
     //Called automatically when the page is loaded
     componentDidMount() {
+        // Get information of logged in user, save it in state variables and load image
         fetch("http://localhost:8081/members/loggedIn/", { method: "GET", credentials: "include" })
             .then((response) => {
                 if (response.ok) {
@@ -130,7 +130,7 @@ class Userprofile extends Component {
         imageBodyData.append("file", userImage.files[0]);
 
         if (userImage.files[0] != null){
-            // Loads image
+            // Uploads image
             fetch("http://localhost:8081/images/", { method: "POST", body: imageBodyData, credentials: "include" })
                 .then((response) => {
                     if (response.ok) {
@@ -151,6 +151,7 @@ class Userprofile extends Component {
         }
     }
 
+    // Uploads user profile information to server
     upload(){
         let userJsonObj = {};
         userJsonObj.email = this.state.email;
@@ -170,6 +171,7 @@ class Userprofile extends Component {
             });
     }
 
+    // HTML script to render
     render() {
         return (
             <section className="background_white">

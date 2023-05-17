@@ -1,12 +1,16 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.TeamMember;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.MemberRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.TeamMemberRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.TeamRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.coyote.Request;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -54,6 +58,10 @@ public class TeamMemberControllerTest {
     TeamMemberRepository teamMemberRepository;
     @Autowired
     private MockMvc mockMvc;
+    @MockBean
+    MemberConverter memberConverter;
+    @MockBean
+    SAML2Service saml2Service;
 
     /**
      * test for successful adding a Member to a Team
@@ -62,8 +70,10 @@ public class TeamMemberControllerTest {
     @Test
     @WithMockUser
     public void addMemberToTeamSuccess()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         Member member = new Member();
-        member.setId(3);
+        member.setId(1L);
         member.setFirstName("Max");
         member.setLastName("Mustermann");
 
@@ -98,7 +108,7 @@ public class TeamMemberControllerTest {
         matcher.find();
         assertEquals(matcher.group(1), "2");
         matcher.find();
-        assertEquals(matcher.group(1), "3");
+        assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
         Mockito.verify(memberRepository).findById(3L);
@@ -113,8 +123,10 @@ public class TeamMemberControllerTest {
     @Test
     @WithMockUser
     public void addMemberToTeamNotFound1()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         Member member = new Member();
-        member.setId(3);
+        member.setId(1L);
         member.setFirstName("Max");
         member.setLastName("Mustermann");
 
@@ -150,8 +162,10 @@ public class TeamMemberControllerTest {
     @Test
     @WithMockUser
     public void addMemberToTeamNotFound2()throws Exception{
-        Member member = new Member();
-        member.setId(3);
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
+        MemberDTO member = new MemberDTO();
+        member.setUserID(3L);
         member.setFirstName("Max");
         member.setLastName("Mustermann");
 
@@ -162,7 +176,7 @@ public class TeamMemberControllerTest {
         TeamMember teamMember = new TeamMember();
         teamMember.setId(1);
         teamMember.setTeam(team);
-        teamMember.setMember(member);
+        teamMember.setMember(memberConverter.convertDtoToEntity(member));
 
         when(teamRepository.findById(2L)).thenReturn(Optional.of(team));
         when(teamMemberRepository.save(any(TeamMember.class))).thenReturn(teamMember);
@@ -188,7 +202,7 @@ public class TeamMemberControllerTest {
     @WithAnonymousUser
     public void addMemberToTeamLogOut()throws Exception{
         Member member = new Member();
-        member.setId(3);
+        member.setId(1L);
         member.setFirstName("Max");
         member.setLastName("Mustermann");
 
@@ -222,8 +236,10 @@ public class TeamMemberControllerTest {
     @Test
     @WithMockUser
     public void deleteMemberofTeamSuccess()throws Exception{
-        Member member = new Member();
-        member.setId(3);
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
+        MemberDTO member = new MemberDTO();
+        member.setUserID(3L);
         member.setFirstName("Max");
         member.setLastName("Mustermann");
 
@@ -234,7 +250,7 @@ public class TeamMemberControllerTest {
         TeamMember teamMember = new TeamMember();
         teamMember.setId(1);
         teamMember.setTeam(team);
-        teamMember.setMember(member);
+        teamMember.setMember(memberConverter.convertDtoToEntity(member));
 
         when(teamMemberRepository.findById(1L)).thenReturn(Optional.of(teamMember));
 
@@ -252,8 +268,8 @@ public class TeamMemberControllerTest {
     @Test
     @WithAnonymousUser
     public void deleteMemberofTeamLogout()throws Exception{
-        Member member = new Member();
-        member.setId(3);
+        MemberDTO member = new MemberDTO();
+        member.setUserID(3L);
         member.setFirstName("Max");
         member.setLastName("Mustermann");
 
@@ -264,7 +280,7 @@ public class TeamMemberControllerTest {
         TeamMember teamMember = new TeamMember();
         teamMember.setId(1);
         teamMember.setTeam(team);
-        teamMember.setMember(member);
+        teamMember.setMember(memberConverter.convertDtoToEntity(member));
 
 
 
@@ -281,8 +297,10 @@ public class TeamMemberControllerTest {
     @Test
     @WithMockUser
     public void deleteMemberofTeamNotFound()throws Exception{
-        Member member = new Member();
-        member.setId(3);
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
+        MemberDTO member = new MemberDTO();
+        member.setUserID(3L);
         member.setFirstName("Max");
         member.setLastName("Mustermann");
 
@@ -293,7 +311,7 @@ public class TeamMemberControllerTest {
         TeamMember teamMember = new TeamMember();
         teamMember.setId(1);
         teamMember.setTeam(team);
-        teamMember.setMember(member);
+        teamMember.setMember(memberConverter.convertDtoToEntity(member));
 
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/teamMembers/1/").accept(MediaType.APPLICATION_JSON);

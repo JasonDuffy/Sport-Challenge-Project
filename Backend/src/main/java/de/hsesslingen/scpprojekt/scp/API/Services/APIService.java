@@ -44,7 +44,14 @@ public class APIService {
      * @return All activities concerning the given challenge ID
      */
     public List<ActivityDTO> getActivitiesForChallenge(Long challengeID){
-        return activityConverter.convertEntityListToDtoList(activityRepository.findActivitiesByChallengeSport_Id(challengeID));
+        List<Activity> activityList = new ArrayList<>();
+
+        for (Activity a : activityRepository.findAll()){
+            if (a.getChallengeSport().getChallenge().getId() == challengeID)
+                activityList.add(a);
+        }
+
+        return activityConverter.convertEntityListToDtoList(activityList);
     }
 
     /**

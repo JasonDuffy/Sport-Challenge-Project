@@ -1,3 +1,12 @@
+/**
+ * CSS styles for Userprofile
+ * 
+ * @author Jason Patrick Duffy
+ */
+
+/**
+*   Rounds image and scales it down
+*/
 .round_image {
     border: 2px solid var(--doubleslash-lightblue);
     border-radius: 100%;

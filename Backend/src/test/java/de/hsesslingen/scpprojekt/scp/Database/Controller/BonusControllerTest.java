@@ -1,9 +1,11 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Services.BonusService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +47,9 @@ public class BonusControllerTest {
     @MockBean
     BonusService bonusService;
 
+    @MockBean
+    SAML2Service saml2Service;
+
     /**
      * Test if all bonuses are returned correctly
      * @throws Exception by mockMvc
@@ -52,6 +57,8 @@ public class BonusControllerTest {
     @Test
     @WithMockUser
     public void getBonusesTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         BonusDTO b1 = new BonusDTO();
         b1.setId(1);
         BonusDTO b2 = new BonusDTO();
@@ -105,6 +112,8 @@ public class BonusControllerTest {
     @Test
     @WithMockUser
     public void getBonusByIDTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         BonusDTO b1 = new BonusDTO();
         b1.setId(1);
 
@@ -137,6 +146,8 @@ public class BonusControllerTest {
     @Test
     @WithMockUser
     public void getBonusByIDTestNotFound() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         when(bonusService.get(1L)).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
@@ -169,6 +180,8 @@ public class BonusControllerTest {
     @Test
     @WithMockUser
     public void createBonusTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         BonusDTO b1 = new BonusDTO();
         b1.setChallengeSportID(2L);
 
@@ -200,6 +213,8 @@ public class BonusControllerTest {
     @Test
     @WithMockUser
     public void createBonusTestNotFound() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         BonusDTO b1 = new BonusDTO();
         b1.setId(1);
         b1.setChallengeSportID(2L);
@@ -248,6 +263,8 @@ public class BonusControllerTest {
     @Test
     @WithMockUser
     public void updateBonusTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         BonusDTO b1 = new BonusDTO();
         b1.setId(1);
 
@@ -282,6 +299,8 @@ public class BonusControllerTest {
     @Test
     @WithMockUser
     public void updateBonusTestSuccessNotFound() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         BonusDTO b1 = new BonusDTO();
         b1.setId(1);
 
@@ -328,6 +347,8 @@ public class BonusControllerTest {
     @Test
     @WithMockUser
     public void deleteBonusTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/bonuses/1/").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
@@ -346,6 +367,8 @@ public class BonusControllerTest {
     @Test
     @WithMockUser
     public void deleteBonusTestNotFound() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         doThrow(NotFoundException.class).when(bonusService).delete(1L);
 
         RequestBuilder request = MockMvcRequestBuilders
@@ -382,6 +405,8 @@ public class BonusControllerTest {
     @Test
     @WithMockUser
     public void deleteAllBonusesTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/bonuses/").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);

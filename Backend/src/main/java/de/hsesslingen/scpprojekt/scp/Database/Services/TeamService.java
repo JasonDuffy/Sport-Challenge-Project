@@ -103,9 +103,7 @@ public class TeamService {
         if (teamData.isPresent()) {
                 try {
                     Team updatedTeam = teamData.get();
-                    Image teamImage = imageStorageService.store(file);
-                    imageStorageService.update(updatedTeam.getImage().getId(),teamImage);
-                    imageStorageService.delete(teamImage.getId());
+                     imageStorageService.store(file);
                     updatedTeam.setName(convertedTeam.getName());
 
                     updatedTeam.setChallenge(challengeService.get(team.getChallengeID()));

@@ -349,4 +349,37 @@ public class ChallengeControllerTest {
                 .andExpect(status().isForbidden())
                 .andReturn();
     }
+    /**
+     * Test if all challenges are deleted correctly
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void deleteAllChallengesTestSuccess() throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders
+                .delete("/challenges/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Mockito.verify(challengeService).deleteAll();
+    }
+
+    /**
+     * Test if 403 is returned when user is not logged in
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void deleteAllChallengesTestNotLoggedIn() throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders
+                .delete("/challenges/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
 }

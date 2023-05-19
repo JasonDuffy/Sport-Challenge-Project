@@ -114,7 +114,7 @@ class Userprofile extends Component {
         infoContainer.classList.remove("error");
         infoContainer.classList.remove("success");
 
-        const userImage = document.getElementById("user_image");
+        let userImage = document.getElementById("user_image");
 
         //Checks image size
         if (userImage.files[0] != null && userImage.files[0].size > 10000000) {
@@ -129,7 +129,7 @@ class Userprofile extends Component {
         let imageBodyData = new FormData();
         imageBodyData.append("file", userImage.files[0]);
 
-        if (userImage.files[0] != null){
+        if (userImage.files[0] != null) {
             // Uploads image
             fetch("http://localhost:8081/images/", { method: "POST", body: imageBodyData, credentials: "include" })
                 .then((response) => {
@@ -137,6 +137,7 @@ class Userprofile extends Component {
                         response.json().then(resData => {
                             this.setState({ image: "data:" + resData.type + ";base64, " + resData.data });
                             this.setState({ imageID: resData.id }, () => {
+                                userImage.value = null; //Clear upload form
                                 this.upload();
                             })
                         });

@@ -1,5 +1,7 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ImageRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
@@ -10,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.io.InputStream;
 
@@ -41,7 +44,9 @@ public class ImageStorageService {
 
         return imageRepository.save(image);
     }
-
+    public List<Image> getAll() {
+        return imageRepository.findAll();
+    }
     /**
      * Get Image with ID
      *
@@ -49,15 +54,13 @@ public class ImageStorageService {
      * @return Image
      * @throws NotFoundException Image not found
      */
-    public Image get(Long ImageID)  {
+    public Image get(Long ImageID) throws NotFoundException {
         Optional<Image> image =  imageRepository.findById(ImageID);
         if(image.isPresent()){
             return  image.get();
         }
-        return null;
+        throw new NotFoundException("Image with ID " + ImageID + " is not present in DB.");
     }
-
-
 
     /**
      *  Delete Image
@@ -65,17 +68,25 @@ public class ImageStorageService {
      * @throws NotFoundException Image Not found
      */
     public void delete(long image) throws NotFoundException{
+        get(image);
        imageRepository.deleteById(image);
     }
 
     /**
-     * Updates Image
+     * Update Image
      *
-     * @param imageID ID of Image to be updated
-     * @param image new Image
-     * @return updated Image
+     * @param imageID ID of the be updated Image
+     * @param file new image
+     * @return new image
+     * @throws NotFoundException To be updated Image not found
+     * @throws IOException not an image
      */
-    public Image update(long imageID, Image image) {
+    public Image update(long imageID, MultipartFile file) throws NotFoundException, IOException {
+        if(!checkImage(file))
+            throw new IOException(file.getOriginalFilename() + " is not an image!");
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        Image image = new Image(fileName, file.getContentType(), file.getBytes());
+
         Image updatedImage = get(imageID);
 
         updatedImage.setName(image.getName());
@@ -85,6 +96,9 @@ public class ImageStorageService {
         return imageRepository.save(updatedImage);
     }
 
+    public void deleteAll(){
+        imageRepository.deleteAll();
+    }
     /**
      * Tests if given file is an image
      * @param file File to be tested

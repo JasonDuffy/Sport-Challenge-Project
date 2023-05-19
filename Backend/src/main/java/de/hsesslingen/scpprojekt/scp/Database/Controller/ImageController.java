@@ -1,9 +1,11 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ImageRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ImageStorageService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -16,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -30,8 +34,6 @@ public class ImageController {
 
     @Autowired
     private ImageStorageService imageStorageService;
-    @Autowired
-    private ImageRepository imageRepository;
 
     /**
      * REST API for uploading an Image
@@ -79,17 +81,90 @@ public class ImageController {
     @GetMapping(path = "/{id}/" , produces = "application/json")
     public ResponseEntity<Image> getImageById(@PathVariable("id") long id, HttpServletRequest request) {
         if (SAML2Service.isLoggedIn(request)){
-            Optional<Image> imageData = imageRepository.findById(id);
-            if (imageData.isPresent()) {
-                return new ResponseEntity<>(imageData.get(), HttpStatus.OK);
-            } else {
+            try {
+                return new ResponseEntity<>(imageStorageService.get(id),HttpStatus.OK);
+            }catch (NotFoundException e) {
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-
         }
     }
+
+    /**
+     * Rest API for deleting an image
+     *
+     * @param id imageID
+     * @param request automatically filled by browser
+     * @return OK 200 else 404 not found
+     */
+    @Operation(summary = "Delete image by ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "delete File ",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Image.class))}),
+            @ApiResponse(responseCode = "404", description = "File not found", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @DeleteMapping(path = "/{id}/" , produces = "application/json")
+    public ResponseEntity<Image> deleteImageById(@PathVariable("id") long id, HttpServletRequest request) {
+        if (SAML2Service.isLoggedIn(request)){
+            try {
+                imageStorageService.delete(id);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }catch (NotFoundException e) {
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
+     * Rest API for Deleting all images
+     *
+     * @param request automatically filled by browser
+     * @return 200 if it worked
+     */
+    @Operation(summary = "Deletes all images")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "All images successfully deleted"),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @DeleteMapping("/")
+    public ResponseEntity<Void> deleteAllImages(HttpServletRequest request) {
+        if (SAML2Service.isLoggedIn(request)){
+            imageStorageService.deleteAll();
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
+     * Rest APi for getting all images
+     *
+     * @param request automatically filled by browser
+     * @return 200 for finding all
+     */
+    @Operation(summary = "Get all images")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Search successful",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ActivityDTO.class))}),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @GetMapping(path = "/", produces = "application/json")
+    public ResponseEntity<List<Image>> getAllImages(HttpServletRequest request){
+        if (SAML2Service.isLoggedIn(request)){
+            return new ResponseEntity<>(imageStorageService.getAll(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
 
     /**
      *
@@ -110,21 +185,14 @@ public class ImageController {
     @PutMapping(path= "/{id}/",consumes = "multipart/form-data",produces= "application/json")
     public ResponseEntity<Image> updateImage(@PathVariable("id") long id, @RequestParam("file") MultipartFile file, HttpServletRequest request){
         if (SAML2Service.isLoggedIn(request)){
-            Optional<Image> imageData = imageRepository.findById(id);
-            if(imageData.isPresent()){
-            try {
-                Image newImage = imageData.get();
-                newImage.setData(file.getBytes());
-                newImage.setName(file.getOriginalFilename());
-                newImage.setType(file.getContentType());
-
-                return new ResponseEntity<>(imageRepository.save(newImage),HttpStatus.OK);
-            }catch (Exception e){
-                return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-            }
-            }else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
+           try {
+               return new ResponseEntity<>(imageStorageService.update(id,file),HttpStatus.OK);
+           } catch (NotFoundException e) {
+               System.out.println(e.getMessage());
+               return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+           } catch (Exception e) {
+               return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
+           }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

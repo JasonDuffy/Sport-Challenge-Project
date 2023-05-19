@@ -400,5 +400,38 @@ public class SportControllerTest {
                 .andReturn();
 
     }
+    /**
+     * Test if all sports are deleted correctly
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void deleteAllSportsTestSuccess() throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders
+                .delete("/sports/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Mockito.verify(sportService).deleteAll();
+    }
+
+    /**
+     * Test if 403 is returned when user is not logged in
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void deleteAllSportsTestNotLoggedIn() throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders
+                .delete("/sports/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
 
 }

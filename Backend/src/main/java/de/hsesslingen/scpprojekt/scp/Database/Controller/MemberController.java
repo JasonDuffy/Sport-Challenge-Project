@@ -1,11 +1,8 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Services.MemberService;
-import de.hsesslingen.scpprojekt.scp.Exceptions.AlreadyExistsException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -29,11 +26,7 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     @Autowired
-    SAML2Service saml2Service;
-    @Autowired
     MemberService memberService;
-    @Autowired
-    MemberConverter memberConverter;
 
     /**
      * REST API for returning Member data of a given ID
@@ -46,13 +39,13 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Member found",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = MemberDTO.class))}),
+                            schema = @Schema(implementation = Member.class))}),
             @ApiResponse(responseCode = "404", description = "Member not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @GetMapping(path ="/{id}/", produces = "application/json")
-    public ResponseEntity<MemberDTO> getMemberByID(@PathVariable("id") long id, HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)){
+    public ResponseEntity<Member> getMemberByID(@PathVariable("id") long id, HttpServletRequest request) {
+        if (SAML2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(memberService.get(id), HttpStatus.OK);
             } catch (NotFoundException e) {
@@ -75,19 +68,13 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Member successfully added",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = MemberDTO.class))}),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
-            @ApiResponse(responseCode = "400", description = "User already exists or image not found", content = @Content)
+                            schema = @Schema(implementation = Member.class))}),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PostMapping(path = "/", produces = "application/json")
-    public ResponseEntity<MemberDTO> createMember(@RequestBody MemberDTO member, HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)){
-            try {
-                return new ResponseEntity<>(memberService.add(member), HttpStatus.CREATED);
-            } catch (AlreadyExistsException | NotFoundException e) {
-                System.out.println(e.getMessage());
-                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-            }
+    public ResponseEntity<Member> createMember(@RequestBody Member member, HttpServletRequest request) {
+        if (SAML2Service.isLoggedIn(request)){
+            return new ResponseEntity<>(memberService.add(member), HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -105,13 +92,13 @@ public class MemberController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Member successfully updated",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = MemberDTO.class))}),
+                            schema = @Schema(implementation = Member.class))}),
             @ApiResponse(responseCode = "404", description = "Member not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PutMapping(path = "/{id}/", produces = "application/json")
-    public ResponseEntity<MemberDTO> updateMember(@PathVariable("id") long id, @RequestBody MemberDTO member, HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)){
+    public ResponseEntity<Member> updateMember(@PathVariable("id") long id, @RequestBody Member member, HttpServletRequest request) {
+        if (SAML2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(memberService.update(id, member), HttpStatus.OK);
             } catch (NotFoundException e) {
@@ -140,7 +127,7 @@ public class MemberController {
     })
     @DeleteMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<HttpStatus> deleteMember(@PathVariable("id") long id, HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             try{
                 memberService.delete(id);
                 return new ResponseEntity<>(HttpStatus.OK);
@@ -167,37 +154,9 @@ public class MemberController {
     })
     @DeleteMapping("/")
     public ResponseEntity<HttpStatus> deleteAllMembers(HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             memberService.deleteAll();
             return new ResponseEntity<>(HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-    }
-
-    /**
-     * REST API for returning Member data of logged in user
-     *
-     * @param request automatically filled by browser
-     * @return Member data corresponding to the user, 404 otherwise
-     */
-    @Operation(summary = "Get member currently logged in")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Member found",
-                    content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = MemberDTO.class))}),
-            @ApiResponse(responseCode = "404", description = "Member not found", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
-    })
-    @GetMapping(path ="/loggedIn/", produces = "application/json")
-    public ResponseEntity<MemberDTO> getCurrentMember(HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)){
-            try{
-                return new ResponseEntity<>(memberService.getByEmail(saml2Service.getCurrentSAMLUser().getEmail()), HttpStatus.OK);
-            } catch (NotFoundException e) {
-                System.out.println(e.getMessage());
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

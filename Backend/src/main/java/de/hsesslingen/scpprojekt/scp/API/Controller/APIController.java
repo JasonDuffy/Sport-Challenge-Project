@@ -33,8 +33,6 @@ import java.util.Optional;
 @RequestMapping("/API")
 public class APIController {
     @Autowired
-    SAML2Service saml2Service;
-    @Autowired
     ChallengeRepository challengeRepository;
     @Autowired
     TeamRepository teamRepository;
@@ -58,7 +56,7 @@ public class APIController {
     })
     @GetMapping(path = "/TeamsForChallenges/", produces = "application/json")
     public ResponseEntity<List<Team>> getAllTeamsForChallenge(@RequestParam long ChallengeID, HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)) {
+        if (SAML2Service.isLoggedIn(request)) {
             Optional<Challenge> challenge = challengeRepository.findById(ChallengeID);
             if (challenge.isPresent()) {
                 List<Team> teams = teamRepository.findAll();
@@ -94,7 +92,7 @@ public class APIController {
     })
     @DeleteMapping(path = "/TeamsChallenge/", produces = "application/json")
     public ResponseEntity<HttpStatus> deleteTeamsFromChallenge(@RequestParam long ChallengeID, HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)) {
+        if (SAML2Service.isLoggedIn(request)) {
             Optional<Challenge> challenge = challengeRepository.findById(ChallengeID);
             if (challenge.isPresent()) {
                 List<Team> team = teamRepository.findAll();
@@ -128,7 +126,7 @@ public class APIController {
     })
     @GetMapping(path = "/MemberChallenges/{id}/", produces = "application/json")
     public ResponseEntity<List<TeamMember>> getTeamMembersForChallenge(@PathVariable("id") long ChallengeID, HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)) {
+        if (SAML2Service.isLoggedIn(request)) {
             Optional<Challenge> challenge = challengeRepository.findById(ChallengeID);
             if (challenge.isPresent()) {
                 List<TeamMember> teams = teamMemberRepository.findAll();

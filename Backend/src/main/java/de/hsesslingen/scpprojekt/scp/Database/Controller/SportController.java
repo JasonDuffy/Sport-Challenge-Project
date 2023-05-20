@@ -27,8 +27,6 @@ import java.util.Optional;
 public class SportController {
 
     @Autowired
-    SAML2Service saml2Service;
-    @Autowired
     private SportRepository sportRepository;
 
     /**
@@ -48,7 +46,7 @@ public class SportController {
     })
     @PostMapping(path = "/",produces = "application/json")
     public ResponseEntity<Sport>addSport(@RequestBody Sport sport, HttpServletRequest request){
-        if (saml2Service.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             try {
                 Sport newsport = sportRepository.save(
                         new Sport(sport.getName(), sport.getFactor()));
@@ -79,7 +77,7 @@ public class SportController {
     })
     @GetMapping(path = "/{id}/" , produces = "application/json")
     public ResponseEntity<Sport> getSportById(@PathVariable("id") long id, HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             Optional<Sport> sportData = sportRepository.findById(id);
             if (sportData.isPresent()) {
                 return new ResponseEntity<>(sportData.get(), HttpStatus.OK);
@@ -106,7 +104,7 @@ public class SportController {
     })
     @GetMapping(path = "/", produces = "application/json")
     public ResponseEntity<List<Sport>> getAllSports(HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             List<Sport> sports = sportRepository.findAll();
             return new ResponseEntity<>(sports, HttpStatus.OK);
         } else {
@@ -129,7 +127,7 @@ public class SportController {
     })
     @DeleteMapping(path = "/{id}/")
     public ResponseEntity<HttpStatus> deleteSport(@PathVariable("id") long id, HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             Optional<Sport> sportData = sportRepository.findById(id);
             if (sportData.isPresent()){
                 sportRepository.deleteById(id);
@@ -160,7 +158,7 @@ public class SportController {
     })
     @PutMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<Sport> updateChallenge(@PathVariable("id") Long ID, @RequestBody Sport sport, HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             Optional<Sport> sportData = sportRepository.findById(ID);
 
             if (sportData.isPresent()) {

@@ -1,15 +1,11 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.MemberRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Services.MemberService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
-import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,10 +49,6 @@ public class MemberControllerTest {
     MemberService memberService;
     @Autowired
     private MockMvc mockMvc;
-    @MockBean
-    SAML2Service saml2Service;
-    @MockBean
-    MemberConverter memberConverter;
 
     /**
      *Test for Successfully creating a member
@@ -65,14 +57,12 @@ public class MemberControllerTest {
     @Test
     @WithMockUser
     public void addMemberSuccess()throws Exception{
-        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-
-        MemberDTO member = new MemberDTO();
-        member.setUserID(1L);
+        Member member = new Member();
+        member.setId(1);
         member.setFirstName("Max");
         member.setLastName("Mustermann");
 
-        when(memberService.add(any(MemberDTO.class))).thenReturn(member);
+        when(memberService.add(any(Member.class))).thenReturn(member);
         RequestBuilder request = MockMvcRequestBuilders
                 .post("/members/")
                 .content(new ObjectMapper().writeValueAsString(member))
@@ -84,16 +74,14 @@ public class MemberControllerTest {
                 .andReturn();
         String content = res.getResponse().getContentAsString();
 
-        Pattern pattern = Pattern.compile("\"firstName\":\"(.*)\",\"lastName\":\"(.*)\",\"userID\":(.*),");
+        Pattern pattern = Pattern.compile("\\{\"id\":(\\d),");
         Matcher matcher = pattern.matcher(content);
 
         matcher.find();
-        assertEquals(matcher.group(1), "Max");
-        assertEquals(matcher.group(2), "Mustermann");
-        assertEquals(matcher.group(3), "1");
+        assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(memberService).add(any(MemberDTO.class));
+        Mockito.verify(memberService).add(any(Member.class));
     }
 
     /**
@@ -103,12 +91,12 @@ public class MemberControllerTest {
     @Test
     @WithAnonymousUser
     public void addMemberNoLogin()throws Exception{
-        MemberDTO member = new MemberDTO();
-        member.setUserID(1L);
+        Member member = new Member();
+        member.setId(1);
         member.setFirstName("Max");
-        member.setLastName("Mustermann");
+         member.setLastName("Mustermann");
 
-        when(memberService.add(any(MemberDTO.class))).thenReturn(member);
+        when(memberService.add(any(Member.class))).thenReturn(member);
         RequestBuilder request = MockMvcRequestBuilders
                 .post("/members/")
                 .content(new ObjectMapper().writeValueAsString(member))
@@ -128,12 +116,10 @@ public class MemberControllerTest {
     @Test
     @WithMockUser
     public void getMemberByIDSuccess() throws Exception{
-        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-
-        MemberDTO member = new MemberDTO();
-        member.setUserID(1L);
+        Member member = new Member();
+        member.setId(1L);
         member.setFirstName("Max");
-        member.setLastName("Mustermann");
+         member.setLastName("Mustermann");
 
         when(memberService.get(1L)).thenReturn(member);
         RequestBuilder request = MockMvcRequestBuilders
@@ -145,13 +131,11 @@ public class MemberControllerTest {
 
         String content = res.getResponse().getContentAsString();
 
-        Pattern pattern = Pattern.compile("\"firstName\":\"(.*)\",\"lastName\":\"(.*)\",\"userID\":(.*),");
+        Pattern pattern = Pattern.compile("\\{\"id\":(\\d),");
         Matcher matcher = pattern.matcher(content);
 
         matcher.find();
-        assertEquals(matcher.group(1), "Max");
-        assertEquals(matcher.group(2), "Mustermann");
-        assertEquals(matcher.group(3), "1");
+        assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
         Mockito.verify(memberService).get(1L);
@@ -164,8 +148,6 @@ public class MemberControllerTest {
     @Test
     @WithMockUser
     public void getMemberByIDNotFound() throws Exception{
-        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-
         when(memberService.get(4L)).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
@@ -198,8 +180,6 @@ public class MemberControllerTest {
     @Test
     @WithMockUser
     public void deleteMemberByIdSuccess() throws Exception{
-        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/members/1/").accept(MediaType.APPLICATION_JSON);
 
@@ -217,8 +197,6 @@ public class MemberControllerTest {
     @Test
     @WithMockUser
     public void deleteMemberByIdNotFound() throws Exception{
-        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-
         doThrow(NotFoundException.class).when(memberService).delete(3L);
 
         RequestBuilder request = MockMvcRequestBuilders
@@ -250,14 +228,12 @@ public class MemberControllerTest {
     @Test
     @WithMockUser
     public void updateMemberSuccess()throws Exception{
-        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-
-        MemberDTO member = new MemberDTO();
-        member.setUserID(1L);
+        Member member = new Member();
+        member.setId(1L);
         member.setFirstName("Max");
         member.setLastName("Mustermann");
 
-        when(memberService.update(any(Long.class), any(MemberDTO.class))).thenReturn(member);
+        when(memberService.update(any(Long.class), any(Member.class))).thenReturn(member);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/members/1/")
@@ -271,16 +247,14 @@ public class MemberControllerTest {
 
         String content = res.getResponse().getContentAsString();
 
-        Pattern pattern = Pattern.compile("\"firstName\":\"(.*)\",\"lastName\":\"(.*)\",\"userID\":(.*),");
+        Pattern pattern = Pattern.compile("\\{\"id\":(\\d),");
         Matcher matcher = pattern.matcher(content);
 
         matcher.find();
-        assertEquals(matcher.group(1), "Max");
-        assertEquals(matcher.group(2), "Mustermann");
-        assertEquals(matcher.group(3), "1");
+        assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(memberService).update(any(Long.class), any(MemberDTO.class));
+        Mockito.verify(memberService).update(any(Long.class), any(Member.class));
     }
     /**
      *Test for updating a non-existing member (Not Found)
@@ -290,14 +264,12 @@ public class MemberControllerTest {
     @Test
     @WithMockUser
     public void updateMemberNotFound()throws Exception{
-        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-
-        MemberDTO member = new MemberDTO();
-        member.setUserID(1L);
+        Member member = new Member();
+        member.setId(1L);
         member.setFirstName("Max");
         member.setLastName("Mustermann");
 
-        when(memberService.update(any(Long.class), any(MemberDTO.class))).thenThrow(NotFoundException.class);
+        when(memberService.update(any(Long.class), any(Member.class))).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/members/4/")
@@ -317,12 +289,11 @@ public class MemberControllerTest {
      */
     @Test
     @WithAnonymousUser
-    public void updateMemberLogOut()throws Exception{
-        MemberDTO member = new MemberDTO();
-        member.setUserID(1L);
+    public void UpdatememberLogOut()throws Exception{
+        Member member = new Member();
+        member.setId(1L);
         member.setFirstName("Max");
         member.setLastName("Mustermann");
-
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/members/1/")
                 .content(new ObjectMapper().writeValueAsString(member))

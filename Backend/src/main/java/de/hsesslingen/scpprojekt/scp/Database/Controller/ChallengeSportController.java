@@ -31,8 +31,6 @@ import java.util.Optional;
 @RequestMapping("/challenge-sports")
 public class ChallengeSportController {
     @Autowired
-    private SAML2Service saml2Service;
-    @Autowired
     private ChallengeSportRepository challengeSportRepository;
     @Autowired
     private ChallengeRepository challengeRepository;
@@ -56,7 +54,7 @@ public class ChallengeSportController {
     })
     @GetMapping(path = "/{id}/" , produces = "application/json")
     public ResponseEntity<ChallengeSport> getChallengeSportById(@PathVariable("id") long id, HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             Optional<ChallengeSport> challengeSportData = challengeSportRepository.findById(id);
             if (challengeSportData.isPresent()) {
                 return new ResponseEntity<>(challengeSportData.get(), HttpStatus.OK);
@@ -83,7 +81,7 @@ public class ChallengeSportController {
     })
     @GetMapping(path = "/" , produces = "application/json")
     public ResponseEntity<List<ChallengeSport>> getAllChallengeSports(HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             List<ChallengeSport> challengeSports = challengeSportRepository.findAll();
             return new ResponseEntity<>(challengeSports, HttpStatus.OK);
         } else {
@@ -110,7 +108,7 @@ public class ChallengeSportController {
     })
     @PostMapping(path = "/",produces = "application/json")
     public ResponseEntity<ChallengeSport>addChallengeSport(@RequestParam float factor, @RequestParam long sportId, @RequestParam long challengeId, HttpServletRequest request){
-        if (saml2Service.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             try {
                 Optional<Sport> foreignSport = sportRepository.findById(sportId);
                 Optional<Challenge> foreignChallenge = challengeRepository.findById(challengeId);
@@ -145,7 +143,7 @@ public class ChallengeSportController {
     })
     @DeleteMapping(path = "/{id}/")
     public ResponseEntity<Void> deleteChallengeSport(@PathVariable("id") long id, HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             Optional<ChallengeSport> challengeSportData = challengeSportRepository.findById(id);
             if (challengeSportData.isPresent()){
                 challengeSportRepository.deleteById(id);
@@ -178,7 +176,7 @@ public class ChallengeSportController {
     })
     @PutMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<ChallengeSport> updateChallenge(@PathVariable("id") long id, @RequestParam float factor, @RequestParam long sportId, @RequestParam long challengeId, HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)){
+        if (SAML2Service.isLoggedIn(request)){
             Optional<ChallengeSport> challengeSportData = challengeSportRepository.findById(id);
             Optional<Sport> foreignSportData = sportRepository.findById(sportId);
             Optional<Challenge> foreignChallengeData = challengeRepository.findById(challengeId);

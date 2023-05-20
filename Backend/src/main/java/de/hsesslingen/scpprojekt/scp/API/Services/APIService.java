@@ -44,14 +44,15 @@ public class APIService {
      * @return All activities concerning the given challenge ID
      */
     public List<ActivityDTO> getActivitiesForChallenge(Long challengeID){
-        List<Activity> activityList = new ArrayList<>();
+        List<Activity> allActivities = activityRepository.findAll();
+        List<Activity> challengeActivities = new ArrayList<>();
 
-        for (Activity a : activityRepository.findAll()){
-            if (a.getChallengeSport().getChallenge().getId() == challengeID)
-                activityList.add(a);
+        for(Activity activity : allActivities){
+            if(activity.getChallengeSport().getChallenge().getId() == challengeID)
+                challengeActivities.add(activity);
         }
 
-        return activityConverter.convertEntityListToDtoList(activityList);
+        return activityConverter.convertEntityListToDtoList(challengeActivities);
     }
 
     /**
@@ -60,7 +61,15 @@ public class APIService {
      * @return All activities by the given user ID
      */
     public List<ActivityDTO> getActivitiesForUser(Long userID){
-        return activityConverter.convertEntityListToDtoList(activityRepository.findActivitiesByMember_Id(userID));
+        List<Activity> allActivities = activityRepository.findAll();
+        List<Activity> userActivities = new ArrayList<>();
+
+        for(Activity activity : allActivities){
+            if(activity.getMember().getId() == userID)
+                userActivities.add(activity);
+        }
+
+        return activityConverter.convertEntityListToDtoList(userActivities);
     }
 
     /**

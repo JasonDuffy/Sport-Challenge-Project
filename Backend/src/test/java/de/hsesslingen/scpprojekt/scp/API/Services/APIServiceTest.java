@@ -3,9 +3,7 @@ package de.hsesslingen.scpprojekt.scp.API.Services;
 import de.hsesslingen.scpprojekt.scp.API.Services.APIService;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
@@ -26,9 +24,6 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -42,9 +37,6 @@ public class APIServiceTest {
     @Autowired
     APIService apiService;
 
-    @Autowired
-    ChallengeSportService challengeSportService;
-
     @MockBean
     ActivityRepository activityRepository;
 
@@ -55,10 +47,7 @@ public class APIServiceTest {
     BonusConverter bonusConverter;
 
     @Autowired
-    ActivityConverter activityConverter;
-
-    @Autowired
-    MemberConverter memberConverter;
+    ChallengeSportService challengeSportService;
 
     List<Activity> activityList = new ArrayList<>();
     List<Challenge> challengeList = new ArrayList<>();
@@ -68,12 +57,10 @@ public class APIServiceTest {
     List<Bonus> bonusList = new ArrayList<>();
 
     @BeforeEach
-    public void setup() throws NotFoundException {
+    public void setup(){
         Member m1 = new Member();
-        m1.setId(1L);
         m1.setEmail("test@example.com");
         Member m2 = new Member();
-        m2.setId(2L);
         m2.setEmail("test2@example.com");
         memberList.add(m1); memberList.add(m2);
 
@@ -157,21 +144,6 @@ public class APIServiceTest {
 
         when(activityRepository.findAll()).thenReturn(activityList);
         when(bonusRepository.findAll()).thenReturn(bonusList);
-
-        when(activityRepository.findActivitiesByChallengeSport_Id(1L)).thenAnswer(a -> {
-            List<Activity> aList = new ArrayList<>();
-            for(Activity act : activityList)
-                if (act.getChallengeSport().getId() == 1L)
-                    aList.add(act);
-            return aList;
-        });
-        when(activityRepository.findActivitiesByMember_Id(1L)).thenAnswer(a -> {
-            List<Activity> aList = new ArrayList<>();
-            for(Activity act : activityList)
-                if (act.getMember().getId() == 1L)
-                    aList.add(act);
-            return aList;
-        });
     }
 
     /**
@@ -223,7 +195,7 @@ public class APIServiceTest {
 
         assertEquals(counter, realCounter);
 
-        Mockito.verify(activityRepository).findActivitiesByMember_Id(1L);
+        Mockito.verify(activityRepository).findAll();
     }
 
     /**

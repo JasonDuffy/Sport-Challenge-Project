@@ -24,9 +24,6 @@ public class ActivityConverter {
     @Autowired
     MemberService memberService;
 
-    @Autowired
-    MemberConverter memberConverter;
-
     public ActivityDTO convertEntityToDto(Activity activity) {
         ActivityDTO activityDTO = new ActivityDTO();
         activityDTO.setId(activity.getId());
@@ -52,7 +49,7 @@ public class ActivityConverter {
         activity.setDistance(activityDTO.getDistance());
         activity.setDate(activityDTO.getDate());
         activity.setChallengeSport(challengeSportService.get(activityDTO.getChallengeSportID()));
-        activity.setMember(memberConverter.convertDtoToEntity(memberService.get(activityDTO.getMemberID())));
+        activity.setMember(memberService.get(activityDTO.getMemberID()));
         return activity;
     }
 

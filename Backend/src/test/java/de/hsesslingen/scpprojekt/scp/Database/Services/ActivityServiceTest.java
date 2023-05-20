@@ -2,7 +2,6 @@ package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
@@ -49,9 +48,6 @@ public class ActivityServiceTest {
     @Autowired
     ActivityConverter activityConverter;
 
-    @Autowired
-    MemberConverter memberConverter;
-
     List<Activity> activityList;
 
     /**
@@ -64,7 +60,6 @@ public class ActivityServiceTest {
         ChallengeSport cs = new ChallengeSport();
         cs.setId(2L);
         Member m = new Member();
-        m.setId(1L);
 
         for (long i = 0; i < 10; i++){
             Activity a = new Activity();
@@ -77,9 +72,8 @@ public class ActivityServiceTest {
 
         when(activityRepository.findAll()).thenReturn(activityList);
         when(challengeSportService.get(2L)).thenReturn(cs);
-        when(memberService.get(1L)).thenReturn(memberConverter.convertEntityToDto(m));
 
-        when(activityRepository.save(any(Activity.class))).then(AdditionalAnswers.returnsFirstArg()); //Return given activity class
+        when(activityRepository.save(any(Activity.class))).then(AdditionalAnswers.returnsFirstArg()); //Return given bonus class
     }
 
     /**
@@ -138,8 +132,7 @@ public class ActivityServiceTest {
         when(challengeSportService.get(1L)).thenReturn(cs);
 
         Member m = new Member();
-        m.setId(1L);
-        when(memberService.get(1L)).thenReturn(memberConverter.convertEntityToDto(m));
+        when(memberService.get(0L)).thenReturn(m);
 
         activityList.get(0).setChallengeSport(cs);
         activityList.get(0).setMember(m);
@@ -152,7 +145,7 @@ public class ActivityServiceTest {
 
         verify(activityRepository).save(any(Activity.class));
         verify(challengeSportService).get(1L);
-        verify(memberService).get(1L);
+        verify(memberService).get(0L);
     }
 
     /**
@@ -164,7 +157,7 @@ public class ActivityServiceTest {
         when(challengeSportService.get(any(Long.class))).thenThrow(NotFoundException.class);
 
         assertThrows(NotFoundException.class, () -> {
-            activityService.add(activityConverter.convertEntityToDto(activityList.get(1)));
+            activityService.add(activityConverter.convertEntityToDto(activityList.get(0)));
         });
     }
 
@@ -179,8 +172,7 @@ public class ActivityServiceTest {
         when(challengeSportService.get(1L)).thenReturn(cs);
 
         Member m = new Member();
-        m.setId(1L);
-        when(memberService.get(0L)).thenReturn(memberConverter.convertEntityToDto(m));
+        when(memberService.get(0L)).thenReturn(m);
 
         activityList.get(1).setDistance(20.9f);
         activityList.get(1).setChallengeSport(cs);
@@ -195,7 +187,7 @@ public class ActivityServiceTest {
 
         verify(activityRepository).save(any(Activity.class));
         verify(challengeSportService).get(1L);
-        verify(memberService).get(1L);
+        verify(memberService).get(0L);
     }
 
     /**

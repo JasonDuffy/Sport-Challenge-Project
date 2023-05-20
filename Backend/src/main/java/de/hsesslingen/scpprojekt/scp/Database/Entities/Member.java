@@ -25,8 +25,9 @@ public class Member{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-    @Column(name = "email", nullable = false, unique = true)
+    private long id;
+    @Column(name = "email", nullable = false)
+    @Unique
     private String email;
     @Column(name = "first_name", nullable = false)
     private String firstName;
@@ -56,7 +57,7 @@ public class Member{
         this.image = null;
     }
 
-    public Long getId() { return id; }
+    public long getId() {return id; }
 
     public String getEmail() {
         return email;
@@ -90,7 +91,7 @@ public class Member{
         this.image = image;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 }

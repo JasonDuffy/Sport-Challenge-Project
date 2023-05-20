@@ -1,20 +1,12 @@
 package de.hsesslingen.scpprojekt.scp.Authentication;
 
-import de.hsesslingen.scpprojekt.scp.API.Controller.API;
 import de.hsesslingen.scpprojekt.scp.Authentication.Controller.SAML2Controller;
-import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpSession;
@@ -22,96 +14,82 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.saml2.provider.service.authentication.Saml2AuthenticatedPrincipal;
-import org.springframework.security.test.context.support.WithAnonymousUser;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Tests of the SAML2Controller class
  * @author Jason Patrick Duffy
  */
 @ActiveProfiles("test")
-@WebMvcTest(SAML2Controller.class)
-@AutoConfigureMockMvc(addFilters = false)
+@SpringBootTest
 class SAML2ControllerTest {
-    @Autowired
-    MockMvc mockMvc;
 
-    @MockBean
-    SAML2Service saml2Service;
+    @Mock
+    private SecurityContext securityContextMock;
 
-    @Autowired
-    SAML2Controller saml2Controller;
+    @Mock
+    private Authentication authenticationMock;
+
+    @Mock
+    private Saml2AuthenticatedPrincipal saml2AuthenticatedPrincipalMock;
 
     /**
      * Tests if the redirection of login works
      */
     @Test
-    @WithMockUser
-    void testLogin() throws Exception {
-        RequestBuilder request = MockMvcRequestBuilders
-                .get("/saml/login/").accept(MediaType.APPLICATION_JSON);
+    void testLogin(){
+        ResponseEntity<Void> res = new SAML2Controller().login();
+        HttpHeaders headers = res.getHeaders();
 
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isPermanentRedirect())
-                .andExpect(header().string("location", "http://localhost:3000/"))
-                .andReturn();
-
-        verify(saml2Service).loginUser();
+        assertEquals(headers.getLocation().toString(), "http://localhost:3000/");
+        assertEquals(res.getStatusCode(), HttpStatus.MOVED_PERMANENTLY);
     }
 
     /**
      * Tests if user data is returned correctly when logged in
      */
     @Test
-    @WithMockUser
-    void testUserDataRestLoggedIn() throws Exception {
-        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+    void testUserDataRestLoggedIn(){
+        when(securityContextMock.getAuthentication()).thenReturn(authenticationMock);
+        when(authenticationMock.getPrincipal()).thenReturn(saml2AuthenticatedPrincipalMock);
+        when(saml2AuthenticatedPrincipalMock.getFirstAttribute("urn:oid:1.2.840.113549.1.9.1")).thenReturn("max@example.com");
+        when(saml2AuthenticatedPrincipalMock.getFirstAttribute("urn:oid:2.5.4.42")).thenReturn("Max Emilian");
+        when(saml2AuthenticatedPrincipalMock.getFirstAttribute("urn:oid:2.5.4.4")).thenReturn("Mustermann");
 
-        SAML2User user = new SAML2User("max@example.com", "Max Emilian", "Mustermann");
-        when(saml2Service.getCurrentSAMLUser()).thenReturn(user);
+        // Set mock SecurityContext as the current context
+        // Makes it so no real authentication is needed
+        SecurityContextHolder.setContext(securityContextMock);
 
-        RequestBuilder request = MockMvcRequestBuilders
-                .get("/saml/").accept(MediaType.APPLICATION_JSON);
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpSession sess = new MockHttpSession();
+        sess.setAttribute("SPRING_SECURITY_CONTEXT", "SAML2");
+        request.setSession(sess);
 
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isOk())
-                .andReturn();
+        SAML2Controller saml2Controller = new SAML2Controller();
 
-        String result = res.getResponse().getContentAsString();
-
-        Pattern pattern = Pattern.compile("\"email\":\"(.*@.*\\..*)\",\"firstName\":\"(.*)\",\"lastName\":\"(.*)\"");
-        Matcher matcher = pattern.matcher(result);
-
-        matcher.find();
-        assertEquals(matcher.group(1), "max@example.com");
-        assertEquals(matcher.group(2), "Max Emilian");
-        assertEquals(matcher.group(3), "Mustermann");
-        assertFalse(matcher.find());
+        ResponseEntity<SAML2User> result = saml2Controller.userDataREST(request);
+        assertEquals(result.getStatusCode(), HttpStatus.OK);
+        assertEquals(result.getBody().getEmail(), "max@example.com");
+        assertEquals(result.getBody().getFirstName(), "Max Emilian");
+        assertEquals(result.getBody().getLastName(), "Mustermann");
     }
 
     /**
      * Tests if user is correctly rejected when not logged in
      */
     @Test
-    @WithAnonymousUser
-    void testUserDataRestLoggedOut() throws Exception {
-        RequestBuilder request = MockMvcRequestBuilders
-                .get("/saml/").accept(MediaType.APPLICATION_JSON);
+    void testUserDataRestLoggedOut(){
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        MockHttpSession sess = new MockHttpSession();
+        sess.setAttribute("SPRING_SECURITY_CONTEXT", null);
+        request.setSession(sess);
 
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isForbidden())
-                .andReturn();
+        SAML2Controller saml2Controller = new SAML2Controller();
+
+        ResponseEntity<SAML2User> result = saml2Controller.userDataREST(request);
+        assertEquals(result.getStatusCode(), HttpStatus.FORBIDDEN);
     }
 }

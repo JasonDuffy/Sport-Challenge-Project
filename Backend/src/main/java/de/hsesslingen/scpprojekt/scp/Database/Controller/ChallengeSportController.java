@@ -35,6 +35,8 @@ import java.util.Optional;
 public class ChallengeSportController {
     @Autowired
     private ChallengeSportService challengeSportService;
+    @Autowired
+    SAML2Service saml2Service;
 
     /**
      * REST API for returning ChallengeSport data of a given ID
@@ -53,7 +55,7 @@ public class ChallengeSportController {
     })
     @GetMapping(path = "/{id}/" , produces = "application/json")
     public ResponseEntity<ChallengeSportDTO> getChallengeSportById(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(challengeSportService.getDTO(id), HttpStatus.OK);
             } catch (NotFoundException e) {
@@ -80,7 +82,7 @@ public class ChallengeSportController {
     })
     @GetMapping(path = "/" , produces = "application/json")
     public ResponseEntity<List<ChallengeSportDTO>> getAllChallengeSports(HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             return new ResponseEntity<>(challengeSportService.getAll(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -104,7 +106,7 @@ public class ChallengeSportController {
     })
     @PostMapping(path = "/",produces = "application/json")
     public ResponseEntity<ChallengeSportDTO>addChallengeSport(@RequestBody ChallengeSportDTO challengeSportDTO, HttpServletRequest request){
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(challengeSportService.add(challengeSportDTO), HttpStatus.CREATED);
             } catch (NotFoundException e) {
@@ -132,7 +134,7 @@ public class ChallengeSportController {
     })
     @DeleteMapping(path = "/{id}/")
     public ResponseEntity<Void> deleteChallengeSport(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 challengeSportService.delete(id);
                 return new ResponseEntity<>(HttpStatus.OK);
@@ -152,7 +154,7 @@ public class ChallengeSportController {
     })
     @DeleteMapping("/")
     public ResponseEntity<Void> deleteAllActivities(HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             challengeSportService.deleteAll();
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
@@ -178,7 +180,7 @@ public class ChallengeSportController {
     })
     @PutMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<ChallengeSportDTO> updateChallenge(@PathVariable("id") long id,@RequestBody ChallengeSportDTO Cs, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(challengeSportService.update(id, Cs), HttpStatus.OK);
             } catch (NotFoundException e) {

@@ -2,11 +2,13 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,11 +45,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @WebMvcTest(ChallengeSportController.class)
 @AutoConfigureMockMvc(addFilters = false)
-public class ChallengeSportTest {
+public class ChallengeSportControllerTest {
     @Autowired
     private MockMvc mockMvc;
     @MockBean
     ChallengeSportService challengeSportService;
+    @MockBean
+    private SAML2Service saml2Service;
+
     /**
      * Test if all ChallengeSport are returned correctly
      * @throws Exception by mockMvc
@@ -55,6 +60,7 @@ public class ChallengeSportTest {
     @Test
     @WithMockUser
     public void getALLChallengeSportTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
         ChallengeSportDTO Cs1 = new ChallengeSportDTO();
         Cs1.setId(1);
         ChallengeSportDTO Cs2 = new ChallengeSportDTO();
@@ -107,6 +113,7 @@ public class ChallengeSportTest {
     @Test
     @WithMockUser
     public void getChallengeSportByIDTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
         ChallengeSportDTO Cs1 = new ChallengeSportDTO();
         Cs1.setId(1);
 
@@ -138,6 +145,7 @@ public class ChallengeSportTest {
     @Test
     @WithMockUser
     public void getChallengeSportByIDTestNotFound() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
         when(challengeSportService.getDTO(1L)).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
@@ -170,6 +178,7 @@ public class ChallengeSportTest {
     @Test
     @WithMockUser
     public void addChallengeSportTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
         ChallengeSportDTO Cs1 = new ChallengeSportDTO();
         Cs1.setId(1);
         Cs1.setSportID(4L);
@@ -206,6 +215,7 @@ public class ChallengeSportTest {
     @Test
     @WithMockUser
     public void addChallengeSportTestNotFound() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
         ChallengeSportDTO Cs1 = new ChallengeSportDTO();
         Cs1.setId(1);
         Cs1.setChallengeID(2);
@@ -257,6 +267,7 @@ public class ChallengeSportTest {
     @Test
     @WithMockUser
     public void updateChallengeSportTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
         ChallengeSportDTO Cs1 = new ChallengeSportDTO();
         Cs1.setId(1);
 
@@ -293,7 +304,8 @@ public class ChallengeSportTest {
     @Test
     @WithMockUser
     public void updateChallengeSportTestSuccessNotFound() throws Exception {
-        ActivityDTO a1 = new ActivityDTO();
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+        ChallengeSportDTO a1 = new ChallengeSportDTO();
         a1.setId(1);
 
         when(challengeSportService.update(any(Long.class), any(ChallengeSportDTO.class))).thenThrow(NotFoundException.class);
@@ -319,7 +331,7 @@ public class ChallengeSportTest {
     @Test
     @WithAnonymousUser
     public void updateChallengeSportTestNotLoggedIn() throws Exception {
-        Activity a1 = new Activity();
+        ChallengeSportDTO a1 = new ChallengeSportDTO();
         a1.setId(1);
 
         RequestBuilder request = MockMvcRequestBuilders
@@ -341,6 +353,7 @@ public class ChallengeSportTest {
     @Test
     @WithMockUser
     public void deleteChallengeSportTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/challenge-sports/1/").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
@@ -359,6 +372,7 @@ public class ChallengeSportTest {
     @Test
     @WithMockUser
     public void deleteChallengeSportTestNotFound() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
         doThrow(NotFoundException.class).when(challengeSportService).delete(1L);
 
         RequestBuilder request = MockMvcRequestBuilders
@@ -395,6 +409,7 @@ public class ChallengeSportTest {
     @Test
     @WithMockUser
     public void deleteAllChallengeSportsTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/challenge-sports/").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);

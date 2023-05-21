@@ -30,6 +30,8 @@ public class SportController {
 
     @Autowired
     private SportService sportService;
+    @Autowired
+    SAML2Service saml2Service;
 
     /**
      * Rest API return Sport of a given id
@@ -47,7 +49,7 @@ public class SportController {
     })
     @PostMapping(path = "/",produces = "application/json")
     public ResponseEntity<Sport>addSport(@RequestBody Sport sport, HttpServletRequest request){
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             return new ResponseEntity<>(sportService.add(sport),HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -72,7 +74,7 @@ public class SportController {
     })
     @GetMapping(path = "/{id}/" , produces = "application/json")
     public ResponseEntity<Sport> getSportById(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
            try{
                return new ResponseEntity<>(sportService.get(id), HttpStatus.OK);
            }catch (NotFoundException e){
@@ -99,7 +101,7 @@ public class SportController {
     })
     @GetMapping(path = "/", produces = "application/json")
     public ResponseEntity<List<Sport>> getAllSports(HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             return new ResponseEntity<>(sportService.getAll(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -121,7 +123,7 @@ public class SportController {
     })
     @DeleteMapping(path = "/{id}/")
     public ResponseEntity<HttpStatus> deleteSport(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 sportService.delete(id);
                 return new ResponseEntity<>(HttpStatus.OK);
@@ -148,7 +150,7 @@ public class SportController {
     })
     @DeleteMapping(path = "/")
     public ResponseEntity<HttpStatus> deleteAllSport(HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             sportService.deleteAll();
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
@@ -174,7 +176,7 @@ public class SportController {
     })
     @PutMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<Sport> updateChallenge(@PathVariable("id") Long ID, @RequestBody Sport sport, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(sportService.update(ID,sport), HttpStatus.OK);
             } catch (NotFoundException e) {

@@ -128,9 +128,9 @@ public class TeamServiceTest {
     /**
      * Test if add works correctly
      * @throws NotFoundException Should never be thrown
-     * TODO: Image gives Null back for converter;
+     *
      */
-    /*
+
     @Test
     public void addTestSuccess() throws NotFoundException {
         Challenge challenge = new Challenge();
@@ -143,7 +143,7 @@ public class TeamServiceTest {
         team.setChallenge(challenge);
 
         TeamDTO teamDTo = teamConverter.convertEntityToDto(team);
-        teamDTo.setImageID(1);
+        teamDTo.setImageID(1L);
         MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
         TeamDTO newTeam = teamService.add(file, teamDTo);
 
@@ -153,7 +153,7 @@ public class TeamServiceTest {
         verify(teamRepository).save(any(Team.class));
         verify(challengeService).get(1L);
     }
-*/
+
     /**
      * Test if exception is correctly thrown
      * @throws NotFoundException Should never be thrown

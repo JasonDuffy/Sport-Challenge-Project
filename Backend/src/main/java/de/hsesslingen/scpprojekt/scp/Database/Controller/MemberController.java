@@ -54,7 +54,7 @@ public class MemberController {
     public ResponseEntity<MemberDTO> getMemberByID(@PathVariable("id") long id, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
             try{
-                return new ResponseEntity<>(memberService.get(id), HttpStatus.OK);
+                return new ResponseEntity<>(memberService.getDTO(id), HttpStatus.OK);
             } catch (NotFoundException e) {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

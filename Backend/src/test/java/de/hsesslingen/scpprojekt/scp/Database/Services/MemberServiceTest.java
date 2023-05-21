@@ -98,7 +98,7 @@ public class MemberServiceTest {
     @Test
     public void getTestSuccess() throws NotFoundException {
         for(Member m: memberList){
-            assertEquals(memberConverter.convertEntityToDto(m).getUserID(), memberService.get(m.getId()).getUserID());
+            assertEquals(memberConverter.convertEntityToDto(m).getUserID(), memberService.getDTO(m.getId()).getUserID());
             verify(memberRepository).findById(m.getId());
         }
     }

@@ -135,7 +135,7 @@ public class MemberControllerTest {
         member.setFirstName("Max");
         member.setLastName("Mustermann");
 
-        when(memberService.get(1L)).thenReturn(member);
+        when(memberService.getDTO(1L)).thenReturn(member);
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/members/1/").accept(MediaType.APPLICATION_JSON);
 
@@ -154,7 +154,7 @@ public class MemberControllerTest {
         assertEquals(matcher.group(3), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(memberService).get(1L);
+        Mockito.verify(memberService).getDTO(1L);
     }
 
     /**
@@ -166,7 +166,7 @@ public class MemberControllerTest {
     public void getMemberByIDNotFound() throws Exception{
         when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
 
-        when(memberService.get(4L)).thenThrow(NotFoundException.class);
+        when(memberService.getDTO(4L)).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/members/4/").accept(MediaType.APPLICATION_JSON);

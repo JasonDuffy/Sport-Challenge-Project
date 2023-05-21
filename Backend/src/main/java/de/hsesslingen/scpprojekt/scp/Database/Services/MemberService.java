@@ -16,7 +16,7 @@ import java.util.Optional;
 /**
  * Service of the Member entity
  *
- * @author Jason Patrick Duffy
+ * @author Jason Patrick Duffy,Tom Nguyen Dinh
  */
 
 @Service
@@ -42,13 +42,20 @@ public class MemberService {
      * @return Member with given ID
      * @throws NotFoundException Member can not be found
      */
-    public MemberDTO get(Long memberID) throws NotFoundException {
+    public MemberDTO getDTO(Long memberID) throws NotFoundException {
         Optional<Member> member = memberRepository.findById(memberID);
         if(member.isPresent())
             return memberConverter.convertEntityToDto(member.get());
         throw new NotFoundException("Member with ID " + memberID + " is not present in DB.");
     }
 
+
+    public Member get(Long memberID) throws NotFoundException {
+        Optional<Member> member = memberRepository.findById(memberID);
+        if(member.isPresent())
+            return member.get();
+        throw new NotFoundException("Member with ID " + memberID + " is not present in DB.");
+    }
     /**
      * Returns member currently logged in
      *
@@ -83,7 +90,7 @@ public class MemberService {
      * @return Updated bonus object
      */
     public MemberDTO update(Long memberID, MemberDTO member) throws NotFoundException {
-        MemberDTO newMember = get(memberID);
+        MemberDTO newMember = getDTO(memberID);
 
         newMember.setEmail(member.getEmail());
         newMember.setFirstName(member.getFirstName());

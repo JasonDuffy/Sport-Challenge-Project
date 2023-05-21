@@ -77,7 +77,7 @@ public class ActivityServiceTest {
 
         when(activityRepository.findAll()).thenReturn(activityList);
         when(challengeSportService.get(2L)).thenReturn(cs);
-        when(memberService.get(1L)).thenReturn(memberConverter.convertEntityToDto(m));
+        when(memberService.getDTO(1L)).thenReturn(memberConverter.convertEntityToDto(m));
 
         when(activityRepository.save(any(Activity.class))).then(AdditionalAnswers.returnsFirstArg()); //Return given activity class
     }
@@ -139,7 +139,7 @@ public class ActivityServiceTest {
 
         Member m = new Member();
         m.setId(1L);
-        when(memberService.get(1L)).thenReturn(memberConverter.convertEntityToDto(m));
+        when(memberService.getDTO(1L)).thenReturn(memberConverter.convertEntityToDto(m));
 
         activityList.get(0).setChallengeSport(cs);
         activityList.get(0).setMember(m);
@@ -152,7 +152,7 @@ public class ActivityServiceTest {
 
         verify(activityRepository).save(any(Activity.class));
         verify(challengeSportService).get(1L);
-        verify(memberService).get(1L);
+        verify(memberService).getDTO(1L);
     }
 
     /**
@@ -180,7 +180,7 @@ public class ActivityServiceTest {
 
         Member m = new Member();
         m.setId(1L);
-        when(memberService.get(0L)).thenReturn(memberConverter.convertEntityToDto(m));
+        when(memberService.getDTO(0L)).thenReturn(memberConverter.convertEntityToDto(m));
 
         activityList.get(1).setDistance(20.9f);
         activityList.get(1).setChallengeSport(cs);
@@ -195,7 +195,7 @@ public class ActivityServiceTest {
 
         verify(activityRepository).save(any(Activity.class));
         verify(challengeSportService).get(1L);
-        verify(memberService).get(1L);
+        verify(memberService).getDTO(1L);
     }
 
     /**

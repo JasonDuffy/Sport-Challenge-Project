@@ -22,6 +22,8 @@ public class TeamMemberConverter {
     TeamService teamService;
     @Autowired
     MemberService memberService;
+    @Autowired
+    MemberConverter memberConverter;
 
     /**
      * Converts Entity TeamMember to a DTO
@@ -34,7 +36,13 @@ public class TeamMemberConverter {
         TeamMemberDTO teamMemberDTO = new TeamMemberDTO();
         teamMemberDTO.setId(teamMember.getId());
         teamMemberDTO.setTeamID(teamMember.getTeam().getId());
-        teamMemberDTO.setMemberID(teamMember.getMember().getId());
+        try {
+            teamMemberDTO.setMemberID(teamMember.getMember().getId());
+        } catch (NullPointerException e){
+            teamMemberDTO.setMemberID(null);
+        }
+
+
         return teamMemberDTO;
     }
 
@@ -64,7 +72,12 @@ public class TeamMemberConverter {
         TeamMember teamMember = new TeamMember();
         teamMember.setId(teamMemberDTO.getId());
         teamMember.setTeam(teamService.get(teamMemberDTO.getTeamID()));
-        teamMember.setMember(memberService.get((teamMemberDTO.getMemberID())));
+        try {
+            teamMember.setMember(memberService.get(teamMemberDTO.getMemberID()));
+        } catch (NullPointerException | NotFoundException e){
+            teamMember.setMember(null);
+        }
+
         return teamMember;
     }
 

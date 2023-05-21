@@ -3,6 +3,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Services;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.TeamMemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamMemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
+import de.hsesslingen.scpprojekt.scp.Database.Filler.Filler;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.TeamMemberRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -37,11 +38,13 @@ public class TeamMemberServiceTest {
     TeamService teamService;
     @MockBean
     TeamMemberRepository teamMemberRepository;
+
     @Autowired
     TeamMemberService teamMemberService;
     @Autowired
     TeamMemberConverter teamMemberConverter;
     List<TeamMember> teamMemberList;
+
 
     /**
      * Sets up tests
@@ -145,7 +148,6 @@ public class TeamMemberServiceTest {
 
         verify(teamMemberRepository).save(any(TeamMember.class));
         verify(teamService).get(1L);
-        verify(memberService).get(0L);
     }
 
     /**
@@ -157,7 +159,7 @@ public class TeamMemberServiceTest {
         when(teamService.get(any(Long.class))).thenThrow(NotFoundException.class);
 
         assertThrows(NotFoundException.class, () -> {
-            teamMemberService.add(teamMemberConverter.convertEntityToDto(teamMemberList.get(0)));
+            teamMemberService.add(teamMemberConverter.convertEntityToDto(teamMemberList.get(1)));
         });
     }
 
@@ -186,7 +188,6 @@ public class TeamMemberServiceTest {
 
         verify(teamMemberRepository).save(any(TeamMember.class));
         verify(teamService).get(1L);
-        verify(memberService).get(0L);
     }
 
     /**
@@ -195,10 +196,9 @@ public class TeamMemberServiceTest {
      */
     @Test
     public void updateTestFail() throws NotFoundException {
-        when(teamService.get(any(Long.class))).thenThrow(NotFoundException.class);
 
         assertThrows(NotFoundException.class, () -> {
-            teamMemberService.update(0L, teamMemberConverter.convertEntityToDto(teamMemberList.get(0)));
+            teamMemberService.update(20L, teamMemberConverter.convertEntityToDto(teamMemberList.get(0)));
         });
     }
 

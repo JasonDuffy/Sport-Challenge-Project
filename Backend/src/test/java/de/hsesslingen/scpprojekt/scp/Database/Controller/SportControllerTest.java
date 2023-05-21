@@ -1,9 +1,12 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.SportRepository;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -47,6 +50,9 @@ public class SportControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @MockBean
+    SAML2Service saml2Service;
+
     /**
      *Test for Successfully creating a Sport
      * @throws Exception Exception by mockMvc
@@ -54,6 +60,8 @@ public class SportControllerTest {
     @Test
     @WithMockUser
     public void addSportSuccess()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         Sport sport = new Sport();
         sport.setId(1);
         sport.setName("Laufen");
@@ -88,6 +96,8 @@ public class SportControllerTest {
     @Test
     @WithMockUser
     public void addSportSomethingWentWrong()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         Sport sport  = new Sport();
 
         when(sportRepository.save(any(Sport.class))).thenThrow(HttpServerErrorException.InternalServerError.class);
@@ -134,6 +144,8 @@ public class SportControllerTest {
     @Test
     @WithMockUser
     public void getSportByIDSuccess() throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         Sport sport = new Sport();
         sport.setId(1L);
         sport.setName("Laufen");
@@ -166,6 +178,8 @@ public class SportControllerTest {
     @Test
     @WithMockUser
     public void getSportByIDNotFound() throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         Sport sport = new Sport();
         sport.setId(1L);
         sport.setName("Laufen");
@@ -207,6 +221,8 @@ public class SportControllerTest {
     @Test
     @WithMockUser
     public void getAllSportSuccess() throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         Sport sport = new Sport();
         sport.setId(1L);
         sport.setName("Laufen");
@@ -275,6 +291,8 @@ public class SportControllerTest {
     @Test
     @WithMockUser
     public void DeleteSportByIdSuccess() throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         Sport sport = new Sport();
         sport.setId(1L);
         sport.setName("Laufen");
@@ -299,6 +317,8 @@ public class SportControllerTest {
     @Test
     @WithMockUser
     public void DeleteSportByIdNotFound() throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         Sport sport = new Sport();
         sport.setId(1L);
         sport.setName("Laufen");
@@ -340,6 +360,8 @@ public class SportControllerTest {
     @Test
     @WithMockUser
     public void UpdateSportSuccess()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         Sport sport = new Sport();
         sport.setId(1L);
         sport.setName("Laufen");
@@ -377,6 +399,8 @@ public class SportControllerTest {
     @Test
     @WithMockUser
     public void UpdateSportNotFound()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         Sport sport = new Sport();
         sport.setId(1L);
         sport.setName("Laufen");

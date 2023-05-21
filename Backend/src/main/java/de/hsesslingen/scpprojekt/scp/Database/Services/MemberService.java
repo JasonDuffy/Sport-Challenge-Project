@@ -1,7 +1,11 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.MemberRepository;
+import de.hsesslingen.scpprojekt.scp.Exceptions.AlreadyExistsException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,13 +23,16 @@ import java.util.Optional;
 public class MemberService {
     @Autowired
     MemberRepository memberRepository;
+    @Autowired
+    MemberConverter memberConverter;
     /**
      * Returns all members in database
      *
      * @return List of all Bonuses in DB
      */
-    public List<Member> getAll() {
-        return memberRepository.findAll();
+    public List<MemberDTO> getAll() {
+        List<Member> members = memberRepository.findAll();
+        return memberConverter.convertEntityListToDtoList(members);
     }
 
     /**
@@ -35,21 +42,37 @@ public class MemberService {
      * @return Member with given ID
      * @throws NotFoundException Member can not be found
      */
-    public Member get(Long memberID) throws NotFoundException {
+    public MemberDTO get(Long memberID) throws NotFoundException {
         Optional<Member> member = memberRepository.findById(memberID);
         if(member.isPresent())
-            return member.get();
+            return memberConverter.convertEntityToDto(member.get());
         throw new NotFoundException("Member with ID " + memberID + " is not present in DB.");
+    }
+
+    /**
+     * Returns member currently logged in
+     *
+     * @return Member that is logged in
+     * @throws NotFoundException Member can not be found
+     */
+    public MemberDTO getByEmail(String email) throws NotFoundException {
+        Member member = memberRepository.findMemberByEmail(email);
+        if(member == null)
+            throw new NotFoundException("Member with email " + email + " is not present in DB.");
+        return memberConverter.convertEntityToDto(member);
     }
 
     /**
      * Adds a given member to the DB
      *
-     * @param member Member object to be added to DB
+     * @param memberDTO MemberDTO object to be added to DB
      * @return Added member object
      */
-    public Member add(Member member) {
-        return memberRepository.save(new Member(member.getEmail(), member.getFirstName(), member.getLastName(), member.getImage()));
+    public MemberDTO add(MemberDTO memberDTO) throws AlreadyExistsException, NotFoundException {
+        Member member = memberConverter.convertDtoToEntity(memberDTO);
+        if(!memberRepository.existsMemberByEmail(member.getEmail()))
+            return memberConverter.convertEntityToDto(memberRepository.save(new Member(member.getEmail(), member.getFirstName(), member.getLastName(), member.getImage())));
+        throw new AlreadyExistsException("Member with email " + member.getEmail() + " already exists in DB!");
     }
 
     /**
@@ -59,15 +82,16 @@ public class MemberService {
      * @param member   Member object that overwrites the old member
      * @return Updated bonus object
      */
-    public Member update(Long memberID, Member member) throws NotFoundException {
-        Member newMember = get(memberID);
+    public MemberDTO update(Long memberID, MemberDTO member) throws NotFoundException {
+        MemberDTO newMember = get(memberID);
 
         newMember.setEmail(member.getEmail());
         newMember.setFirstName(member.getFirstName());
         newMember.setLastName(member.getLastName());
-        newMember.setImage(member.getImage());
+        newMember.setImageID(member.getImageID());
+        newMember.setUserID(memberID);
 
-        return memberRepository.save(newMember);
+        return memberConverter.convertEntityToDto(memberRepository.save(memberConverter.convertDtoToEntity(newMember)));
     }
 
     /**

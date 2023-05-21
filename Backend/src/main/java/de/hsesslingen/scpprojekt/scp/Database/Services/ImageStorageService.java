@@ -1,7 +1,5 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ImageRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
@@ -96,6 +94,9 @@ public class ImageStorageService {
         return imageRepository.save(updatedImage);
     }
 
+    /**
+     * delete All Images
+     */
     public void deleteAll(){
         imageRepository.deleteAll();
     }

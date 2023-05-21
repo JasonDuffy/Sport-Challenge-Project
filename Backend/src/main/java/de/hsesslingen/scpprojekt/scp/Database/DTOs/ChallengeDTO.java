@@ -2,7 +2,6 @@ package de.hsesslingen.scpprojekt.scp.Database.DTOs;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 
 import java.time.LocalDateTime;
 
@@ -18,12 +17,12 @@ public class ChallengeDTO {
     String description;
     LocalDateTime startDate;
     LocalDateTime endDate;
-    long imageID;
+    Long imageID;
     float targetDistance;
 
     public ChallengeDTO() {}
 
-    public ChallengeDTO(String name, String description, LocalDateTime startDate, LocalDateTime endDate, long imageID, float targetDistance) {
+    public ChallengeDTO(String name, String description, LocalDateTime startDate, LocalDateTime endDate, Long imageID, float targetDistance) {
         this.name = name;
         this.description = description;
         this.startDate = startDate;
@@ -75,11 +74,11 @@ public class ChallengeDTO {
         this.endDate = endDate;
     }
 
-    public long getImageID() {
+    public Long getImageID() {
         return imageID;
     }
 
-    public void setImageID(long imageID) {
+    public void setImageID(Long imageID) {
         this.imageID = imageID;
     }
 

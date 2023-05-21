@@ -122,11 +122,10 @@ public class ChallengeServiceTest {
     /**
      * Test if add works correctly
      * @throws NotFoundException Should never be thrown
-     * TODO: getImage gives null back
 
-     /*
+     */
     @Test
-    public void addTestSuccess() throws NotFoundException, IOException {
+    public void addTestSuccess() throws NotFoundException {
 
         MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
 
@@ -134,7 +133,7 @@ public class ChallengeServiceTest {
 
         verify(challengeRepository).save(any(Challenge.class));
 
-    }*/
+    }
     /**
      * Test if exception is correctly thrown
      * @throws NotFoundException Should never be thrown
@@ -152,10 +151,10 @@ public class ChallengeServiceTest {
     /**
      * Test is update works correctly
      * @throws NotFoundException Should never be thrown
-     * TODO: same problem image is null
+     *
      */
 
-    /*
+
     @Test
     public void updateTestSuccess() throws NotFoundException {
 
@@ -170,7 +169,7 @@ public class ChallengeServiceTest {
 
         verify(challengeRepository).save(any(Challenge.class));
     }
-*/
+
 
     /**
      * Test if exception is correctly thrown

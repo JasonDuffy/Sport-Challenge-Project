@@ -33,7 +33,7 @@ public class ImageStorageService {
      * @throws IOException
      */
     public Image store(MultipartFile file) throws IOException {
-        if(!checkImage(file))
+        if(!isImage(file))
             throw new IOException(file.getOriginalFilename() + " is not an image!");
 
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
@@ -42,11 +42,14 @@ public class ImageStorageService {
         return imageRepository.save(image);
     }
 
-    public Image get(Long ImageID) throws  NotFoundException {
-        Optional<Image> image =  imageRepository.findById(ImageID);
-        if(image.isPresent()){
-            return  image.get();
-        }throw new NotFoundException("Image with ID " +ImageID+" is not present in DB.");
+    public Image get(Long ImageID) throws NotFoundException {
+        if(ImageID != null){
+            Optional<Image> image =  imageRepository.findById(ImageID);
+            if(image.isPresent()){
+                return  image.get();
+            }
+        }
+        throw new NotFoundException("Image with ID " +ImageID+" is not present in DB.");
     }
 
     /**
@@ -54,7 +57,7 @@ public class ImageStorageService {
      * @param file File to be tested
      * @return True if file is an image, false otherwise
      */
-    public Boolean checkImage(MultipartFile file){
+    public Boolean isImage(MultipartFile file){
         try (InputStream input = file.getInputStream()){
             return ImageIO.read(input) != null;
         } catch (Exception e){

@@ -1,4 +1,5 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
@@ -7,6 +8,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ImageStorageService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.TeamService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,7 @@ import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -55,6 +58,8 @@ public class TeamControllerTest {
     TeamService teamService;
     @MockBean
     ImageStorageService imageStorageService;
+    @MockBean
+    SAML2Service saml2Service;
 
     /**
      * Test for get team by ID SUCCESS
@@ -63,10 +68,12 @@ public class TeamControllerTest {
     @Test
     @WithMockUser
     public void getTeamByIDSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         TeamDTO team = new TeamDTO();
         team.setId(1);
 
-        when(teamService.get(1L)).thenReturn(team);
+        when(teamService.getDTO(1L)).thenReturn(team);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/teams/1/").accept(MediaType.APPLICATION_JSON);
@@ -85,7 +92,7 @@ public class TeamControllerTest {
         assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(teamService).get(1L);
+        Mockito.verify(teamService).getDTO(1L);
     }
 
     /**
@@ -95,7 +102,9 @@ public class TeamControllerTest {
     @Test
     @WithMockUser
     public void getTeamByIDNotFound() throws Exception{
-        when(teamService.get(1L)).thenThrow(NotFoundException.class);
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
+        when(teamService.getDTO(1L)).thenThrow(NotFoundException.class);
         RequestBuilder requestBuilder = MockMvcRequestBuilders
                 .get("/teams/1/").accept(MediaType.APPLICATION_JSON);
 
@@ -125,6 +134,8 @@ public class TeamControllerTest {
     @Test
     @WithMockUser
     public void getALLTeamsSuccess() throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         TeamDTO team1 = new TeamDTO();
         TeamDTO team2 = new TeamDTO();
         team1.setId(1);
@@ -178,6 +189,8 @@ public class TeamControllerTest {
     @Test
     @WithMockUser
     public void deleteATeamSuccess()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
 
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/teams/1/").accept(MediaType.APPLICATION_JSON)
@@ -196,6 +209,8 @@ public class TeamControllerTest {
     @Test
     @WithMockUser
     public void deleteATeamNotFound()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         doThrow(NotFoundException.class).when(teamService).delete(1L);
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/teams/1/").accept(MediaType.APPLICATION_JSON)
@@ -227,6 +242,8 @@ public class TeamControllerTest {
     @Test
     @WithMockUser
     public void deleteALLTeamSuccess()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/teams/").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
@@ -258,6 +275,8 @@ public class TeamControllerTest {
     @Test
     @WithMockUser
     public void addTeamSuccess()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         Challenge challenge = new Challenge();
         challenge.setName("Annas");
         Image image = new Image();
@@ -267,6 +286,7 @@ public class TeamControllerTest {
         team.setId(1L);
         team.setName("Hansen");
         team.setChallenge(challenge);
+
 
         MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
         MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\"}".getBytes());
@@ -283,19 +303,21 @@ public class TeamControllerTest {
                .andExpect(status().isCreated())
                .andReturn();
 
+        Mockito.verify(teamService).add(any(MockMultipartFile.class),any(TeamDTO.class));
+
 
     }
     /**
      * Test for creating a team not found
      * @throws Exception Exception by mockMvc
      */
-    /*
+
     @Test
     @WithMockUser
     public void addTeamNotFound()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
 
-        TeamDTO team = new TeamDTO();
-        team.setId(1L);
+        when(teamService.add(any(MockMultipartFile.class),any(TeamDTO.class))).thenThrow(NotFoundException.class);
 
         MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
         MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\" }".getBytes());
@@ -310,10 +332,9 @@ public class TeamControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isNotFound())
                 .andReturn();
-
-
+        Mockito.verify(teamService).add(any(MockMultipartFile.class),any(TeamDTO.class));
     }
-*/
+
     /**
      * Test for creating a team not login
      * @throws Exception Exception by mockMvc
@@ -348,6 +369,8 @@ public class TeamControllerTest {
     @Test
     @WithMockUser
     public void updateTeamSuccess()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         Challenge challenge = new Challenge();
         challenge.setName("Annas");
         challenge.setId(2L);
@@ -379,21 +402,25 @@ public class TeamControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
+        Mockito.verify(teamService).update(any(MockMultipartFile.class),any(Long.class),any(TeamDTO.class));
+
     }
 
     /**
      * Test for updating a team not found
      * @throws Exception Exception by mockMvc
      */
-    /*
+
     @Test
     @WithMockUser
     public void updateTeamNotFound()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
 
-        when(teamService.get(1L)).thenThrow(NotFoundException.class);
 
         MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
         MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\"}".getBytes());
+
+        when(teamService.update(any(MockMultipartFile.class),any(Long.class),any(TeamDTO.class))).thenThrow(NotFoundException.class);
 
         MockMultipartHttpServletRequestBuilder builder =
                 MockMvcRequestBuilders.multipart("/teams/2/");
@@ -413,8 +440,9 @@ public class TeamControllerTest {
                 .andExpect(status().isNotFound())
                 .andReturn();
 
+        Mockito.verify(teamService).update(any(MockMultipartFile.class),any(Long.class),any(TeamDTO.class));
     }
-*/
+
     /**
      * Test for updating a team not login
      * @throws Exception Exception by mockMvc

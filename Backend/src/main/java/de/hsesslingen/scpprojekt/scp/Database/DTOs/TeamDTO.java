@@ -2,12 +2,13 @@ package de.hsesslingen.scpprojekt.scp.Database.DTOs;
 
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
 
 public class TeamDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     long id;
     String name;
-    long imageID;
+    Long imageID;
     long challengeID;
 
     public TeamDTO() {}
@@ -34,11 +35,11 @@ public class TeamDTO {
         this.name = name;
     }
 
-    public long getImageID() {
+    public Long getImageID() {
         return imageID;
     }
 
-    public void setImageID(long imageID) {
+    public void setImageID(Long imageID) {
         this.imageID = imageID;
     }
 

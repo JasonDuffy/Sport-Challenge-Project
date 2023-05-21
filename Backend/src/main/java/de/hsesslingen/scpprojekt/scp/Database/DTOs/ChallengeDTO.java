@@ -13,7 +13,7 @@ public class ChallengeDTO {
     String description;
     LocalDateTime startDate;
     LocalDateTime endDate;
-    long imageID;
+    Long imageID;
     float targetDistance;
 
     public ChallengeDTO() {}

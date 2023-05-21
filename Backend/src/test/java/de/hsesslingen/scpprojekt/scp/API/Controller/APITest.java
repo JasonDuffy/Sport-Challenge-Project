@@ -1,10 +1,12 @@
 package de.hsesslingen.scpprojekt.scp.API.Controller;
 
 import de.hsesslingen.scpprojekt.scp.API.Services.APIService;
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,6 +54,9 @@ public class APITest {
     @MockBean
     ActivityConverter activityConverter;
 
+    @MockBean
+    SAML2Service saml2Service;
+
     /**
      * Test if all activities are returned correctly
      * @throws Exception by mockMvc
@@ -59,6 +64,8 @@ public class APITest {
     @Test
     @WithMockUser
     public void getAllActivitiesForChallengeTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
         ActivityDTO a2 = new ActivityDTO();
@@ -114,6 +121,8 @@ public class APITest {
     @Test
     @WithMockUser
     public void getAllActivitiesForChallengeTestNotFound() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/API/challengeActivities/").accept(MediaType.APPLICATION_JSON)
                 .param("challengeID", "1");
@@ -132,6 +141,8 @@ public class APITest {
     @Test
     @WithMockUser
     public void getAllActivitiesForUserTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
         ActivityDTO a2 = new ActivityDTO();
@@ -187,6 +198,8 @@ public class APITest {
     @Test
     @WithMockUser
     public void getAllActivitiesForUserTestNotFound() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/API/userActivities/").accept(MediaType.APPLICATION_JSON)
                 .param("userID", "1");
@@ -205,6 +218,8 @@ public class APITest {
     @Test
     @WithMockUser
     public void getRawDistanceForChallengeTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
         ActivityDTO a2 = new ActivityDTO();
@@ -254,6 +269,8 @@ public class APITest {
     @Test
     @WithMockUser
     public void getRawDistanceForChallengeTestServerError() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
         ActivityDTO a2 = new ActivityDTO();
@@ -283,6 +300,8 @@ public class APITest {
     @Test
     @WithMockUser
     public void getDistanceForChallengeTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
         ActivityDTO a2 = new ActivityDTO();
@@ -332,6 +351,8 @@ public class APITest {
     @Test
     @WithMockUser
     public void getDistanceForChallengeTestServerError() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
         ActivityDTO a2 = new ActivityDTO();
@@ -361,6 +382,8 @@ public class APITest {
     @Test
     @WithMockUser
     public void getDistanceForChallengeForUserTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
         ActivityDTO a2 = new ActivityDTO();
@@ -412,6 +435,8 @@ public class APITest {
     @Test
     @WithMockUser
     public void getDistanceForChallengeForUserTestServerError() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
         ActivityDTO a2 = new ActivityDTO();
@@ -442,6 +467,8 @@ public class APITest {
     @Test
     @WithMockUser
     public void getRawDistanceForChallengeForUserTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
         ActivityDTO a2 = new ActivityDTO();
@@ -493,6 +520,8 @@ public class APITest {
     @Test
     @WithMockUser
     public void getRawDistanceForChallengeForUserTestServerError() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
         ActivityDTO a2 = new ActivityDTO();

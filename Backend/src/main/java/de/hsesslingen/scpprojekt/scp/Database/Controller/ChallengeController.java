@@ -158,9 +158,7 @@ public class ChallengeController {
             try{
                 ResponseEntity<ChallengeDTO> chDTO = null;
                 if (sportId.length == sportFactor.length) {
-                    for (int i = 0; i < sportId.length; i++) {
-                        chDTO =   new ResponseEntity<>(challengeService.add(file,sportId[i],sportFactor[i],challenge), HttpStatus.CREATED);
-                    }
+                    chDTO =   new ResponseEntity<>(challengeService.add(file,sportId,sportFactor,challenge), HttpStatus.CREATED);
                     return chDTO;
                 }else {
                     throw new RuntimeException();
@@ -256,5 +254,4 @@ public class ChallengeController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
-
 }

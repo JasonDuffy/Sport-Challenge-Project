@@ -74,13 +74,16 @@ public class ChallengeService {
     }
 
 
-    public ChallengeDTO add(MultipartFile file, long sportId, float sportFactor, ChallengeDTO challenge) throws NotFoundException {
+    public ChallengeDTO add(MultipartFile file, long sportId[], float sportFactor[], ChallengeDTO challenge) throws NotFoundException {
         try {
             Image image = imageStorageService.store(file);
             Challenge newchallenge = challengeConverter.convertDtoToEntity(challenge);
             newchallenge.setImage(image);
             Challenge savedChallenge = challengeRepository.save(newchallenge);
-            challengeSportRepository.save(new ChallengeSport(sportFactor, newchallenge, sportService.get(sportId)));
+
+            for (int i = 0; i < sportId.length; i++) {
+                challengeSportRepository.save(new ChallengeSport(sportFactor[i], newchallenge, sportService.get(sportId[i])));
+            }
             return challengeConverter.convertEntityToDto(savedChallenge);
         } catch (IOException e) {
             throw new RuntimeException(e);

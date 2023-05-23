@@ -30,6 +30,8 @@ import java.util.List;
 public class TeamController {
 
     @Autowired
+    SAML2Service saml2Service;
+    @Autowired
     TeamService teamService;
 
     /**
@@ -53,7 +55,7 @@ public class TeamController {
     public ResponseEntity<TeamDTO> addTeam(@RequestParam("file")MultipartFile file,
                                         @RequestPart("json") @Valid TeamDTO team,
                                         HttpServletRequest request){
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(teamService.add(file,team), HttpStatus.CREATED);
             }catch (NotFoundException e){
@@ -88,7 +90,7 @@ public class TeamController {
                                            @PathVariable("id") long TeamID,
                                            @RequestPart("json") @Valid TeamDTO team,
                                            HttpServletRequest request){
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
            try{
                return new ResponseEntity<>(teamService.update(file,TeamID,team), HttpStatus.OK);
             }catch (NotFoundException e){
@@ -115,7 +117,7 @@ public class TeamController {
     })
     @DeleteMapping(path = "/{id}/",produces = "application/json")
     public ResponseEntity<HttpStatus> deleteTeam(@PathVariable("id")long ID,HttpServletRequest request){
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 teamService.delete(ID);
                 return new ResponseEntity<>(HttpStatus.OK);
@@ -144,7 +146,7 @@ public class TeamController {
     })
     @GetMapping(path = "/", produces = "application/json")
     public ResponseEntity<List<TeamDTO>> getAllTeams(HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             return new ResponseEntity<>(teamService.getAll(),HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -168,7 +170,7 @@ public class TeamController {
     })
     @GetMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<TeamDTO> getTeamByID(@PathVariable("id") long TeamID, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(teamService.get(TeamID),HttpStatus.OK);
             } catch (NotFoundException e) {
@@ -195,7 +197,7 @@ public class TeamController {
     })
     @DeleteMapping("/")
     public ResponseEntity<HttpStatus> deleteAllMembers(HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try {
                 teamService.deleteAll();
                 return new ResponseEntity<>(HttpStatus.OK);

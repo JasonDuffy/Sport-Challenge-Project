@@ -1,10 +1,12 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ActivityService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,9 @@ public class ActivityControllerTest {
     @MockBean
     ActivityService activityService;
 
+    @MockBean
+    SAML2Service saml2Service;
+
     /**
      * Test if all activities are returned correctly
      * @throws Exception by mockMvc
@@ -53,6 +58,8 @@ public class ActivityControllerTest {
     @Test
     @WithMockUser
     public void getActivitiesTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
         ActivityDTO a2 = new ActivityDTO();
@@ -106,6 +113,8 @@ public class ActivityControllerTest {
     @Test
     @WithMockUser
     public void getActivityByIDTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
 
@@ -138,6 +147,7 @@ public class ActivityControllerTest {
     @Test
     @WithMockUser
     public void getActivityByIDTestNotFound() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
         when(activityService.get(1L)).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
@@ -170,6 +180,8 @@ public class ActivityControllerTest {
     @Test
     @WithMockUser
     public void createActivityTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         ActivityDTO a1 = new ActivityDTO();
         a1.setChallengeSportID(2L);
         a1.setMemberID(0L);
@@ -204,6 +216,8 @@ public class ActivityControllerTest {
     @Test
     @WithMockUser
     public void createActivityTestNotFound() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
         a1.setChallengeSportID(2L);
@@ -254,6 +268,8 @@ public class ActivityControllerTest {
     @Test
     @WithMockUser
     public void updateActivityTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
 
@@ -290,6 +306,8 @@ public class ActivityControllerTest {
     @Test
     @WithMockUser
     public void updateActivityTestSuccessNotFound() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         ActivityDTO a1 = new ActivityDTO();
         a1.setId(1);
 
@@ -338,6 +356,8 @@ public class ActivityControllerTest {
     @Test
     @WithMockUser
     public void deleteActivityTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/activities/1/").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
@@ -356,6 +376,7 @@ public class ActivityControllerTest {
     @Test
     @WithMockUser
     public void deleteActivityTestNotFound() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
         doThrow(NotFoundException.class).when(activityService).delete(1L);
 
         RequestBuilder request = MockMvcRequestBuilders
@@ -392,6 +413,8 @@ public class ActivityControllerTest {
     @Test
     @WithMockUser
     public void deleteAllActivitiesTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/activities/").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);

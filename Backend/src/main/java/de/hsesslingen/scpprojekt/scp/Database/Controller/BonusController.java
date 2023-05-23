@@ -29,6 +29,9 @@ public class BonusController {
     @Autowired
     BonusService bonusService;
 
+    @Autowired
+    SAML2Service saml2Service;
+
     /**
      * REST API for returning all bonuses
      *
@@ -44,7 +47,7 @@ public class BonusController {
     })
     @GetMapping(path = "/", produces = "application/json")
     public ResponseEntity<List<BonusDTO>> getBonuses(HttpServletRequest request){
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             return new ResponseEntity<>(bonusService.getAll(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -68,7 +71,7 @@ public class BonusController {
     })
     @GetMapping(path ="/{id}/", produces = "application/json")
     public ResponseEntity<BonusDTO> getBonusByID(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(bonusService.get(id), HttpStatus.OK);
             } catch (NotFoundException e) {
@@ -97,7 +100,7 @@ public class BonusController {
     })
     @PostMapping(path = "/", produces = "application/json")
     public ResponseEntity<BonusDTO> createBonus(@RequestBody BonusDTO bonus, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(bonusService.add(bonus), HttpStatus.CREATED);
             } catch (NotFoundException e) {
@@ -126,7 +129,7 @@ public class BonusController {
     })
     @PutMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<BonusDTO> updateBonus(@PathVariable("id") long id, @RequestBody BonusDTO bonus, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(bonusService.update(id, bonus), HttpStatus.OK);
             } catch (NotFoundException e) {
@@ -155,7 +158,7 @@ public class BonusController {
     })
     @DeleteMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<Void> deleteBonus(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 bonusService.delete(id);
                 return new ResponseEntity<>(HttpStatus.OK);
@@ -181,7 +184,7 @@ public class BonusController {
     })
     @DeleteMapping("/")
     public ResponseEntity<Void> deleteAllBonuses(HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             bonusService.deleteAll();
             return new ResponseEntity<>(HttpStatus.OK);
         } else {

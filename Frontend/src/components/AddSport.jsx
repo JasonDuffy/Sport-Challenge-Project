@@ -1,8 +1,6 @@
 import React, { Component } from "react";
-import { useState } from "react";
 import withRouter from "./withRouter";
 import Button from "./Button";
-import "./css/AddSport.css";
 import "./css/Form.css";
 
 /**
@@ -45,6 +43,11 @@ class AddSport extends Component {
     window.scrollTo(0, 0);
   }
 
+  clearAllInputs() {
+    this.setState({ sportName: ""});
+    this.setState({ sportFactor: 1});
+  }
+
   async submitHandle(event) {
     event.preventDefault();
 
@@ -66,23 +69,22 @@ class AddSport extends Component {
     let sportJsonObj = {};
     sportJsonObj.name = this.state.sportName;
     sportJsonObj.factor = this.state.sportFactor;
-    /*
-    //Creates body data for the fetch
-    let fetchBodyData = new FormData();
-    fetchBodyData.append("sportId", sportCheckedId);
-    fetchBodyData.append("sportFactor", sportCheckedFactor);
-    fetchBodyData.append("json", JSON.stringify(sportJsonObj));
-    */
+
     //Gives data to the Backend and writes it into the DB
-    fetch("http://localhost:8081/sports/" + this.props.params.id + "/", { method: "POST", body: JSON.stringify(sportJsonObj), credentials: "include", headers: { Accept: "application/json", "Content-Type": "application/json" } })
+    fetch("http://localhost:8081/sports/", {
+      method: "POST",
+      body: JSON.stringify(sportJsonObj),
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    })
       .then((response) => {
         if (response.ok) {
-          response.json().then((resData => {
+          response.json().then((resData) => {
             infoContainerEl.classList.add("success");
-            infoMessageEl.innerHTML = "Die Sportart wurde erolgreich erstellt! Wenn du möchtests kannst du eine weitere Sportarten erstellen oder dir deine erstellte Sportart <a href=\"/Sport/" + resData.id + "\">hier</a> ansehen";
+            infoMessageEl.innerHTML = "Die Sportart wurde erolgreich erstellt! Wenn du möchtests kannst du eine weitere Sportarten erstellen.";
             window.scrollTo(0, 0);
             this.clearAllInputs();
-          }));
+          });
         } else {
           this.showInputErrorMessage("Beim erstellen der Sportart ist etwas schief gelaufen: " + response.status + " " + response.statusText + "!");
         }
@@ -94,7 +96,7 @@ class AddSport extends Component {
 
   async componentDidMount() {
     if (this.props.params.action === "Edit") {
-      let sportResponse = await fetch("http://localhost:8081/sports/" + this.props.params.id + "/", { method: "GET", credentials: "include", });
+      let sportResponse = await fetch("http://localhost:8081/sports/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
       let sportResData = await sportResponse.json();
 
       this.setState({ sportName: sportResData.name });
@@ -117,25 +119,12 @@ class AddSport extends Component {
               <form onSubmit={this.submitHandle}>
                 <div className="form_input_container pd_1">
                   <h2>Welche Sportart?</h2>
-                  <input
-                    className="mg_t_2"
-                    type="text"
-                    value={this.state.sportName}
-                    maxLength={15}
-                    onChange={this.sportNameChange}
-                    placeholder="Sport Name"
-                  ></input>
+                  <input className="mg_t_2" type="text" value={this.state.sportName} maxLength={15} onChange={this.sportNameChange} placeholder="Sport Name"></input>
                 </div>
                 <div className="form_input_container pd_1 mg_t_2">
                   <h2>Welchen Factor soll der Sport haben?</h2>
                   <br />
-                  <input
-                    className="mg_t_2"
-                    type="number"
-                    value={this.state.sportFactor}
-                    onChange={this.sportFactorChange}
-                    placeholder="Factor"
-                  ></input>
+                  <input className="mg_t_2" type="number" value={this.state.sportFactor} onChange={this.sportFactorChange} placeholder="Factor"></input>
                 </div>
                 <div className="center_content mg_t_2">
                   <Button color="orange" txt="Sport festlegen" type="submit" />
@@ -149,5 +138,4 @@ class AddSport extends Component {
   }
 }
 
-//export default AddSport;
 export default withRouter(AddSport);

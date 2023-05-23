@@ -3,6 +3,8 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.SportRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Services.SportService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,7 @@ import java.util.regex.Pattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -42,7 +45,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class SportControllerTest {
 
     @MockBean
-    private SportRepository sportRepository;
+    private SportService sportService;
+
 
     @Autowired
     private MockMvc mockMvc;
@@ -59,7 +63,7 @@ public class SportControllerTest {
         sport.setName("Laufen");
         sport.setFactor(10);
 
-        when(sportRepository.save(any(Sport.class))).thenReturn(sport);
+        when(sportService.add(any(Sport.class))).thenReturn(sport);
         RequestBuilder request = MockMvcRequestBuilders
                 .post("/sports/")
                 .content(new ObjectMapper().writeValueAsString(sport))
@@ -78,30 +82,9 @@ public class SportControllerTest {
         assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(sportRepository).save(any(Sport.class));
+        Mockito.verify(sportService).add(any(Sport.class));
     }
-
-    /**
-     * Test for InternalServerError
-     * @throws Exception Exception by mockMvc
-     */
-    @Test
-    @WithMockUser
-    public void addSportSomethingWentWrong()throws Exception{
-        Sport sport  = new Sport();
-
-        when(sportRepository.save(any(Sport.class))).thenThrow(HttpServerErrorException.InternalServerError.class);
-        RequestBuilder request = MockMvcRequestBuilders
-                .post("/sports/")
-                .content(new ObjectMapper().writeValueAsString(sport))
-                .accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON);
-
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isInternalServerError())
-                .andReturn();
-
-    }
+    
     /**
      *Test for  creating a Sport with not been login
      * @throws Exception Exception by mockMvc
@@ -114,7 +97,7 @@ public class SportControllerTest {
         sport.setName("Laufen");
         sport.setFactor(10);
 
-        when(sportRepository.save(any(Sport.class))).thenReturn(sport);
+        when(sportService.add(any(Sport.class))).thenReturn(sport);
         RequestBuilder request = MockMvcRequestBuilders
                 .post("/sports/")
                 .content(new ObjectMapper().writeValueAsString(sport))
@@ -139,7 +122,7 @@ public class SportControllerTest {
         sport.setName("Laufen");
         sport.setFactor(10);
 
-        when(sportRepository.findById(1L)).thenReturn(Optional.of(sport));
+        when(sportService.get(1L)).thenReturn(sport);
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/sports/1/").accept(MediaType.APPLICATION_JSON);
 
@@ -156,7 +139,7 @@ public class SportControllerTest {
         assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(sportRepository).findById(1L);
+        Mockito.verify(sportService).get(1L);
     }
 
     /**
@@ -171,9 +154,9 @@ public class SportControllerTest {
         sport.setName("Laufen");
         sport.setFactor(10);
 
-        when(sportRepository.findById(1L)).thenReturn(Optional.of(sport));
+        when(sportService.get(1L)).thenThrow(NotFoundException.class);
         RequestBuilder request = MockMvcRequestBuilders
-                .get("/sports/4/").accept(MediaType.APPLICATION_JSON);
+                .get("/sports/1/").accept(MediaType.APPLICATION_JSON);
 
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isNotFound())
@@ -191,7 +174,7 @@ public class SportControllerTest {
         sport.setName("Laufen");
         sport.setFactor(10);
 
-        when(sportRepository.findById(1L)).thenReturn(Optional.of(sport));
+        when(sportService.get(1L)).thenReturn(sport);
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/sports/1/").accept(MediaType.APPLICATION_JSON);
 
@@ -219,7 +202,7 @@ public class SportControllerTest {
         List<Sport> sportsList = new ArrayList<>();
         sportsList.add(sport); sportsList.add(Rad);
 
-        when(sportRepository.findAll()).thenReturn(sportsList);
+        when(sportService.getAll()).thenReturn(sportsList);
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/sports/").accept(MediaType.APPLICATION_JSON);
 
@@ -238,7 +221,7 @@ public class SportControllerTest {
         assertEquals(matcher.group(1), "2");
         assertFalse(matcher.find());
 
-        Mockito.verify(sportRepository).findAll();
+        Mockito.verify(sportService).getAll();
     }
 
     /**
@@ -260,7 +243,7 @@ public class SportControllerTest {
         List<Sport> sportsList = new ArrayList<>();
         sportsList.add(sport); sportsList.add(Rad);
 
-        when(sportRepository.findAll()).thenReturn(sportsList);
+        when(sportService.getAll()).thenReturn(sportsList);
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/sports/").accept(MediaType.APPLICATION_JSON);
 
@@ -280,16 +263,15 @@ public class SportControllerTest {
         sport.setName("Laufen");
         sport.setFactor(10);
 
-        when(sportRepository.findById(1L)).thenReturn(Optional.of(sport));
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/sports/1/").accept(MediaType.APPLICATION_JSON);
 
         MvcResult res = mockMvc.perform(request)
-                .andExpect(status().is(204))
+                .andExpect(status().isOk())
                 .andReturn();
 
-        Mockito.verify(sportRepository).findById(1L);
-        Mockito.verify(sportRepository).deleteById(1L);
+        Mockito.verify(sportService).delete(1L);
+
     }
 
     /**
@@ -299,18 +281,15 @@ public class SportControllerTest {
     @Test
     @WithMockUser
     public void DeleteSportByIdNotFound() throws Exception{
-        Sport sport = new Sport();
-        sport.setId(1L);
-        sport.setName("Laufen");
-        sport.setFactor(10);
 
-        when(sportRepository.findById(1L)).thenReturn(Optional.of(sport));
+        doThrow(NotFoundException.class).when(sportService).delete(1L);
         RequestBuilder request = MockMvcRequestBuilders
-                .delete("/sports/3/").accept(MediaType.APPLICATION_JSON);
+                .delete("/sports/1/").accept(MediaType.APPLICATION_JSON);
 
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isNotFound())
                 .andReturn();
+        Mockito.verify(sportService).delete(1L);
     }
     /**
      *Test if unknown User is correctly turned away
@@ -324,7 +303,7 @@ public class SportControllerTest {
         sport.setName("Laufen");
         sport.setFactor(10);
 
-        when(sportRepository.findById(1L)).thenReturn(Optional.of(sport));
+        when(sportService.get(1L)).thenReturn(sport);
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/sports/1/").accept(MediaType.APPLICATION_JSON);
 
@@ -345,8 +324,8 @@ public class SportControllerTest {
         sport.setName("Laufen");
         sport.setFactor(10);
 
-        when(sportRepository.findById(1L)).thenReturn(Optional.of(sport));
-        when(sportRepository.save(any(Sport.class))).thenReturn(sport);
+
+        when(sportService.update(any(Long.class), any(Sport.class))).thenReturn(sport);
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/sports/1/")
                 .content(new ObjectMapper().writeValueAsString(sport))
@@ -358,6 +337,7 @@ public class SportControllerTest {
                 .andReturn();
 
         String content = res.getResponse().getContentAsString();
+        System.out.println(content);
 
         Pattern pattern = Pattern.compile("\\{\"id\":(\\d),");
         Matcher matcher = pattern.matcher(content);
@@ -366,8 +346,8 @@ public class SportControllerTest {
         assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(sportRepository).findById(1L);
-        Mockito.verify(sportRepository).save(sport);
+
+        Mockito.verify(sportService).update(any(Long.class), any(Sport.class));
     }
     /**
      *Test for updating a non-existing Sport (Not Found)
@@ -382,8 +362,7 @@ public class SportControllerTest {
         sport.setName("Laufen");
         sport.setFactor(10);
 
-        when(sportRepository.findById(1L)).thenReturn(Optional.of(sport));
-        when(sportRepository.save(any(Sport.class))).thenReturn(sport);
+        when(sportService.update(any(Long.class), any(Sport.class))).thenThrow(NotFoundException.class);
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/sports/4/")
                 .content(new ObjectMapper().writeValueAsString(sport))
@@ -394,6 +373,7 @@ public class SportControllerTest {
                 .andExpect(status().isNotFound())
                 .andReturn();
 
+        Mockito.verify(sportService).update(any(Long.class), any(Sport.class));
     }
 
     /**
@@ -408,8 +388,7 @@ public class SportControllerTest {
         sport.setName("Laufen");
         sport.setFactor(10);
 
-        when(sportRepository.findById(1L)).thenReturn(Optional.of(sport));
-        when(sportRepository.save(any(Sport.class))).thenReturn(sport);
+        when(sportService.update(any(Long.class), any(Sport.class))).thenReturn(sport);
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/sports/1/")
                 .content(new ObjectMapper().writeValueAsString(sport))

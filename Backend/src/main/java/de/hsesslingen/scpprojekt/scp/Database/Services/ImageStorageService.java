@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 import java.io.InputStream;
 
@@ -41,14 +42,64 @@ public class ImageStorageService {
 
         return imageRepository.save(image);
     }
-
-    public Image get(Long ImageID) throws  NotFoundException {
+    public List<Image> getAll() {
+        return imageRepository.findAll();
+    }
+    /**
+     * Get Image with ID
+     *
+     * @param ImageID Image with given ID
+     * @return Image
+     * @throws NotFoundException Image not found
+     */
+    public Image get(Long ImageID) throws NotFoundException {
         Optional<Image> image =  imageRepository.findById(ImageID);
         if(image.isPresent()){
             return  image.get();
-        }throw new NotFoundException("Image with ID " +ImageID+" is not present in DB.");
+        }
+        throw new NotFoundException("Image with ID " + ImageID + " is not present in DB.");
     }
 
+    /**
+     *  Delete Image
+     * @param image Object of Image
+     * @throws NotFoundException Image Not found
+     */
+    public void delete(long image) throws NotFoundException{
+        get(image);
+       imageRepository.deleteById(image);
+    }
+
+    /**
+     * Update Image
+     *
+     * @param imageID ID of the be updated Image
+     * @param file new image
+     * @return new image
+     * @throws NotFoundException To be updated Image not found
+     * @throws IOException not an image
+     */
+    public Image update(long imageID, MultipartFile file) throws NotFoundException, IOException {
+        if(!checkImage(file))
+            throw new IOException(file.getOriginalFilename() + " is not an image!");
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        Image image = new Image(fileName, file.getContentType(), file.getBytes());
+
+        Image updatedImage = get(imageID);
+
+        updatedImage.setName(image.getName());
+        updatedImage.setType(image.getType());
+        updatedImage.setData(image.getData());
+
+        return imageRepository.save(updatedImage);
+    }
+
+    /**
+     * delete All Images
+     */
+    public void deleteAll(){
+        imageRepository.deleteAll();
+    }
     /**
      * Tests if given file is an image
      * @param file File to be tested

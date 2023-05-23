@@ -1,14 +1,12 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.SportRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Services.ImageStorageService;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -32,12 +30,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * Tests for the ChallengeController class
- * @author Jason Patrick Duffy
+ * @author Jason Patrick Duffy,Tom Nguyen Dinh
  */
 @ActiveProfiles("test")
 @WebMvcTest(ChallengeController.class)
@@ -47,40 +46,21 @@ public class ChallengeControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    private ChallengeRepository challengeRepository;
+    private ChallengeService challengeService;
 
-    @MockBean
-    private ImageStorageService imageStorageService;
 
-    @MockBean
-    private ChallengeSportRepository challengeSportRepository;
-
-    @MockBean
-    private SportRepository sportRepository;
 
     @Test
     @WithMockUser
     public void getChallengeByIDSuccess() throws Exception {
-        long id = 1L;
-        float target = 100.60f;
         String name = "Test Challenge";
-        String desc = "This challenge is a test.";
-        LocalDateTime start = LocalDateTime.of(2023, 5, 8, 10, 0);
-        String startAsString = "08.05.2023,10:00";
-        LocalDateTime end = LocalDateTime.of(2023, 6, 8, 10, 0);
-        String endAsString = "08.06.2023,10:00";
-        Image image = null;
 
-        Challenge challenge = new Challenge();
-        challenge.setId(id);
+        ChallengeDTO challenge = new ChallengeDTO();
+        challenge.setId(1);
         challenge.setName(name);
-        challenge.setStartDate(start);
-        challenge.setEndDate(end);
-        challenge.setDescription(desc);
-        challenge.setTargetDistance(target);
-        challenge.setImage(image);
 
-        when(challengeRepository.findById(1L)).thenReturn(Optional.of(challenge));
+
+        when(challengeService.getDTO(1L)).thenReturn(challenge);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/challenges/1/").accept(MediaType.APPLICATION_JSON);
@@ -88,21 +68,27 @@ public class ChallengeControllerTest {
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.id").value(id))
-                .andExpect(jsonPath("$.name").value(name))
-                .andExpect(jsonPath("$.description").value(desc))
-                .andExpect(jsonPath("$.startDate").value(startAsString))
-                .andExpect(jsonPath("$.endDate").value(endAsString))
-                .andExpect(jsonPath("$.targetDistance").value(target))
-                .andExpect(jsonPath("$.image").value(image))
                 .andReturn();
+        String content = res.getResponse().getContentAsString();
+
+        Pattern pattern = Pattern.compile("\\{\"id\":(\\d),");
+        Matcher matcher = pattern.matcher(content);
+
+        matcher.find();
+        assertEquals(matcher.group(1), "1");
+        assertFalse(matcher.find());
+
+        Mockito.verify(challengeService).getDTO(1L);
     }
 
     @Test
     @WithMockUser
     public void getChallengeByIDNotFound() throws Exception {
+        when(challengeService.getDTO(1L)).thenThrow(NotFoundException.class);
+
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/challenges/1/").accept(MediaType.APPLICATION_JSON);
+
 
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isNotFound())
@@ -126,7 +112,7 @@ public class ChallengeControllerTest {
         LocalDateTime start = LocalDateTime.of(2023, 4, 8, 10, 0);
         LocalDateTime end = LocalDateTime.of(2023, 10, 8, 10, 0);
 
-        Challenge challenge = new Challenge();
+        ChallengeDTO challenge = new ChallengeDTO();
         challenge.setId(1L);
         challenge.setStartDate(start);
         challenge.setEndDate(end);
@@ -134,16 +120,16 @@ public class ChallengeControllerTest {
         LocalDateTime start2 = LocalDateTime.of(2022, 4, 8, 10, 0);
         LocalDateTime end2 = LocalDateTime.of(2022, 10, 8, 10, 0);
 
-        Challenge challenge2 = new Challenge();
+        ChallengeDTO challenge2 = new ChallengeDTO();
         challenge2.setId(2L);
         challenge2.setStartDate(start2);
         challenge2.setEndDate(end2);
 
-        List<Challenge> challengeList = new ArrayList<>();
+        List<ChallengeDTO> challengeList = new ArrayList<>();
         challengeList.add(challenge);
         challengeList.add(challenge2);
 
-        when(challengeRepository.findAll()).thenReturn(challengeList);
+        when(challengeService.getAll()).thenReturn(challengeList);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/challenges/").accept(MediaType.APPLICATION_JSON).param("type", " ");
@@ -171,7 +157,7 @@ public class ChallengeControllerTest {
         LocalDateTime start = LocalDateTime.of(2023, 4, 8, 10, 0);
         LocalDateTime end = LocalDateTime.of(2023, 10, 8, 10, 0);
 
-        Challenge challenge = new Challenge();
+        ChallengeDTO challenge = new ChallengeDTO();
         challenge.setId(1L);
         challenge.setStartDate(start);
         challenge.setEndDate(end);
@@ -179,16 +165,16 @@ public class ChallengeControllerTest {
         LocalDateTime start2 = LocalDateTime.of(2022, 4, 8, 10, 0);
         LocalDateTime end2 = LocalDateTime.of(2022, 10, 8, 10, 0);
 
-        Challenge challenge2 = new Challenge();
+        ChallengeDTO challenge2 = new ChallengeDTO();
         challenge2.setId(2L);
         challenge2.setStartDate(start2);
         challenge2.setEndDate(end2);
 
-        List<Challenge> challengeList = new ArrayList<>();
+        List<ChallengeDTO> challengeList = new ArrayList<>();
         challengeList.add(challenge);
         challengeList.add(challenge2);
 
-        when(challengeRepository.findAll()).thenReturn(challengeList);
+        when(challengeService.getAll()).thenReturn(challengeList);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/challenges/").accept(MediaType.APPLICATION_JSON).param("type", "current");
@@ -214,7 +200,7 @@ public class ChallengeControllerTest {
         LocalDateTime start = LocalDateTime.of(2023, 4, 8, 10, 0);
         LocalDateTime end = LocalDateTime.of(2023, 10, 8, 10, 0);
 
-        Challenge challenge = new Challenge();
+        ChallengeDTO challenge = new ChallengeDTO();
         challenge.setId(1L);
         challenge.setStartDate(start);
         challenge.setEndDate(end);
@@ -222,16 +208,16 @@ public class ChallengeControllerTest {
         LocalDateTime start2 = LocalDateTime.of(2022, 4, 8, 10, 0);
         LocalDateTime end2 = LocalDateTime.of(2022, 10, 8, 10, 0);
 
-        Challenge challenge2 = new Challenge();
+        ChallengeDTO challenge2 = new ChallengeDTO();
         challenge2.setId(2L);
         challenge2.setStartDate(start2);
         challenge2.setEndDate(end2);
 
-        List<Challenge> challengeList = new ArrayList<>();
+        List<ChallengeDTO> challengeList = new ArrayList<>();
         challengeList.add(challenge);
         challengeList.add(challenge2);
 
-        when(challengeRepository.findAll()).thenReturn(challengeList);
+        when(challengeService.getAll()).thenReturn(challengeList);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/challenges/").accept(MediaType.APPLICATION_JSON).param("type", "past");
@@ -327,7 +313,6 @@ public class ChallengeControllerTest {
         challenge.setTargetDistance(target);
         challenge.setImage(image);
 
-        when(challengeRepository.findById(1L)).thenReturn(Optional.of(challenge));
 
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/challenges/1/")
@@ -336,11 +321,13 @@ public class ChallengeControllerTest {
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andReturn();
+        Mockito.verify(challengeService).delete(1L);
     }
 
     @Test
     @WithMockUser
     public void deleteChallengeNotFound() throws Exception {
+        doThrow(NotFoundException.class).when(challengeService).delete(1L);
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/challenges/1/")
                 .accept(MediaType.APPLICATION_JSON);
@@ -348,6 +335,7 @@ public class ChallengeControllerTest {
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isNotFound())
                 .andReturn();
+        Mockito.verify(challengeService).delete(1L);
     }
 
     @Test
@@ -356,6 +344,39 @@ public class ChallengeControllerTest {
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/challenges/1/")
                 .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+    /**
+     * Test if all challenges are deleted correctly
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void deleteAllChallengesTestSuccess() throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders
+                .delete("/challenges/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Mockito.verify(challengeService).deleteAll();
+    }
+
+    /**
+     * Test if 403 is returned when user is not logged in
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void deleteAllChallengesTestNotLoggedIn() throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders
+                .delete("/challenges/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
 
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isForbidden())

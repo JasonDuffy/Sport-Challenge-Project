@@ -92,12 +92,11 @@ public class ChallengeService {
 
 
 
-    public ChallengeDTO update(MultipartFile file, long ChallengeID, ChallengeDTO challengeDTO) throws NotFoundException {
+    public ChallengeDTO update(long imageID, long ChallengeID, ChallengeDTO challengeDTO) throws NotFoundException {
         Optional<Challenge> challengeData = challengeRepository.findById(ChallengeID);
         Challenge convertedChallenge = challengeConverter.convertDtoToEntity(challengeDTO) ;
         if (challengeData.isPresent()){
-            try {
-                Image image = imageStorageService.store(file);
+                Image image = imageStorageService.get(imageID);
                 Challenge updatedChallenge = challengeData.get();
                 updatedChallenge.setName(convertedChallenge.getName());
                 updatedChallenge.setImage(image);
@@ -108,9 +107,6 @@ public class ChallengeService {
 
                 Challenge savedChallenge= challengeRepository.save(updatedChallenge);
                 return challengeConverter.convertEntityToDto(savedChallenge);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
         }throw  new NotFoundException("Challenge with ID " +ChallengeID+" is not present in DB.");
     }
 

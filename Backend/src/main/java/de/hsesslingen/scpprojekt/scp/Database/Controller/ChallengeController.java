@@ -192,10 +192,10 @@ public class ChallengeController {
 
     })
     @PutMapping(path = "/{id}/",consumes = "multipart/form-data", produces = "application/json")
-    public ResponseEntity<ChallengeDTO> updateChallenge(@RequestParam("file") MultipartFile file, @PathVariable("id") long ID,  @RequestPart("json") @Valid ChallengeDTO challenge, HttpServletRequest request) {
+    public ResponseEntity<ChallengeDTO> updateChallenge(@RequestParam("imageId") long imageID, @PathVariable("id") long ID,  @RequestPart("json") @Valid ChallengeDTO challenge, HttpServletRequest request) {
         if (SAML2Service.isLoggedIn(request)){
             try{
-                return new ResponseEntity<>(challengeService.update(file,ID, challenge), HttpStatus.OK);
+                return new ResponseEntity<>(challengeService.update(imageID, ID, challenge), HttpStatus.OK);
             } catch (NotFoundException e) {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

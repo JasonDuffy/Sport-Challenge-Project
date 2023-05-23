@@ -21,6 +21,8 @@ class AddChallenge extends Component {
       challengeDistanceGoal: 1,
       challengeStartDate: "",
       challengeEndDate: "",
+      imageSource: "",
+      imageID: 0,
       allSport: [],
     };
 
@@ -30,10 +32,12 @@ class AddChallenge extends Component {
     this.challengeDistanceGoalChange = this.challengeDistanceGoalChange.bind(this);
     this.challengeStartDateChange = this.challengeStartDateChange.bind(this);
     this.challengeEndDateChange = this.challengeEndDateChange.bind(this);
+    this.previewImageChange = this.previewImageChange.bind(this);
     this.clearAllInputs = this.clearAllInputs.bind(this);
     this.submitHandle = this.submitHandle.bind(this);
   }
 
+  //==================================================START STATE CHANGE FUNCTIONS==================================================
   challengeNameChange(event) {
     this.setState({ challengeName: event.target.value });
   }
@@ -41,21 +45,34 @@ class AddChallenge extends Component {
   challengeDescriptionChange(event) {
     this.setState({ challengeDescription: event.target.value });
   }
+
   challengeDistanceGoalChange(event) {
     if (event.target.value >= 1) {
       this.setState({ challengeDistanceGoal: event.target.value });
+      //If the user tries to write 0 in the Input field it will be turned to 1
     } else if (event.target.value === 0) {
       this.setState({ challengeDistanceGoal: 1 });
     }
   }
+
   challengeStartDateChange(event) {
     this.setState({ challengeStartDate: event.target.value });
-    this.setState({ challengeEndDate: "" });
+    this.setState({ challengeEndDate: "" }); //Sets End Date to nothing so it can´t be before the start date
   }
+
   challengeEndDateChange(event) {
     this.setState({ challengeEndDate: event.target.value });
   }
 
+  previewImageChange(event){
+    this.setState({ imageSource: URL.createObjectURL(event.target.files[0])});
+  }
+  //==================================================END STATE CHANGE FUNCTIONS==================================================
+
+
+
+  //==================================================START OUTSOURCED FUNCTIONS==================================================
+  //Displays a red box with the given message at the top of the Site (Scrolls automaticly to it)
   showInputErrorMessage(message) {
     const infoContainerEl = document.getElementById("form_info_container");
     const infoMessageEl = document.getElementById("form_info_message");
@@ -64,7 +81,7 @@ class AddChallenge extends Component {
     window.scrollTo(0, 0);
   }
 
-  clearAllInputs(){
+  clearAllInputs() {
     const challengeImageEl = document.getElementById("challenge_image");
     const sportCheckboxEl = document.getElementsByClassName("form_sport_checkbox");
 
@@ -80,15 +97,34 @@ class AddChallenge extends Component {
     }
   }
 
-  submitHandle(event) {
-    event.preventDefault();
+  //Converts the date which comes from the DB to the fomrat the date input fields can display
+  dateToInputFormat(dateString) {
+    const dateSplitByComma = dateString.split(",");
+    const dateSplitByPoint = dateSplitByComma[0].split(".");
 
+    return dateSplitByPoint[2] + "-" + dateSplitByPoint[1] + "-" + dateSplitByPoint[0] + "T" + dateSplitByComma[1];
+  }
+  //==================================================END OUTSOURCED FUNCTIONS==================================================
+
+
+
+  //==================================================START COMPONENT FUNCTIONS==================================================
+  async submitHandle(event) {
+    event.preventDefault(); //prevents the reload
+
+    //Vars needed in the function
     const challengeImageEl = document.getElementById("challenge_image");
     const sportCheckboxEl = document.getElementsByClassName("form_sport_checkbox");
     const sportNumberEl = document.getElementsByClassName("form_sport_number");
     const infoContainerEl = document.getElementById("form_info_container");
     const infoMessageEl = document.getElementById("form_info_message");
-    const dateOptions = { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" };
+    const dateOptions = {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    };
 
     let startDate = new Date(this.state.challengeStartDate);
     let endDate = new Date(this.state.challengeEndDate);
@@ -97,26 +133,33 @@ class AddChallenge extends Component {
     let sportCheckedId = [];
     let sportCheckedFactor = [];
 
+    //the info message box which displays error/success messages is resetet
     infoContainerEl.classList.remove("error");
     infoContainerEl.classList.remove("success");
 
+    //==================================================START OF THE INPUT CHECK==================================================
+    //Checks if the a name is null
     if (this.state.challengeName === "") {
       this.showInputErrorMessage("Bitte gebe deiner Challenge einen Namen!");
       return;
     }
 
-    //Checks if the file is null and smaller than 10MB
-    if (challengeImageEl.files[0] == null) {
-      this.showInputErrorMessage("Bitte lade für deine Challenge ein Bild hoch!");
-      return;
-    } else if (challengeImageEl.files[0].size > 10000000) {
-      this.showInputErrorMessage("Das Bild darf nicht größer als 10Mb sein!");
-      return;
-    } else if (/^image/.test(challengeImageEl.files[0].type) === false) {
-      this.showInputErrorMessage("Es sind nur Bilder zum hochladen erlaubt!");
-      return;
+    //Does not check the image if Challenge is Edited and no new picture is uploaded cause of the existing image
+    if (this.props.params.action == "Add" || challengeImageEl.files[0] != null) {
+      //Checks if the file is an image, not null and smaller than 10MB
+      if (challengeImageEl.files[0] == null) {
+        this.showInputErrorMessage("Bitte lade für deine Challenge ein Bild hoch!");
+        return;
+      } else if (challengeImageEl.files[0].size > 10000000) {
+        this.showInputErrorMessage("Das Bild darf nicht größer als 10Mb sein!");
+        return;
+      } else if (/^image/.test(challengeImageEl.files[0].type) === false) {
+        this.showInputErrorMessage("Es sind nur Bilder zum hochladen erlaubt!");
+        return;
+      }
     }
 
+    //Saves the SportId and the input factor if the checkbox of the sport is checked
     for (let i = 0; i < sportCheckboxEl.length; i++) {
       if (sportCheckboxEl[i].checked) {
         sportCheckedId.push(sportCheckboxEl[i].dataset.sportId);
@@ -130,40 +173,159 @@ class AddChallenge extends Component {
       return;
     }
 
+    //NOTE: Date is checked by HTML
+    //==================================================END OF THE INPUT CHECK==================================================
+
+
+
+    //==================================================START TO BACKEND START==================================================
     //Creates the JSON object corresponding to the Challenge object in the Backend
     let challengeJsonObj = {};
     challengeJsonObj.name = this.state.challengeName;
     challengeJsonObj.description = this.state.challengeDescription;
     challengeJsonObj.startDate = startDateFormat;
     challengeJsonObj.endDate = endDateFormat;
+    challengeJsonObj.imageID = 0;
     challengeJsonObj.targetDistance = this.state.challengeDistanceGoal;
 
-    //Creates body data for the fetch
-    let fetchBodyData = new FormData();
-    fetchBodyData.append("sportId", sportCheckedId);
-    fetchBodyData.append("sportFactor", sportCheckedFactor);
-    fetchBodyData.append("file", challengeImageEl.files[0]);
-    fetchBodyData.append("json", JSON.stringify(challengeJsonObj));
 
-    //Gives data to the Backend and writes it into the DB
-    fetch("http://localhost:8081/challenges/", { method: "POST", body: fetchBodyData, credentials: "include" })
-      .then((response) => {
-        if (response.ok) {
-          response.json().then((resData => {
-            infoContainerEl.classList.add("success");
-            infoMessageEl.innerHTML = "Die Challenge wurde erolgreich erstellt! Wenn du möchtests kannst du eine weitere Challenge erstellen oder dir deine erstellte Challenge <a href=\"/Challenge/" + resData.id + "\">hier</a> ansehen";
-            window.scrollTo(0, 0);
-            this.clearAllInputs();
-          }));
-        } else {
-          this.showInputErrorMessage(
-            "Beim erstellen der Challenge ist etwas schief gelaufen: " + response.status + " " + response.statusText + "!"
-          );
+
+    //==================================================ADD CHALLENGE==================================================
+    if (this.props.params.action == "Add") {
+      //Creates body data for the fetch
+      let fetchBodyData = new FormData();
+      fetchBodyData.append("sportId", sportCheckedId);
+      fetchBodyData.append("sportFactor", sportCheckedFactor);
+      fetchBodyData.append("file", challengeImageEl.files[0]);
+      fetchBodyData.append("json", JSON.stringify(challengeJsonObj));
+
+      //Gives data to the Backend and writes it into the DB
+      let challengeResponse = await fetch("http://localhost:8081/challenges/", { method: "POST", body: fetchBodyData, credentials: "include" });
+      if (challengeResponse.ok) {
+        let challengeResData = await challengeResponse.json();
+        infoContainerEl.classList.add("success");
+        infoMessageEl.innerHTML =
+          'Die Challenge wurde erolgreich erstellt! Wenn du möchtests kannst du eine weitere Challenge erstellen oder dir deine erstellte Challenge <a href="/Challenge/' +
+          challengeResData.id +
+          '">hier</a> ansehen';
+        window.scrollTo(0, 0);
+        this.clearAllInputs();
+      } else {
+        this.showInputErrorMessage("Beim erstellen der Challenge ist etwas schief gelaufen: " + challengeResponse.status + " " + challengeResponse.statusText + "!");
+      }
+
+
+
+    //==================================================UPDATE CHALLENGE==================================================
+    } else if (this.props.params.action == "Edit") {
+      //If a new Image is set it will update the image corresponding to the challenge
+      if (challengeImageEl.files[0] != null) {
+        //Creates body data for the update image fetch
+        let fetchImageBodyData = new FormData();
+        fetchImageBodyData.append("file", challengeImageEl.files[0]);
+
+        //Gives data to the Backend and updates the Image
+        let imageResponse = await fetch("http://localhost:8081/images/" + this.state.imageID + "/", { method: "PUT", body: fetchImageBodyData, credentials: "include" });
+        if (!imageResponse.ok) {
+          this.showInputErrorMessage("Beim editieren der Challenge ist etwas schief gelaufen: " + imageResponse.status + " " + imageResponse.statusText + "!");
         }
-      })
-      .catch((error) => {
-        this.showInputErrorMessage("Beim erstellen der Challenge ist etwas schief gelaufen: " + error + "!");
+      }
+
+
+
+      //Selects all sportCheckboxes which are checked
+      const sportCheckboxCheckedEl = document.querySelectorAll('[class*="form_sport_checkbox"][type="checkbox"]:checked');
+      let challengeSportFactor = []; //Array with the factors of inputs (only from checked sports)
+      let sportIdInDB = []; //Array which contains the SportId's that should be updatet
+      let challengeSportId = []; //Array which contains the ChallengeSportId's needed for the update
+
+      //All challengeSports that contains the Challenge ID 
+      let sportResponse = await fetch("http://localhost:8081/challenge-sports/challenges/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
+      let sportResData = await sportResponse.json();
+
+      //Search and saves the Sports that need a update
+      for (let i = 0; i < sportResData.length; i++) {
+        sportIdInDB.push(document.querySelector('[data-sport-id="' + sportResData[i].sportID + '"][type="checkbox"]').dataset.sportId);
+        challengeSportId.push(sportResData[i].id);
+      }
+
+      //Saves the factor given by the user for the checked sports
+      for (let i = 0; i < sportCheckboxCheckedEl.length; i++) {
+        challengeSportFactor.push(document.querySelector('[data-sport-id="' + sportCheckboxCheckedEl[i].dataset.sportId + '"][type="number"]').value);
+      }
+
+      //Creates body data for the update challenge-sport fetch
+      //Set's the default params
+      let challengeSportJsonObj = {};
+      challengeSportJsonObj.id = 0;
+      challengeSportJsonObj.challengeID = this.props.params.id;
+
+      for (let i = 0; i < sportCheckboxCheckedEl.length; i++) {
+        //remaining data for the fetch
+        challengeSportJsonObj.factor = challengeSportFactor[i];
+        challengeSportJsonObj.sportID = sportCheckboxCheckedEl[i].dataset.sportId;
+
+        //If the Challenge sport already exists in the DB it will be updated, added otherwise
+        if (sportIdInDB.includes(sportCheckboxCheckedEl[i].dataset.sportId)) {
+          //UPDATE Challenge Sport
+
+          sportResponse = await fetch("http://localhost:8081/challenge-sports/" + challengeSportId[0] + "/", {
+            method: "PUT",
+            headers: { Accept: "application/json", "Content-Type": "application/json" }, //Needed: Backend will not accept without
+            body: JSON.stringify(challengeSportJsonObj),
+            credentials: "include",
+          });
+
+          challengeSportId.shift(); //removes first element of the list (the one that has been updated)
+
+          if (!sportResponse.ok) {
+            this.showInputErrorMessage("Beim editieren der Challenge ist etwas schief gelaufen: " + sportResponse.status + " " + sportResponse.statusText + "!");
+          }
+        } else {
+          //ADD new Challenge Sport
+
+          sportResponse = await fetch("http://localhost:8081/challenge-sports/", {
+            method: "POST",
+            headers: { Accept: "application/json", "Content-Type": "application/json" }, //Needed: Backend will not accept without
+            body: JSON.stringify(challengeSportJsonObj),
+            credentials: "include",
+          });
+
+          if (!sportResponse.ok) {
+            this.showInputErrorMessage("Beim editieren der Challenge ist etwas schief gelaufen: " + sportResponse.status + " " + sportResponse.statusText + "!");
+          }
+        }
+      }
+
+
+
+      //Creates body data for the create Challenge fetch
+      let fetchChallengeBodyData = new FormData();
+      fetchChallengeBodyData.append("imageId", this.state.imageID);
+      fetchChallengeBodyData.append("json", JSON.stringify(challengeJsonObj));
+
+      //Gives data to the Backend and updates the Challenge
+      let challengeResponse = await fetch("http://localhost:8081/challenges/" + this.props.params.id + "/", {
+        method: "PUT",
+        body: fetchChallengeBodyData,
+        credentials: "include",
       });
+
+      //Show success message if everthing worked, error message otherwise
+      if (challengeResponse.ok) {
+        let challengeResData = await challengeResponse.json();
+        infoContainerEl.classList.add("success");
+        infoMessageEl.innerHTML =
+          'Die Challenge wurde erolgreich editiert! Wenn du möchtests kannst du eine weitere Challenge erstellen oder dir deine editierte Challenge <a href="/Challenge/' +
+          challengeResData.id +
+          '">hier</a> ansehen';
+        window.scrollTo(0, 0);
+        this.clearAllInputs();
+      } else {
+        this.showInputErrorMessage("Beim editieren der Challenge ist etwas schief gelaufen: " + challengeResponse.status + " " + challengeResponse.statusText + "!");
+      }
+    }
+    //==================================================END FETCH TO BACKEND==================================================
   }
 
   async componentDidMount() {
@@ -171,8 +333,36 @@ class AddChallenge extends Component {
     let response = await fetch("http://localhost:8081/sports/", { method: "GET", credentials: "include" });
     let resData = await response.json();
     this.setState({ allSport: resData });
-  }
 
+    //If the component is in edit mode
+    if (this.props.params.action === "Edit") {
+      //fetch the data of the challenge from the backend
+      let challengeResponse = await fetch("http://localhost:8081/challenges/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
+      let challengeResData = await challengeResponse.json();
+      let sportResponse = await fetch("http://localhost:8081/challenge-sports/challenges/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
+      let sportResData = await sportResponse.json();
+      let imageResponse = await fetch("http://localhost:8081/images/" + challengeResData.imageID + "/", { method: "GET", credentials: "include" });
+      let imageResData = await imageResponse.json();
+
+      //prefills the Input fields with the current challenge data
+      this.setState({ challengeName: challengeResData.name });
+      this.setState({ imageSource: "data:" + imageResData.type + ";base64, " + imageResData.data });
+      this.setState({ imageID: challengeResData.imageID });
+      this.setState({ challengeDescription: challengeResData.description });
+      this.setState({ challengeDistanceGoal: challengeResData.targetDistance });
+      this.setState({ challengeStartDate: this.dateToInputFormat(challengeResData.startDate) });
+      this.setState({ challengeEndDate: this.dateToInputFormat(challengeResData.endDate) });
+
+      for (let i = 0; i < sportResData.length; i++) {
+        document.querySelector('[data-sport-id="' + sportResData[i].sportID + '"][type="checkbox"]').checked = true;
+      }
+    }
+  }
+  //==================================================END COMPONENT FUNCTIONS==================================================
+
+
+
+  //==================================================HTML OF THE COMPONENT==================================================
   render() {
     return (
       <section className="background_white">
@@ -198,15 +388,22 @@ class AddChallenge extends Component {
                   ></input>
                 </div>
                 <div className="form_input_container pd_1 mg_t_2">
-                  <h2>Wähle ein Bild für deine Challenge</h2>
-                  <span className="form_input_description">
-                    Das Bild repräsentiert deine Challenge auf der Startseite.
+                  <div>
+                    <h2>Wähle ein Bild für deine Challenge</h2>
+                    <span className="form_input_description">
+                      Das Bild repräsentiert deine Challenge auf der Startseite.
+                      <br />
+                      <br />
+                      Das Bild sollte quadratisch sein.
+                    </span>
                     <br />
-                    <br />
-                    Das Bild sollte quadratisch sein.
-                  </span>
-                  <br />
-                  <input id="challenge_image" className="mg_t_2" type="file" accept="image/*"></input>
+                    <input id="challenge_image" className="mg_t_2" type="file" accept="image/*" onChange={this.previewImageChange}></input>
+                  </div>
+                  {this.state.imageSource != "" && (
+                    <div className="mg_t_2">
+                      <img src={this.state.imageSource} alt="Aktuelles Bild der Challenge" height={200} width={200}></img>
+                    </div>
+                  )}
                 </div>
                 <div className="form_input_container pd_1 mg_t_2">
                   <h2>Beschreibe deine Challenge</h2>
@@ -247,21 +444,10 @@ class AddChallenge extends Component {
                         <tr key={item.id}>
                           <td>{item.name}</td>
                           <td>
-                            <input
-                              className="form_sport_number"
-                              data-sport-id={item.id}
-                              type="number"
-                              step="0.1"
-                              defaultValue={item.factor}
-                              min={1.0}
-                            ></input>
+                            <input className="form_sport_number" data-sport-id={item.id} type="number" step="0.1" defaultValue={item.factor} min={1.0}></input>
                           </td>
                           <td>
-                            <input
-                              className="form_table_checkbox form_sport_checkbox"
-                              data-sport-id={item.id}
-                              type="checkbox"
-                            ></input>
+                            <input className="form_table_checkbox form_sport_checkbox" data-sport-id={item.id} type="checkbox"></input>
                           </td>
                         </tr>
                       ))}

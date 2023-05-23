@@ -8,6 +8,7 @@ import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,6 +31,17 @@ public class ChallengeSportService {
      */
     public List<ChallengeSportDTO> getAll() {
         List<ChallengeSport> challengeSportList = challengeSportRepository.findAll();
+        return challengeSportConverter.convertEntityListToDtoList(challengeSportList);
+    }
+
+    public List<ChallengeSportDTO> getAllChallengeSportsOfChallenge(long ChallengeID)  {
+        List<ChallengeSport> challengeSports = challengeSportRepository.findAll();
+        List<ChallengeSport> challengeSportList = new ArrayList<>();
+        for (ChallengeSport challengeSport : challengeSports){
+            if(challengeSport.getChallenge().getId() == ChallengeID){
+                challengeSportList.add(challengeSport);
+            }
+        }
         return challengeSportConverter.convertEntityListToDtoList(challengeSportList);
     }
 

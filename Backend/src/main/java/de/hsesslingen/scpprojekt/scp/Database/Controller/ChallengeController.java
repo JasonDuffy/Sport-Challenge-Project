@@ -39,6 +39,8 @@ public class ChallengeController {
 
     @Autowired
     private ChallengeService challengeService;
+    @Autowired
+    private SAML2Service saml2Service;
 
     /**
      * REST API for returning Challenge data of a given ID
@@ -57,7 +59,7 @@ public class ChallengeController {
     })
     @GetMapping(path = "/{id}/" , produces = "application/json")
     public ResponseEntity<ChallengeDTO> getChallengeById(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(challengeService.getDTO(id), HttpStatus.OK);
             } catch (NotFoundException e) {
@@ -85,7 +87,7 @@ public class ChallengeController {
     })
     @GetMapping(path = "/", produces = "application/json")
     public ResponseEntity<List<ChallengeDTO>> getChallenges(@Parameter(description = "Which challenges should be returned. \"current\" for only current challenges, \"past\" for only past and anything else for all") @RequestParam String type, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             List<ChallengeDTO> challenges = challengeService.getAll();
 
             switch(type){
@@ -154,7 +156,7 @@ public class ChallengeController {
     })
     @PostMapping(path = "/", consumes = "multipart/form-data", produces = "application/json")
     public ResponseEntity<ChallengeDTO> addChallenge(@RequestPart("file") MultipartFile file, @RequestParam("sportId") long sportId[], @RequestParam("sportFactor") float sportFactor[], @RequestPart("json") @Valid ChallengeDTO challenge, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 ResponseEntity<ChallengeDTO> chDTO = null;
                 if (sportId.length == sportFactor.length) {
@@ -177,7 +179,7 @@ public class ChallengeController {
      *
      * @param ID of Challenge which should be deleted
      * @param challenge challenge data for the Challenge update
-     * @param file Image which should be stored
+     * @param imageID ImageID which should be stored
      * @param request automatically filled by browser
      * @return A 200 Code and the Member data if it worked 404 otherwise
      */
@@ -193,7 +195,7 @@ public class ChallengeController {
     })
     @PutMapping(path = "/{id}/",consumes = "multipart/form-data", produces = "application/json")
     public ResponseEntity<ChallengeDTO> updateChallenge(@RequestParam("imageId") long imageID, @PathVariable("id") long ID,  @RequestPart("json") @Valid ChallengeDTO challenge, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(challengeService.update(imageID, ID, challenge), HttpStatus.OK);
             } catch (NotFoundException e) {
@@ -221,7 +223,7 @@ public class ChallengeController {
     })
     @DeleteMapping(path = "/{id}/",produces = "application/json")
     public ResponseEntity<Void> deleteChallenge(@PathVariable("id") long ID,HttpServletRequest request) throws NotFoundException {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try {
                 challengeService.delete(ID);
                 return new ResponseEntity<>(HttpStatus.OK);
@@ -247,7 +249,7 @@ public class ChallengeController {
     })
     @DeleteMapping("/")
     public ResponseEntity<Void> deleteAllChallenges(HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             challengeService.deleteAll();
             return new ResponseEntity<>(HttpStatus.OK);
         } else {

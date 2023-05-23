@@ -1,5 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.TeamMemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamMemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
@@ -41,6 +42,8 @@ public class TeamMemberServiceTest {
     TeamMemberService teamMemberService;
     @Autowired
     TeamMemberConverter teamMemberConverter;
+    @Autowired
+    MemberConverter memberConverter;
     List<TeamMember> teamMemberList;
 
     /**
@@ -132,7 +135,7 @@ public class TeamMemberServiceTest {
         when(teamService.get(1L)).thenReturn(t);
 
         Member m = new Member();
-        when(memberService.get(0L)).thenReturn(m);
+        when(memberConverter.convertDtoToEntity(memberService.get(0L))).thenReturn(m);
 
         teamMemberList.get(0).setTeam(t);
         teamMemberList.get(0).setMember(m);
@@ -172,7 +175,7 @@ public class TeamMemberServiceTest {
         when(teamService.get(1L)).thenReturn(t);
 
         Member m = new Member();
-        when(memberService.get(0L)).thenReturn(m);
+        when(memberConverter.convertDtoToEntity(memberService.get(0L))).thenReturn(m);
 
         teamMemberList.get(1).setTeam(t);
         teamMemberList.get(1).setMember(m);

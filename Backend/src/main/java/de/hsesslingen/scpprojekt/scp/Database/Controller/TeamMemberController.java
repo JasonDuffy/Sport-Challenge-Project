@@ -19,6 +19,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -40,6 +41,8 @@ public class TeamMemberController {
 
     @Autowired
     TeamMemberService teamMemberService;
+    @Autowired
+    private SAML2Service saml2Service;
 
     /**
      * get all Teammember
@@ -56,7 +59,7 @@ public class TeamMemberController {
     })
     @GetMapping(path = "/", produces = "application/json")
     public ResponseEntity<List<TeamMemberDTO>> getALLTeamMembers(HttpServletRequest request)  {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             return new ResponseEntity<>(teamMemberService.getAll(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -72,7 +75,7 @@ public class TeamMemberController {
     @GetMapping(path = "/challenges/{id}/", produces = "application/json")
     public ResponseEntity<List<TeamMemberDTO>> getALLTeamMembersForChallenge(@PathVariable ("id") long ChallengeID,
                                                                              HttpServletRequest request)  {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             return new ResponseEntity<>(teamMemberService.getAllTeamOfChallenge(ChallengeID), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -97,7 +100,7 @@ public class TeamMemberController {
     })
     @GetMapping(path ="/{id}/", produces = "application/json")
     public ResponseEntity<TeamMemberDTO> getTeamMemberByID(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(teamMemberService.get(id), HttpStatus.OK);
             } catch (NotFoundException e) {
@@ -128,7 +131,7 @@ public class TeamMemberController {
     })
     @PostMapping(path = "/",produces = "application/json")
     public ResponseEntity<TeamMemberDTO> addTeamMember( TeamMemberDTO teamMemberDTO,HttpServletRequest request){
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                  return new ResponseEntity<>(teamMemberService.add(teamMemberDTO),HttpStatus.CREATED);
                 } catch (NotFoundException e) {
@@ -157,7 +160,7 @@ public class TeamMemberController {
     })
     @DeleteMapping(path = "/{id}/",produces = "application/json")
     public ResponseEntity<HttpStatus> deleteATeamMember(@PathVariable("id") long ID,HttpServletRequest request){
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 teamMemberService.delete(ID);
                 return new ResponseEntity<>(HttpStatus.OK);
@@ -184,7 +187,7 @@ public class TeamMemberController {
     })
     @DeleteMapping("/")
     public ResponseEntity<Void> deleteAllTeamMembers(HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             teamMemberService.deleteAll();
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
@@ -211,7 +214,7 @@ public class TeamMemberController {
     })
     @PutMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<TeamMemberDTO> updateTeamMember(@PathVariable("id") long id, @RequestBody TeamMemberDTO teamMember, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(teamMemberService.update(id, teamMember), HttpStatus.OK);
             } catch (NotFoundException e) {

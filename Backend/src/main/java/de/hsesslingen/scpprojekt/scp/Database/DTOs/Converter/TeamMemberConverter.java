@@ -22,6 +22,8 @@ public class TeamMemberConverter {
     TeamService teamService;
     @Autowired
     MemberService memberService;
+    @Autowired
+    MemberConverter memberConverter;
 
     /**
      * Converts Entity TeamMember to a DTO
@@ -64,7 +66,7 @@ public class TeamMemberConverter {
         TeamMember teamMember = new TeamMember();
         teamMember.setId(teamMemberDTO.getId());
         teamMember.setTeam(teamService.get(teamMemberDTO.getTeamID()));
-        teamMember.setMember(memberService.get((teamMemberDTO.getMemberID())));
+        teamMember.setMember(memberConverter.convertDtoToEntity(memberService.get((teamMemberDTO.getMemberID()))));
         return teamMember;
     }
 

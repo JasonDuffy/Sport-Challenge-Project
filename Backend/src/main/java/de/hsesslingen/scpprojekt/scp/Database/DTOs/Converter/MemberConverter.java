@@ -33,7 +33,7 @@ public class MemberConverter {
         try{
             memberDTO.setImageID(member.getImage().getId());
         } catch (NullPointerException e){
-            memberDTO.setImageID(null);
+            memberDTO.setImageID(0);
         }
         return memberDTO;
     }

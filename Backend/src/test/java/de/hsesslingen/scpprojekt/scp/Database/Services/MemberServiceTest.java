@@ -78,7 +78,7 @@ public class MemberServiceTest {
         for(Member m : members){
             boolean test = false;
             for (Member m1: memberList){
-                if (m1.getId().equals(m.getId())) {
+                if (m1.getId() == m.getId()) {
                     test = true;
                     break;
                 }

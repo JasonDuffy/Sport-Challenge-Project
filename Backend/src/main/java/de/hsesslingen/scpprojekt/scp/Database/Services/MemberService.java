@@ -42,7 +42,7 @@ public class MemberService {
      * @return Member with given ID
      * @throws NotFoundException Member can not be found
      */
-    public MemberDTO get(Long memberID) throws NotFoundException {
+    public MemberDTO get(long memberID) throws NotFoundException {
         Optional<Member> member = memberRepository.findById(memberID);
         if(member.isPresent())
             return memberConverter.convertEntityToDto(member.get());
@@ -82,7 +82,7 @@ public class MemberService {
      * @param member   Member object that overwrites the old member
      * @return Updated bonus object
      */
-    public MemberDTO update(Long memberID, MemberDTO member) throws NotFoundException {
+    public MemberDTO update(long memberID, MemberDTO member) throws NotFoundException {
         MemberDTO newMember = get(memberID);
 
         newMember.setEmail(member.getEmail());

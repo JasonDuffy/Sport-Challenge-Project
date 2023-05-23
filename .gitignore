@@ -1,1 +1,2 @@
 .data/keycloak/h2/keycloakdb.lock.db
+.data/keycloak/h2/keycloakdb.trace.db

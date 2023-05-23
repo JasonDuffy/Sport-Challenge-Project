@@ -1,17 +1,30 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.TeamConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.*;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
  * Service of the Challenge
  *
- * @auth Tom Nguyen Dinh
+ * @author Tom Nguyen Dinh, Jason Patrick Duffy
  */
 @Service
 public class ChallengeService {
@@ -20,6 +33,24 @@ public class ChallengeService {
     ChallengeRepository challengeRepository;
     @Autowired
     ImageStorageService imageStorageService;
+    @Autowired
+    ActivityRepository activityRepository;
+    @Autowired
+    BonusRepository bonusRepository;
+    @Autowired
+    ActivityConverter activityConverter;
+    @Autowired
+    BonusConverter bonusConverter;
+    @Autowired
+    @Lazy
+    TeamConverter teamConverter;
+    @Autowired
+    TeamRepository teamRepository;
+    @Autowired
+    MemberConverter memberConverter;
+    @Autowired
+    MemberRepository memberRepository;
+
 
 
 /*
@@ -99,4 +130,48 @@ public class ChallengeService {
         challengeRepository.deleteAll();
     }
      **/
+
+    /**
+     * Return all Activities for given Challenge ID
+     * @param challengeID Challenge ID for returned activities
+     * @return All activities concerning the given challenge ID
+     */
+    public List<ActivityDTO> getActivitiesForChallenge(Long challengeID){
+        return activityConverter.convertEntityListToDtoList(activityRepository.findActivitiesByChallenge_ID(challengeID));
+    }
+
+    /**
+     * Returns all bonuses for a challenge
+     * @param challengeID The challengeID for which the bonuses should be returned
+     * @return The bonuses for the challenge
+     */
+    public List<BonusDTO> getChallengeBonuses(long challengeID){
+        return bonusConverter.convertEntityListToDtoList(bonusRepository.findBonusesByChallengeID(challengeID));
+    }
+
+    /**
+     * Returns all teams for a challenge
+     * @param challengeID The challengeID for which the teams should be returned
+     * @return The teams for the challenge
+     */
+    public List<TeamDTO> getChallengeTeams(long challengeID){
+        return teamConverter.convertEntityListToDtoList(teamRepository.findTeamsByChallenge_Id(challengeID));
+    }
+
+    /**
+     * Deletes all teams from a challenge
+     * @param challengeID The challengeID for which the teams should be deleted
+     */
+    public void deleteChallengeTeams(long challengeID){
+        teamRepository.deleteAllByChallenge_Id(challengeID);
+    }
+
+    /**
+     * Returns all members for a challenge
+     * @param challengeID The challengeID for which the teams should be deleted
+     * @return The members of a challenge
+     */
+    public List<MemberDTO> getChallengeMembers(long challengeID){
+        return memberConverter.convertEntityListToDtoList(memberRepository.findMembersByChallenge_ID(challengeID));
+    }
 }

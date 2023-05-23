@@ -1,9 +1,14 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Filler.Filler;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.MemberRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.AlreadyExistsException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
@@ -36,9 +41,13 @@ public class MemberServiceTest {
     @MockBean
     MemberRepository memberRepository;
     @MockBean
+    ActivityRepository activityRepository;
+    @MockBean
     ImageStorageService imageStorageService;
     @MockBean
     Filler filler; //Mock Filler because its entries cause exceptions
+    @Autowired
+    ActivityConverter activityConverter;
     @Autowired
     MemberConverter memberConverter;
     @Autowired
@@ -213,5 +222,67 @@ public class MemberServiceTest {
     public void deleteAllTest(){
         memberService.deleteAll();
         verify(memberRepository).deleteAll();
+    }
+
+    /**
+     * Tests if activities for users are returned correctly
+     */
+    @Test
+    public void getActivitiesForUserTest(){
+        Member m1 = new Member();
+        m1.setId(1L);
+        ChallengeSport cs1 = new ChallengeSport();
+        cs1.setId(1L);
+        Activity a1 = new Activity();
+        a1.setId(1L);
+        a1.setChallengeSport(cs1);
+        a1.setMember(m1);
+        Activity a2 = new Activity();
+        a2.setId(2L);
+        a2.setChallengeSport(cs1);
+        a2.setMember(m1);
+        List<Activity> aList = new ArrayList<>();
+        aList.add(a1); aList.add(a2);
+        when(activityRepository.findActivitiesByMember_Id(1L)).thenReturn(aList);
+
+        List<ActivityDTO> acts = memberService.getActivitiesForUser(1L);
+
+        int counter = acts.size();
+        int realCounter = aList.size();
+
+        assertEquals(counter, realCounter);
+
+        verify(activityRepository).findActivitiesByMember_Id(1L);
+    }
+
+    /**
+     * Tests if activities for users in challenge are returned correctly
+     */
+    @Test
+    public void getActivitiesForUserInChallengeTest() throws NotFoundException {
+        Member m1 = new Member();
+        m1.setId(1L);
+        ChallengeSport cs1 = new ChallengeSport();
+        cs1.setId(1L);
+        Activity a1 = new Activity();
+        a1.setId(1L);
+        a1.setChallengeSport(cs1);
+        a1.setMember(m1);
+        Activity a2 = new Activity();
+        a2.setId(2L);
+        a2.setChallengeSport(cs1);
+        a2.setMember(m1);
+        List<Activity> aList = new ArrayList<>();
+        aList.add(a1); aList.add(a2);
+        when(activityRepository.findActivitiesByChallenge_IDAndMember_ID(1L, 1L)).thenReturn(aList);
+
+        List<ActivityDTO> acts = memberService.getActivitiesForUserInChallenge(1L, 1L);
+
+        int counter = acts.size();
+        int realCounter = aList.size();
+
+        assertEquals(counter, realCounter);
+
+        verify(activityRepository).findActivitiesByChallenge_IDAndMember_ID(1L, 1L);
     }
 }

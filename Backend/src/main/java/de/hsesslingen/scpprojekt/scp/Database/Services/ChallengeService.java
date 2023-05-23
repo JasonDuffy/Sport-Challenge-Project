@@ -73,6 +73,22 @@ public class ChallengeService {
         throw new NotFoundException("Challenge with ID " + ChallengeID + " is not present in DB.");
     }
 
+    /**
+     * Get ChallengeID's where the given MemberID is part of
+     *
+     * @param memberID memberID that should return all ChallengeID's the member is part of
+     * @return ChallengeID's
+     * @throws NotFoundException Not found any Challenge the Member is part of
+     */
+    public List<Long> getChallengeIDsByMemberID(Long memberID) throws NotFoundException {
+        List<Long> challengeIDs = challengeRepository.findChallengeIDsByMemberID(memberID);
+        if(!challengeIDs.isEmpty()){
+            return challengeIDs;
+        }else{
+            throw new NotFoundException("The member wit the ID " + memberID + " is not part of a Challenge");
+        }
+    }
+
 
     public ChallengeDTO add(MultipartFile file, long sportId[], float sportFactor[], ChallengeDTO challenge) throws NotFoundException {
         try {

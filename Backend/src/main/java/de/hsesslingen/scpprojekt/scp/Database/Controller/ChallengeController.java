@@ -126,6 +126,35 @@ public class ChallengeController {
     }
 
     /**
+     * REST API for returning ChallengeID's where the given MemberID is part of
+     *
+     * @param memberID memberID that should return all ChallengeID's the member is part of
+     * @param request automatically filled by browser
+     * @return ChallengeID's corresponding to the given memberID 404 otherwise
+     */
+    @Operation(summary = "Get all Challenge for the Member")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "No ChallengeID's found for the MemberID",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Long.class))}),
+            @ApiResponse(responseCode = "404", description = "No ChallengeID's found for the MemberID", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @GetMapping(path = "/members/{id}/" , produces = "application/json")
+    public ResponseEntity<List<Long>> getChallengeIDsByMemberID(@PathVariable("id") long memberID, HttpServletRequest request) {
+        if (saml2Service.isLoggedIn(request)){
+            try {
+                return new ResponseEntity<>(challengeService.getChallengeIDsByMemberID(memberID), HttpStatus.OK);
+            } catch (NotFoundException e){
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
      * Internal Problem of Swagger Ui/ Spring to upload a file and a json object
      * creates a Converter for the  Mediatype which allows octet stream,
      * so it can have a json format Object

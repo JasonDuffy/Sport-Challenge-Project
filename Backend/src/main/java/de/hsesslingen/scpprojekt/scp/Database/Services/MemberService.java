@@ -1,15 +1,21 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.MemberRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.AlreadyExistsException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,7 +30,13 @@ public class MemberService {
     @Autowired
     MemberRepository memberRepository;
     @Autowired
+    ActivityRepository activityRepository;
+    @Autowired
     MemberConverter memberConverter;
+    @Autowired
+    @Lazy
+    ActivityConverter activityConverter;
+
     /**
      * Returns all members in database
      *
@@ -109,5 +121,24 @@ public class MemberService {
      */
     public void deleteAll() {
         memberRepository.deleteAll();
+    }
+
+    /**
+     * Return all activities for given User ID
+     * @param userID User ID for returned activities
+     * @return All activities by the given user ID
+     */
+    public List<ActivityDTO> getActivitiesForUser(Long userID){
+        return activityConverter.convertEntityListToDtoList(activityRepository.findActivitiesByMember_Id(userID));
+    }
+
+    /**
+     * Returns all activities of a given user in a given challenge
+     * @param challengeID Challenge ID of the requested activities
+     * @param userID User ID of the requested activities
+     * @return All Activities with the given User & Challenge IDs
+     */
+    public List<ActivityDTO> getActivitiesForUserInChallenge(Long challengeID, Long userID) throws NotFoundException {
+        return activityConverter.convertEntityListToDtoList(activityRepository.findActivitiesByChallenge_IDAndMember_ID(challengeID, userID));
     }
 }

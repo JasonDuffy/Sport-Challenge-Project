@@ -30,6 +30,9 @@ import java.util.List;
 @RequestMapping("/API")
 public class API {
     @Autowired
+    SAML2Service saml2Service;
+
+    @Autowired
     APIService functions;
 
     @Autowired
@@ -51,7 +54,7 @@ public class API {
     })
     @GetMapping(path = "/challengeActivities/", produces = "application/json")
     public ResponseEntity<List<ActivityDTO>> getAllActivitiesForChallenge(@RequestParam Long challengeID, HttpServletRequest request){
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             List<ActivityDTO> challengeActivities = functions.getActivitiesForChallenge(challengeID);
 
             if(!challengeActivities.isEmpty()){
@@ -80,7 +83,7 @@ public class API {
     })
     @GetMapping(path = "/userActivities/", produces = "application/json")
     public ResponseEntity<List<ActivityDTO>> getAllActivitiesForUser(@RequestParam Long userID, HttpServletRequest request){
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             List<ActivityDTO> userActivities = functions.getActivitiesForUser(userID);
 
             if(!userActivities.isEmpty()){
@@ -109,7 +112,7 @@ public class API {
     })
     @GetMapping(path = "/rawChallengeDistance/", produces = "application/json")
     public ResponseEntity<Float> getRawDistanceForChallenge(@RequestParam Long challengeID, HttpServletRequest request){
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 List<Activity> activities = activityConverter.convertDtoListToEntityList(functions.getActivitiesForChallenge(challengeID));
 
@@ -139,7 +142,7 @@ public class API {
     })
     @GetMapping(path = "/challengeDistance/", produces = "application/json")
     public ResponseEntity<Float> getDistanceForChallenge(@RequestParam Long challengeID, HttpServletRequest request){
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 List<Activity> activities = activityConverter.convertDtoListToEntityList(functions.getActivitiesForChallenge(challengeID));
 
@@ -170,7 +173,7 @@ public class API {
     })
     @GetMapping(path = "/challengeDistanceForUser/", produces = "application/json")
     public ResponseEntity<Float> getDistanceForChallengeForUser(@RequestParam Long challengeID, @RequestParam Long userID, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 List<Activity> activities = activityConverter.convertDtoListToEntityList(functions.getActivitiesForUserInChallenge(challengeID, userID));
 
@@ -201,7 +204,7 @@ public class API {
     })
     @GetMapping(path = "/rawChallengeDistanceForUser/", produces = "application/json")
     public ResponseEntity<Float> getRawDistanceForChallengeForUser(@RequestParam Long challengeID, @RequestParam Long userID, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 List<Activity> activities = activityConverter.convertDtoListToEntityList(functions.getActivitiesForUserInChallenge(challengeID, userID));
 

@@ -47,3 +47,15 @@ spring:
               response-url: "{baseUrl}/logout/saml2/slo"
             assertingparty:
               metadata-uri: "http://localhost:8080/realms/SportChallenge/protocol/saml/descriptor"
+
+  mail:
+    host: "smtp.gmail.com"
+    port: 587
+    username: "slashchallengescp@gmail.com"
+    password: "kpcxvrxxjxoemqvy"
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true

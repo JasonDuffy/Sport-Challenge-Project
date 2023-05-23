@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Bonus Benachrichtigung</title>
+    <style>
+        a {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>Der Bonus <a th:text="${bonusName}">BonusName</a> wurde der Challenge <a th:text="${challengeName}">ChallengeName</a> hinzugefügt!</h1>
+    <p>Beschreibung: <a th:text="${description}">Description</a></p>
+    <p>Beginn: <a th:text="${startTime}">StartTime</a></p>
+    <p>Ende: <a th:text="${endTime}">EndTime</a></p>
+    <p>Faktor: <a th:text="${factor}">Factor</a></p>
+</body>
+</html>

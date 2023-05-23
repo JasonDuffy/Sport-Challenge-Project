@@ -5,11 +5,16 @@ import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
+import de.hsesslingen.scpprojekt.scp.Mail.Services.EmailService;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -28,6 +33,13 @@ public class BonusService {
 
     @Autowired
     BonusConverter bonusConverter;
+
+    @Autowired
+    EmailService emailService;
+
+    @Autowired
+    @Lazy
+    ChallengeService challengeService;
 
     /**
      * Returns all bonuses in database
@@ -59,10 +71,36 @@ public class BonusService {
      * @param bonus            Bonus object to be added to DB
      * @return Added bonus object
      */
-    public BonusDTO add(BonusDTO bonus) throws NotFoundException{
+    public BonusDTO add(BonusDTO bonus) throws NotFoundException {
         Bonus b = bonusConverter.convertDtoToEntity(bonus);
         Bonus savedBonus = bonusRepository.save(b);
+
+        sendBonusMail(savedBonus);
+
         return bonusConverter.convertEntityToDto(savedBonus);
+    }
+
+    /**
+     * Sends an email to all members of a challenge, informing them of a new bonus
+     *
+     * @param bonus Bonus that they should be notified about
+     */
+    private void sendBonusMail(Bonus bonus){
+        Map<String, Object> mailMap = new HashMap<>();
+        mailMap.put("challengeName", bonus.getChallengeSport().getChallenge().getName());
+        mailMap.put("bonusName", bonus.getName());
+        mailMap.put("startTime", bonus.getStartDate());
+        mailMap.put("endTime", bonus.getEndDate());
+        mailMap.put("factor", bonus.getFactor());
+        mailMap.put("description", bonus.getDescription());
+
+        String subject = mailMap.get("challengeName") + " hat einen neuen Bonus!";
+
+        try {
+            emailService.sendBonusMail(challengeService.getChallengeMembers(bonus.getChallengeSport().getChallenge().getId()), subject, mailMap);
+        } catch (MessagingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

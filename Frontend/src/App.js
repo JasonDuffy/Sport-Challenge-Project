@@ -10,6 +10,10 @@ import MyChallenges from "./components/MyChallenges";
 import Navbar from "./components/Navbar";
 import Userprofile from "./components/Userprofile";
 import Test from "./components/Test";
+<<<<<<< Updated upstream
+=======
+import AddSport from "./components/AddSport";
+>>>>>>> Stashed changes
 
 function App() {
   return (
@@ -24,6 +28,10 @@ function App() {
         <Route path="/Profile" element={<Userprofile />} />
         <Route path="/:action/Challenge/:id" element={<AddChallenge />} />
         <Route path="/:action/Team/:id" element={<AddTeam />} />
+<<<<<<< Updated upstream
+=======
+        <Route path="/:action/Sport/:id" element={<AddSport />} />
+>>>>>>> Stashed changes
       </Routes>
     </>
   );

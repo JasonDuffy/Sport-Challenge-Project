@@ -129,7 +129,7 @@ public class ChallengeServiceTest {
 
         MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
 
-        ChallengeDTO newC = challengeService.add(file,1,10,challengeConverter.convertEntityToDto(challengeList.get(0)));
+        ChallengeDTO newC = challengeService.add(file,new long[]{1L},new float[]{10F},challengeConverter.convertEntityToDto(challengeList.get(0)));
 
         verify(challengeRepository).save(any(Challenge.class));
 
@@ -145,7 +145,7 @@ public class ChallengeServiceTest {
         MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
 
         assertThrows(NotFoundException.class, () -> {
-            challengeService.add(file,0,10,challengeConverter.convertEntityToDto(challengeList.get(0)));
+            challengeService.add(file,new long[]{1L},new float[]{10F},challengeConverter.convertEntityToDto(challengeList.get(0)));
         });
     }
     /**
@@ -160,9 +160,7 @@ public class ChallengeServiceTest {
 
         challengeList.get(1).setName("name");
 
-        MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
-
-        ChallengeDTO newC = challengeService.update(file,0L, challengeConverter.convertEntityToDto(challengeList.get(1)));
+        ChallengeDTO newC = challengeService.update(1,0L, challengeConverter.convertEntityToDto(challengeList.get(1)));
 
         assertEquals(newC.getId(), challengeList.get(0).getId());
         assertEquals(newC.getName(), challengeList.get(0).getName());
@@ -177,9 +175,8 @@ public class ChallengeServiceTest {
      */
     @Test
     public void updateTestFail() throws NotFoundException {
-        MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
         assertThrows(NotFoundException.class, () -> {
-            challengeService.update(file,20L, challengeConverter.convertEntityToDto(challengeList.get(0)));
+            challengeService.update(1,20L, challengeConverter.convertEntityToDto(challengeList.get(0)));
         });
     }
     /**

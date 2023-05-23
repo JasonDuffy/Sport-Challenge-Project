@@ -8,6 +8,9 @@ import "./css/Form.css";
  *
  * @author Mason Schönherr
  */
+let sportNameHeading = "";
+
+
 class AddSport extends Component {
   constructor(props) {
     super(props);
@@ -54,9 +57,6 @@ class AddSport extends Component {
     const infoContainerEl = document.getElementById("form_info_container");
     const infoMessageEl = document.getElementById("form_info_message");
 
-    let sportCheckedId = [];
-    let sportCheckedFactor = [];
-
     infoContainerEl.classList.remove("error");
     infoContainerEl.classList.remove("success");
 
@@ -70,28 +70,29 @@ class AddSport extends Component {
     sportJsonObj.name = this.state.sportName;
     sportJsonObj.factor = this.state.sportFactor;
 
-    //Gives data to the Backend and writes it into the DB
-    fetch("http://localhost:8081/sports/", {
-      method: "POST",
-      body: JSON.stringify(sportJsonObj),
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-    })
-      .then((response) => {
-        if (response.ok) {
-          response.json().then((resData) => {
-            infoContainerEl.classList.add("success");
-            infoMessageEl.innerHTML = "Die Sportart wurde erolgreich erstellt! Wenn du möchtests kannst du eine weitere Sportarten erstellen.";
-            window.scrollTo(0, 0);
-            this.clearAllInputs();
-          });
-        } else {
-          this.showInputErrorMessage("Beim erstellen der Sportart ist etwas schief gelaufen: " + response.status + " " + response.statusText + "!");
-        }
-      })
-      .catch((error) => {
-        this.showInputErrorMessage("Beim erstellen der Sportart ist etwas schief gelaufen: " + error + "!");
-      });
+    if(this.props.params.action === "Edit"){
+      let sportResponse = await fetch("http://localhost:8081/sports/" + this.props.params.id + "/", { method: "PUT", body: JSON.stringify(sportJsonObj), credentials: "include", headers: { "Content-Type": "application/json" }});
+      if(sportResponse.ok){
+        infoContainerEl.classList.add("success");
+        infoMessageEl.innerHTML = "Die Sportart wurde erolgreich editiert!";
+        window.scrollTo(0, 0);
+        this.clearAllInputs();
+      }else{
+        this.showInputErrorMessage("Beim editieren der Sportart ist etwas schief gelaufen: " + sportResponse.status + " " + sportResponse.statusText + "!");
+      }
+    }else{
+      //Gives data to the Backend and writes it into the DB
+      let sportResponse = await fetch("http://localhost:8081/sports/", { method: "POST", body: JSON.stringify(sportJsonObj), credentials: "include", headers: { "Content-Type": "application/json" }});
+      if(sportResponse.ok){
+        infoContainerEl.classList.add("success");
+        infoMessageEl.innerHTML = "Die Sportart wurde erolgreich erstellt! Wenn du möchtests kannst du eine weitere Sportarten erstellen.";
+        window.scrollTo(0, 0);
+        this.clearAllInputs();
+      }else{
+        this.showInputErrorMessage("Beim erstellen der Sportart ist etwas schief gelaufen: " + sportResponse.status + " " + sportResponse.statusText + "!");
+      }
+    }
+
   }
 
   async componentDidMount() {
@@ -99,6 +100,7 @@ class AddSport extends Component {
       let sportResponse = await fetch("http://localhost:8081/sports/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
       let sportResData = await sportResponse.json();
 
+      sportNameHeading = sportResData.name;
       this.setState({ sportName: sportResData.name });
       this.setState({ sportFactor: sportResData.factor });
     }
@@ -110,7 +112,8 @@ class AddSport extends Component {
         <div className="section_container">
           <div className="section_content">
             <div className="heading_underline_center mg_b_10">
-              <span className="underline_center">Sport hinzufügen</span>
+              {this.props.params.action === "Edit" && <span className="underline_center">Sport {sportNameHeading} editieren</span>}
+              {this.props.params.action === "Add" && <span className="underline_center">Sport hinzufügen</span>}
             </div>
             <div id="form_info_container" className="pd_1 mg_b_2">
               <span id="form_info_message"></span>
@@ -118,16 +121,23 @@ class AddSport extends Component {
             <div className="form_container">
               <form onSubmit={this.submitHandle}>
                 <div className="form_input_container pd_1">
-                  <h2>Welche Sportart?</h2>
+                  <h2>Gib deiner Sportart einen Namen</h2>
                   <input className="mg_t_2" type="text" value={this.state.sportName} maxLength={15} onChange={this.sportNameChange} placeholder="Sport Name"></input>
                 </div>
                 <div className="form_input_container pd_1 mg_t_2">
-                  <h2>Welchen Factor soll der Sport haben?</h2>
+                  <h2>Lege einen Faktor für deine Sportart fest</h2>
+                  <span className="form_input_description">
+                    Die mit deiner Sportart zurückgelegten Kilometer werden mit diesem Faktor multipliziert.
                   <br />
-                  <input className="mg_t_2" type="number" value={this.state.sportFactor} onChange={this.sportFactorChange} placeholder="Factor"></input>
+                  <br />
+                    Dies ist der Standart Faktor, er kann beim erstellen einer Challenge spezifisch für diese angepasst werden. 
+                  </span>
+                  <br />
+                  <input className="mg_t_2" type="number" value={this.state.sportFactor} onChange={this.sportFactorChange}></input>
                 </div>
                 <div className="center_content mg_t_2">
-                  <Button color="orange" txt="Sport festlegen" type="submit" />
+                  {this.props.params.action === "Edit" && <Button color="orange" txt="Sportart editieren" type="submit" />}
+                  {this.props.params.action === "Add" && <Button color="orange" txt="Sportart hinzufügen" type="submit" />}
                 </div>
               </form>
             </div>

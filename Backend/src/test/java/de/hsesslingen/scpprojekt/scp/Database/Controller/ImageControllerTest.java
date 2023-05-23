@@ -1,8 +1,10 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ImageStorageService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +48,8 @@ public class ImageControllerTest {
 
     @MockBean
     ImageStorageService imageservice;
+    @MockBean
+    SAML2Service saml2Service;
 
 
     /**
@@ -56,6 +60,8 @@ public class ImageControllerTest {
     @Test
     @WithMockUser
     public void getALLImagesTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         Image i1 = new Image();
         i1.setId(1);
         Image i2 = new Image();
@@ -111,6 +117,8 @@ public class ImageControllerTest {
     @Test
     @WithMockUser
     public void getImageByIDTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         Image i1 = new Image();
         i1.setId(1);
 
@@ -134,6 +142,8 @@ public class ImageControllerTest {
     @Test
     @WithMockUser
     public void getImageByIDNotFound() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         Image i1 = new Image();
         i1.setId(1);
 
@@ -171,6 +181,8 @@ public class ImageControllerTest {
     @Test
     @WithMockUser
     public void storeImageTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         Image i1 = new Image();
         i1.setId(1);
 
@@ -217,6 +229,8 @@ public class ImageControllerTest {
     @Test
     @WithMockUser
     public void deleteImageTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/images/1/").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
@@ -235,6 +249,8 @@ public class ImageControllerTest {
     @Test
     @WithMockUser
     public void deleteActivityTestNotFound() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         doThrow(NotFoundException.class).when(imageservice).delete(1L);
 
         RequestBuilder request = MockMvcRequestBuilders
@@ -271,6 +287,8 @@ public class ImageControllerTest {
     @Test
     @WithMockUser
     public void deleteAllActivitiesTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/images/").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
@@ -305,6 +323,8 @@ public class ImageControllerTest {
     @Test
     @WithMockUser
     public void updateActivityTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         Image i1 = new Image();
         i1.setId(1);
 
@@ -337,6 +357,7 @@ public class ImageControllerTest {
     @Test
     @WithMockUser
     public void updateActivityNotFound() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
 
         when(imageservice.update(any(long.class), any(MultipartFile.class))).thenThrow(NotFoundException.class);
 

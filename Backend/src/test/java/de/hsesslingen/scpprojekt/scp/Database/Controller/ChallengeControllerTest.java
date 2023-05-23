@@ -1,10 +1,12 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -47,12 +50,16 @@ public class ChallengeControllerTest {
 
     @MockBean
     private ChallengeService challengeService;
+    @MockBean
+    SAML2Service saml2Service;
 
 
 
     @Test
     @WithMockUser
     public void getChallengeByIDSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         String name = "Test Challenge";
 
         ChallengeDTO challenge = new ChallengeDTO();
@@ -84,6 +91,8 @@ public class ChallengeControllerTest {
     @Test
     @WithMockUser
     public void getChallengeByIDNotFound() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         when(challengeService.getDTO(1L)).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
@@ -109,6 +118,8 @@ public class ChallengeControllerTest {
     @Test
     @WithMockUser
     public void getAllChallengesSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         LocalDateTime start = LocalDateTime.of(2023, 4, 8, 10, 0);
         LocalDateTime end = LocalDateTime.of(2023, 10, 8, 10, 0);
 
@@ -154,6 +165,8 @@ public class ChallengeControllerTest {
     @Test
     @WithMockUser
     public void getCurrentChallengesSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         LocalDateTime start = LocalDateTime.of(2023, 4, 8, 10, 0);
         LocalDateTime end = LocalDateTime.of(2023, 10, 8, 10, 0);
 
@@ -197,6 +210,8 @@ public class ChallengeControllerTest {
     @Test
     @WithMockUser
     public void getPastChallengesSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         LocalDateTime start = LocalDateTime.of(2023, 4, 8, 10, 0);
         LocalDateTime end = LocalDateTime.of(2023, 10, 8, 10, 0);
 
@@ -294,6 +309,8 @@ public class ChallengeControllerTest {
     @Test
     @WithMockUser
     public void deleteChallengeSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         long id = 1L;
         float target = 100.60f;
         String name = "Test Challenge";
@@ -327,6 +344,8 @@ public class ChallengeControllerTest {
     @Test
     @WithMockUser
     public void deleteChallengeNotFound() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         doThrow(NotFoundException.class).when(challengeService).delete(1L);
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/challenges/1/")
@@ -356,6 +375,8 @@ public class ChallengeControllerTest {
     @Test
     @WithMockUser
     public void deleteAllChallengesTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/challenges/").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);

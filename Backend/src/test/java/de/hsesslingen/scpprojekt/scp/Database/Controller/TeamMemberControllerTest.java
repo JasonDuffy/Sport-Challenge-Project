@@ -1,10 +1,12 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamMemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Services.TeamMemberService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,8 @@ public class TeamMemberControllerTest {
 
     @MockBean
     TeamMemberService teamMemberService;
+    @MockBean
+    SAML2Service saml2Service;
     @Autowired
     private MockMvc mockMvc;
 
@@ -48,6 +52,8 @@ public class TeamMemberControllerTest {
     @Test
     @WithMockUser
     public void addMemberToTeamSuccess()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         Member member = new Member();
         member.setId(3);
         member.setFirstName("Max");
@@ -89,6 +95,8 @@ public class TeamMemberControllerTest {
     @Test
     @WithMockUser
     public void addMemberToTeamNotFound()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         Member member = new Member();
         member.setId(3);
         member.setFirstName("Max");
@@ -152,6 +160,8 @@ public class TeamMemberControllerTest {
     @Test
     @WithMockUser
     public void deleteMemberofTeamSuccess()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         Member member = new Member();
         member.setId(3);
         member.setFirstName("Max");
@@ -205,7 +215,7 @@ public class TeamMemberControllerTest {
     @Test
     @WithMockUser
     public void deleteMemberofTeamNotFound()throws Exception{
-
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
 
         doThrow(NotFoundException.class).when(teamMemberService).delete(1L);
 
@@ -226,6 +236,8 @@ public class TeamMemberControllerTest {
     @Test
     @WithMockUser
     public void deleteALLTeamMembers() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/teamMembers/").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);

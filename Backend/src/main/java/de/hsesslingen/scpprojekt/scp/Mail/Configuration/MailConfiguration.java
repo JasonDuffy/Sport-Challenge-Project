@@ -1,7 +1,5 @@
 package de.hsesslingen.scpprojekt.scp.Mail.Configuration;
 
-import freemarker.cache.ClassTemplateLoader;
-import freemarker.cache.TemplateLoader;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;

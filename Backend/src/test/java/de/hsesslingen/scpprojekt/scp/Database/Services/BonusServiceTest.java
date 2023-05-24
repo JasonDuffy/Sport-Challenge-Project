@@ -41,6 +41,8 @@ public class BonusServiceTest {
     BonusRepository bonusRepository;
     @MockBean
     ChallengeSportService challengeSportService;
+    @MockBean
+    ChallengeService challengeService;
 
     List<Bonus> bonusList;
 
@@ -125,8 +127,12 @@ public class BonusServiceTest {
      */
     @Test
     public void addTestSuccess() throws NotFoundException {
+        Challenge c1 = new Challenge();
+        c1.setId(1L);
+        c1.setName("Challenge");
         ChallengeSport cs = new ChallengeSport();
         cs.setId(1);
+        cs.setChallenge(c1);
         when(challengeSportService.get(1L)).thenReturn(cs);
 
         BonusDTO newBonus = bonusService.add(bonusConverter.convertEntityToDto(bonusList.get(0)));

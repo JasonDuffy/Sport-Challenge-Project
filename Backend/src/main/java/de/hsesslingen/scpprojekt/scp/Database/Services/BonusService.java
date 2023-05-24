@@ -12,6 +12,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -89,10 +91,11 @@ public class BonusService {
         Map<String, Object> mailMap = new HashMap<>();
         mailMap.put("challengeName", bonus.getChallengeSport().getChallenge().getName());
         mailMap.put("bonusName", bonus.getName());
-        mailMap.put("startTime", bonus.getStartDate());
-        mailMap.put("endTime", bonus.getEndDate());
+        mailMap.put("startTime", bonus.getStartDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm")));
+        mailMap.put("endTime", bonus.getEndDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm")));
         mailMap.put("factor", bonus.getFactor());
         mailMap.put("description", bonus.getDescription());
+        mailMap.put("sport", bonus.getChallengeSport().getSport().getName());
 
         String subject = mailMap.get("challengeName") + " hat einen neuen Bonus!";
 

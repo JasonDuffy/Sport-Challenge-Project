@@ -29,6 +29,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMultipartHttpServletRequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
+import org.springframework.web.multipart.MultipartFile;
 
 
 import java.util.*;
@@ -65,6 +66,7 @@ public class TeamControllerTest {
      * Test for get team by ID SUCCESS
      * @throws Exception Exception by mockMvc
      */
+
     @Test
     @WithMockUser
     public void getTeamByIDSuccess() throws Exception {
@@ -99,6 +101,7 @@ public class TeamControllerTest {
      * Test for get team by ID not found
      * @throws Exception Exception by mockMvc
      */
+
     @Test
     @WithMockUser
     public void getTeamByIDNotFound() throws Exception{
@@ -190,7 +193,6 @@ public class TeamControllerTest {
     @WithMockUser
     public void deleteATeamSuccess()throws Exception{
         when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-
 
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/teams/1/").accept(MediaType.APPLICATION_JSON)
@@ -308,10 +310,11 @@ public class TeamControllerTest {
      * Test for creating a team not found
      * @throws Exception Exception by mockMvc
      */
-    /*
+
     @Test
     @WithMockUser
     public void addTeamNotFound()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
 
         TeamDTO team = new TeamDTO();
         team.setId(1L);
@@ -319,6 +322,7 @@ public class TeamControllerTest {
         MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
         MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\" }".getBytes());
 
+        when(teamService.add(any(MockMultipartFile.class),any(TeamDTO.class))).thenThrow(NotFoundException.class);
         RequestBuilder request =
                 MockMvcRequestBuilders.multipart("/teams/")
                         .file(file)
@@ -329,10 +333,8 @@ public class TeamControllerTest {
         mockMvc.perform(request)
                 .andExpect(status().isNotFound())
                 .andReturn();
-
-
     }
-*/
+
     /**
      * Test for creating a team not login
      * @throws Exception Exception by mockMvc
@@ -340,8 +342,6 @@ public class TeamControllerTest {
     @Test
     @WithAnonymousUser
     public void addTeamLogOut()throws Exception{
-
-
         MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
         MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\"}".getBytes());
 
@@ -406,15 +406,18 @@ public class TeamControllerTest {
      * Test for updating a team not found
      * @throws Exception Exception by mockMvc
      */
-    /*
+
     @Test
     @WithMockUser
     public void updateTeamNotFound()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
 
         when(teamService.get(1L)).thenThrow(NotFoundException.class);
 
         MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
         MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\"}".getBytes());
+
+        when(teamService.update(any(MockMultipartFile.class),any(Long.class),any(TeamDTO.class))).thenThrow(NotFoundException.class);
 
         MockMultipartHttpServletRequestBuilder builder =
                 MockMvcRequestBuilders.multipart("/teams/2/");
@@ -435,7 +438,7 @@ public class TeamControllerTest {
                 .andReturn();
 
     }
-*/
+
     /**
      * Test for updating a team not login
      * @throws Exception Exception by mockMvc

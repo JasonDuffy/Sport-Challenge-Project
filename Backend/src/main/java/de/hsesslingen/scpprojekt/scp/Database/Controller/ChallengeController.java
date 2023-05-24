@@ -15,6 +15,9 @@ import de.hsesslingen.scpprojekt.scp.Database.Services.ActivityService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ImageStorageService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -34,6 +37,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -141,6 +145,35 @@ public class ChallengeController {
     }
 
     /**
+     * REST API for returning ChallengeID's where the given MemberID is part of
+     *
+     * @param memberID memberID that should return all ChallengeID's the member is part of
+     * @param request automatically filled by browser
+     * @return ChallengeID's corresponding to the given memberID 404 otherwise
+     */
+    @Operation(summary = "Get all Challenge for the Member")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "No ChallengeID's found for the MemberID",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Long.class))}),
+            @ApiResponse(responseCode = "404", description = "No ChallengeID's found for the MemberID", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @GetMapping(path = "/members/{id}/" , produces = "application/json")
+    public ResponseEntity<List<Long>> getChallengeIDsByMemberID(@PathVariable("id") long memberID, HttpServletRequest request) {
+        if (saml2Service.isLoggedIn(request)){
+            try {
+                return new ResponseEntity<>(challengeService.getChallengeIDsByMemberID(memberID), HttpStatus.OK);
+            } catch (NotFoundException e){
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
      * Internal Problem of Swagger Ui/ Spring to upload a file and a json object
      * creates a Converter for the  Mediatype which allows octet stream,
      * so it can have a json format Object
@@ -166,18 +199,22 @@ public class ChallengeController {
             @ApiResponse(responseCode = "201", description = "Challenge successfully added",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ChallengeDTO.class))}),
-            @ApiResponse(responseCode = "417", description = "Something went wrong creating the new Challenge", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Something went wrong creating the new Challenge", content = @Content),
+            @ApiResponse(responseCode = "400", description = "ID arrays are not same size", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PostMapping(path = "/", consumes = "multipart/form-data", produces = "application/json")
     public ResponseEntity<ChallengeDTO> addChallenge(@RequestPart("file") MultipartFile file, @RequestParam("sportId") long sportId[], @RequestParam("sportFactor") float sportFactor[], @RequestPart("json") @Valid ChallengeDTO challenge, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
-            ResponseEntity<ChallengeDTO> chDTO = null;
             if (sportId.length == sportFactor.length) {
-                chDTO =   new ResponseEntity<>(challengeService.add(file,sportId,sportFactor,challenge), HttpStatus.CREATED);
-                return chDTO;
+                try {
+                    return new ResponseEntity<>(challengeService.add(file,sportId,sportFactor,challenge), HttpStatus.CREATED);
+                } catch (IOException e) {
+                    System.out.println(e.getMessage());
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
             }else {
-                throw new RuntimeException();
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -189,7 +226,7 @@ public class ChallengeController {
      *
      * @param ID of Challenge which should be deleted
      * @param challenge challenge data for the Challenge update
-     * @param file Image which should be stored
+     * @param imageID ImageID which should be stored
      * @param request automatically filled by browser
      * @return A 200 Code and the Member data if it worked 404 otherwise
      */

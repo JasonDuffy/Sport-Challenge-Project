@@ -39,7 +39,7 @@ public class ChallengeSportController {
     @Autowired
     private ChallengeSportService challengeSportService;
     @Autowired
-    SAML2Service saml2Service;
+    private SAML2Service saml2Service;
 
     /**
      * REST API for returning ChallengeSport data of a given ID

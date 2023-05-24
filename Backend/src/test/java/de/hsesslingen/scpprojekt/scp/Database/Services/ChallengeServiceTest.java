@@ -8,6 +8,9 @@ import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Filler.Filler;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.*;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeConverter;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,11 +19,11 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -368,7 +371,7 @@ public class ChallengeServiceTest {
      * @throws NotFoundException Should never be thrown
      */
     @Test
-    public void addTestSuccess() throws NotFoundException {
+    public void addTestSuccess() throws IOException {
 
         MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
 
@@ -377,7 +380,6 @@ public class ChallengeServiceTest {
         verify(challengeRepository).save(any(Challenge.class));
 
     }
-
     /**
      * Test is update works correctly
      * @throws NotFoundException Should never be thrown

@@ -34,16 +34,11 @@ public class TeamMemberConverter {
      * @return TeamMember as DTo
      */
 
-    public TeamMemberDTO convertEntityToDto(TeamMember teamMember) {
+    public TeamMemberDTO convertEntityToDto(TeamMember teamMember) throws NullPointerException{
         TeamMemberDTO teamMemberDTO = new TeamMemberDTO();
         teamMemberDTO.setId(teamMember.getId());
         teamMemberDTO.setTeamID(teamMember.getTeam().getId());
-        try {
-            teamMemberDTO.setMemberID(teamMember.getMember().getId());
-        } catch (NullPointerException e){
-            teamMemberDTO.setMemberID(null);
-        }
-
+        teamMemberDTO.setMemberID(teamMember.getMember().getId());
 
         return teamMemberDTO;
     }

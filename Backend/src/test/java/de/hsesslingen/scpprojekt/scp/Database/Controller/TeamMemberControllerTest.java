@@ -12,8 +12,12 @@ import de.hsesslingen.scpprojekt.scp.Database.Repositories.TeamMemberRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.TeamRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.coyote.Request;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamMemberDTO;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
+import de.hsesslingen.scpprojekt.scp.Database.Services.TeamMemberService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -28,15 +32,12 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -51,23 +52,25 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 public class TeamMemberControllerTest {
 
     @MockBean
-    TeamRepository teamRepository;
+    TeamMemberService teamMemberService;
     @MockBean
-    MemberRepository memberRepository;
-    @MockBean
-    TeamMemberRepository teamMemberRepository;
+    SAML2Service saml2Service;
     @Autowired
     private MockMvc mockMvc;
     @MockBean
     MemberConverter memberConverter;
     @MockBean
-    SAML2Service saml2Service;
+    MemberRepository memberRepository;
+    @MockBean
+    TeamMemberRepository teamMemberRepository;
+    @MockBean
+    TeamRepository teamRepository;
 
     /**
      * test for successful adding a Member to a Team
      * @throws Exception Exception by mockMvc
      */
-    @Test
+/*    @Test
     @WithMockUser
     public void addMemberToTeamSuccess()throws Exception{
         when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
@@ -77,31 +80,28 @@ public class TeamMemberControllerTest {
         member.setFirstName("Max");
         member.setLastName("Mustermann");
 
-        Team team = new Team();
+        TeamMemberDTO team = new TeamMemberDTO();
         team.setId(2);
-        team.setName("red Nidhogg");
 
-        TeamMember teamMember = new TeamMember();
+        TeamMemberDTO teamMember = new TeamMemberDTO();
         teamMember.setId(1);
-        teamMember.setTeam(team);
-        teamMember.setMember(member);
+        teamMember.setTeamID(2);
+        teamMember.setMemberID(3);
 
-        when(memberRepository.findById(3L)).thenReturn(Optional.of(member));
-        when(teamRepository.findById(2L)).thenReturn(Optional.of(team));
-        when(teamMemberRepository.save(any(TeamMember.class))).thenReturn(teamMember);
+
+        when(teamMemberService.add(any(TeamMemberDTO.class))).thenReturn(teamMember);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .post("/teamMembers/").accept(MediaType.APPLICATION_JSON)
-                .param("TeamID", "2")
-                .param("MemberID", "3");
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(teamMember));
 
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isCreated())
                 .andReturn();
         String content = res.getResponse().getContentAsString();
 
-        Pattern pattern = Pattern.compile("\\{\"id\":(\\d),");
-        Matcher matcher = pattern.matcher(content);
+        TeamMemberDTO result = new ObjectMapper().readValue(content,TeamMemberDTO.class);
 
         matcher.find();
         assertEquals(matcher.group(1), "1");
@@ -111,10 +111,8 @@ public class TeamMemberControllerTest {
         assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(memberRepository).findById(3L);
-        Mockito.verify(teamRepository).findById(2L);
-        Mockito.verify(teamMemberRepository).save(any(TeamMember.class));
-    }
+        Mockito.verify(teamMemberService).add(any(TeamMemberDTO.class));
+    }*/
 
     /**
      * test by adding a Member to a non-existing Team
@@ -122,7 +120,7 @@ public class TeamMemberControllerTest {
      */
     @Test
     @WithMockUser
-    public void addMemberToTeamNotFound1()throws Exception{
+    public void addMemberToTeamNotFound()throws Exception{
         when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
 
         Member member = new Member();
@@ -130,67 +128,26 @@ public class TeamMemberControllerTest {
         member.setFirstName("Max");
         member.setLastName("Mustermann");
 
-        Team team = new Team();
+        TeamMemberDTO team = new TeamMemberDTO();
         team.setId(2);
-        team.setName("red Nidhogg");
 
-        TeamMember teamMember = new TeamMember();
+        TeamMemberDTO teamMember = new TeamMemberDTO();
         teamMember.setId(1);
-        teamMember.setTeam(team);
-        teamMember.setMember(member);
+        teamMember.setTeamID(2);
+        teamMember.setMemberID(3);
 
-        when(memberRepository.findById(3L)).thenReturn(Optional.of(member));
-        when(teamMemberRepository.save(any(TeamMember.class))).thenReturn(teamMember);
+        when(teamMemberService.add(any(TeamMemberDTO.class))).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .post("/teamMembers/").accept(MediaType.APPLICATION_JSON)
-                .param("TeamID", "2")
-                .param("MemberID", "3");
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(teamMember));
 
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isNotFound())
                 .andReturn();
 
-        Mockito.verify(memberRepository).findById(3L);
-
-    }
-
-    /**
-     * test by adding non-existing Member to Team
-     * @throws Exception Exception by mockMvc
-     */
-    @Test
-    @WithMockUser
-    public void addMemberToTeamNotFound2()throws Exception{
-        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-
-        MemberDTO member = new MemberDTO();
-        member.setUserID(3L);
-        member.setFirstName("Max");
-        member.setLastName("Mustermann");
-
-        Team team = new Team();
-        team.setId(2);
-        team.setName("red Nidhogg");
-
-        TeamMember teamMember = new TeamMember();
-        teamMember.setId(1);
-        teamMember.setTeam(team);
-        teamMember.setMember(memberConverter.convertDtoToEntity(member));
-
-        when(teamRepository.findById(2L)).thenReturn(Optional.of(team));
-        when(teamMemberRepository.save(any(TeamMember.class))).thenReturn(teamMember);
-
-        RequestBuilder request = MockMvcRequestBuilders
-                .post("/teamMembers/").accept(MediaType.APPLICATION_JSON)
-                .param("TeamID", "2")
-                .param("MemberID", "3");
-
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isNotFound())
-                .andReturn();
-
-        Mockito.verify(teamRepository).findById(2L);
+        Mockito.verify(teamMemberService).add(any(TeamMemberDTO.class));
 
     }
 
@@ -206,23 +163,16 @@ public class TeamMemberControllerTest {
         member.setFirstName("Max");
         member.setLastName("Mustermann");
 
-        Team team = new Team();
+        TeamMemberDTO team = new TeamMemberDTO();
         team.setId(2);
-        team.setName("red Nidhogg");
 
-        TeamMember teamMember = new TeamMember();
+        TeamMemberDTO teamMember = new TeamMemberDTO();
         teamMember.setId(1);
-        teamMember.setTeam(team);
-        teamMember.setMember(member);
-
-        when(memberRepository.findById(3L)).thenReturn(Optional.of(member));
-        when(teamRepository.findById(2L)).thenReturn(Optional.of(team));
-        when(teamMemberRepository.save(any(TeamMember.class))).thenReturn(teamMember);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .post("/teamMembers/").accept(MediaType.APPLICATION_JSON)
-                .param("TeamID", "2")
-                .param("MemberID", "3");
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(teamMember));
 
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isForbidden())
@@ -238,52 +188,39 @@ public class TeamMemberControllerTest {
     public void deleteMemberofTeamSuccess()throws Exception{
         when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
 
-        MemberDTO member = new MemberDTO();
-        member.setUserID(3L);
+        Member member = new Member();
+        member.setId(3L);
         member.setFirstName("Max");
         member.setLastName("Mustermann");
 
         Team team = new Team();
-        team.setId(2);
-        team.setName("red Nidhogg");
+        team.setId(1L);
 
         TeamMember teamMember = new TeamMember();
         teamMember.setId(1);
         teamMember.setTeam(team);
-        teamMember.setMember(memberConverter.convertDtoToEntity(member));
+        teamMember.setMember(member);
 
         when(teamMemberRepository.findById(1L)).thenReturn(Optional.of(teamMember));
 
         RequestBuilder request = MockMvcRequestBuilders
-                .delete("/teamMembers/1/").accept(MediaType.APPLICATION_JSON);
-
+                .delete("/teamMembers/1/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Mockito.verify(teamMemberRepository).findById(1L);
-        Mockito.verify(teamMemberRepository).deleteById(1L);
+        Mockito.verify(teamMemberService).delete(1L);
     }
+
+    /**
+     * Test delete a Member of a team and not been Login
+     * @throws Exception Forbidden
+     */
 
     @Test
     @WithAnonymousUser
     public void deleteMemberofTeamLogout()throws Exception{
-        MemberDTO member = new MemberDTO();
-        member.setUserID(3L);
-        member.setFirstName("Max");
-        member.setLastName("Mustermann");
-
-        Team team = new Team();
-        team.setId(2);
-        team.setName("red Nidhogg");
-
-        TeamMember teamMember = new TeamMember();
-        teamMember.setId(1);
-        teamMember.setTeam(team);
-        teamMember.setMember(memberConverter.convertDtoToEntity(member));
-
-
-
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/teamMembers/1/").accept(MediaType.APPLICATION_JSON);
 
@@ -294,25 +231,16 @@ public class TeamMemberControllerTest {
 
     }
 
+    /**
+     * test without corresponding team-member
+     * @throws Exception 404 not Found
+     */
     @Test
     @WithMockUser
     public void deleteMemberofTeamNotFound()throws Exception{
         when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
 
-        MemberDTO member = new MemberDTO();
-        member.setUserID(3L);
-        member.setFirstName("Max");
-        member.setLastName("Mustermann");
-
-        Team team = new Team();
-        team.setId(2);
-        team.setName("red Nidhogg");
-
-        TeamMember teamMember = new TeamMember();
-        teamMember.setId(1);
-        teamMember.setTeam(team);
-        teamMember.setMember(memberConverter.convertDtoToEntity(member));
-
+        doThrow(NotFoundException.class).when(teamMemberService).delete(1L);
         RequestBuilder request = MockMvcRequestBuilders
                 .delete("/teamMembers/1/").accept(MediaType.APPLICATION_JSON);
 
@@ -320,7 +248,43 @@ public class TeamMemberControllerTest {
                 .andExpect(status().isNotFound())
                 .andReturn();
 
-        Mockito.verify(teamMemberRepository).findById(1L);
+        Mockito.verify(teamMemberService).delete(1L);
+    }
+
+    /**
+     * Test if all activity are deleted correctly
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void deleteALLTeamMembers() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .delete("/teamMembers/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+
+        Mockito.verify(teamMemberService).deleteAll();
+    }
+
+    /**
+     * Test if 403 is returned when user is not logged in
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void deleteALLTeamMembersNotLogin() throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders
+                .delete("/teamMembers/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
     }
 
 

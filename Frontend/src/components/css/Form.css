@@ -98,14 +98,14 @@ select:focus{
     outline: 0;
 }
 
-#form_info_container{
+#form_info_container, .form_info_container{
     display: none;
     font-size: 14px;
     font-weight: bold;
     text-align: center;
 }
 
-#form_info_message > a{
+#form_info_message > a, .form_info_message > a{
     color: #467834;
     text-decoration: underline;
 }

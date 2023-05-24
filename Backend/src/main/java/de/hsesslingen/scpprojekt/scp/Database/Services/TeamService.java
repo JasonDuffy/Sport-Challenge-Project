@@ -31,8 +31,6 @@ public class TeamService {
     @Autowired
     ChallengeService challengeService;
     @Autowired
-    ChallengeRepository challengeRepository;
-    @Autowired
     ImageStorageService imageStorageService;
     @Autowired
     ImageRepository imageRepository;
@@ -61,8 +59,9 @@ public class TeamService {
     public TeamDTO get(Long TeamID) throws NotFoundException {
         Optional<Team> team = teamRepository.findById(TeamID);
         if(team.isPresent()){
-            return  teamConverter.convertEntityToDto(team.get());
-        }throw new NotFoundException("Team with ID " +TeamID+" is not present in DB.");
+            return teamConverter.convertEntityToDto(team.get());
+        }
+        throw new NotFoundException("Team with ID " +TeamID+" is not present in DB.");
     }
 
 
@@ -102,10 +101,9 @@ public class TeamService {
         if (teamData.isPresent()) {
                 try {
                     Team updatedTeam = teamData.get();
-                    Image teamImage = imageStorageService.store(file);
-
+                    imageStorageService.store(file);
                     updatedTeam.setName(convertedTeam.getName());
-                    updatedTeam.setImage(teamImage);
+
                     updatedTeam.setChallenge(challengeService.get(team.getChallengeID()));
 
                     Team savedTeam = teamRepository.save(updatedTeam);

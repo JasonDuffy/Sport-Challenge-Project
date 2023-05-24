@@ -27,13 +27,6 @@ import java.util.Optional;
 public class ActivityService {
     @Autowired
     ActivityRepository activityRepository;
-
-    @Autowired
-    ChallengeSportService challengeSportService;
-
-    @Autowired
-    MemberService memberService;
-
     @Autowired
     @Lazy
     ActivityConverter activityConverter;

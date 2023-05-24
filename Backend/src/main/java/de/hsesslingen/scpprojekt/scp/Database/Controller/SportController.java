@@ -31,7 +31,7 @@ public class SportController {
     @Autowired
     private SportService sportService;
     @Autowired
-    SAML2Service saml2Service;
+    private SAML2Service saml2Service;
 
     /**
      * Rest API return Sport of a given id

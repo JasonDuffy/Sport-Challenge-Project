@@ -6,6 +6,10 @@ import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
@@ -55,6 +59,9 @@ public class ActivityServiceTest {
     BonusService bonusService;
     @MockBean
     ChallengeService challengeService;
+
+    @Autowired
+    MemberConverter memberConverter;
 
     List<Activity> activityList;
 

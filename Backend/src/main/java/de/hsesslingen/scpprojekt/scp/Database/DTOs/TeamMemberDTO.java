@@ -11,7 +11,7 @@ public class TeamMemberDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     long id;
     long teamID;
-    Long memberID;
+    long memberID;
 
     public TeamMemberDTO(){}
 
@@ -32,10 +32,10 @@ public class TeamMemberDTO {
     public void setTeamID(long teamID) {
         this.teamID = teamID;
     }
-    public Long getMemberID() {
+    public long getMemberID() {
         return memberID;
     }
-    public void setMemberID(Long memberID) {
+    public void setMemberID(long memberID) {
         this.memberID = memberID;
     }
 }

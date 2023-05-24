@@ -8,6 +8,12 @@ import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Filler.Filler;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.*;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeConverter;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
+import de.hsesslingen.scpprojekt.scp.Database.Filler.Filler;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,6 +23,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
@@ -377,7 +386,6 @@ public class ChallengeServiceTest {
         verify(challengeRepository).save(any(Challenge.class));
 
     }
-
     /**
      * Test is update works correctly
      * @throws NotFoundException Should never be thrown

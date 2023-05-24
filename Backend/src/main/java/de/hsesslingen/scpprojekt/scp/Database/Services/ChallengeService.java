@@ -6,6 +6,9 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.*;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeConverter;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
@@ -95,17 +98,28 @@ public class ChallengeService {
         throw new NotFoundException("Challenge with ID " + ChallengeID + " is not present in DB.");
     }
 
+    /**
+     * Get ChallengeID's where the given MemberID is part of
+     *
+     * @param memberID memberID that should return all ChallengeID's the member is part of
+     * @return ChallengeID's
+     * @throws NotFoundException Not found any Challenge the Member is part of
+     */
+    public List<Long> getChallengeIDsByMemberID(Long memberID) throws NotFoundException {
+        List<Long> challengeIDs = challengeRepository.findChallengeIDsByMemberID(memberID);
+        if(!challengeIDs.isEmpty()){
+            return challengeIDs;
+        }else{
+            throw new NotFoundException("The member wit the ID " + memberID + " is not part of a Challenge");
+        }
+    }
+
 
     public ChallengeDTO add(MultipartFile file, long sportId[], float sportFactor[], ChallengeDTO challenge) {
         try {
             Image image = imageStorageService.store(file);
-            Challenge newchallenge = new Challenge();
+            Challenge newchallenge = challengeConverter.convertDtoToEntity(challenge);
             newchallenge.setImage(image);
-            newchallenge.setName(challenge.getName());
-            newchallenge.setDescription(challenge.getDescription());
-            newchallenge.setStartDate(challenge.getStartDate());
-            newchallenge.setEndDate(challenge.getEndDate());
-            newchallenge.setTargetDistance(challenge.getTargetDistance());
             Challenge savedChallenge = challengeRepository.save(newchallenge);
             return challengeConverter.convertEntityToDto(savedChallenge);
         } catch (IOException e) {

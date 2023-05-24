@@ -6,8 +6,10 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,6 +28,7 @@ public class BonusService {
     ChallengeSportService challengeSportService;
 
     @Autowired
+    @Lazy
     BonusConverter bonusConverter;
 
     /**
@@ -108,5 +111,25 @@ public class BonusService {
      */
     public void deleteAll() {
         bonusRepository.deleteAll();
+    }
+
+    /**
+     * Return factor to apply to distance for given list of bonuses and given date
+     * @param bonuses List of bonuses to be applied
+     * @param checkDate Date to be checked
+     * @return Factor for distance calculation
+     */
+    public float getMultiplierFromBonuses(List<Bonus> bonuses, LocalDateTime checkDate){
+        float factor = 0.0f;
+
+        for(Bonus bonus : bonuses){
+            if(!bonus.getStartDate().isAfter(checkDate) && !bonus.getEndDate().isBefore(checkDate))
+                factor += bonus.getFactor();
+        }
+
+        if ( factor == 0.0f )
+            return 1.0f; //If no bonuses are applied, return factor as 1
+
+        return factor;
     }
 }

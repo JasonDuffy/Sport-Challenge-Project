@@ -6,6 +6,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.TeamMember;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.TeamMemberRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ public class TeamMemberService {
     @Autowired
     TeamMemberRepository teamMemberRepository;
     @Autowired
+    @Lazy
     TeamMemberConverter teamMemberConverter;
 
     public List<TeamMemberDTO> getAll()  {

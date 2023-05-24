@@ -8,6 +8,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportReposit
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,6 +24,7 @@ public class ChallengeSportService {
     @Autowired
     ChallengeSportRepository challengeSportRepository;
     @Autowired
+    @Lazy
     ChallengeSportConverter challengeSportConverter;
 
     /**

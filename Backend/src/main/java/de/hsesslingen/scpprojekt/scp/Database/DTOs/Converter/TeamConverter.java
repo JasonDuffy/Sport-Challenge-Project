@@ -26,11 +26,11 @@ public class TeamConverter {
         teamDTO.setName(team.getName());
         try {
             teamDTO.setImageID(team.getImage().getId());
-
         } catch (NullPointerException e){
-            teamDTO.setImageID(null);
+            teamDTO.setImageID(0);
         }
         teamDTO.setChallengeID(team.getChallenge().getId());
+
         return teamDTO;
     }
 
@@ -49,9 +49,8 @@ public class TeamConverter {
         team.setName(teamDTO.getName());
         try {
             team.setImage(imageStorageService.get(teamDTO.getImageID()));
-
         } catch (NullPointerException | NotFoundException e){
-            team.setImage(imageStorageService.get(null));
+            team.setImage(null);
         }
         team.setChallenge(challengeService.get(teamDTO.getChallengeID()));
         return team;

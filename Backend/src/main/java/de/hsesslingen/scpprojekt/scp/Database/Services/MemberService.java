@@ -1,22 +1,28 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.MemberRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.AlreadyExistsException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * Service of the Member entity
  *
- * @author Jason Patrick Duffy,Tom Nguyen Dinh
+ * @author Jason Patrick Duffy
  */
 
 @Service
@@ -24,7 +30,14 @@ public class MemberService {
     @Autowired
     MemberRepository memberRepository;
     @Autowired
+    ActivityRepository activityRepository;
+    @Autowired
+    @Lazy
     MemberConverter memberConverter;
+    @Autowired
+    @Lazy
+    ActivityConverter activityConverter;
+
     /**
      * Returns all members in database
      *
@@ -42,20 +55,13 @@ public class MemberService {
      * @return Member with given ID
      * @throws NotFoundException Member can not be found
      */
-    public MemberDTO getDTO(Long memberID) throws NotFoundException {
+    public MemberDTO get(long memberID) throws NotFoundException {
         Optional<Member> member = memberRepository.findById(memberID);
         if(member.isPresent())
             return memberConverter.convertEntityToDto(member.get());
         throw new NotFoundException("Member with ID " + memberID + " is not present in DB.");
     }
 
-
-    public Member get(Long memberID) throws NotFoundException {
-        Optional<Member> member = memberRepository.findById(memberID);
-        if(member.isPresent())
-            return member.get();
-        throw new NotFoundException("Member with ID " + memberID + " is not present in DB.");
-    }
     /**
      * Returns member currently logged in
      *
@@ -89,8 +95,8 @@ public class MemberService {
      * @param member   Member object that overwrites the old member
      * @return Updated bonus object
      */
-    public MemberDTO update(Long memberID, MemberDTO member) throws NotFoundException {
-        MemberDTO newMember = getDTO(memberID);
+    public MemberDTO update(long memberID, MemberDTO member) throws NotFoundException {
+        MemberDTO newMember = get(memberID);
 
         newMember.setEmail(member.getEmail());
         newMember.setFirstName(member.getFirstName());
@@ -116,5 +122,24 @@ public class MemberService {
      */
     public void deleteAll() {
         memberRepository.deleteAll();
+    }
+
+    /**
+     * Return all activities for given User ID
+     * @param userID User ID for returned activities
+     * @return All activities by the given user ID
+     */
+    public List<ActivityDTO> getActivitiesForUser(Long userID){
+        return activityConverter.convertEntityListToDtoList(activityRepository.findActivitiesByMember_Id(userID));
+    }
+
+    /**
+     * Returns all activities of a given user in a given challenge
+     * @param challengeID Challenge ID of the requested activities
+     * @param userID User ID of the requested activities
+     * @return All Activities with the given User & Challenge IDs
+     */
+    public List<ActivityDTO> getActivitiesForUserInChallenge(Long challengeID, Long userID) throws NotFoundException {
+        return activityConverter.convertEntityListToDtoList(activityRepository.findActivitiesByChallenge_IDAndMember_ID(challengeID, userID));
     }
 }

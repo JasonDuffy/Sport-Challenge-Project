@@ -10,6 +10,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Repositories.ImageRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.TeamRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -30,8 +31,13 @@ public class TeamService {
     @Autowired
     ChallengeService challengeService;
     @Autowired
+    ChallengeRepository challengeRepository;
+    @Autowired
     ImageStorageService imageStorageService;
     @Autowired
+    ImageRepository imageRepository;
+    @Autowired
+    @Lazy
     TeamConverter teamConverter ;
 
     /**
@@ -52,17 +58,10 @@ public class TeamService {
      * @return Team of ID
      * @throws NotFoundException Team can not be found
      */
-    public TeamDTO getDTO(Long TeamID) throws NotFoundException {
+    public TeamDTO get(Long TeamID) throws NotFoundException {
         Optional<Team> team = teamRepository.findById(TeamID);
         if(team.isPresent()){
-            return teamConverter.convertEntityToDto(team.get());
-        }throw new NotFoundException("Team with ID " +TeamID+" is not present in DB.");
-    }
-
-    public Team get(Long TeamID) throws NotFoundException {
-        Optional<Team> team = teamRepository.findById(TeamID);
-        if(team.isPresent()){
-            return team.get();
+            return  teamConverter.convertEntityToDto(team.get());
         }throw new NotFoundException("Team with ID " +TeamID+" is not present in DB.");
     }
 
@@ -103,9 +102,10 @@ public class TeamService {
         if (teamData.isPresent()) {
                 try {
                     Team updatedTeam = teamData.get();
-                     imageStorageService.store(file);
-                    updatedTeam.setName(convertedTeam.getName());
+                    Image teamImage = imageStorageService.store(file);
 
+                    updatedTeam.setName(convertedTeam.getName());
+                    updatedTeam.setImage(teamImage);
                     updatedTeam.setChallenge(challengeService.get(team.getChallengeID()));
 
                     Team savedTeam = teamRepository.save(updatedTeam);

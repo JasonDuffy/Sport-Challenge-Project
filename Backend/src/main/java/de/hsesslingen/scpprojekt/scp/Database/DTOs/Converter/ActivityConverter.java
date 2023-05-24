@@ -52,7 +52,7 @@ public class ActivityConverter {
         activity.setDistance(activityDTO.getDistance());
         activity.setDate(activityDTO.getDate());
         activity.setChallengeSport(challengeSportService.get(activityDTO.getChallengeSportID()));
-        activity.setMember(memberConverter.convertDtoToEntity(memberService.getDTO(activityDTO.getMemberID())));
+        activity.setMember(memberConverter.convertDtoToEntity(memberService.get(activityDTO.getMemberID())));
         return activity;
     }
 

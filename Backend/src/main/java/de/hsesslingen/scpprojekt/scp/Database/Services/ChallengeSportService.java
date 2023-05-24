@@ -2,15 +2,14 @@ package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,6 +33,17 @@ public class ChallengeSportService {
      */
     public List<ChallengeSportDTO> getAll() {
         List<ChallengeSport> challengeSportList = challengeSportRepository.findAll();
+        return challengeSportConverter.convertEntityListToDtoList(challengeSportList);
+    }
+
+    public List<ChallengeSportDTO> getAllChallengeSportsOfChallenge(long ChallengeID)  {
+        List<ChallengeSport> challengeSports = challengeSportRepository.findAll();
+        List<ChallengeSport> challengeSportList = new ArrayList<>();
+        for (ChallengeSport challengeSport : challengeSports){
+            if(challengeSport.getChallenge().getId() == ChallengeID){
+                challengeSportList.add(challengeSport);
+            }
+        }
         return challengeSportConverter.convertEntityListToDtoList(challengeSportList);
     }
 

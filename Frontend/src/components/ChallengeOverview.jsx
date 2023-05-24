@@ -28,16 +28,18 @@ function ChallengeOverview(props) {
 
   useEffect(() => {
     async function getChallengeData(){
-      const result = await fetch("http://localhost:8081/challenges/" + props.id + "/", { method: "GET", credentials: "include" });
-      const resData = await result.json();
+      const challengeResponse = await fetch("http://localhost:8081/challenges/" + props.id + "/", { method: "GET", credentials: "include" });
+      const challengeResData = await challengeResponse.json();
+      const imageResponse = await fetch("http://localhost:8081/images/" + challengeResData.imageID + "/", { method: "GET", credentials: "include" });
+      const imageResData = await imageResponse.json();
 
-      setChallengeName(resData.name);
-      setStartDate(resData.startDate.split(",")[0]);
-      setEndDate(resData.endDate.split(",")[0]);
+      setChallengeName(challengeResData.name);
+      setStartDate(challengeResData.startDate.split(",")[0]);
+      setEndDate(challengeResData.endDate.split(",")[0]);
       setDistanceDone(0);
-      setDistanceGoal(resData.targetDistance);
-      setChallengeInfo(resData.description);
-      setImageSource("data:" + resData.image.type + ";base64, " + resData.image.data);
+      setDistanceGoal(challengeResData.targetDistance);
+      setChallengeInfo(challengeResData.description);
+      setImageSource("data:" + imageResData.type + ";base64, " + imageResData.data);
     }
 
     getChallengeData();

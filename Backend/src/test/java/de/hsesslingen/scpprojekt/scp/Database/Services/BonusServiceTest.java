@@ -3,6 +3,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Services;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
@@ -14,6 +15,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -30,17 +32,15 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 @SpringBootTest
 public class BonusServiceTest {
-    @MockBean
-    BonusRepository bonusRepository;
-
-    @MockBean
-    ChallengeSportService challengeSportService;
-
     @Autowired
     BonusService bonusService;
-
     @Autowired
     BonusConverter bonusConverter;
+
+    @MockBean
+    BonusRepository bonusRepository;
+    @MockBean
+    ChallengeSportService challengeSportService;
 
     List<Bonus> bonusList;
 
@@ -51,13 +51,19 @@ public class BonusServiceTest {
     public void setup() throws NotFoundException {
         bonusList = new ArrayList<>();
 
+        Challenge c1 = new Challenge();
+        c1.setId(1L);
+
         ChallengeSport cs = new ChallengeSport();
-        cs.setId(1);
+        cs.setId(1L);
+        cs.setChallenge(c1);
 
         for (long i = 0; i < 10; i++){
             Bonus b = new Bonus();
             b.setId(i);
             b.setChallengeSport(cs);
+            b.setStartDate(LocalDateTime.of(2023, 4, 1, 0, 0, 0));
+            b.setEndDate(LocalDateTime.of(2023, 6, 1, 0, 0, 0));
             bonusList.add(b);
             when(bonusRepository.findById(i)).thenReturn(Optional.of(b));
         }
@@ -207,5 +213,35 @@ public class BonusServiceTest {
     public void deleteAllTest(){
         bonusService.deleteAll();
         verify(bonusRepository).deleteAll();
+    }
+
+     /**
+     * Test if multiplier is correctly calculated
+     */
+    @Test
+    public void getMultiplierFromBonusesTest(){
+        LocalDateTime currentDate = LocalDateTime.of(2023, 5, 1, 15, 0);
+        float bonusfactor = 0.0f;
+
+        for(Bonus b : bonusList){
+            if (b.getChallengeSport().getChallenge().getId() == 1
+                    && !b.getStartDate().isAfter(currentDate)
+                    && !b.getEndDate().isBefore(currentDate))
+                bonusfactor += b.getFactor();
+        }
+
+        if (bonusfactor == 0.0f)
+            bonusfactor = 1.0f;
+
+        assertEquals(bonusService.getMultiplierFromBonuses(bonusList, currentDate), bonusfactor);
+    }
+
+    /**
+     * Test if multiplier is correctly set to 1 if no bonuses are given
+     */
+    @Test
+    public void getMultiplierFromBonusesEmpty(){
+        LocalDateTime currentDate = LocalDateTime.of(2023, 5, 1, 15, 0);
+        assertEquals(bonusService.getMultiplierFromBonuses(new ArrayList<>(), currentDate), 1.0f);
     }
 }

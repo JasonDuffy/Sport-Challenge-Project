@@ -2,8 +2,13 @@ package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
+import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +28,15 @@ public class ActivityService {
     ActivityRepository activityRepository;
     @Autowired
     ActivityConverter activityConverter;
+
+    @Autowired
+    BonusConverter bonusConverter;
+
+    @Autowired
+    BonusService bonusService;
+
+    @Autowired
+    ChallengeService challengeService;
 
     /**
      * Returns all activities in database
@@ -100,5 +114,52 @@ public class ActivityService {
      */
     public void deleteAll() {
         activityRepository.deleteAll();
+    }
+
+    /**
+     * Returns for activity distance without bonuses
+     * @param activities List of activities for which the distance should be calculated. All have to be part of the same challenge.
+     * @return Distance of activity without bonuses
+     */
+    public float getRawDistanceForActivities(List<Activity> activities) throws InvalidActivitiesException {
+        float sum = 0.0f;
+
+        if(!activities.isEmpty()){
+            Challenge challenge = activities.get(0).getChallengeSport().getChallenge();
+
+            for (Activity act : activities){
+                if(act.getChallengeSport().getChallenge().getId() != challenge.getId()) //Checks if all activities are part of the same challenge
+                    throw new InvalidActivitiesException("Activity by member " + act.getMember().getEmail() + " on " + act.getDate() + " in challenge "
+                            + act.getChallengeSport().getChallenge().getName() + "is not part of Challenge " + challenge.getName());
+
+                sum += act.getDistance() * act.getChallengeSport().getFactor();
+            }
+        }
+
+        return sum;
+    }
+
+    /**
+     * Returns the activity distance WITH bonuses
+     * @param activities List of activities for which the distance should be calculated. All have to be part of the same challenge.
+     * @return Distance of activities with bonuses
+     */
+    public float getDistanceForActivities(List<Activity> activities) throws InvalidActivitiesException, NotFoundException {
+        float sum = 0.0f;
+
+        if(!activities.isEmpty()){
+            Challenge challenge = activities.get(0).getChallengeSport().getChallenge();
+            List<Bonus> challengeBonuses = bonusConverter.convertDtoListToEntityList(challengeService.getChallengeBonuses(challenge.getId()));
+
+            for (Activity act : activities){
+                if(act.getChallengeSport().getChallenge().getId() != challenge.getId()) //Checks if all activities are part of the same challenge
+                    throw new InvalidActivitiesException("Activity by member " + act.getMember().getEmail() + " on " + act.getDate() + " in challenge "
+                            + act.getChallengeSport().getChallenge().getName() + "is not part of Challenge " + challenge.getName());
+
+                sum += act.getDistance() * act.getChallengeSport().getFactor() * bonusService.getMultiplierFromBonuses(challengeBonuses, act.getDate());
+            }
+        }
+
+        return sum;
     }
 }

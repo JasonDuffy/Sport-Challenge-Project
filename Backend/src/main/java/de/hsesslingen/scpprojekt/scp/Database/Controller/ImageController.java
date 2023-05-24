@@ -81,10 +81,10 @@ public class ImageController {
     @GetMapping(path = "/{id}/" , produces = "application/json")
     public ResponseEntity<Image> getImageById(@PathVariable("id") long id, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
-            Optional<Image> imageData = imageRepository.findById(id);
-            if (imageData.isPresent()) {
-                return new ResponseEntity<>(imageData.get(), HttpStatus.OK);
-            } else {
+            try {
+                return new ResponseEntity<>(imageStorageService.get(id), HttpStatus.OK);
+            } catch (NotFoundException e){
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
@@ -109,7 +109,7 @@ public class ImageController {
     })
     @DeleteMapping(path = "/{id}/" , produces = "application/json")
     public ResponseEntity<Image> deleteImageById(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try {
                 imageStorageService.delete(id);
                 return new ResponseEntity<>(HttpStatus.OK);
@@ -135,7 +135,7 @@ public class ImageController {
     })
     @DeleteMapping("/")
     public ResponseEntity<Void> deleteAllImages(HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             imageStorageService.deleteAll();
             return new ResponseEntity<>(HttpStatus.OK);
         } else {
@@ -158,7 +158,7 @@ public class ImageController {
     })
     @GetMapping(path = "/", produces = "application/json")
     public ResponseEntity<List<Image>> getAllImages(HttpServletRequest request){
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             return new ResponseEntity<>(imageStorageService.getAll(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -183,21 +183,16 @@ public class ImageController {
             @ApiResponse(responseCode = "417", description = "Something went wrong updating the image", content = @Content)
     })
     @PutMapping(path= "/{id}/",consumes = "multipart/form-data",produces= "application/json")
-    public ResponseEntity<Image> updateImage(@PathVariable("id") long id, @RequestParam("file") MultipartFile file, HttpServletRequest request){
+    public ResponseEntity<Void> updateImage(@PathVariable("id") long id, @RequestParam("file") MultipartFile file, HttpServletRequest request){
         if (saml2Service.isLoggedIn(request)){
-            Optional<Image> imageData = imageRepository.findById(id);
-            if(imageData.isPresent()){
             try {
-                Image newImage = imageData.get();
-                newImage.setData(file.getBytes());
-                newImage.setName(file.getOriginalFilename());
-                newImage.setType(file.getContentType());
-
-                return new ResponseEntity<>(imageRepository.save(newImage),HttpStatus.OK);
-            }catch (Exception e){
-                return new ResponseEntity<>(HttpStatus.EXPECTATION_FAILED);
-            }
-            }else {
+                imageStorageService.update(id, file);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }catch (IOException e){
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {

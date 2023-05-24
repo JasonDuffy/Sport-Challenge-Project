@@ -68,13 +68,13 @@ public class ChallengeController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Challenge found",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Challenge.class))}),
+                            schema = @Schema(implementation = ChallengeDTO.class))}),
             @ApiResponse(responseCode = "404", description = "Challenge not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @GetMapping(path = "/{id}/" , produces = "application/json")
     public ResponseEntity<ChallengeDTO> getChallengeById(@PathVariable("id") long id, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(challengeService.getDTO(id), HttpStatus.OK);
             } catch (NotFoundException e) {
@@ -97,12 +97,12 @@ public class ChallengeController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Search successful",
                     content = {@Content(mediaType = "application/json",
-                                array = @ArraySchema(schema = @Schema(implementation = Challenge.class)))}),
+                                array = @ArraySchema(schema = @Schema(implementation = ChallengeDTO.class)))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @GetMapping(path = "/", produces = "application/json")
     public ResponseEntity<List<ChallengeDTO>> getChallenges(@Parameter(description = "Which challenges should be returned. \"current\" for only current challenges, \"past\" for only past and anything else for all") @RequestParam String type, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             List<ChallengeDTO> challenges = challengeService.getAll();
 
             switch(type){
@@ -165,24 +165,19 @@ public class ChallengeController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Challenge successfully added",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Challenge.class))}),
+                            schema = @Schema(implementation = ChallengeDTO.class))}),
             @ApiResponse(responseCode = "417", description = "Something went wrong creating the new Challenge", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PostMapping(path = "/", consumes = "multipart/form-data", produces = "application/json")
     public ResponseEntity<ChallengeDTO> addChallenge(@RequestPart("file") MultipartFile file, @RequestParam("sportId") long sportId[], @RequestParam("sportFactor") float sportFactor[], @RequestPart("json") @Valid ChallengeDTO challenge, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
-            try{
-                ResponseEntity<ChallengeDTO> chDTO = null;
-                if (sportId.length == sportFactor.length) {
-                    chDTO =   new ResponseEntity<>(challengeService.add(file,sportId,sportFactor,challenge), HttpStatus.CREATED);
-                    return chDTO;
-                }else {
-                    throw new RuntimeException();
-                }
-            } catch (NotFoundException e) {
-                System.out.println(e.getMessage());
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        if (saml2Service.isLoggedIn(request)){
+            ResponseEntity<ChallengeDTO> chDTO = null;
+            if (sportId.length == sportFactor.length) {
+                chDTO =   new ResponseEntity<>(challengeService.add(file,sportId,sportFactor,challenge), HttpStatus.CREATED);
+                return chDTO;
+            }else {
+                throw new RuntimeException();
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -202,7 +197,7 @@ public class ChallengeController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Challenge successfully updated",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Challenge.class))}),
+                            schema = @Schema(implementation = ChallengeDTO.class))}),
             @ApiResponse(responseCode = "404", description = "Challenge not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "417", description = "Something went wrong updating the  Challenge", content = @Content),
@@ -210,7 +205,7 @@ public class ChallengeController {
     })
     @PutMapping(path = "/{id}/",consumes = "multipart/form-data", produces = "application/json")
     public ResponseEntity<ChallengeDTO> updateChallenge(@RequestParam("imageId") long imageID, @PathVariable("id") long ID,  @RequestPart("json") @Valid ChallengeDTO challenge, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(challengeService.update(imageID, ID, challenge), HttpStatus.OK);
             } catch (NotFoundException e) {
@@ -238,7 +233,7 @@ public class ChallengeController {
     })
     @DeleteMapping(path = "/{id}/",produces = "application/json")
     public ResponseEntity<Void> deleteChallenge(@PathVariable("id") long ID,HttpServletRequest request) throws NotFoundException {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             try {
                 challengeService.delete(ID);
                 return new ResponseEntity<>(HttpStatus.OK);
@@ -435,7 +430,7 @@ public class ChallengeController {
     })
     @DeleteMapping("/")
     public ResponseEntity<Void> deleteAllChallenges(HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             challengeService.deleteAll();
             return new ResponseEntity<>(HttpStatus.OK);
         } else {

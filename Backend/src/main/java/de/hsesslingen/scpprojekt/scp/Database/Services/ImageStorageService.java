@@ -80,7 +80,7 @@ public class ImageStorageService {
      * @throws IOException not an image
      */
     public Image update(long imageID, MultipartFile file) throws NotFoundException, IOException {
-        if(!checkImage(file))
+        if(!isImage(file))
             throw new IOException(file.getOriginalFilename() + " is not an image!");
         String fileName = StringUtils.cleanPath(file.getOriginalFilename());
         Image image = new Image(fileName, file.getContentType(), file.getBytes());

@@ -2,10 +2,8 @@ package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.TeamConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.*;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Filler.Filler;
@@ -13,18 +11,23 @@ import de.hsesslingen.scpprojekt.scp.Database.Repositories.*;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.AdditionalAnswers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.http.MediaType;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -346,20 +349,20 @@ public class ChallengeServiceTest {
      * Test if all members are returned correctly
      */
     @Test
-    public void getChallengeMembersTest(){
+    public void getChallengeMembersTest() {
         List<MemberDTO> members = challengeService.getChallengeMembers(1L);
 
         int counter = members.size();
         int realCounter = 0;
 
-        for(TeamMember tm : teamMemberList)
-            if(tm.getTeam().getChallenge().getId() == 1L)
+        for (TeamMember tm : teamMemberList)
+            if (tm.getTeam().getChallenge().getId() == 1L)
                 realCounter++;
 
         assertEquals(counter, realCounter);
 
         Mockito.verify(memberRepository).findMembersByChallenge_ID(1L);
-    
+    }
     /**
      * Test if add works correctly
      * @throws NotFoundException Should never be thrown
@@ -374,33 +377,18 @@ public class ChallengeServiceTest {
         verify(challengeRepository).save(any(Challenge.class));
 
     }
-    /**
-     * Test if exception is correctly thrown
-     * @throws NotFoundException Should never be thrown
-     */
-    @Test
-    public void addTestFail() throws NotFoundException {
-       when(sportService.get(any(Long.class))).thenThrow(NotFoundException.class);
 
-        MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
-
-        assertThrows(NotFoundException.class, () -> {
-            challengeService.add(file,new long[]{1L},new float[]{10F},challengeConverter.convertEntityToDto(challengeList.get(0)));
-        });
-    }
     /**
      * Test is update works correctly
      * @throws NotFoundException Should never be thrown
      *
      */
-
-
     @Test
     public void updateTestSuccess() throws NotFoundException {
 
         challengeList.get(1).setName("name");
 
-        ChallengeDTO newC = challengeService.update(1,0L, challengeConverter.convertEntityToDto(challengeList.get(1)));
+        ChallengeDTO newC = challengeService.update(1L,1L, challengeConverter.convertEntityToDto(challengeList.get(1)));
 
         assertEquals(newC.getId(), challengeList.get(0).getId());
         assertEquals(newC.getName(), challengeList.get(0).getName());

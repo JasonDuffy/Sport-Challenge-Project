@@ -123,6 +123,8 @@ public class ChallengeControllerTest {
     public void getChallengeByIDNotFound() throws Exception {
         when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
 
+        when(challengeService.getDTO(1L)).thenThrow(NotFoundException.class);
+
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/challenges/1/").accept(MediaType.APPLICATION_JSON);
 

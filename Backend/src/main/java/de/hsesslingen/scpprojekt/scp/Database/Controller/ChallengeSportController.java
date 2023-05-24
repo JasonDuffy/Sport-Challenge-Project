@@ -211,7 +211,7 @@ public class ChallengeSportController {
     })
     @GetMapping(path = "/challenges/{id}/", produces = "application/json")
     public ResponseEntity<List<ChallengeSportDTO>> getAllChallengeSportsForChallenge(@PathVariable("id") long ChallengeID, HttpServletRequest request) {
-        if (SAML2Service.isLoggedIn(request)){
+        if (saml2Service.isLoggedIn(request)){
             return new ResponseEntity<>(challengeSportService.getAllChallengeSportsOfChallenge(ChallengeID), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

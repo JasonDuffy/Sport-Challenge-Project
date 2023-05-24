@@ -1,13 +1,7 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.TeamConverter;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.*;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.*;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
@@ -20,7 +14,9 @@ import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -62,13 +58,11 @@ public class ChallengeService {
     ChallengeConverter challengeConverter;
 
 
-/*
+
     public List<ChallengeDTO> getAll() {
         List<Challenge> challengeListList = challengeRepository.findAll();
         return challengeConverter.convertEntityListToDtoList(challengeListList);
-
     }
-*/
 
     /**
      * Get Challenge with the ID
@@ -102,7 +96,7 @@ public class ChallengeService {
     }
 
 
-    public ChallengeDTO add(MultipartFile file, long sportId[], float sportFactor[], ChallengeDTO challenge) throws NotFoundException {
+    public ChallengeDTO add(MultipartFile file, long sportId[], float sportFactor[], ChallengeDTO challenge) {
         try {
             Image image = imageStorageService.store(file);
             Challenge newchallenge = new Challenge();
@@ -113,7 +107,7 @@ public class ChallengeService {
             newchallenge.setEndDate(challenge.getEndDate());
             newchallenge.setTargetDistance(challenge.getTargetDistance());
             Challenge savedChallenge = challengeRepository.save(newchallenge);
-            return savedChallenge;
+            return challengeConverter.convertEntityToDto(savedChallenge);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -151,7 +145,6 @@ public class ChallengeService {
     public void deleteAll() {
         challengeRepository.deleteAll();
     }
-     **/
 
     /**
      * Return all Activities for given Challenge ID

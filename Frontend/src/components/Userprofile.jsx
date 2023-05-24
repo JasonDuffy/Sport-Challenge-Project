@@ -5,7 +5,7 @@ import "./css/Userprofile.css";
 /**
  * Page that shows the user profile of the current user and allows editing
  * 
- * @author Jason Patrick Duffy, Robin Hackh
+ * @author Jason Patrick Duffy
  */
 class Userprofile extends Component {
     constructor(props) {
@@ -52,12 +52,8 @@ class Userprofile extends Component {
                         this.setState({ lastName: resData.lastName }, () => {
                             this.updateHeading();
                         });
-                        if(resData.imageID != 0){
-                            this.setState({ imageID: resData.imageID });
-                            this.loadImage(resData.imageID);
-                        }else{
-                            this.setState({image: require(`../images/Default-User.png`)});
-                        }
+                        this.setState({ imageID: resData.imageID });
+                        this.loadImage(resData.imageID);
                     }));
 
 

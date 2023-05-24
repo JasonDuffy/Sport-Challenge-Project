@@ -52,7 +52,7 @@ public class MemberDTO {
         return userID;
     }
 
-    public void setUserID(long userID) {
+    public void setUserID(Long userID) {
         this.userID = userID;
     }
 
@@ -60,7 +60,7 @@ public class MemberDTO {
         return imageID;
     }
 
-    public void setImageID(long imageID) {
+    public void setImageID(Long imageID) {
         this.imageID = imageID;
     }
 }

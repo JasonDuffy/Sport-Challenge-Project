@@ -2,8 +2,6 @@ package de.hsesslingen.scpprojekt.scp.Database.Repositories;
 
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,8 +22,4 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Transactional
     Boolean existsMemberByEmail(String email);
-
-    @Transactional
-    @Query("select m from Member m join TeamMember tm on m.id=tm.member.id join Team t on tm.team.id=t.id where t.challenge.id = :challengeID")
-    List<Member> findMembersByChallenge_ID(@Param("challengeID") long challengeID);
 }

@@ -1,16 +1,11 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
-import de.hsesslingen.scpprojekt.scp.Database.Services.ActivityService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.MemberService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.AlreadyExistsException;
-import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -22,8 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 /**
  * REST controller for Member.
@@ -41,10 +34,6 @@ public class MemberController {
     MemberService memberService;
     @Autowired
     MemberConverter memberConverter;
-    @Autowired
-    ActivityConverter activityConverter;
-    @Autowired
-    ActivityService activityService;
 
     /**
      * REST API for returning Member data of a given ID
@@ -208,98 +197,6 @@ public class MemberController {
             } catch (NotFoundException e) {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-    }
-
-    /**
-     * Get all activities for a given User ID
-     *
-     * @param userID The user ID for the activities
-     * @param request automatically filled by browser
-     * @return List of all activities if logged in
-     */
-    @Operation(summary = "Get all activities for given User ID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Activities for User found.",
-                    content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ActivityDTO.class))}),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
-            @ApiResponse(responseCode = "404", description = "No activities found.", content = @Content)
-    })
-    @GetMapping(path = "/{id}/activities/", produces = "application/json")
-    public ResponseEntity<List<ActivityDTO>> getAllActivitiesForUser(@PathVariable("id") long userID, HttpServletRequest request){
-        if (saml2Service.isLoggedIn(request)){
-            List<ActivityDTO> userActivities = memberService.getActivitiesForUser(userID);
-
-            if(!userActivities.isEmpty()){
-                return new ResponseEntity<>(userActivities, HttpStatus.OK);
-            }
-
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-    }
-
-    /**
-     * Get distance of user in challenge with bonuses applied
-     * @param challengeID ID of the challenge to be checked
-     * @param userID ID of the user to be checked
-     * @param request automatically filled by browser
-     * @return Distance covered by user in challenge with bonuses
-     */
-    @Operation(summary = "Get distance of user in challenge with bonuses applied")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Distance successfully calculated",
-                    content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Float.class))}),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Not all activities are part of the same challenge.", content = @Content)
-    })
-    @GetMapping(path = "/{id}/challenges/{chID}/distance/", produces = "application/json")
-    public ResponseEntity<Float> getDistanceForChallengeForUser(@PathVariable("chID") long challengeID, @PathVariable("id") long userID, HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)){
-            try{
-                List<Activity> activities = activityConverter.convertDtoListToEntityList(memberService.getActivitiesForUserInChallenge(challengeID, userID));
-
-                return new ResponseEntity<>(activityService.getDistanceForActivities(activities), HttpStatus.OK);
-            } catch (InvalidActivitiesException | NotFoundException e){
-                System.out.println(e.getMessage());
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-    }
-
-    /**
-     * Get distance of user in challenge without any bonuses applied
-     * @param challengeID ID of the challenge to be checked
-     * @param userID ID of the user to be checked
-     * @param request automatically filled by browser
-     * @return Distance covered by user in challenge without bonuses
-     */
-    @Operation(summary = "Get distance of user in challenge without bonuses applied")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Distance successfully calculated",
-                    content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Float.class))}),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Not all activities are part of the same challenge.", content = @Content)
-    })
-    @GetMapping(path = "/{id}/challenges/{chID}/rawDistance/", produces = "application/json")
-    public ResponseEntity<Float> getRawDistanceForChallengeForUser(@PathVariable("chID") long challengeID, @PathVariable("id") long userID, HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)){
-            try{
-                List<Activity> activities = activityConverter.convertDtoListToEntityList(memberService.getActivitiesForUserInChallenge(challengeID, userID));
-
-                return new ResponseEntity<>(activityService.getRawDistanceForActivities(activities), HttpStatus.OK);
-            } catch (InvalidActivitiesException | NotFoundException e){
-                System.out.println(e.getMessage());
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

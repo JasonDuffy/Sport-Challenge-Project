@@ -1,6 +1,7 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
@@ -11,6 +12,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Repositories.SportRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,6 +23,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -187,6 +190,29 @@ public class ChallengeSportController {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
+     * REST API for returning all Challenge-Sports for the given Challenge ID
+     *
+     * @param ChallengeID ID of the Challenge where all challenge-sports should be returned
+     * @param request automatically filled by browser
+     * @return A 200 Code if it worked
+     */
+    @Operation(summary = "Get all Challenge-Sport for a Challenge")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Search successful",
+                    content = {@Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = ChallengeSportDTO.class)))}),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @GetMapping(path = "/challenges/{id}/", produces = "application/json")
+    public ResponseEntity<List<ChallengeSportDTO>> getAllChallengeSportsForChallenge(@PathVariable("id") long ChallengeID, HttpServletRequest request) {
+        if (saml2Service.isLoggedIn(request)){
+            return new ResponseEntity<>(challengeSportService.getAllChallengeSportsOfChallenge(ChallengeID), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

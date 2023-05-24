@@ -20,13 +20,17 @@ public class ChallengeConverter {
 
     public ChallengeDTO convertEntityToDto(Challenge challenge) {
         ChallengeDTO  ChallengeDTO = new ChallengeDTO();
-        ChallengeDTO .setId(challenge.getId());
-        ChallengeDTO .setName(challenge.getName());
-        ChallengeDTO .setImageID(challenge.getImage().getId());
-        ChallengeDTO .setDescription(challenge.getDescription());
-        ChallengeDTO .setStartDate(challenge.getStartDate());
-        ChallengeDTO .setEndDate(challenge.getEndDate());
-        ChallengeDTO .setTargetDistance(challenge.getTargetDistance());
+        ChallengeDTO.setId(challenge.getId());
+        ChallengeDTO.setName(challenge.getName());
+        try{
+            ChallengeDTO.setImageID(challenge.getImage().getId());
+        }catch (NullPointerException e){
+            ChallengeDTO.setImageID(null);
+        }
+        ChallengeDTO.setDescription(challenge.getDescription());
+        ChallengeDTO.setStartDate(challenge.getStartDate());
+        ChallengeDTO.setEndDate(challenge.getEndDate());
+        ChallengeDTO.setTargetDistance(challenge.getTargetDistance());
         return ChallengeDTO ;
     }
 
@@ -43,7 +47,12 @@ public class ChallengeConverter {
         Challenge challenge = new Challenge();
         challenge.setId(challengeDTO.getId());
         challenge.setName(challengeDTO.getName());
-        challenge.setImage(imageStorageService.get((challengeDTO.getImageID())));
+        try {
+            challenge.setImage(imageStorageService.get((challengeDTO.getImageID())));
+
+        }catch (NullPointerException|NotFoundException e){
+            challenge.setImage(null);
+        }
         challenge.setDescription(challengeDTO.getDescription());
         challenge.setStartDate(challengeDTO.getStartDate());
         challenge.setEndDate(challengeDTO.getEndDate());

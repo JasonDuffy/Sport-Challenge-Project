@@ -772,7 +772,7 @@ html, body {
   scroll-behavior: smooth;
   background-color: #fff;
   font-weight: 400;
-  font-family: 'Segoe UI', sans-serif;
+  font-family: "Segoe UI", sans-serif;
   font-size: 14px;
   color: var(--doubleslash-text-grey);
 }
@@ -795,8 +795,7 @@ a {
   cursor: pointer;
   text-decoration: none;
   color: var(--doubleslash-text-grey);
-  -webkit-transition: color .15s ease;
-  transition: color .15s ease;
+  transition: color 0.15s ease;
 }
 
 a:hover {
@@ -804,12 +803,8 @@ a:hover {
 }
 
 .center_content {
-  display: -webkit-box;
-  display: -ms-flexbox;
   display: flex;
-  -webkit-box-pack: center;
-      -ms-flex-pack: center;
-          justify-content: center;
+  justify-content: center;
 }
 
 .visible {
@@ -851,10 +846,9 @@ a:hover {
   content: "____";
   font-size: 100px;
   letter-spacing: -2px;
-  font-family: "Segoe UI",sans-serif;
+  font-family: "Segoe UI", sans-serif;
   color: var(--doubleslash-orange);
   display: block;
-  line-height: .01em;
+  line-height: 0.01em;
   margin-top: -40px;
-}
-/*# sourceMappingURL=root.css.map */
+}/*# sourceMappingURL=root.css.map */

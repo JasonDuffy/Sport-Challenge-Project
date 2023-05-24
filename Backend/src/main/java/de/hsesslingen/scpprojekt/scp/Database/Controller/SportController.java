@@ -2,6 +2,8 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.SportRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Services.SportService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,35 +29,28 @@ import java.util.Optional;
 public class SportController {
 
     @Autowired
-    SAML2Service saml2Service;
+    private SportService sportService;
     @Autowired
-    private SportRepository sportRepository;
+    SAML2Service saml2Service;
 
     /**
      * Rest API return Sport of a given id
      *
      * @param sport  sport data for the created one
      * @param request automatically filled by browser
-     * @return A 201 Code and the sport data if it worked 417 otherwise
+     * @return A 201 Code for success else 403 fo not logged in
      */
     @Operation(summary = "Adds the new sport")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Sport successfully added",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = Sport.class))}),
-            @ApiResponse(responseCode = "500", description = "Something went wrong creating the new sport", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PostMapping(path = "/",produces = "application/json")
     public ResponseEntity<Sport>addSport(@RequestBody Sport sport, HttpServletRequest request){
         if (saml2Service.isLoggedIn(request)){
-            try {
-                Sport newsport = sportRepository.save(
-                        new Sport(sport.getName(), sport.getFactor()));
-                return new ResponseEntity<>(newsport, HttpStatus.CREATED);
-            }catch (Exception e){
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            return new ResponseEntity<>(sportService.add(sport),HttpStatus.CREATED);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -80,12 +75,12 @@ public class SportController {
     @GetMapping(path = "/{id}/" , produces = "application/json")
     public ResponseEntity<Sport> getSportById(@PathVariable("id") long id, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
-            Optional<Sport> sportData = sportRepository.findById(id);
-            if (sportData.isPresent()) {
-                return new ResponseEntity<>(sportData.get(), HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
+           try{
+               return new ResponseEntity<>(sportService.get(id), HttpStatus.OK);
+           }catch (NotFoundException e){
+               System.out.println(e.getMessage());
+               return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+           }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -107,8 +102,7 @@ public class SportController {
     @GetMapping(path = "/", produces = "application/json")
     public ResponseEntity<List<Sport>> getAllSports(HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
-            List<Sport> sports = sportRepository.findAll();
-            return new ResponseEntity<>(sports, HttpStatus.OK);
+            return new ResponseEntity<>(sportService.getAll(), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -119,27 +113,49 @@ public class SportController {
      *
      * @param id get SportID
      * @param request automatically filled by browser
-     * @return 204 for Deleted Sport if not 404
+     * @return 200 for Deleted Sport if not 404
      */
     @Operation(summary = "Deleted the sport")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Deleted sport"),
+            @ApiResponse(responseCode = "200", description = "Deleted sport"),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "404", description = "Sport not found", content = @Content)
     })
     @DeleteMapping(path = "/{id}/")
     public ResponseEntity<HttpStatus> deleteSport(@PathVariable("id") long id, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
-            Optional<Sport> sportData = sportRepository.findById(id);
-            if (sportData.isPresent()){
-                sportRepository.deleteById(id);
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-            }else {
+            try{
+                sportService.delete(id);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }catch (NotFoundException e){
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
+    }
+
+    /**
+     * Rest Api  for Deleting ALl sports
+     *
+     * @param request automatically filled by browser
+     * @return 200 for success
+     */
+
+    @Operation(summary = "Deleted all sports")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Deleted aLL sport"),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
+    })
+    @DeleteMapping(path = "/")
+    public ResponseEntity<HttpStatus> deleteAllSport(HttpServletRequest request) {
+        if (saml2Service.isLoggedIn(request)){
+            sportService.deleteAll();
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 
     /**
@@ -161,15 +177,10 @@ public class SportController {
     @PutMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<Sport> updateChallenge(@PathVariable("id") Long ID, @RequestBody Sport sport, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
-            Optional<Sport> sportData = sportRepository.findById(ID);
-
-            if (sportData.isPresent()) {
-                Sport newSport = sportData.get();
-                newSport.setName(sport.getName());
-                newSport.setFactor(sport.getFactor());
-
-                return new ResponseEntity<>(sportRepository.save(newSport), HttpStatus.OK);
-            } else {
+            try{
+                return new ResponseEntity<>(sportService.update(ID,sport), HttpStatus.OK);
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
         } else {

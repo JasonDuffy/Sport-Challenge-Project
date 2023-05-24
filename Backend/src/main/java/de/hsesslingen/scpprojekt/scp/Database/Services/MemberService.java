@@ -32,6 +32,7 @@ public class MemberService {
     @Autowired
     ActivityRepository activityRepository;
     @Autowired
+    @Lazy
     MemberConverter memberConverter;
     @Autowired
     @Lazy

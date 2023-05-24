@@ -38,8 +38,10 @@ public class ChallengeService {
     @Autowired
     BonusRepository bonusRepository;
     @Autowired
+    @Lazy
     ActivityConverter activityConverter;
     @Autowired
+    @Lazy
     BonusConverter bonusConverter;
     @Autowired
     @Lazy
@@ -47,6 +49,7 @@ public class ChallengeService {
     @Autowired
     TeamRepository teamRepository;
     @Autowired
+    @Lazy
     MemberConverter memberConverter;
     @Autowired
     MemberRepository memberRepository;

@@ -1,16 +1,15 @@
 /**
  * CSS styles for Userprofile
  * 
- * @author Jason Patrick Duffy, Robin Hackh
+ * @author Jason Patrick Duffy
  */
 
 /**
 *   Rounds image and scales it down
 */
 .round_image {
+    border: 2px solid var(--doubleslash-lightblue);
     border-radius: 100%;
-    width: 40vw;
-    max-width: 300px;
+    max-height: min(40vw, 40vh);
     aspect-ratio: 1;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }

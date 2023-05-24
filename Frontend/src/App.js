@@ -10,6 +10,7 @@ import MyChallenges from "./components/MyChallenges";
 import Navbar from "./components/Navbar";
 import Userprofile from "./components/Userprofile";
 import Test from "./components/Test";
+import AddSport from "./components/AddSport";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/Profile" element={<Userprofile />} />
         <Route path="/:action/Challenge/:id" element={<AddChallenge />} />
         <Route path="/:action/Team/:id" element={<AddTeam />} />
+        <Route path="/:action/Sport/:id" element={<AddSport />} />
       </Routes>
     </>
   );

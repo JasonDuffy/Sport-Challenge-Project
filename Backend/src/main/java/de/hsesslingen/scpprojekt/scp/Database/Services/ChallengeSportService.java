@@ -1,9 +1,14 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
+import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,20 +17,24 @@ import java.util.Optional;
 /**
  * Service of the ChallengeSport entity
  *
- * @author Jason Patrick Duffy
+ * @author Jason Patrick Duffy, Tom Nguyen Dinh
  */
 @Service
 public class ChallengeSportService {
     @Autowired
     ChallengeSportRepository challengeSportRepository;
+    @Autowired
+    @Lazy
+    ChallengeSportConverter challengeSportConverter;
 
     /**
      * Returns all ChallengeSports  in database
      *
      * @return List of all ChallengeSports in DB
      */
-    public List<ChallengeSport> getAll() {
-        return challengeSportRepository.findAll();
+    public List<ChallengeSportDTO> getAll() {
+        List<ChallengeSport> challengeSportList = challengeSportRepository.findAll();
+        return challengeSportConverter.convertEntityListToDtoList(challengeSportList);
     }
 
     /**
@@ -41,41 +50,63 @@ public class ChallengeSportService {
             return challengeSport.get();
         throw new NotFoundException("ChallengeSport with ID " + challengeSportID + " is not present in DB.");
     }
+    public ChallengeSportDTO getDTO(Long challengeSportID) throws NotFoundException {
+        Optional<ChallengeSport> challengeSport = challengeSportRepository.findById(challengeSportID);
+        if(challengeSport.isPresent())
+            return challengeSportConverter.convertEntityToDto(challengeSport.get());
+        throw new NotFoundException("ChallengeSport with ID " + challengeSportID + " is not present in DB.");
+    }
 
     /**
-     * TODO: Adds a given ChallengeSport to the DB
+     * Adds a given ChallengeSport to the DB
      *
      * @param challengeSport ChallengeSport object to be added to DB
      * @return Added ChallengeSport object
      */
-    public ChallengeSport add(ChallengeSport challengeSport) {
-        return null;
+    public ChallengeSportDTO add(ChallengeSportDTO challengeSport) throws NotFoundException {
+        ChallengeSport challengeSportAdd = challengeSportConverter.convertDtoToEntity(challengeSport);
+        ChallengeSport savedChallengeSport = challengeSportRepository.save(challengeSportAdd);
+        return challengeSportConverter.convertEntityToDto(savedChallengeSport);
     }
 
     /**
-     * TODO: Updates a ChallengeSport
+     * Updates a ChallengeSport
      *
      * @param challengeSportID ID of the ChallengeSport to be updated
      * @param challengeSport   ChallengeSport object that overwrites the old ChallengeSport
      * @return Updated ChallengeSport object
      */
-    public ChallengeSport update(Long challengeSportID, ChallengeSport challengeSport) {
-        return null;
+    public ChallengeSportDTO update(Long challengeSportID, ChallengeSportDTO challengeSport) throws NotFoundException {
+        Optional<ChallengeSport> optionalCS = challengeSportRepository.findById(challengeSportID);
+        ChallengeSport convertedCS = challengeSportConverter.convertDtoToEntity(challengeSport);
+
+        if(optionalCS.isPresent()){
+            ChallengeSport CS = optionalCS.get();
+            CS.setChallenge(convertedCS.getChallenge());
+            CS.setSport(convertedCS.getSport());
+            CS.setFactor(convertedCS.getFactor());
+
+            ChallengeSport savedCS = challengeSportRepository.save(CS);
+            return challengeSportConverter.convertEntityToDto(savedCS);
+        }
+
+        throw new NotFoundException("Challenge-Sport with ID " + challengeSportID + " is not present in DB.");
     }
 
     /**
-     * TODO: Deletes a specific ChallengeSport from the DB
+     * Deletes a specific ChallengeSport from the DB
      *
      * @param challengeSportID ID of the ChallengeSport to be deleted
      */
-    public void delete(Long challengeSportID) {
-
+    public void delete(Long challengeSportID) throws NotFoundException {
+        get(challengeSportID);
+        challengeSportRepository.deleteById(challengeSportID);
     }
 
     /**
-     * TODO: Deletes all bonuses from the DB
+     *  Deletes all bonuses from the DB
      */
     public void deleteAll() {
-
+        challengeSportRepository.deleteAll();
     }
 }

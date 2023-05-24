@@ -60,9 +60,6 @@ public class ActivityServiceTest {
     @MockBean
     ChallengeService challengeService;
 
-    @Autowired
-    MemberConverter memberConverter;
-
     List<Activity> activityList;
 
     /**

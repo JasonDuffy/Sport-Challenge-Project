@@ -75,7 +75,7 @@ public class TeamControllerTest {
         TeamDTO team = new TeamDTO();
         team.setId(1);
 
-        when(teamService.getDTO(1L)).thenReturn(team);
+        when(teamService.get(1L)).thenReturn(team);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/teams/1/").accept(MediaType.APPLICATION_JSON);
@@ -94,7 +94,7 @@ public class TeamControllerTest {
         assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(teamService).getDTO(1L);
+        Mockito.verify(teamService).get(1L);
     }
 
     /**

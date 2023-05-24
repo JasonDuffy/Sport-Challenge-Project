@@ -37,6 +37,7 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -198,18 +199,22 @@ public class ChallengeController {
             @ApiResponse(responseCode = "201", description = "Challenge successfully added",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ChallengeDTO.class))}),
-            @ApiResponse(responseCode = "417", description = "Something went wrong creating the new Challenge", content = @Content),
+            @ApiResponse(responseCode = "500", description = "Something went wrong creating the new Challenge", content = @Content),
+            @ApiResponse(responseCode = "400", description = "ID arrays are not same size", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PostMapping(path = "/", consumes = "multipart/form-data", produces = "application/json")
     public ResponseEntity<ChallengeDTO> addChallenge(@RequestPart("file") MultipartFile file, @RequestParam("sportId") long sportId[], @RequestParam("sportFactor") float sportFactor[], @RequestPart("json") @Valid ChallengeDTO challenge, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
-            ResponseEntity<ChallengeDTO> chDTO = null;
             if (sportId.length == sportFactor.length) {
-                chDTO =   new ResponseEntity<>(challengeService.add(file,sportId,sportFactor,challenge), HttpStatus.CREATED);
-                return chDTO;
+                try {
+                    return new ResponseEntity<>(challengeService.add(file,sportId,sportFactor,challenge), HttpStatus.CREATED);
+                } catch (IOException e) {
+                    System.out.println(e.getMessage());
+                    return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                }
             }else {
-                throw new RuntimeException();
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

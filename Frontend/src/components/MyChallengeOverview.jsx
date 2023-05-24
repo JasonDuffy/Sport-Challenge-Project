@@ -93,7 +93,7 @@ class MyChallengeOverview extends Component {
     let challengeResData = await challengeResponse.json();
     let imageResponse = await fetch("http://localhost:8081/images/" + challengeResData.imageID + "/", { method: "GET", credentials: "include" });
     let imageResData = await imageResponse.json();
-    let distanceResponse = await fetch("http://localhost:8081/API/challengeDistance/?challengeID=" + this.props.id, { method: "GET", credentials: "include" });
+    let distanceResponse = await fetch("http://localhost:8081/challenges/" + this.props.id + "/distance/", { method: "GET", credentials: "include" });
     let distanceResData = await distanceResponse.json();
     let challengeSportResponse = await fetch("http://localhost:8081/challenge-sports/challenges/" + this.props.id + "/", { method: "GET", credentials: "include" });
     let challengeSportResData = await challengeSportResponse.json();
@@ -140,7 +140,7 @@ class MyChallengeOverview extends Component {
           </div>
           <form onSubmit={this.submitHandle}>
             <h2>Wie viel Kilometer hast du zurückgelegt?</h2>
-            <input className="mg_t_1" type="number" value={this.state.activityDistance} onChange={this.activityDistanceChange}></input>
+            <input className="mg_t_1" type="number" step={0.1} value={this.state.activityDistance} onChange={this.activityDistanceChange}></input>
             <div className="mg_t_2">
               <h2>Sportart auswählen</h2>
               <select className="mg_t_1" value={this.state.activitySportId} onChange={this.activitySportIdChange}>

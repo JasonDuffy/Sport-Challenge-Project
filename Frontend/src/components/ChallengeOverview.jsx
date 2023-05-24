@@ -32,14 +32,16 @@ function ChallengeOverview(props) {
       const challengeResData = await challengeResponse.json();
       const imageResponse = await fetch("http://localhost:8081/images/" + challengeResData.imageID + "/", { method: "GET", credentials: "include" });
       const imageResData = await imageResponse.json();
+      const challengeDistanceResponse = await fetch("http://localhost:8081/challenges/" + props.id + "/distance/", { method: "GET", credentials: "include" });
+      const challengeDistanceResData = await challengeDistanceResponse.json();
 
       setChallengeName(challengeResData.name);
       setStartDate(challengeResData.startDate.split(",")[0]);
       setEndDate(challengeResData.endDate.split(",")[0]);
-      setDistanceDone(0);
       setDistanceGoal(challengeResData.targetDistance);
       setChallengeInfo(challengeResData.description);
       setImageSource("data:" + imageResData.type + ";base64, " + imageResData.data);
+      setDistanceDone(challengeDistanceResData);
     }
 
     getChallengeData();

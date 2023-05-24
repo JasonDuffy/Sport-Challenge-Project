@@ -100,7 +100,7 @@ public class TeamMemberService {
      *
      * @param teamMemberID ID of the TeamMember to be deleted
      */
-    public void delete(Long teamMemberID) throws NotFoundException {
+    public void delete(long teamMemberID) throws NotFoundException {
         get(teamMemberID);
         teamMemberRepository.deleteById(teamMemberID);
     }

@@ -54,7 +54,7 @@ public class ImageController {
     public ResponseEntity<HttpStatus> uploadImage(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
             try {   
-                imageStorageService.store(file)
+                imageStorageService.store(file);
                 return new ResponseEntity<>(HttpStatus.OK);
             }catch (Exception e){
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

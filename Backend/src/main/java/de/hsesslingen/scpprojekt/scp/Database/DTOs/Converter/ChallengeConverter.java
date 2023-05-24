@@ -63,13 +63,12 @@ public class ChallengeConverter {
      * @return Challenge Entity
      * @throws NotFoundException Not Found Challenge
      */
-    public Challenge convertDtoToEntity(ChallengeDTO  challengeDTO ) throws NotFoundException {
+    public Challenge convertDtoToEntity(ChallengeDTO  challengeDTO ) {
         Challenge challenge = new Challenge();
         challenge.setId(challengeDTO.getId());
         challenge.setName(challengeDTO.getName());
         try {
             challenge.setImage(imageStorageService.get((challengeDTO.getImageID())));
-
         }catch (NullPointerException|NotFoundException e){
             challenge.setImage(null);
         }

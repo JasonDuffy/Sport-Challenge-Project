@@ -115,16 +115,12 @@ public class ChallengeService {
     }
 
 
-    public ChallengeDTO add(MultipartFile file, long sportId[], float sportFactor[], ChallengeDTO challenge) {
-        try {
-            Image image = imageStorageService.store(file);
-            Challenge newchallenge = challengeConverter.convertDtoToEntity(challenge);
-            newchallenge.setImage(image);
-            Challenge savedChallenge = challengeRepository.save(newchallenge);
-            return challengeConverter.convertEntityToDto(savedChallenge);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public ChallengeDTO add(MultipartFile file, long sportId[], float sportFactor[], ChallengeDTO challenge) throws  IOException{
+        Image image = imageStorageService.store(file);
+        Challenge newchallenge = challengeConverter.convertDtoToEntity(challenge);
+        newchallenge.setImage(image);
+        Challenge savedChallenge = challengeRepository.save(newchallenge);
+        return challengeConverter.convertEntityToDto(savedChallenge);
     }
 
 

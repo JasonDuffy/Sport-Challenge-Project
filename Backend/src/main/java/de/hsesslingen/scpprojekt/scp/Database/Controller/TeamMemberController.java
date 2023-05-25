@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -91,7 +92,7 @@ public class TeamMemberController {
             @ApiResponse(responseCode = "404", description = "Team and Member not found", content = @Content)
     })
     @PostMapping(path = "/", produces = "application/json")
-    public ResponseEntity<TeamMemberDTO> addTeamMember(TeamMemberDTO teamMemberDTO, HttpServletRequest request) {
+    public ResponseEntity<TeamMemberDTO> addTeamMember(@RequestBody TeamMemberDTO teamMemberDTO, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)) {
             try {
                 return new ResponseEntity<>(teamMemberService.add(teamMemberDTO), HttpStatus.CREATED);

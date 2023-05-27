@@ -6,6 +6,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.MemberService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -26,6 +27,9 @@ public class ActivityConverter {
 
     @Autowired
     MemberConverter memberConverter;
+    @Autowired
+    @Lazy
+    ChallengeSportConverter challengeSportConverter;
 
     public ActivityDTO convertEntityToDto(Activity activity) {
         ActivityDTO activityDTO = new ActivityDTO();
@@ -51,7 +55,7 @@ public class ActivityConverter {
         activity.setId(activityDTO.getId());
         activity.setDistance(activityDTO.getDistance());
         activity.setDate(activityDTO.getDate());
-        activity.setChallengeSport(challengeSportService.get(activityDTO.getChallengeSportID()));
+        activity.setChallengeSport(challengeSportConverter.convertDtoToEntity(challengeSportService.get(activityDTO.getChallengeSportID())));
         activity.setMember(memberConverter.convertDtoToEntity(memberService.get(activityDTO.getMemberID())));
         return activity;
     }

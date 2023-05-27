@@ -5,6 +5,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -19,6 +20,9 @@ import java.util.List;
 public class BonusConverter {
     @Autowired
     ChallengeSportService challengeSportService;
+    @Autowired
+    @Lazy
+    ChallengeSportConverter challengeSportConverter;
 
     public BonusDTO convertEntityToDto(Bonus bonus) {
         BonusDTO bonusDTO = new BonusDTO();
@@ -50,7 +54,7 @@ public class BonusConverter {
         bonus.setFactor(bonusDTO.getFactor());
         bonus.setId(bonusDTO.getId());
         bonus.setName(bonusDTO.getName());
-        bonus.setChallengeSport(challengeSportService.get(bonusDTO.getChallengeSportID()));
+        bonus.setChallengeSport(challengeSportConverter.convertDtoToEntity(challengeSportService.get(bonusDTO.getChallengeSportID())));
 
         return bonus;
     }

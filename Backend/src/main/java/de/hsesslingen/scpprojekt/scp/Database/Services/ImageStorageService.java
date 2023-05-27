@@ -28,10 +28,11 @@ public class ImageStorageService {
 
 
     /**
+     * Store an Image
      *
      * @param file The file(Image) you want store in the DB
      * @return A new image Entity filled with data of the given file.
-     * @throws IOException
+     * @throws IOException not an image
      */
     public Image store(MultipartFile file) throws IOException {
         if(!isImage(file))

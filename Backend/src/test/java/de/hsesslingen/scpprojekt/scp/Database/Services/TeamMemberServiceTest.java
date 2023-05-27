@@ -1,5 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.TeamConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.TeamMemberConverter;
@@ -43,6 +44,9 @@ public class TeamMemberServiceTest {
     ChallengeService challengeService;
     @MockBean
     TeamMemberRepository teamMemberRepository;
+    @MockBean
+    ImageStorageService imageStorageService;
+
     @Autowired
     TeamMemberService teamMemberService;
     @Autowired
@@ -51,6 +55,8 @@ public class TeamMemberServiceTest {
     TeamConverter teamConverter;
     @Autowired
     MemberConverter memberConverter;
+    @Autowired
+    ChallengeConverter challengeConverter;
     List<TeamMember> teamMemberList;
 
     /**
@@ -61,12 +67,18 @@ public class TeamMemberServiceTest {
         teamMemberList = new ArrayList<>();
         Challenge c1 = new Challenge();
         c1.setId(1L);
-        when(challengeService.get(1L)).thenReturn(c1);
+        when(challengeService.get(1L)).thenReturn(challengeConverter.convertEntityToDto(c1));
 
+        Image image = new Image();
+        image.setId(1L);
+        when(imageStorageService.get(1L)).thenReturn(image);
         Team t1 = new Team();
+        t1.setImage(image);
         t1.setId(1L);
         t1.setChallenge(c1);
+
         Team t2 = new Team();
+        t2.setImage(image);
         t2.setId(2L);
         t2.setChallenge(c1);
 
@@ -143,18 +155,20 @@ public class TeamMemberServiceTest {
      * Test if add works correctly
      * @throws NotFoundException Should never be thrown
      */
-    /*@Test
+    @Test
     public void addTestSuccess() throws NotFoundException {
+        Image i = new Image();
+        i.setId(1);
+        Challenge c = new Challenge();
+        c.setId(1);
+        c.setImage(i);
         Team t = new Team();
         t.setId(1);
-
-        TeamDTO tDTO = new TeamDTO();
-        tDTO.setId(1L);
-        when(teamService.get(1L)).thenReturn(tDTO);
+        t.setChallenge(c);
+        when(teamService.get(1L)).thenReturn(teamConverter.convertEntityToDto(t));
 
         Member m = new Member();
-        m.setId(1L);
-        when(memberConverter.convertDtoToEntity(memberService.get(1L))).thenReturn(m);
+        when(memberService.get(0L)).thenReturn(memberConverter.convertEntityToDto(m));
 
         teamMemberList.get(0).setTeam(t);
         teamMemberList.get(0).setMember(m);
@@ -167,8 +181,7 @@ public class TeamMemberServiceTest {
 
         verify(teamMemberRepository).save(any(TeamMember.class));
         verify(teamService).get(1L);
-        verify(memberService).get(0L);
-    }*/
+    }
 
     /**
      * Test if exception is correctly thrown
@@ -187,14 +200,20 @@ public class TeamMemberServiceTest {
      * Test is update works correctly
      * @throws NotFoundException Should never be thrown
      */
-    /*@Test
+    @Test
     public void updateTestSuccess() throws NotFoundException {
+        Image i = new Image();
+        i.setId(1);
+        Challenge c = new Challenge();
+        c.setId(1);
+        c.setImage(i);
         Team t = new Team();
         t.setId(1);
+        t.setChallenge(c);
         when(teamService.get(1L)).thenReturn(teamConverter.convertEntityToDto(t));
 
         Member m = new Member();
-        when(memberConverter.convertDtoToEntity(memberService.get(0L))).thenReturn(m);
+        when(memberService.get(0L)).thenReturn(memberConverter.convertEntityToDto(m));
 
         teamMemberList.get(1).setTeam(t);
         teamMemberList.get(1).setMember(m);
@@ -209,7 +228,7 @@ public class TeamMemberServiceTest {
         verify(teamMemberRepository).save(any(TeamMember.class));
         verify(teamService).get(1L);
         verify(memberService).get(0L);
-    }*/
+    }
 
     /**
      * Test if exception is correctly thrown
@@ -252,9 +271,5 @@ public class TeamMemberServiceTest {
         teamMemberService.deleteAll();
         verify(teamMemberRepository).deleteAll();
     }
-
-
-
-
 
 }

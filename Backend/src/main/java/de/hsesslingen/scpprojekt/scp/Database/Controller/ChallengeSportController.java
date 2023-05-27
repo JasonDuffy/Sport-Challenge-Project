@@ -60,7 +60,7 @@ public class ChallengeSportController {
     public ResponseEntity<ChallengeSportDTO> getChallengeSportById(@PathVariable("id") long id, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
             try{
-                return new ResponseEntity<>(challengeSportService.getDTO(id), HttpStatus.OK);
+                return new ResponseEntity<>(challengeSportService.get(id), HttpStatus.OK);
             } catch (NotFoundException e) {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -177,7 +177,7 @@ public class ChallengeSportController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "ChallengeSport successfully updated",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Sport.class))}),
+                            schema = @Schema(implementation = ChallengeSportDTO.class))}),
             @ApiResponse(responseCode = "404", description = "ChallengeSport not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })

@@ -74,10 +74,10 @@ public class ChallengeService {
      * @return Challenge
      * @throws NotFoundException Not found Challenge
      */
-    public Challenge get(Long ChallengeID) throws NotFoundException {
+    public ChallengeDTO get(Long ChallengeID) throws NotFoundException {
         Optional<Challenge> challenge = challengeRepository.findById(ChallengeID);
         if (challenge.isPresent()) {
-            return challenge.get();
+            return challengeConverter.convertEntityToDto(challenge.get());
         }
         throw new NotFoundException("Challenge with ID " + ChallengeID + " is not present in DB.");
     }
@@ -89,14 +89,6 @@ public class ChallengeService {
      * @return Challenge
      * @throws NotFoundException Not found Challenge
      */
-
-    public ChallengeDTO getDTO(Long ChallengeID) throws NotFoundException {
-        Optional<Challenge> challenge = challengeRepository.findById(ChallengeID);
-        if (challenge.isPresent()) {
-            return challengeConverter.convertEntityToDto(challenge.get());
-        }
-        throw new NotFoundException("Challenge with ID " + ChallengeID + " is not present in DB.");
-    }
 
     /**
      * Get ChallengeID's where the given MemberID is part of
@@ -115,6 +107,15 @@ public class ChallengeService {
     }
 
 
+    /**
+     *  add Challenge
+     * @param file Image data
+     * @param sportId Id for the sport
+     * @param sportFactor Factor for the sport in this challenge
+     * @param challenge data of Challenge
+     * @return A new challenge Entity added to the db
+     * @throws IOException not an image
+     */
     public ChallengeDTO add(MultipartFile file, long sportId[], float sportFactor[], ChallengeDTO challenge) throws  IOException{
         Image image = imageStorageService.store(file);
         Challenge newchallenge = challengeConverter.convertDtoToEntity(challenge);

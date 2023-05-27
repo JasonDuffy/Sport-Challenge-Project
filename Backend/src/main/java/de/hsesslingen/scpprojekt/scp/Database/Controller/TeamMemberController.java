@@ -113,9 +113,7 @@ public class TeamMemberController {
      */
     @Operation(summary = "Deletes a Member of a Team ")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Delete successful",
-                    content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = TeamMember.class))}),
+            @ApiResponse(responseCode = "200", description = "Delete successful"),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "404", description = "TeamMember not found", content = @Content)
     })
@@ -168,7 +166,7 @@ public class TeamMemberController {
     @Operation(summary = "Updates a TeamMember")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "TeamMember successfully updated", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = ActivityDTO.class)) }),
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = TeamMemberDTO.class)) }),
             @ApiResponse(responseCode = "404", description = "TeamMember not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })

@@ -2,6 +2,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
@@ -30,6 +31,10 @@ public class BonusService {
     @Autowired
     @Lazy
     BonusConverter bonusConverter;
+
+    @Autowired
+    @Lazy
+    ChallengeSportConverter challengeSportConverter;
 
     /**
      * Returns all bonuses in database
@@ -87,7 +92,7 @@ public class BonusService {
             newBonus.setEndDate(bonus.getEndDate());
             newBonus.setStartDate(bonus.getStartDate());
             newBonus.setId(bonus.getId());
-            newBonus.setChallengeSport(challengeSportService.get(bonus.getChallengeSportID()));
+            newBonus.setChallengeSport(challengeSportConverter.convertDtoToEntity(challengeSportService.get(bonus.getChallengeSportID())));
 
             Bonus savedBonus = bonusRepository.save(newBonus);
             return bonusConverter.convertEntityToDto(savedBonus);

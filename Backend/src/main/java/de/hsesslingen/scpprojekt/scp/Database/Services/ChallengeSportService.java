@@ -37,14 +37,7 @@ public class ChallengeSportService {
     }
 
     public List<ChallengeSportDTO> getAllChallengeSportsOfChallenge(long ChallengeID)  {
-        List<ChallengeSport> challengeSports = challengeSportRepository.findAll();
-        List<ChallengeSport> challengeSportList = new ArrayList<>();
-        for (ChallengeSport challengeSport : challengeSports){
-            if(challengeSport.getChallenge().getId() == ChallengeID){
-                challengeSportList.add(challengeSport);
-            }
-        }
-        return challengeSportConverter.convertEntityListToDtoList(challengeSportList);
+        return challengeSportConverter.convertEntityListToDtoList(challengeSportRepository.findChallengeSportByChallenge_Id(ChallengeID));
     }
 
     /**
@@ -54,13 +47,7 @@ public class ChallengeSportService {
      * @return ChallengeSport with given ID
      * @throws NotFoundException ChallengeSport can not be found
      */
-    public ChallengeSport get(Long challengeSportID) throws NotFoundException {
-        Optional<ChallengeSport> challengeSport = challengeSportRepository.findById(challengeSportID);
-        if(challengeSport.isPresent())
-            return challengeSport.get();
-        throw new NotFoundException("ChallengeSport with ID " + challengeSportID + " is not present in DB.");
-    }
-    public ChallengeSportDTO getDTO(Long challengeSportID) throws NotFoundException {
+    public ChallengeSportDTO get(Long challengeSportID) throws NotFoundException {
         Optional<ChallengeSport> challengeSport = challengeSportRepository.findById(challengeSportID);
         if(challengeSport.isPresent())
             return challengeSportConverter.convertEntityToDto(challengeSport.get());

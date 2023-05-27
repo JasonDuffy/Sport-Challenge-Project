@@ -2,9 +2,11 @@ package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,6 +15,7 @@ import org.mockito.AdditionalAnswers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
@@ -36,6 +39,9 @@ public class BonusServiceTest {
     BonusService bonusService;
     @Autowired
     BonusConverter bonusConverter;
+    @Autowired
+    @Lazy
+    ChallengeSportConverter csConverter;
 
     @MockBean
     BonusRepository bonusRepository;
@@ -54,9 +60,13 @@ public class BonusServiceTest {
         Challenge c1 = new Challenge();
         c1.setId(1L);
 
+        Sport sport = new Sport();
+        sport.setId(1);
+
         ChallengeSport cs = new ChallengeSport();
         cs.setId(1L);
         cs.setChallenge(c1);
+        cs.setSport(sport);
 
         for (long i = 0; i < 10; i++){
             Bonus b = new Bonus();
@@ -69,7 +79,7 @@ public class BonusServiceTest {
         }
 
         when(bonusRepository.findAll()).thenReturn(bonusList);
-        when(challengeSportService.get(1L)).thenReturn(cs);
+        when(challengeSportService.get(1L)).thenReturn(csConverter.convertEntityToDto(cs));
 
         when(bonusRepository.save(any(Bonus.class))).then(AdditionalAnswers.returnsFirstArg()); //Return given bonus class
     }
@@ -125,9 +135,18 @@ public class BonusServiceTest {
      */
     @Test
     public void addTestSuccess() throws NotFoundException {
+        Challenge c1 = new Challenge();
+        c1.setId(1L);
+
+        Sport sport = new Sport();
+        sport.setId(1);
+
         ChallengeSport cs = new ChallengeSport();
         cs.setId(1);
-        when(challengeSportService.get(1L)).thenReturn(cs);
+        cs.setSport(sport);
+        cs.setChallenge(c1);
+
+        when(challengeSportService.get(1L)).thenReturn(csConverter.convertEntityToDto(cs));
 
         BonusDTO newBonus = bonusService.add(bonusConverter.convertEntityToDto(bonusList.get(0)));
 
@@ -157,9 +176,17 @@ public class BonusServiceTest {
      */
     @Test
     public void updateTestSuccess() throws NotFoundException {
+        Challenge c1 = new Challenge();
+        c1.setId(1L);
+
+        Sport sport = new Sport();
+        sport.setId(1);
+
         ChallengeSport cs = new ChallengeSport();
         cs.setId(1);
-        when(challengeSportService.get(1L)).thenReturn(cs);
+        cs.setSport(sport);
+        cs.setChallenge(c1);
+        when(challengeSportService.get(1L)).thenReturn(csConverter.convertEntityToDto(cs));
 
         bonusList.get(1).setFactor(10.5f);
 

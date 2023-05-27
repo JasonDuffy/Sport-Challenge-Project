@@ -179,7 +179,7 @@ class AddTeam extends Component {
       }
     }
 
-    //Checks if min one Member is selected
+    //Checks if min one Member is selected (there is always 1 child the Overlay so it must be min 2)
     if (teamMembersEl.childNodes.length < 2) {
       this.showInputErrorMessage("Du musst für dein Team mindestens einen Member auswählen!");
       return;

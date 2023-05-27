@@ -17,6 +17,7 @@ class AddChallenge extends Component {
     //state for the input elements
     this.state = {
       challengeName: "",
+      challengeNameHeading: "",
       challengeDescription: "",
       challengeDistanceGoal: 1,
       challengeStartDate: "",
@@ -231,8 +232,6 @@ class AddChallenge extends Component {
         }
       }
 
-
-
       //Selects all sportCheckboxes which are checked
       const sportCheckboxCheckedEl = document.querySelectorAll('[class*="form_sport_checkbox"][type="checkbox"]:checked');
       let challengeSportFactor = []; //Array with the factors of inputs (only from checked sports)
@@ -244,14 +243,14 @@ class AddChallenge extends Component {
       let sportResData = await sportResponse.json();
 
       //Search and saves the Sports that need a update
-      for (let i = 0; i < sportResData.length; i++) {
-        sportIdInDB.push(document.querySelector('[data-sport-id="' + sportResData[i].sportID + '"][type="checkbox"]').dataset.sportId);
-        challengeSportId.push(sportResData[i].id);
+      for (const sportData of sportResData) {
+        sportIdInDB.push(document.querySelector('[data-sport-id="' + sportData.sportID + '"][type="checkbox"]').dataset.sportId);
+        challengeSportId.push(sportData.id);
       }
 
       //Saves the factor given by the user for the checked sports
-      for (let i = 0; i < sportCheckboxCheckedEl.length; i++) {
-        challengeSportFactor.push(document.querySelector('[data-sport-id="' + sportCheckboxCheckedEl[i].dataset.sportId + '"][type="number"]').value);
+      for (const sportCheckedCheckbox of sportCheckboxCheckedEl) {
+        challengeSportFactor.push(document.querySelector('[data-sport-id="' + sportCheckedCheckbox.dataset.sportId + '"][type="number"]').value);
       }
 
       //Creates body data for the update challenge-sport fetch
@@ -345,6 +344,7 @@ class AddChallenge extends Component {
       let imageResData = await imageResponse.json();
 
       //prefills the Input fields with the current challenge data
+      this.setState({ challengeNameHeading: challengeResData.name });
       this.setState({ challengeName: challengeResData.name });
       this.setState({ imageSource: "data:" + imageResData.type + ";base64, " + imageResData.data });
       this.setState({ imageID: challengeResData.imageID });
@@ -369,7 +369,8 @@ class AddChallenge extends Component {
         <div className="section_container">
           <div className="section_content">
             <div className="heading_underline_center mg_b_10">
-              <span className="underline_center">Challenge hinzufügen</span>
+              {this.props.params.action === "Edit" && <span className="underline_center">Challenge {this.state.challengeNameHeading} editieren</span>}
+              {this.props.params.action === "Add" && <span className="underline_center">Challenge hinzufügen</span>}
             </div>
             <div id="form_info_container" className="pd_1 mg_b_2">
               <span id="form_info_message"></span>
@@ -478,7 +479,8 @@ class AddChallenge extends Component {
                   </div>
                 </div>
                 <div className="center_content mg_t_2">
-                  <Button color="orange" txt="Challenge erstellen" type="submit" />
+                  {this.props.params.action === "Edit" && <Button color="orange" txt="Änderungen speichern" type="submit" />}
+                  {this.props.params.action === "Add" && <Button color="orange" txt="Challenge erstellen" type="submit" />}
                 </div>
               </form>
             </div>

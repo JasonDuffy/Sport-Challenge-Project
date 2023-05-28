@@ -15,6 +15,10 @@
             font-size: 14px;
         }
 
+        li{
+            list-style: none;
+        }
+
         .centerContent {
             text-align: center;
         }
@@ -37,10 +41,20 @@
         </h1>
         <h2 th:text="${description}" class="bonusDescription centerContent">Description</h2>
         <div>
-            <p>Beginn: <a th:text="${startTime}">StartTime</a> Uhr</p>
-            <p>Ende: <a th:text="${endTime}">EndTime</a> Uhr</p>
-            <p>Sportart: <a th:text="${sport}">Sport</a></p>
-            <p>Bonusfaktor: <a th:text="${factor}">Factor</a></p>
+            <ul>
+                <li>
+                    <p>Beginn: <a th:text="${startTime}">StartTime</a> Uhr</p>
+                </li>
+                <li>
+                    <p>Ende: <a th:text="${endTime}">EndTime</a> Uhr</p>
+                </li>
+                <li>
+                    <p>Sportart: <a th:text="${sport}">Sport</a></p>
+                </li>
+                <li>
+                    <p>Bonusfaktor: <a th:text="${factor}">Factor</a></p>
+                </li>
+            </ul>
         </div>
 
     </div>

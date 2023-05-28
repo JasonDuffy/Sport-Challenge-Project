@@ -117,7 +117,7 @@ public class ChallengeSportControllerTest {
         ChallengeSportDTO Cs1 = new ChallengeSportDTO();
         Cs1.setId(1);
 
-        when(challengeSportService.getDTO(1L)).thenReturn(Cs1);
+        when(challengeSportService.get(1L)).thenReturn(Cs1);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/challenge-sports/1/").accept(MediaType.APPLICATION_JSON);
@@ -136,7 +136,7 @@ public class ChallengeSportControllerTest {
         assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(challengeSportService).getDTO(1L);
+        Mockito.verify(challengeSportService).get(1L);
     }
     /**
      * Test if 404 is returned when no activities are found
@@ -146,7 +146,7 @@ public class ChallengeSportControllerTest {
     @WithMockUser
     public void getChallengeSportByIDTestNotFound() throws Exception {
         when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-        when(challengeSportService.getDTO(1L)).thenThrow(NotFoundException.class);
+        when(challengeSportService.get(1L)).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/challenge-sports/1/").accept(MediaType.APPLICATION_JSON);

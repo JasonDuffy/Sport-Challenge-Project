@@ -19,6 +19,8 @@ import java.util.List;
 public class BonusConverter {
     @Autowired
     ChallengeSportService challengeSportService;
+    @Autowired
+    ChallengeSportConverter challengeSportConverter;
 
     public BonusDTO convertEntityToDto(Bonus bonus) {
         BonusDTO bonusDTO = new BonusDTO();
@@ -50,7 +52,7 @@ public class BonusConverter {
         bonus.setFactor(bonusDTO.getFactor());
         bonus.setId(bonusDTO.getId());
         bonus.setName(bonusDTO.getName());
-        bonus.setChallengeSport(challengeSportService.get(bonusDTO.getChallengeSportID()));
+        bonus.setChallengeSport(challengeSportConverter.convertDtoToEntity(challengeSportService.get(bonusDTO.getChallengeSportID())));
 
         return bonus;
     }

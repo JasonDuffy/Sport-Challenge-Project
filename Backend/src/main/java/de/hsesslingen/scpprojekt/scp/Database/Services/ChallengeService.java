@@ -37,7 +37,11 @@ public class ChallengeService {
     @Autowired
     ImageStorageService imageStorageService;
     @Autowired
+    ChallengeSportService challengeSportService;
+    @Autowired
     ActivityRepository activityRepository;
+    @Autowired
+    SportService sportService;
     @Autowired
     BonusRepository bonusRepository;
     @Autowired
@@ -113,17 +117,25 @@ public class ChallengeService {
             throw new NotFoundException("The member wit the ID " + memberID + " is not part of a Challenge");
         }
     }
-
-
+    
     public ChallengeDTO add(MultipartFile file, long sportId[], float sportFactor[], ChallengeDTO challenge) throws  IOException{
         Image image = imageStorageService.store(file);
         Challenge newchallenge = challengeConverter.convertDtoToEntity(challenge);
         newchallenge.setImage(image);
         Challenge savedChallenge = challengeRepository.save(newchallenge);
+        for (int i = 0; i < sportId.length; i++) {
+            ChallengeSportDTO newChallengeSport = new ChallengeSportDTO();
+            newChallengeSport.setChallengeID(savedChallenge.getId());
+            newChallengeSport.setFactor(sportFactor[i]);
+            newChallengeSport.setSportID(sportId[i]);
+            try {
+                challengeSportService.add(newChallengeSport);
+            } catch (NotFoundException e) {
+                //never happens
+            }
+        }
         return challengeConverter.convertEntityToDto(savedChallenge);
     }
-
-
 
     public ChallengeDTO update(long imageID, long ChallengeID, ChallengeDTO challengeDTO) throws NotFoundException {
         Optional<Challenge> challengeData = challengeRepository.findById(ChallengeID);

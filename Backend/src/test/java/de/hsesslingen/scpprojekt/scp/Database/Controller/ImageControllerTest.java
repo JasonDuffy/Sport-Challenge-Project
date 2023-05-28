@@ -195,7 +195,7 @@ public class ImageControllerTest {
                 .contentType(MediaType.MULTIPART_FORM_DATA);
 
         MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn();
 
         Mockito.verify(imageservice).store(any(MultipartFile.class));

@@ -5,6 +5,7 @@ import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +42,8 @@ public class BonusServiceTest {
     BonusRepository bonusRepository;
     @MockBean
     ChallengeSportService challengeSportService;
+    @MockBean
+    ChallengeService challengeService;
 
     List<Bonus> bonusList;
 
@@ -125,8 +128,17 @@ public class BonusServiceTest {
      */
     @Test
     public void addTestSuccess() throws NotFoundException {
+        Challenge c1 = new Challenge();
+        c1.setId(1L);
+        c1.setName("Challenge");
+
+        Sport s1 = new Sport();
+        s1.setId(1L);
+
         ChallengeSport cs = new ChallengeSport();
         cs.setId(1);
+        cs.setChallenge(c1);
+        cs.setSport(s1);
         when(challengeSportService.get(1L)).thenReturn(cs);
 
         BonusDTO newBonus = bonusService.add(bonusConverter.convertEntityToDto(bonusList.get(0)));

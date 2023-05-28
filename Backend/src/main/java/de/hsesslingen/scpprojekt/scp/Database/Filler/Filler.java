@@ -59,11 +59,11 @@ public class Filler {
     final private LocalDateTime date5Start = LocalDateTime.of(2022,8,1,12,0);
     final private LocalDateTime date5End = LocalDateTime.of(2022,8,31,12,0);
 
-    Member joe = new Member("Joe.Doe@gmail.com", "Joe", "Doe");
-    Member hanna = new Member("Hanna.Montana@biz.de", "Hannah", "Montana");
-    Member god = new Member("God.Rick@yahoo.de", "God", "Rick");
-    Member jack = new Member("Jack.Sparrow@googlemail.com", "Jack", "Sparrow");
-    Member anakin = new Member("Anakin.Skywalker@hs-esslingen.de", "Anakin", "Skywalker");
+    Member joe = new Member("Joe.Doe@example.com", "Joe", "Doe");
+    Member hanna = new Member("Hanna.Montana@example.com", "Hannah", "Montana");
+    Member god = new Member("God.Rick@example.com", "God", "Rick");
+    Member jack = new Member("Jack.Sparrow@example.com", "Jack", "Sparrow");
+    Member anakin = new Member("Anakin.Skywalker@example.com", "Anakin", "Skywalker");
 
     Image pic1 = new Image("Hustle", "image/jpg", type1);
     Image pic2 = new Image("Bustle", "image/jpg", type2);

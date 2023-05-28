@@ -3,6 +3,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
@@ -60,7 +61,7 @@ public class ChallengeSportController {
     public ResponseEntity<ChallengeSportDTO> getChallengeSportById(@PathVariable("id") long id, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
             try{
-                return new ResponseEntity<>(challengeSportService.getDTO(id), HttpStatus.OK);
+                return new ResponseEntity<>(challengeSportService.get(id), HttpStatus.OK);
             } catch (NotFoundException e) {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

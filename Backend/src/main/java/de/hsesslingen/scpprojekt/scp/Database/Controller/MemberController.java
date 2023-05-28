@@ -47,6 +47,28 @@ public class MemberController {
     ActivityService activityService;
 
     /**
+     * REST API for returning data of all Members
+     *
+     * @param request automatically filled by browser
+     * @return All Member data
+     */
+    @Operation(summary = "Get all members")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Search successful",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = MemberDTO.class))}),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @GetMapping(path ="/", produces = "application/json")
+    public ResponseEntity<List<MemberDTO>> getAllMembers(HttpServletRequest request) {
+        if (saml2Service.isLoggedIn(request)){
+            return new ResponseEntity<>(memberService.getAll(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
      * REST API for returning Member data of a given ID
      *
      * @param id id of the Member that should be returned

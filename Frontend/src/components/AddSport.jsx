@@ -136,7 +136,7 @@ class AddSport extends Component {
                   <input className="mg_t_2" type="number" value={this.state.sportFactor} onChange={this.sportFactorChange}></input>
                 </div>
                 <div className="center_content mg_t_2">
-                  {this.props.params.action === "Edit" && <Button color="orange" txt="Sportart editieren" type="submit" />}
+                  {this.props.params.action === "Edit" && <Button color="orange" txt="Änderungen speichern" type="submit" />}
                   {this.props.params.action === "Add" && <Button color="orange" txt="Sportart hinzufügen" type="submit" />}
                 </div>
               </form>

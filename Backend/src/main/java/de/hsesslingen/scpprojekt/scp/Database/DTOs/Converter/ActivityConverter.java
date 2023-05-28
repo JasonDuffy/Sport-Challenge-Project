@@ -20,9 +20,12 @@ import java.util.List;
 public class ActivityConverter {
     @Autowired
     ChallengeSportService challengeSportService;
-
     @Autowired
     MemberService memberService;
+    @Autowired
+    ChallengeSportConverter challengeSportConverter;
+    @Autowired
+    MemberConverter memberConverter;
 
     @Autowired
     MemberConverter memberConverter;

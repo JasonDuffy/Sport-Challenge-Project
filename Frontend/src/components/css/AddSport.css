@@ -1,0 +1,31 @@
+textarea {
+    height: 300px;
+    width: 100%;
+}
+
+.form_input_date_container {
+    display: flex;
+}
+
+.form_input_date_content {
+    padding: 0.5rem;
+    border: 2px solid var(--doubleslash-text-grey);
+    border-radius: 5px;
+}
+
+.form_input_date_separator {
+    color: var(--doubleslash-text-grey);
+    font-weight: 1000;
+    letter-spacing: -3px;
+}
+
+input[type="datetime-local"] {
+    color: var(--doubleslash-text-grey);
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0.5rem 1rem;
+    background-color: var(--doubleslash-lightblue);
+    border: 0;
+    outline: 0;
+}

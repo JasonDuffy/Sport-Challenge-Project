@@ -70,6 +70,7 @@ class AddBonus extends Component{
   }
 
   async submitHandle(event) {
+    event.preventDefault();
 
     const sportCheckboxEl = document.getElementsByClassName("form_sport_checkbox");
     const dateOptions = { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" };

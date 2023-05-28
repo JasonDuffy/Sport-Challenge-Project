@@ -27,12 +27,6 @@ public class ActivityConverter {
     @Autowired
     MemberConverter memberConverter;
 
-    @Autowired
-    MemberConverter memberConverter;
-
-    @Autowired
-    ChallengeSportConverter challengeSportConverter;
-
     public ActivityDTO convertEntityToDto(Activity activity) {
         ActivityDTO activityDTO = new ActivityDTO();
         activityDTO.setId(activity.getId());

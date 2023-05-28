@@ -2,9 +2,11 @@ package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,6 +38,8 @@ public class BonusServiceTest {
     BonusService bonusService;
     @Autowired
     BonusConverter bonusConverter;
+    @Autowired
+    ChallengeSportConverter challengeSportConverter;
 
     @MockBean
     BonusRepository bonusRepository;
@@ -51,14 +55,20 @@ public class BonusServiceTest {
     public void setup() throws NotFoundException {
         bonusList = new ArrayList<>();
 
+        Sport s1 = new Sport();
+        s1.setId(1L);
+
         Challenge c1 = new Challenge();
         c1.setId(1L);
 
         ChallengeSport cs = new ChallengeSport();
         cs.setId(1L);
         cs.setChallenge(c1);
+        cs.setSport(s1);
 
-        for (long i = 0; i < 10; i++){
+        when(challengeSportService.get(1L)).thenReturn(challengeSportConverter.convertEntityToDto(cs));
+
+        for (long i = 1; i < 10; i++){
             Bonus b = new Bonus();
             b.setId(i);
             b.setChallengeSport(cs);
@@ -69,7 +79,6 @@ public class BonusServiceTest {
         }
 
         when(bonusRepository.findAll()).thenReturn(bonusList);
-        when(challengeSportService.get(1L)).thenReturn(cs);
 
         when(bonusRepository.save(any(Bonus.class))).then(AdditionalAnswers.returnsFirstArg()); //Return given bonus class
     }
@@ -127,7 +136,6 @@ public class BonusServiceTest {
     public void addTestSuccess() throws NotFoundException {
         ChallengeSport cs = new ChallengeSport();
         cs.setId(1);
-        when(challengeSportService.get(1L)).thenReturn(cs);
 
         BonusDTO newBonus = bonusService.add(bonusConverter.convertEntityToDto(bonusList.get(0)));
 
@@ -159,11 +167,10 @@ public class BonusServiceTest {
     public void updateTestSuccess() throws NotFoundException {
         ChallengeSport cs = new ChallengeSport();
         cs.setId(1);
-        when(challengeSportService.get(1L)).thenReturn(cs);
 
         bonusList.get(1).setFactor(10.5f);
 
-        BonusDTO newBonus = bonusService.update(0L, bonusConverter.convertEntityToDto(bonusList.get(1)));
+        BonusDTO newBonus = bonusService.update(1L, bonusConverter.convertEntityToDto(bonusList.get(1)));
 
         assertEquals(newBonus.getId(), bonusList.get(0).getId());
         assertEquals(newBonus.getFactor(), bonusList.get(1).getFactor());

@@ -299,7 +299,7 @@ public class ChallengeServiceTest {
 
         for(ActivityDTO a : acts){
             counter++;
-            assertEquals(challengeSportConverter.convertDtoToEntity(challengeSportService.get(a.getChallengeSportID())).getChallenge().getId(), 1L);
+            assertEquals(challengeSportConverter.convertDtoToEntity(challengeSportService.get(a.getChallengeSportID())).getChallenge().getId(), 3L);
         }
 
         int realCounter = 0;
@@ -324,7 +324,7 @@ public class ChallengeServiceTest {
         int counter = 0;
 
         for(BonusDTO b : bonuses){
-            assertEquals(1L, bonusConverter.convertDtoToEntity(b).getChallengeSport().getChallenge().getId());
+            assertEquals(3L, bonusConverter.convertDtoToEntity(b).getChallengeSport().getChallenge().getId());
             counter++;
         }
 

@@ -40,8 +40,6 @@ public class ChallengeSportController {
     @Autowired
     private ChallengeSportService challengeSportService;
     @Autowired
-    private ChallengeSportConverter challengeSportConverter;
-    @Autowired
     private SAML2Service saml2Service;
 
     /**

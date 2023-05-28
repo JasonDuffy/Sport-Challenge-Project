@@ -36,6 +36,17 @@ public class TeamMemberController {
     @Autowired
     private SAML2Service saml2Service;
 
+    /**
+     * Returns all Team members in DB
+     * @param request Automatically filled by browser
+     * @return All team members in DB
+     */
+    @Operation(summary = "Get all Team-Members in DB")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Search successful", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = TeamMemberDTO.class)) }),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
     @GetMapping(path = "/", produces = "application/json")
     public ResponseEntity<List<TeamMemberDTO>> getALLTeamMembers(HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)) {
@@ -45,6 +56,12 @@ public class TeamMemberController {
         }
     }
 
+    /**
+     * Returns all team members for a challenge
+     * @param ChallengeID ID of the challenge
+     * @param request Automatically filled by browser
+     * @return All team members in challenge
+     */
     @Operation(summary = "Get all Team-Member for a Challenge")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Search successful", content = {
@@ -61,6 +78,19 @@ public class TeamMemberController {
         }
     }
 
+    /**
+     * Returns a Team Member for the given ID
+     * @param id ID of the team member
+     * @param request Automatically filled by browser
+     * @return Team member DTO object and code 200 if found, 404 otherwise
+     */
+    @Operation(summary = "Returns a Team Member for the given ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Search successful", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = TeamMemberDTO.class)) }),
+            @ApiResponse(responseCode = "404", description = "Team member not found", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
     @GetMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<TeamMemberDTO> getTeamMemberByID(@PathVariable("id") long id, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)) {

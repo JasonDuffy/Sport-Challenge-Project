@@ -35,10 +35,10 @@ public class ChallengeSportService {
      * @return ChallengeSport with given ID
      * @throws NotFoundException ChallengeSport can not be found
      */
-    public ChallengeSport get(Long challengeSportID) throws NotFoundException {
+    public ChallengeSportDTO get(Long challengeSportID) throws NotFoundException {
         Optional<ChallengeSport> challengeSport = challengeSportRepository.findById(challengeSportID);
         if(challengeSport.isPresent())
-            return challengeSport.get();
+            return challengeSportConverter.convertEntityToDto(challengeSport.get());
         throw new NotFoundException("ChallengeSport with ID " + challengeSportID + " is not present in DB.");
     }
 

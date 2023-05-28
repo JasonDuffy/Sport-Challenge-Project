@@ -1,7 +1,10 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.*;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
@@ -33,6 +36,17 @@ import static org.mockito.Mockito.when;
 @ActiveProfiles("test")
 @SpringBootTest
 public class ActivityServiceTest {
+    @Autowired
+    ActivityService activityService;
+    @Autowired
+    ActivityConverter activityConverter;
+    @Autowired
+    MemberConverter memberConverter;
+    @Autowired
+    BonusConverter bonusConverter;
+    @MockBean
+    ChallengeSportConverter challengeSportConverter;
+
     @MockBean
     ActivityRepository activityRepository;
 
@@ -71,7 +85,8 @@ public class ActivityServiceTest {
         }
 
         when(activityRepository.findAll()).thenReturn(activityList);
-        when(challengeSportService.get(2L)).thenReturn(cs);
+        when(challengeSportConverter.convertDtoToEntity(challengeSportService.get(2L))).thenReturn(cs);
+        when(memberService.get(1L)).thenReturn(memberConverter.convertEntityToDto(m));
 
         when(activityRepository.save(any(Activity.class))).then(AdditionalAnswers.returnsFirstArg()); //Return given bonus class
     }
@@ -129,7 +144,7 @@ public class ActivityServiceTest {
     public void addTestSuccess() throws NotFoundException {
         ChallengeSport cs = new ChallengeSport();
         cs.setId(1);
-        when(challengeSportService.get(1L)).thenReturn(cs);
+        when(challengeSportConverter.convertDtoToEntity(challengeSportService.get(1L))).thenReturn(cs);
 
         Member m = new Member();
         when(memberService.get(0L)).thenReturn(m);
@@ -169,7 +184,7 @@ public class ActivityServiceTest {
     public void updateTestSuccess() throws NotFoundException {
         ChallengeSport cs = new ChallengeSport();
         cs.setId(1);
-        when(challengeSportService.get(1L)).thenReturn(cs);
+        when(challengeSportConverter.convertDtoToEntity(challengeSportService.get(1L))).thenReturn(cs);
 
         Member m = new Member();
         when(memberService.get(0L)).thenReturn(m);

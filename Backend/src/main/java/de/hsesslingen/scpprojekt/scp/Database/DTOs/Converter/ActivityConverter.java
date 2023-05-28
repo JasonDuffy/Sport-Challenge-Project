@@ -20,9 +20,12 @@ import java.util.List;
 public class ActivityConverter {
     @Autowired
     ChallengeSportService challengeSportService;
-
     @Autowired
     MemberService memberService;
+    @Autowired
+    ChallengeSportConverter challengeSportConverter;
+    @Autowired
+    MemberConverter memberConverter;
 
     public ActivityDTO convertEntityToDto(Activity activity) {
         ActivityDTO activityDTO = new ActivityDTO();
@@ -48,8 +51,8 @@ public class ActivityConverter {
         activity.setId(activityDTO.getId());
         activity.setDistance(activityDTO.getDistance());
         activity.setDate(activityDTO.getDate());
-        activity.setChallengeSport(challengeSportService.get(activityDTO.getChallengeSportID()));
-        activity.setMember(memberService.get(activityDTO.getMemberID()));
+        activity.setChallengeSport(challengeSportConverter.convertDtoToEntity(challengeSportService.get(activityDTO.getChallengeSportID())));
+        activity.setMember(memberConverter.convertDtoToEntity(memberService.get(activityDTO.getMemberID())));
         return activity;
     }
 

@@ -2,6 +2,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
@@ -30,6 +31,13 @@ import static org.mockito.Mockito.*;
 @ActiveProfiles("test")
 @SpringBootTest
 public class BonusServiceTest {
+    @Autowired
+    BonusService bonusService;
+    @Autowired
+    BonusConverter bonusConverter;
+    @MockBean
+    ChallengeSportConverter challengeSportConverter;
+
     @MockBean
     BonusRepository bonusRepository;
 
@@ -63,7 +71,7 @@ public class BonusServiceTest {
         }
 
         when(bonusRepository.findAll()).thenReturn(bonusList);
-        when(challengeSportService.get(1L)).thenReturn(cs);
+        when(challengeSportConverter.convertDtoToEntity(challengeSportService.get(1L))).thenReturn(cs);
 
         when(bonusRepository.save(any(Bonus.class))).then(AdditionalAnswers.returnsFirstArg()); //Return given bonus class
     }
@@ -121,7 +129,7 @@ public class BonusServiceTest {
     public void addTestSuccess() throws NotFoundException {
         ChallengeSport cs = new ChallengeSport();
         cs.setId(1);
-        when(challengeSportService.get(1L)).thenReturn(cs);
+        when(challengeSportConverter.convertDtoToEntity(challengeSportService.get(1L))).thenReturn(cs);
 
         BonusDTO newBonus = bonusService.add(bonusConverter.convertEntityToDto(bonusList.get(0)));
 
@@ -153,7 +161,7 @@ public class BonusServiceTest {
     public void updateTestSuccess() throws NotFoundException {
         ChallengeSport cs = new ChallengeSport();
         cs.setId(1);
-        when(challengeSportService.get(1L)).thenReturn(cs);
+        when(challengeSportConverter.convertDtoToEntity(challengeSportService.get(1L))).thenReturn(cs);
 
         bonusList.get(1).setFactor(10.5f);
 

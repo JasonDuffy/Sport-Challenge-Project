@@ -31,8 +31,7 @@ public class ActivityConverter {
     @Lazy
     ChallengeSportConverter challengeSportConverter;
 
-    @Autowired
-    ChallengeSportConverter challengeSportConverter;
+
 
     public ActivityDTO convertEntityToDto(Activity activity) {
         ActivityDTO activityDTO = new ActivityDTO();

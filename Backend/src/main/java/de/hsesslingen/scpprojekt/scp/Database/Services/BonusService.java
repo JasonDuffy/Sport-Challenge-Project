@@ -48,9 +48,6 @@ public class BonusService {
     @Lazy
     ChallengeService challengeService;
 
-    @Autowired
-    @Lazy
-    ChallengeSportConverter challengeSportConverter;
 
     /**
      * Returns all bonuses in database

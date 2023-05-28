@@ -54,6 +54,8 @@ public class ChallengeServiceTest {
     MemberConverter memberConverter;
     @Autowired
     ChallengeConverter challengeConverter;
+    @MockBean
+    ChallengeSportConverter challengeSportConverter;
     
     @MockBean
     ChallengeSportService challengeSportService;
@@ -129,25 +131,25 @@ public class ChallengeServiceTest {
         cs1.setChallenge(ch1);
         cs1.setSport(s1);
         cs1.setFactor(4.0f);
-        when(challengeSportService.get(1L)).thenReturn(cs1);
+        when(challengeSportConverter.convertDtoToEntity(challengeSportService.get(1L))).thenReturn(cs1);
         ChallengeSport cs2 = new ChallengeSport();
         cs2.setId(2);
         cs2.setChallenge(ch1);
         cs2.setSport(s2);
         cs2.setFactor(5.0f);
-        when(challengeSportService.get(2L)).thenReturn(cs2);
+        when(challengeSportConverter.convertDtoToEntity(challengeSportService.get(2L))).thenReturn(cs2);
         ChallengeSport cs3 = new ChallengeSport();
         cs3.setId(3);
         cs3.setChallenge(ch2);
         cs3.setSport(s1);
         cs3.setFactor(0.5f);
-        when(challengeSportService.get(3L)).thenReturn(cs3);
+        when(challengeSportConverter.convertDtoToEntity(challengeSportService.get(3L))).thenReturn(cs1);
         ChallengeSport cs4 = new ChallengeSport();
         cs4.setId(4);
         cs4.setChallenge(ch3);
         cs4.setSport(s2);
         cs4.setFactor(1.0f);
-        when(challengeSportService.get(4L)).thenReturn(cs4);
+        when(challengeSportConverter.convertDtoToEntity(challengeSportService.get(4L))).thenReturn(cs4);
         challengeSportList.add(cs1); challengeSportList.add(cs2); challengeSportList.add(cs3); challengeSportList.add(cs4);
 
         Bonus b1 = new Bonus();
@@ -297,7 +299,7 @@ public class ChallengeServiceTest {
 
         for(ActivityDTO a : acts){
             counter++;
-            assertEquals(challengeSportService.get(a.getChallengeSportID()).getChallenge().getId(), 1L);
+            assertEquals(challengeSportConverter.convertDtoToEntity(challengeSportService.get(a.getChallengeSportID())).getChallenge().getId(), 3L);
         }
 
         int realCounter = 0;
@@ -322,7 +324,7 @@ public class ChallengeServiceTest {
         int counter = 0;
 
         for(BonusDTO b : bonuses){
-            assertEquals(1L, bonusConverter.convertDtoToEntity(b).getChallengeSport().getChallenge().getId());
+            assertEquals(3L, bonusConverter.convertDtoToEntity(b).getChallengeSport().getChallenge().getId());
             counter++;
         }
 

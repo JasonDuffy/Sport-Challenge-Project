@@ -51,11 +51,10 @@ public class ImageController {
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PostMapping(path = "/", consumes = "multipart/form-data")
-    public ResponseEntity<HttpStatus> uploadImage(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+    public ResponseEntity<Image> uploadImage(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
-            try {   
-                imageStorageService.store(file);
-                return new ResponseEntity<>(HttpStatus.OK);
+            try {
+                return new ResponseEntity<>(imageStorageService.store(file), HttpStatus.CREATED);
             }catch (Exception e){
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }

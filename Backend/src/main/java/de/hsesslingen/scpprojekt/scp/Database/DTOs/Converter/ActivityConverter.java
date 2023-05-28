@@ -21,15 +21,13 @@ import java.util.List;
 public class ActivityConverter {
     @Autowired
     ChallengeSportService challengeSportService;
-
     @Autowired
     MemberService memberService;
-
-    @Autowired
-    MemberConverter memberConverter;
     @Autowired
     @Lazy
     ChallengeSportConverter challengeSportConverter;
+    @Autowired
+    MemberConverter memberConverter;
 
 
 

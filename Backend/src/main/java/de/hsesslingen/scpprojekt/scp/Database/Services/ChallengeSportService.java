@@ -37,14 +37,7 @@ public class ChallengeSportService {
     }
 
     public List<ChallengeSportDTO> getAllChallengeSportsOfChallenge(long ChallengeID)  {
-        List<ChallengeSport> challengeSports = challengeSportRepository.findAll();
-        List<ChallengeSport> challengeSportList = new ArrayList<>();
-        for (ChallengeSport challengeSport : challengeSports){
-            if(challengeSport.getChallenge().getId() == ChallengeID){
-                challengeSportList.add(challengeSport);
-            }
-        }
-        return challengeSportConverter.convertEntityListToDtoList(challengeSportList);
+        return challengeSportConverter.convertEntityListToDtoList(challengeSportRepository.findChallengeSportByChallenge_Id(ChallengeID));
     }
 
     /**

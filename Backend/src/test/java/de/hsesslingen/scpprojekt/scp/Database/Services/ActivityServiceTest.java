@@ -11,13 +11,13 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
-import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDateTime;
@@ -28,8 +28,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests of Activity Service
@@ -48,7 +47,10 @@ public class ActivityServiceTest {
     @Autowired
     BonusConverter bonusConverter;
     @Autowired
-    ChallengeSportConverter challengeSportConverter;
+    ChallengeSportConverter csConverter;
+    @Autowired
+    ChallengeConverter challengeConverter;
+
 
     @MockBean
     ActivityRepository activityRepository;
@@ -60,6 +62,10 @@ public class ActivityServiceTest {
     BonusService bonusService;
     @MockBean
     ChallengeService challengeService;
+    @MockBean
+    SportService sportService;
+    @MockBean
+    ImageStorageService imageStorageService;
 
     List<Activity> activityList;
 
@@ -70,23 +76,25 @@ public class ActivityServiceTest {
     public void setup() throws NotFoundException {
         activityList = new ArrayList<>();
 
-        Sport s1 = new Sport();
-        s1.setId(1L);
-
         Challenge c1 = new Challenge();
         c1.setId(1L);
 
-        ChallengeSport cs = new ChallengeSport();
-        cs.setId(1L);
-        cs.setChallenge(c1);
-        cs.setSport(s1);
+        Sport sport = new Sport();
+        sport.setId(1L);
 
-        when(challengeSportService.get(1L)).thenReturn(challengeSportConverter.convertEntityToDto(cs));
+        ChallengeSport cs = new ChallengeSport();
+        cs.setId(2L);
+        cs.setChallenge(c1);
+        cs.setSport(sport);
+
+        Image image = new Image();
+        image.setId(1L);
 
         Member m = new Member();
         m.setId(1L);
+        m.setImage(image);
 
-        for (long i = 1; i < 10; i++){
+        for (long i = 0; i < 10; i++){
             Activity a = new Activity();
             a.setId(i);
             a.setChallengeSport(cs);
@@ -96,6 +104,10 @@ public class ActivityServiceTest {
         }
 
         when(activityRepository.findAll()).thenReturn(activityList);
+        when(challengeService.get(1L)).thenReturn(challengeConverter.convertEntityToDto(c1));
+        when(sportService.get(1L)).thenReturn(sport);
+        when(imageStorageService.get(1L)).thenReturn(image);
+        when(challengeSportService.get(2L)).thenReturn(csConverter.convertEntityToDto(cs));
         when(memberService.get(1L)).thenReturn(memberConverter.convertEntityToDto(m));
 
         when(activityRepository.save(any(Activity.class))).then(AdditionalAnswers.returnsFirstArg()); //Return given activity class
@@ -152,8 +164,18 @@ public class ActivityServiceTest {
      */
     @Test
     public void addTestSuccess() throws NotFoundException {
+
+        Challenge c1 = new Challenge();
+        c1.setId(1L);
+
+        Sport sport = new Sport();
+        sport.setId(1L);
+
         ChallengeSport cs = new ChallengeSport();
-        cs.setId(1L);
+        cs.setId(1);
+        cs.setSport(sport);
+        cs.setChallenge(c1);
+        when(challengeSportService.get(1L)).thenReturn(csConverter.convertEntityToDto(cs));
 
         Member m = new Member();
         m.setId(1L);
@@ -192,8 +214,17 @@ public class ActivityServiceTest {
      */
     @Test
     public void updateTestSuccess() throws NotFoundException {
+        Challenge c1 = new Challenge();
+        c1.setId(1L);
+
+        Sport sport = new Sport();
+        sport.setId(1L);
+
         ChallengeSport cs = new ChallengeSport();
-        cs.setId(1L);
+        cs.setId(1);
+        cs.setSport(sport);
+        cs.setChallenge(c1);
+        when(challengeSportService.get(1L)).thenReturn(csConverter.convertEntityToDto(cs));
 
         Member m = new Member();
         m.setId(1L);
@@ -203,7 +234,7 @@ public class ActivityServiceTest {
         activityList.get(1).setChallengeSport(cs);
         activityList.get(1).setMember(m);
 
-        ActivityDTO newActivity = activityService.update(1L, activityConverter.convertEntityToDto(activityList.get(1)));
+        ActivityDTO newActivity = activityService.update(0L, activityConverter.convertEntityToDto(activityList.get(1)));
 
         assertEquals(newActivity.getId(), activityList.get(0).getId());
         assertEquals(newActivity.getDistance(), activityList.get(1).getDistance());
@@ -308,24 +339,36 @@ public class ActivityServiceTest {
      */
     @Test
     public void getDistanceForActivitiesTest() throws InvalidActivitiesException, NotFoundException {
-        BonusDTO b1 = new BonusDTO();
+        Sport sport = new Sport();
+        sport.setId(1);
+
+        Challenge challenge = new Challenge();
+        challenge.setId(1);
+
+        ChallengeSport challengeSport = new ChallengeSport();
+        challengeSport.setId(1);
+        challengeSport.setChallenge(challenge);
+        challengeSport.setSport(sport);
+
+        Bonus b1 = new Bonus();
+        b1.setChallengeSport(challengeSport);
         b1.setId(1);
         b1.setStartDate(LocalDateTime.of(2023, 4, 10, 8, 0));
         b1.setEndDate(LocalDateTime.of(2023, 6, 4, 10, 0));
         b1.setFactor(2.0f);
-        b1.setChallengeSportID(1L);
-        BonusDTO b2 = new BonusDTO();
+
+        Bonus b2 = new Bonus();
+        b2.setChallengeSport(challengeSport);
         b2.setId(2);
         b2.setStartDate(LocalDateTime.of(2023, 4, 10, 8, 0));
         b2.setEndDate(LocalDateTime.of(2023, 6, 4, 10, 0));
         b2.setFactor(3.0f);
-        b2.setChallengeSportID(1L);
 
         List<BonusDTO> bonusList = new ArrayList<>();
-        bonusList.add(b1); bonusList.add(b2);
+        bonusList.add(bonusConverter.convertEntityToDto(b1)); bonusList.add(bonusConverter.convertEntityToDto(b2));
 
         when(challengeService.getChallengeBonuses(1L)).thenReturn(bonusList);
-
+        when(challengeSportService.get(1L)).thenReturn(csConverter.convertEntityToDto(challengeSport));
         List<Activity> challenge1Acts = new ArrayList<>();
 
         for(Activity a : activityList){

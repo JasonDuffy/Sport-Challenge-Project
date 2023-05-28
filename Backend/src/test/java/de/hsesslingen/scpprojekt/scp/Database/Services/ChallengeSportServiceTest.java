@@ -2,6 +2,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
@@ -49,6 +50,8 @@ public class ChallengeSportServiceTest {
     ChallengeSportConverter challengeSportConverter;
     @Autowired
     ChallengeSportService challengeSportService;
+    @Autowired
+    ChallengeConverter challengeConverter;
     List<ChallengeSport> CSList;
 
     /**
@@ -95,7 +98,7 @@ public class ChallengeSportServiceTest {
         when(challengeSportRepository.findById(3L)).thenReturn(Optional.of(cs3));
 
         when(challengeSportRepository.findAll()).thenReturn(CSList);
-        when(challengeService.get(1L)).thenReturn(cha1);
+        when(challengeService.get(1L)).thenReturn(challengeConverter.convertEntityToDto(cha1));
         when(sportService.get(1L)).thenReturn(sp1);
         when(sportService.get(2L)).thenReturn(sp2);
         when(sportService.get(3L)).thenReturn(sp3);
@@ -153,7 +156,7 @@ public class ChallengeSportServiceTest {
     public void addTestSuccess() throws NotFoundException {
         Challenge c = new Challenge();
         c.setId(1);
-        when(challengeService.get(1L)).thenReturn(c);
+        when(challengeService.get(1L)).thenReturn(challengeConverter.convertEntityToDto(c));
 
         ChallengeSportDTO newCS = challengeSportService.add(challengeSportConverter.convertEntityToDto(CSList.get(0)));
 
@@ -185,7 +188,7 @@ public class ChallengeSportServiceTest {
     public void updateTestSuccess() throws NotFoundException {
         Challenge c = new Challenge();
         c.setId(1);
-        when(challengeService.get(1L)).thenReturn(c);
+        when(challengeService.get(1L)).thenReturn(challengeConverter.convertEntityToDto(c));
 
         challengeSportService.get(1L).setFactor(10.5f);
 
@@ -240,5 +243,11 @@ public class ChallengeSportServiceTest {
         verify(challengeSportRepository).deleteAll();
     }
 
+
+    @Test
+    public void getAllFromChallengeTest()  {
+        challengeSportService.getAllChallengeSportsOfChallenge(1L);
+        verify(challengeSportRepository).findChallengeSportByChallenge_Id(1);
+    }
 
 }

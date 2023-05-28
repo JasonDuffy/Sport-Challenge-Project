@@ -48,6 +48,7 @@ public class BonusService {
     @Lazy
     ChallengeService challengeService;
 
+
     /**
      * Returns all bonuses in database
      *

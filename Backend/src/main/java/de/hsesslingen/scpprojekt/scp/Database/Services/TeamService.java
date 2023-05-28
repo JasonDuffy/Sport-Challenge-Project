@@ -1,14 +1,15 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.TeamConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.ImageRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.TeamRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.TeamMember;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.*;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -39,6 +41,14 @@ public class TeamService {
     @Autowired
     @Lazy
     ChallengeConverter challengeConverter;
+
+    @Autowired
+    ActivityRepository activityRepository;
+    @Autowired
+    ActivityConverter activityConverter;
+    @Autowired
+    TeamMemberRepository teamMemberRepository;
+
 
     /**
      * Returns all Teams in DB
@@ -129,4 +139,27 @@ public class TeamService {
     public void deleteAll() {
         teamRepository.deleteAll();
     }
+
+    /**
+     *  Get Activity from a team of a challenge
+     *
+     * @param challengeID challenge ID
+     * @param teamID ID of Team
+     * @return List of Activities
+     */
+    public List<ActivityDTO> getTeamChallengeActivity(Long challengeID, Long teamID) throws NotFoundException {
+        get(teamID);
+        List<ActivityDTO> a = activityConverter.convertEntityListToDtoList(activityRepository.findActivitiesByChallenge_ID(challengeID));
+        List <TeamMember> t = teamMemberRepository.findAllByTeamId(teamID);
+        List<ActivityDTO> newA = new ArrayList<>();
+        for (ActivityDTO as : a){
+            for (TeamMember ts : t){
+                if(as.getMemberID()==ts.getMember().getId()){
+                    newA.add(as);
+                }
+            }
+        }
+        return newA;
+    }
+
 }

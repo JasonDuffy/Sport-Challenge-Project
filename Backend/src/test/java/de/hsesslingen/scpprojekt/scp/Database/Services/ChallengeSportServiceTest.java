@@ -9,6 +9,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
 import de.hsesslingen.scpprojekt.scp.Database.Filler.Filler;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
+import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -185,7 +186,7 @@ public class ChallengeSportServiceTest {
      * @throws NotFoundException Should never be thrown
      */
     @Test
-    public void updateTestSuccess() throws NotFoundException {
+    public void updateTestSuccess() throws NotFoundException, InvalidActivitiesException {
         Challenge c = new Challenge();
         c.setId(1);
         when(challengeService.get(1L)).thenReturn(challengeConverter.convertEntityToDto(c));

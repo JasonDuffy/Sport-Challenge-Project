@@ -149,7 +149,7 @@ public class ActivityService {
      * @return Distance of activities with bonuses
      */
     public float getDistanceForActivities(List<Activity> activities) throws InvalidActivitiesException, NotFoundException {
-        float sum = 0.0f;
+        Float sum = 0.0f;
 
         if(!activities.isEmpty()){
             Challenge challenge = activities.get(0).getChallengeSport().getChallenge();
@@ -168,7 +168,7 @@ public class ActivityService {
     }
 
     public float getAVGDistanceForActivities(List<Activity> activities) throws InvalidActivitiesException, NotFoundException {
-        float sum = 0.0f;
+        Float sum = 0.0f;
         int i = 0;
 
         if(!activities.isEmpty()){

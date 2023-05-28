@@ -322,7 +322,7 @@ public class ImageControllerTest {
      */
     @Test
     @WithMockUser
-    public void updateActivityTestSuccess() throws Exception {
+    public void updateImageTestSuccess() throws Exception {
         when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
 
         Image i1 = new Image();
@@ -356,7 +356,7 @@ public class ImageControllerTest {
      */
     @Test
     @WithMockUser
-    public void updateActivityNotFound() throws Exception {
+    public void updateImageNotFound() throws Exception {
         when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
 
         when(imageservice.update(any(long.class), any(MultipartFile.class))).thenThrow(NotFoundException.class);
@@ -385,7 +385,7 @@ public class ImageControllerTest {
      */
     @Test
     @WithAnonymousUser
-    public void updateActivityNotLoggedIn() throws Exception {
+    public void updateImageNotLoggedIn() throws Exception {
 
 
         MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());

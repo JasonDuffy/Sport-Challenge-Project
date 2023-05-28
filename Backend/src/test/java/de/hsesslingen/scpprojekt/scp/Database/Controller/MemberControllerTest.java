@@ -1,6 +1,7 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.hsesslingen.scpprojekt.scp.Authentication.SAML2User;
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
@@ -10,6 +11,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.MemberRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ActivityService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.MemberService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.AlreadyExistsException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,8 +40,7 @@ import java.util.regex.Pattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -101,7 +102,7 @@ public class MemberControllerTest {
         assertEquals(matcher.group(3), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(memberService).add(any(MemberDTO.class));
+        verify(memberService).add(any(MemberDTO.class));
     }
 
     /**
@@ -110,7 +111,7 @@ public class MemberControllerTest {
      */
     @Test
     @WithAnonymousUser
-    public void addMemberNoLogin()throws Exception{
+    public void addMemberNotLogin()throws Exception{
         MemberDTO member = new MemberDTO();
         member.setUserID(1L);
         member.setFirstName("Max");
@@ -125,6 +126,32 @@ public class MemberControllerTest {
 
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
+    /**
+     *Test for already existing member
+     * @throws Exception Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void addMemberAlreadyExist()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
+        MemberDTO member = new MemberDTO();
+        member.setUserID(1L);
+        member.setFirstName("Max");
+        member.setLastName("Mustermann");
+
+        when(memberService.add(any(MemberDTO.class))).thenThrow(AlreadyExistsException.class);
+        RequestBuilder request = MockMvcRequestBuilders
+                .post("/members/")
+                .content(new ObjectMapper().writeValueAsString(member))
+                .contentType(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isBadRequest())
                 .andReturn();
     }
 
@@ -162,7 +189,7 @@ public class MemberControllerTest {
         assertEquals(matcher.group(3), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(memberService).get(1L);
+        verify(memberService).get(1L);
     }
 
     /**
@@ -215,7 +242,7 @@ public class MemberControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Mockito.verify(memberService).delete(1L);
+        verify(memberService).delete(1L);
     }
 
     /**
@@ -288,7 +315,7 @@ public class MemberControllerTest {
         assertEquals(matcher.group(3), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(memberService).update(any(Long.class), any(MemberDTO.class));
+        verify(memberService).update(any(Long.class), any(MemberDTO.class));
     }
     /**
      *Test for updating a non-existing member (Not Found)
@@ -380,7 +407,7 @@ public class MemberControllerTest {
         assertEquals(matcher.group(1), "2");
         assertFalse(matcher.find());
 
-        Mockito.verify(memberService).getActivitiesForUser(1L);
+        verify(memberService).getActivitiesForUser(1L);
     }
 
     /**
@@ -414,7 +441,7 @@ public class MemberControllerTest {
                 .andExpect(status().isNotFound())
                 .andReturn();
 
-        Mockito.verify(memberService).getActivitiesForUser(1L);
+        verify(memberService).getActivitiesForUser(1L);
     }
 
 
@@ -448,8 +475,8 @@ public class MemberControllerTest {
         String content = res.getResponse().getContentAsString();
         assertEquals(content, "4.0");
 
-        Mockito.verify(memberService).getActivitiesForUserInChallenge(1L, 1L);
-        Mockito.verify(activityService).getDistanceForActivities(any());
+        verify(memberService).getActivitiesForUserInChallenge(1L, 1L);
+        verify(activityService).getDistanceForActivities(any());
     }
 
     /**
@@ -493,8 +520,8 @@ public class MemberControllerTest {
                 .andExpect(status().isInternalServerError())
                 .andReturn();
 
-        Mockito.verify(memberService).getActivitiesForUserInChallenge(1L, 1L);
-        Mockito.verify(activityService).getDistanceForActivities(any());
+        verify(memberService).getActivitiesForUserInChallenge(1L, 1L);
+        verify(activityService).getDistanceForActivities(any());
     }
 
     /**
@@ -527,8 +554,8 @@ public class MemberControllerTest {
         String content = res.getResponse().getContentAsString();
         assertEquals(content, "4.0");
 
-        Mockito.verify(memberService).getActivitiesForUserInChallenge(1L, 1L);
-        Mockito.verify(activityService).getRawDistanceForActivities(any());
+        verify(memberService).getActivitiesForUserInChallenge(1L, 1L);
+        verify(activityService).getRawDistanceForActivities(any());
     }
 
     /**
@@ -572,8 +599,112 @@ public class MemberControllerTest {
                 .andExpect(status().isInternalServerError())
                 .andReturn();
 
-        Mockito.verify(memberService).getActivitiesForUserInChallenge(1L, 1L);
-        Mockito.verify(activityService).getRawDistanceForActivities(any());
+        verify(memberService).getActivitiesForUserInChallenge(1L, 1L);
+        verify(activityService).getRawDistanceForActivities(any());
+    }
+
+    /**
+     * Test if all members are deleted correctly
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void deleteAllMembersTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+        RequestBuilder request = MockMvcRequestBuilders
+                .delete("/members/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+
+        verify(memberService).deleteAll();
+    }
+
+    /**
+     * Test if an unknown user is thrown
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void deleteAllMembersTestNotLoggedIn() throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders
+                .delete("/members/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+
+    }
+
+    /**
+     *  Test if  Current user is correct
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void GetCurrentUserSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+        MemberDTO memberDTO = new MemberDTO();
+        memberDTO.setUserID(1);
+        memberDTO.setEmail("max@example.com");
+
+        SAML2User user = new SAML2User("max@example.com", "Max Emilian", "Mustermann");
+        when(saml2Service.getCurrentSAMLUser()).thenReturn(user);
+
+        when(memberService.getByEmail(user.getEmail())).thenReturn(memberDTO);
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/members/loggedIn/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+        verify(memberService).getByEmail(user.getEmail());
+    }
+
+    /**
+     *  No User found 404 test
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void GetCurrentUserNotFound() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+        MemberDTO memberDTO = new MemberDTO();
+        memberDTO.setUserID(1);
+        memberDTO.setEmail("max@example.com");
+
+        SAML2User user = new SAML2User("max@example.com", "Max Emilian", "Mustermann");
+        when(saml2Service.getCurrentSAMLUser()).thenReturn(user);
+
+        when(memberService.getByEmail(user.getEmail())).thenThrow(NotFoundException.class);
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/members/loggedIn/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isNotFound())
+                .andReturn();
+    }
+
+    /**
+     *  User not logged in
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void GetCurrentUserNotLoggedIn() throws Exception {
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/members/loggedIn/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
     }
 
 }

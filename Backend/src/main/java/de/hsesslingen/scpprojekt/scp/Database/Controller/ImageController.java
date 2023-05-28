@@ -153,7 +153,7 @@ public class ImageController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Search successful",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ActivityDTO.class))}),
+                            schema = @Schema(implementation = Image.class))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @GetMapping(path = "/", produces = "application/json")

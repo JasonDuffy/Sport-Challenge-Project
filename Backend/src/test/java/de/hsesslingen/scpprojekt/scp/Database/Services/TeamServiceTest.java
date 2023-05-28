@@ -1,5 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.TeamConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
@@ -8,6 +9,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
 import de.hsesslingen.scpprojekt.scp.Database.Filler.Filler;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.TeamRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
+import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
@@ -48,10 +50,13 @@ public class TeamServiceTest {
     ImageStorageService imageStorageService;
     @MockBean
     Filler filler;
+
     @Autowired
     TeamConverter teamConverter;
     @Autowired
     TeamService teamService;
+    @Autowired
+    ChallengeConverter challengeConverter;
 
     List<Team> teamList;
 
@@ -77,7 +82,7 @@ public class TeamServiceTest {
             when(teamRepository.findById(i)).thenReturn(Optional.of(t1));
         }
         when(teamRepository.findAll()).thenReturn(teamList);
-        when(challengeService.get(1L)).thenReturn(challenge);
+        when(challengeService.get(1L)).thenReturn(challengeConverter.convertEntityToDto(challenge));
         when(imageStorageService.get(1L)).thenReturn(image);
 
         when(teamRepository.save(any(Team.class))).then(AdditionalAnswers.returnsFirstArg());
@@ -176,13 +181,11 @@ public class TeamServiceTest {
     public void updateTestSuccess() throws NotFoundException {
         Challenge challenge = new Challenge();
         challenge.setId(1);
-        when(challengeService.get(1L)).thenReturn(challenge);
+        when(challengeService.get(1L)).thenReturn(challengeConverter.convertEntityToDto(challenge));
 
         teamList.get(1).setName("Team Dieter");
-        MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
 
-
-        TeamDTO newTeam = teamService.update(file, 0L, teamConverter.convertEntityToDto(teamList.get(1)));
+        TeamDTO newTeam = teamService.update(1L, 0L, teamConverter.convertEntityToDto(teamList.get(1)));
 
         assertEquals(newTeam.getId(), teamList.get(0).getId());
         assertEquals(newTeam.getName(), teamList.get(1).getName());
@@ -199,11 +202,10 @@ public class TeamServiceTest {
     @Test
     public void updateTestFail() throws NotFoundException {
 
-        MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
         when(challengeService.get(any(Long.class))).thenThrow(NotFoundException.class);
 
         assertThrows(NotFoundException.class, () -> {
-            teamService.update(file, 0L, teamConverter.convertEntityToDto(teamList.get(0)));
+            teamService.update(1L, 0L, teamConverter.convertEntityToDto(teamList.get(0)));
         });
     }
 

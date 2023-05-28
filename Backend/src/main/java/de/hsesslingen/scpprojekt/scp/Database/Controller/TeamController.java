@@ -70,7 +70,7 @@ public class TeamController {
     /**
      * Rest API for updating a Team
      *
-     * @param file  Image that should be stored for the Team
+     * @param imageID ID of Image that should be used for the Team
      * @param TeamID ID of the Team which should be updated
      * @param team new Data of the team
      * @param request automatically filled by browser
@@ -85,14 +85,14 @@ public class TeamController {
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "417", description = "Something went wrong updating the Team", content = @Content)
     })
-    @PutMapping(path = "/{id}/",consumes = "multipart/form-data", produces = "application/json")
-    public ResponseEntity<TeamDTO> updateTeam(@RequestParam("file")MultipartFile file,
+    @PutMapping(path = "/{id}/",produces = "application/json")
+    public ResponseEntity<TeamDTO> updateTeam(@RequestParam("imageID")Long imageID,
                                            @PathVariable("id") long TeamID,
-                                           @RequestPart("json") @Valid TeamDTO team,
+                                           @RequestBody TeamDTO team,
                                            HttpServletRequest request){
         if (saml2Service.isLoggedIn(request)){
            try{
-               return new ResponseEntity<>(teamService.update(file,TeamID,team), HttpStatus.OK);
+               return new ResponseEntity<>(teamService.update(imageID,TeamID,team), HttpStatus.OK);
             }catch (NotFoundException e){
                System.out.println((e.getMessage()));
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -192,18 +192,13 @@ public class TeamController {
     @Operation(summary = "Deletes all Teams")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "All teams successfully deleted"),
-            @ApiResponse(responseCode = "500", description = "Something went wrong deleting all teams", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @DeleteMapping("/")
     public ResponseEntity<HttpStatus> deleteAllMembers(HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
-            try {
-                teamService.deleteAll();
-                return new ResponseEntity<>(HttpStatus.OK);
-            } catch (Exception e) {
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            teamService.deleteAll();
+            return new ResponseEntity<>(HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

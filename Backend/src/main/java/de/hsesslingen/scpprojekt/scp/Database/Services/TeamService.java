@@ -1,5 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.TeamConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
@@ -33,10 +34,11 @@ public class TeamService {
     @Autowired
     ImageStorageService imageStorageService;
     @Autowired
-    ImageRepository imageRepository;
-    @Autowired
     @Lazy
     TeamConverter teamConverter ;
+    @Autowired
+    @Lazy
+    ChallengeConverter challengeConverter;
 
     /**
      * Returns all Teams in DB
@@ -88,32 +90,25 @@ public class TeamService {
     /**
      * Updates a Team
      *
-     * @param file updated Image
-     * @param TeamID Id of Team which should be updated
+     * @param imageID ID of the new Image
+     * @param TeamID ID of Team which should be updated
      * @param team team object with updated values
      * @return Updated Team
      * @throws NotFoundException not found Team or Challenge
      */
-
-    public TeamDTO update(MultipartFile file, Long TeamID, TeamDTO team) throws NotFoundException {
+    public TeamDTO update(Long imageID, Long TeamID, TeamDTO team) throws NotFoundException {
         Optional<Team> teamData = teamRepository.findById(TeamID);
         Team convertedTeam = teamConverter.convertDtoToEntity(team);
         if (teamData.isPresent()) {
-                try {
-                    Team updatedTeam = teamData.get();
-                    imageStorageService.store(file);
-                    updatedTeam.setName(convertedTeam.getName());
+                Team updatedTeam = teamData.get();
+                Image image = imageStorageService.get(imageID);
+                updatedTeam.setName(convertedTeam.getName());
+                updatedTeam.setChallenge(challengeConverter.convertDtoToEntity(challengeService.get(team.getChallengeID())));
+                updatedTeam.setImage(image);
 
-                    updatedTeam.setChallenge(challengeService.get(team.getChallengeID()));
-
-                    Team savedTeam = teamRepository.save(updatedTeam);
-                    return teamConverter.convertEntityToDto(savedTeam);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            throw new NotFoundException("Team with ID " + TeamID + " is not present in DB.");
-
+                Team savedTeam = teamRepository.save(updatedTeam);
+                return teamConverter.convertEntityToDto(savedTeam);
+        }throw new NotFoundException("Team with ID " + TeamID + " is not present in DB.");
     }
 
     /**

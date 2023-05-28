@@ -178,7 +178,7 @@ public class ChallengeSportController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "ChallengeSport successfully updated",
                     content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Sport.class))}),
+                            schema = @Schema(implementation = ChallengeSportDTO.class))}),
             @ApiResponse(responseCode = "404", description = "ChallengeSport not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })

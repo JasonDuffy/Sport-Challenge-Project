@@ -3,9 +3,11 @@ package de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeService;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.SportService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -23,6 +25,9 @@ public class ChallengeSportConverter {
     SportService sportService;
     @Autowired
     ChallengeService challengeService;
+    @Autowired
+    @Lazy
+    ChallengeConverter challengeConverter;
 
     public ChallengeSportDTO convertEntityToDto(ChallengeSport challengeSport) {
         ChallengeSportDTO ChallengeSportDTO = new ChallengeSportDTO();
@@ -45,7 +50,7 @@ public class ChallengeSportConverter {
     public ChallengeSport convertDtoToEntity(ChallengeSportDTO challengeSportDTO) throws NotFoundException {
         ChallengeSport challengeSport = new ChallengeSport();
         challengeSport.setId(challengeSportDTO.getId());
-        challengeSport.setChallenge(challengeService.get(challengeSportDTO.getChallengeID()));
+        challengeSport.setChallenge(challengeConverter.convertDtoToEntity(challengeService.get(challengeSportDTO.getChallengeID())));
         challengeSport.setSport(sportService.get(challengeSportDTO.getSportID()));
         challengeSport.setFactor(challengeSportDTO.getFactor());
         return challengeSport;

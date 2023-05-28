@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * Converts Bonus Entity to DTO and vice-versa
  *
- * @author Jason Patrick Duffy
+ * @author Jason Patrick Duffy,Tom Nguyen Dinh
  */
 @Component
 public class BonusConverter {

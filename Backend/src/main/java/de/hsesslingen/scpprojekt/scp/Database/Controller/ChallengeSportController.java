@@ -11,6 +11,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.SportRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -190,6 +191,8 @@ public class ChallengeSportController {
             } catch (NotFoundException e) {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } catch (InvalidActivitiesException e) {
+                throw new RuntimeException(e);
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

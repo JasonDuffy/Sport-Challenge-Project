@@ -86,6 +86,8 @@ public class ActivityServiceTest {
         Member m = new Member();
         m.setId(1L);
 
+        LocalDateTime time = LocalDateTime.now();
+
         for (long i = 1; i < 10; i++){
             Activity a = new Activity();
             a.setId(i);

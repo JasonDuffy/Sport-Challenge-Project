@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Converts Activity Entity to DTO and vice-versa
  *
- * @author Jason Patrick Duffy
+ * @author Jason Patrick Duffy, Tom Nguyen
  */
 @Component
 public class ActivityConverter {
@@ -37,6 +37,7 @@ public class ActivityConverter {
         activityDTO.setDistance(activity.getDistance());
         activityDTO.setChallengeSportID(activity.getChallengeSport().getId());
         activityDTO.setMemberID(activity.getMember().getId());
+        activityDTO.setTotalDistance(activity.getTotalDistance());
         return activityDTO;
     }
 
@@ -56,6 +57,7 @@ public class ActivityConverter {
         activity.setDate(activityDTO.getDate());
         activity.setChallengeSport(challengeSportConverter.convertDtoToEntity(challengeSportService.get(activityDTO.getChallengeSportID())));
         activity.setMember(memberConverter.convertDtoToEntity(memberService.get(activityDTO.getMemberID())));
+        activity.setTotalDistance(activityDTO.getTotalDistance());
         return activity;
     }
 

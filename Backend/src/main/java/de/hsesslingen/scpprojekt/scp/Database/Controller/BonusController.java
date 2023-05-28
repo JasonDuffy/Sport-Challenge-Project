@@ -3,6 +3,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Services.BonusService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -135,6 +136,8 @@ public class BonusController {
             } catch (NotFoundException e) {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } catch (InvalidActivitiesException e) {
+                throw new RuntimeException(e);
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

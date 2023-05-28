@@ -1,6 +1,9 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.TeamConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
@@ -369,36 +372,22 @@ public class TeamControllerTest {
     public void updateTeamSuccess()throws Exception{
         when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
 
-        Challenge challenge = new Challenge();
-        challenge.setName("Annas");
-        challenge.setId(2L);
-
         Team team = new Team();
-        team.setId(1L);
-        team.setName("Hansen");
-        team.setChallenge(challenge);
+        team.setId(1);
 
-        MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
-        MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\"}".getBytes());
+        when(teamService.update(any(Long.class),any(Long.class),any(TeamDTO.class))).thenReturn(any(TeamDTO.class));
 
-        MockMultipartHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.multipart("/teams/1/");
-        builder.with(new RequestPostProcessor() {
-            @Override
-            public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
-                request.setMethod("PUT");
-                return request;
-            }
-        });
-        mockMvc.perform(builder
-                        .file(file)
-                .file(jsonFile)
-                .param("ChallengeID", "2")
-                .contentType(MediaType.MULTIPART_FORM_DATA)
-                .accept(MediaType.APPLICATION_JSON)
-                )
+        RequestBuilder request = MockMvcRequestBuilders
+                .put("/teams/1/").accept(MediaType.APPLICATION_JSON)
+                .param("imageID" ,"1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(team));
+
+        MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isOk())
                 .andReturn();
+
+        Mockito.verify(teamService).update(any(Long.class),any(Long.class), any(TeamDTO.class));
 
     }
 
@@ -412,30 +401,22 @@ public class TeamControllerTest {
     public void updateTeamNotFound()throws Exception{
         when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
 
+        Team team = new Team();
+        team.setId(1);
+
         when(teamService.get(1L)).thenThrow(NotFoundException.class);
+        when(teamService.update(any(Long.class),any(Long.class),any(TeamDTO.class))).thenThrow(NotFoundException.class);
 
-        MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
-        MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\"}".getBytes());
+        RequestBuilder request = MockMvcRequestBuilders
+                .put("/teams/1/").accept(MediaType.APPLICATION_JSON)
+                .param("imageID" ,"1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(team));
 
-        when(teamService.update(any(MockMultipartFile.class),any(Long.class),any(TeamDTO.class))).thenThrow(NotFoundException.class);
-
-        MockMultipartHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.multipart("/teams/2/");
-        builder.with(new RequestPostProcessor() {
-            @Override
-            public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
-                request.setMethod("PUT");
-                return request;
-            }
-        });
-        mockMvc.perform(builder
-                        .file(file)
-                        .file(jsonFile)
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
-                        .accept(MediaType.APPLICATION_JSON)
-                )
+        MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isNotFound())
                 .andReturn();
+        Mockito.verify(teamService).update(any(Long.class),any(Long.class), any(TeamDTO.class));
 
     }
 
@@ -446,37 +427,20 @@ public class TeamControllerTest {
     @Test
     @WithAnonymousUser
     public void updateTeamLogOut()throws Exception{
-        ChallengeDTO challenge = new ChallengeDTO();
-        challenge.setName("Annas");
-        challenge.setId(2L);
+        Team team = new Team();
+        team.setId(1);
 
-        TeamDTO team = new TeamDTO();
-        team.setId(1L);
-        team.setName("Hansen");
-        team.setChallengeID(2L);
+        when(teamService.update(any(Long.class),any(Long.class),any(TeamDTO.class))).thenReturn(any(TeamDTO.class));
 
-        MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
-        MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"name\": \"Hansen\"}".getBytes());
+        RequestBuilder request = MockMvcRequestBuilders
+                .put("/teams/1/").accept(MediaType.APPLICATION_JSON)
+                .param("imageID" ,"1")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(team));
 
-
-        MockMultipartHttpServletRequestBuilder builder =
-                MockMvcRequestBuilders.multipart("/teams/1/");
-        builder.with(new RequestPostProcessor() {
-            @Override
-            public MockHttpServletRequest postProcessRequest(MockHttpServletRequest request) {
-                request.setMethod("PUT");
-                return request;
-            }
-        });
-        mockMvc.perform(builder
-                        .file(file)
-                        .file(jsonFile)
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
-                        .accept(MediaType.APPLICATION_JSON)
-                )
+        MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isForbidden())
                 .andReturn();
-
     }
 
 }

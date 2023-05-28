@@ -55,6 +55,29 @@ public class ActivityController {
     }
 
     /**
+     * REST API for returning all activities
+     *
+     * @param request automatically filled by browser
+     * @return List of all activities if logged in
+     */
+    @Operation(summary = "update all activities with current TotalDistance")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Search successful",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ActivityDTO.class))}),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @PutMapping(path = "/TotalDistance/", produces = "application/json")
+    public ResponseEntity<List<ActivityDTO>> getActivitiesTotalD(HttpServletRequest request) throws NotFoundException {
+        if (saml2Service.isLoggedIn(request)){
+            activityService.totalDistanceAll();
+            return new ResponseEntity<>(activityService.getAll(),HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
      * REST API for returning Activity data of a given ID
      *
      * @param id ID of the Activity that should be returned

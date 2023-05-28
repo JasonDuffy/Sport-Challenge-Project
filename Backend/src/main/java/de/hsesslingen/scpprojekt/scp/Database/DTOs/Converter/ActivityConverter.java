@@ -6,6 +6,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.MemberService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.List;
 /**
  * Converts Activity Entity to DTO and vice-versa
  *
- * @author Jason Patrick Duffy
+ * @author Jason Patrick Duffy, Tom Nguyen
  */
 @Component
 public class ActivityConverter {
@@ -23,9 +24,12 @@ public class ActivityConverter {
     @Autowired
     MemberService memberService;
     @Autowired
+    @Lazy
     ChallengeSportConverter challengeSportConverter;
     @Autowired
     MemberConverter memberConverter;
+
+
 
     public ActivityDTO convertEntityToDto(Activity activity) {
         ActivityDTO activityDTO = new ActivityDTO();
@@ -34,6 +38,7 @@ public class ActivityConverter {
         activityDTO.setDistance(activity.getDistance());
         activityDTO.setChallengeSportID(activity.getChallengeSport().getId());
         activityDTO.setMemberID(activity.getMember().getId());
+        activityDTO.setTotalDistance(activity.getTotalDistance());
         return activityDTO;
     }
 
@@ -53,6 +58,7 @@ public class ActivityConverter {
         activity.setDate(activityDTO.getDate());
         activity.setChallengeSport(challengeSportConverter.convertDtoToEntity(challengeSportService.get(activityDTO.getChallengeSportID())));
         activity.setMember(memberConverter.convertDtoToEntity(memberService.get(activityDTO.getMemberID())));
+        activity.setTotalDistance(activityDTO.getTotalDistance());
         return activity;
     }
 

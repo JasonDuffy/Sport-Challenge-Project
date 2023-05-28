@@ -80,7 +80,7 @@ public class ChallengeController {
     public ResponseEntity<ChallengeDTO> getChallengeById(@PathVariable("id") long id, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
             try{
-                return new ResponseEntity<>(challengeService.getDTO(id), HttpStatus.OK);
+                return new ResponseEntity<>(challengeService.get(id), HttpStatus.OK);
             } catch (NotFoundException e) {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -240,8 +240,8 @@ public class ChallengeController {
             @ApiResponse(responseCode = "417", description = "Something went wrong updating the  Challenge", content = @Content),
 
     })
-    @PutMapping(path = "/{id}/",consumes = "multipart/form-data", produces = "application/json")
-    public ResponseEntity<ChallengeDTO> updateChallenge(@RequestParam("imageId") long imageID, @PathVariable("id") long ID,  @RequestPart("json") @Valid ChallengeDTO challenge, HttpServletRequest request) {
+    @PutMapping(path = "/{id}/", produces = "application/json")
+    public ResponseEntity<ChallengeDTO> updateChallenge(@RequestParam("imageId") long imageID, @PathVariable("id") long ID,  @RequestBody ChallengeDTO challenge, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(challengeService.update(imageID, ID, challenge), HttpStatus.OK);
@@ -455,7 +455,7 @@ public class ChallengeController {
         }
     }
 
-     /* REST API for deleting all Activities
+     /** REST API for deleting all Activities
      *
      * @param request automatically filled by browser
      * @return A 200 Code if it worked

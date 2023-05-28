@@ -1,6 +1,8 @@
 package de.hsesslingen.scpprojekt.scp.Database.DTOs;
 
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 /**
  * DTO for ChallengeSport
  *
@@ -8,6 +10,7 @@ package de.hsesslingen.scpprojekt.scp.Database.DTOs;
  */
 
 public class ChallengeSportDTO {
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     long id;
     float factor;
     long challengeID;

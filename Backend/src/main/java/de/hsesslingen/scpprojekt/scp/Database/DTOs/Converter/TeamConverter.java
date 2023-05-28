@@ -6,6 +6,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ImageStorageService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -19,6 +20,9 @@ public class TeamConverter {
     ImageStorageService imageStorageService;
     @Autowired
     ChallengeService challengeService;
+    @Autowired
+    @Lazy
+    ChallengeConverter challengeConverter;
 
     public TeamDTO convertEntityToDto(Team team) {
         TeamDTO teamDTO= new TeamDTO();
@@ -52,7 +56,7 @@ public class TeamConverter {
         } catch (NullPointerException | NotFoundException e){
             team.setImage(null);
         }
-        team.setChallenge(challengeService.get(teamDTO.getChallengeID()));
+        team.setChallenge(challengeConverter.convertDtoToEntity(challengeService.get(teamDTO.getChallengeID())));
         return team;
     }
 

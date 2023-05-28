@@ -19,7 +19,12 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -107,22 +112,29 @@ public class ImageServiceTest {
      * Test if add works correctly
      * @throws IOException Should never be thrown
      */
-
-    /*
     @Test
     public void addTestSuccess() throws IOException {
-        MockMultipartFile file = new MockMultipartFile("file", "file.jpg","image/jpeg" , "Test123".getBytes());
+        final byte[] type1 = {2,3,4};
+        Image pic1 = new Image("Hustle", "image/jpg", type1);
+        InputStream ip = new FileInputStream("src/main/java/de/hsesslingen/scpprojekt/scp/Database/Filler/Images/image-" + (1) + ".jpg");
+        BufferedImage bi = ImageIO.read(ip);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bi, "jpg", baos);
+        pic1.setData(baos.toByteArray());
+        byte [] data = pic1.getData();
+
+        MockMultipartFile file = new MockMultipartFile("file", "file.jpg", "image/jpeg", data);
         imageStorageService.store(file);
+
 
         verify(imageRepository).save(any(Image.class));
 
     }
-*/
+
     /**
      * Test if exception is correctly thrown
      *
      */
-    /*
     @Test
     public void addTestFail(){
 
@@ -132,12 +144,30 @@ public class ImageServiceTest {
             imageStorageService.store(file);
         });
     }
+
+    /**
+     *  test updating an image success
+     *
+     * @throws NotFoundException  Should never be thrown
+     * @throws IOException Should never be thrown
+     */
     @Test
     public void updateTestSuccess() throws NotFoundException, IOException {
-        MockMultipartFile file = new MockMultipartFile("file", "file.jpg","image/jpeg" , "Test123".getBytes());
+        final byte[] type1 = {2,3,4};
+        Image pic1 = new Image("Hustle", "image/jpg", type1);
+        InputStream ip = new FileInputStream("src/main/java/de/hsesslingen/scpprojekt/scp/Database/Filler/Images/image-" + (1) + ".jpg");
+        BufferedImage bi = ImageIO.read(ip);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bi, "jpg", baos);
+        pic1.setData(baos.toByteArray());
+        byte [] data = pic1.getData();
+
+        MockMultipartFile file = new MockMultipartFile("file", "file.jpg", "image/jpeg", data);
         Image image = new Image();
-        image.setId(1);
+        image.setId(1L);
         imageStorageService.update(1,file);
+
+        verify(imageRepository).save(any(Image.class));
     }
 
     /**
@@ -158,13 +188,24 @@ public class ImageServiceTest {
      * Test if exception is correctly thrown
      * @throws NotFoundException Not found Image
      */
-    /*
+
     @Test
     public void updateTestFailNotfound() throws NotFoundException, IOException {
-        MockMultipartFile file = new MockMultipartFile("file", "file.jpg","image/jpeg" , "Test123".getBytes());
-        imageStorageService.update(20L,file);
+        final byte[] type1 = {2,3,4};
+        Image pic1 = new Image("Hustle", "image/jpg", type1);
+        InputStream ip = new FileInputStream("src/main/java/de/hsesslingen/scpprojekt/scp/Database/Filler/Images/image-" + (1) + ".jpg");
+        BufferedImage bi = ImageIO.read(ip);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(bi, "jpg", baos);
+        pic1.setData(baos.toByteArray());
+        byte [] data = pic1.getData();
+
+        MockMultipartFile file = new MockMultipartFile("file", "file.jpg", "image/jpeg", data);
+        assertThrows(NotFoundException.class, () -> {
+            imageStorageService.update(20L,file);
+        });
     }
-*/
+
     /**
      * Test if delete works correctly
      * @throws NotFoundException Should never be thrown

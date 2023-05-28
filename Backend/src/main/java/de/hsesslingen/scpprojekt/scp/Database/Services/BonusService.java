@@ -3,11 +3,8 @@ package de.hsesslingen.scpprojekt.scp.Database.Services;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
-import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import de.hsesslingen.scpprojekt.scp.Mail.Services.EmailService;
 import jakarta.mail.MessagingException;
@@ -17,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +29,6 @@ import java.util.Optional;
 @Service
 public class BonusService {
     @Autowired
-    @Lazy
     BonusRepository bonusRepository;
 
     @Autowired
@@ -51,13 +48,6 @@ public class BonusService {
     @Lazy
     ChallengeService challengeService;
 
-    @Autowired
-    @Lazy
-    ActivityRepository activityRepository;
-
-    @Autowired
-    @Lazy
-    ActivityService activityService;
 
     /**
      * Returns all bonuses in database
@@ -129,22 +119,20 @@ public class BonusService {
      * @param bonus   Bonus object that overwrites the old bonus
      * @return Updated bonus object
      */
-    public BonusDTO update(Long bonusID, BonusDTO bonus) throws NotFoundException, InvalidActivitiesException {
+    public BonusDTO update(Long bonusID, BonusDTO bonus) throws NotFoundException{
         Optional<Bonus> optionalBonus = bonusRepository.findById(bonusID);
         Bonus convertedBonus = bonusConverter.convertDtoToEntity(bonus);
 
         if(optionalBonus.isPresent()){
             Bonus newBonus = optionalBonus.get();
 
-            newBonus.setFactor(convertedBonus.getFactor());
-            newBonus.setName(convertedBonus.getName());
-            newBonus.setDescription(convertedBonus.getDescription());
-            newBonus.setEndDate(convertedBonus.getEndDate());
-            newBonus.setStartDate(convertedBonus.getStartDate());
-            newBonus.setChallengeSport(convertedBonus.getChallengeSport());
-
-            List<Activity> a = activityRepository.findActivitiesByChallengeSport_Id(newBonus.getChallengeSport().getId());
-            activityService.calcTotalDistanceList(a);
+            newBonus.setFactor(bonus.getFactor());
+            newBonus.setName(bonus.getName());
+            newBonus.setDescription(bonus.getDescription());
+            newBonus.setEndDate(bonus.getEndDate());
+            newBonus.setStartDate(bonus.getStartDate());
+            newBonus.setId(bonus.getId());
+            newBonus.setChallengeSport(challengeSportConverter.convertDtoToEntity(challengeSportService.get(bonus.getChallengeSportID())));
 
             Bonus savedBonus = bonusRepository.save(newBonus);
             return bonusConverter.convertEntityToDto(savedBonus);

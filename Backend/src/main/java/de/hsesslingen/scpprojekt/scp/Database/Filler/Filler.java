@@ -2,8 +2,11 @@ package de.hsesslingen.scpprojekt.scp.Database.Filler;
 
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.*;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ActivityService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
@@ -41,6 +44,9 @@ public class Filler {
     private TeamRepository teamRepository;
     @Autowired
     private TeamMemberRepository teamMemberRepository;
+    @Autowired
+    @Lazy
+    private ActivityService activityService;
 
     final private byte[] type1 = {2,3,4};
     final private byte[] type2 = {2,3,4};
@@ -119,7 +125,7 @@ public class Filler {
     Bonus lucky = new Bonus(cp5, date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
 
     @EventListener(ApplicationReadyEvent.class)
-    public void fillDb() {
+    public void fillDb() throws NotFoundException {
         try {
             Image[] imgArray = {pic1, pic2, pic3, pic4, pic5};
 
@@ -169,6 +175,8 @@ public class Filler {
         bonusRepository.saveAll(Arrays.asList(
                 doub, anni, holi, finish, lucky
         ));
+
+        activityService.totalDistanceAll();
     }
 }
 

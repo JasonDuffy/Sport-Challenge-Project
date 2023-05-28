@@ -18,6 +18,7 @@ public class ActivityDTO  {
     long memberID;
     float distance;
     LocalDateTime date;
+    Float totalDistance;
 
     public ActivityDTO() {}
 
@@ -70,4 +71,13 @@ public class ActivityDTO  {
     public void setDate(LocalDateTime date) {
         this.date = date;
     }
+
+    public Float getTotalDistance() {
+        return totalDistance;
+    }
+
+    public void setTotalDistance(Float totalDistance) {
+        this.totalDistance = totalDistance;
+    }
+
 }

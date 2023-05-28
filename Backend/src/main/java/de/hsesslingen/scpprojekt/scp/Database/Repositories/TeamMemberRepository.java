@@ -1,8 +1,11 @@
 package de.hsesslingen.scpprojekt.scp.Database.Repositories;
 
 import de.hsesslingen.scpprojekt.scp.Database.Entities.TeamMember;
+import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * TeamMember Repository
@@ -12,4 +15,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TeamMemberRepository extends JpaRepository<TeamMember,Long> {
 
+    @Transactional
+    public List<TeamMember> findAllByTeamId(long teamID);
 }

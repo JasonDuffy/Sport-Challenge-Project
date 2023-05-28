@@ -2,8 +2,11 @@ package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
+import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
@@ -25,6 +28,14 @@ public class ChallengeSportService {
     @Autowired
     @Lazy
     ChallengeSportConverter challengeSportConverter;
+    @Autowired
+    @Lazy
+    ActivityService activityService;
+
+    @Autowired
+    @Lazy
+    ActivityRepository activityRepository;
+
 
     /**
      * Returns all ChallengeSports  in database
@@ -73,7 +84,7 @@ public class ChallengeSportService {
      * @param challengeSport   ChallengeSport object that overwrites the old ChallengeSport
      * @return Updated ChallengeSport object
      */
-    public ChallengeSportDTO update(Long challengeSportID, ChallengeSportDTO challengeSport) throws NotFoundException {
+    public ChallengeSportDTO update(Long challengeSportID, ChallengeSportDTO challengeSport) throws NotFoundException, InvalidActivitiesException {
         Optional<ChallengeSport> optionalCS = challengeSportRepository.findById(challengeSportID);
         ChallengeSport convertedCS = challengeSportConverter.convertDtoToEntity(challengeSport);
 
@@ -82,6 +93,9 @@ public class ChallengeSportService {
             CS.setChallenge(convertedCS.getChallenge());
             CS.setSport(convertedCS.getSport());
             CS.setFactor(convertedCS.getFactor());
+
+            List<Activity>  a =  activityRepository.findActivitiesByChallengeSport_Id(challengeSportID);
+            activityService.calcTotalDistanceList(a);
 
             ChallengeSport savedCS = challengeSportRepository.save(CS);
             return challengeSportConverter.convertEntityToDto(savedCS);

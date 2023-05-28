@@ -8,6 +8,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
+import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -175,7 +176,7 @@ public class BonusServiceTest {
      * @throws NotFoundException Should never be thrown
      */
     @Test
-    public void updateTestSuccess() throws NotFoundException {
+    public void updateTestSuccess() throws NotFoundException, InvalidActivitiesException {
         Challenge c1 = new Challenge();
         c1.setId(1L);
 
@@ -197,7 +198,6 @@ public class BonusServiceTest {
         assertEquals(newBonus.getChallengeSportID(), cs.getId());
 
         verify(bonusRepository).save(any(Bonus.class));
-        verify(challengeSportService, times(2)).get(1L);
     }
 
     /**

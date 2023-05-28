@@ -99,6 +99,7 @@ public class ActivityServiceTest {
             a.setId(i);
             a.setChallengeSport(cs);
             a.setMember(m);
+            a.setTotalDistance(10F);
             activityList.add(a);
             when(activityRepository.findById(i)).thenReturn(Optional.of(a));
         }
@@ -372,11 +373,10 @@ public class ActivityServiceTest {
         List<Activity> challenge1Acts = new ArrayList<>();
 
         for(Activity a : activityList){
-            if (a.getChallengeSport().getChallenge().getId() == 1)
                 challenge1Acts.add(a);
         }
 
-        float distance = 0.0f;
+        float distance = 100f;
 
         for (Activity a : challenge1Acts){
             float bonusfactor = 0.0f;

@@ -3,6 +3,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Repositories;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
  */
 @Repository
 public interface ChallengeSportRepository extends JpaRepository<ChallengeSport,Long> {
-
+    @Transactional
     List<ChallengeSport> findChallengeSportByChallenge_Id(long challengeID);
 
 }

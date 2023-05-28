@@ -1,10 +1,12 @@
 package de.hsesslingen.scpprojekt.scp.Database.DTOs.Converters;
 
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportService;
+import de.hsesslingen.scpprojekt.scp.Database.Services.SportService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.TeamService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.AlreadyExistsException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
@@ -13,12 +15,14 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
 
 /**
  * Test if the ChallengeConverter is correct
@@ -34,6 +38,13 @@ public class ChallengeSportConvertTest {
     @Autowired
     ChallengeSportConverter challengeSportConverter;
 
+    @MockBean
+    SportService sportService;
+    @MockBean
+    ChallengeService challengeService;
+    @Autowired
+    ChallengeConverter challengeConverter;
+
     List<ChallengeSport> challengeSportList ;
     List<ChallengeSportDTO> challengeSportDTOList ;
     ChallengeSportDTO challengeSportDTO;
@@ -45,9 +56,14 @@ public class ChallengeSportConvertTest {
 
         Sport sport = new Sport();
         sport.setId(2);
+        when(sportService.get(2L)).thenReturn(sport);
 
         Challenge challenge = new Challenge();
         challenge.setId(1);
+        Image image = new Image();
+        image.setId(1L);
+        challenge.setImage(image);
+        when(challengeService.get(1L)).thenReturn(challengeConverter.convertEntityToDto(challenge));
 
         challengeSport = new ChallengeSport();
         challengeSport.setId(3);

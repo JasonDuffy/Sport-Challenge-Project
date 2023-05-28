@@ -73,6 +73,7 @@ public class ActivityService {
      */
     public ActivityDTO add(ActivityDTO activity) throws NotFoundException {
         Activity a = activityConverter.convertDtoToEntity(activity);
+        a.setTotalDistance(calcTotalDistance(a));
         Activity savedActivity = activityRepository.save(a);
         return activityConverter.convertEntityToDto(savedActivity);
     }
@@ -94,7 +95,7 @@ public class ActivityService {
             newActivity.setChallengeSport(convertedActivity.getChallengeSport());
             newActivity.setDistance(convertedActivity.getDistance());
             newActivity.setDate(convertedActivity.getDate());
-
+            newActivity.setTotalDistance(calcTotalDistance(newActivity));
             Activity savedActivity = activityRepository.save(newActivity);
             return activityConverter.convertEntityToDto(savedActivity);
         }
@@ -148,7 +149,7 @@ public class ActivityService {
      * @return Distance of activities with bonuses
      */
     public float getDistanceForActivities(List<Activity> activities) throws InvalidActivitiesException, NotFoundException {
-        float sum = 0.0f;
+        Float sum = 0.0f;
 
         if(!activities.isEmpty()){
             Challenge challenge = activities.get(0).getChallengeSport().getChallenge();
@@ -159,10 +160,80 @@ public class ActivityService {
                     throw new InvalidActivitiesException("Activity by member " + act.getMember().getEmail() + " on " + act.getDate() + " in challenge "
                             + act.getChallengeSport().getChallenge().getName() + "is not part of Challenge " + challenge.getName());
 
-                sum += act.getDistance() * act.getChallengeSport().getFactor() * bonusService.getMultiplierFromBonuses(challengeBonuses, act.getDate());
+                sum += act.getTotalDistance();
             }
         }
 
         return sum;
     }
+
+    public float getAVGDistanceForActivities(List<Activity> activities) throws InvalidActivitiesException, NotFoundException {
+        Float sum = 0.0f;
+        int i = 0;
+
+        if(!activities.isEmpty()){
+            Challenge challenge = activities.get(0).getChallengeSport().getChallenge();
+            List<Bonus> challengeBonuses = bonusConverter.convertDtoListToEntityList(challengeService.getChallengeBonuses(challenge.getId()));
+            for (Activity act : activities){
+                if(act.getChallengeSport().getChallenge().getId() != challenge.getId()) //Checks if all activities are part of the same challenge
+                    throw new InvalidActivitiesException("Activity by member " + act.getMember().getEmail() + " on " + act.getDate() + " in challenge "
+                            + act.getChallengeSport().getChallenge().getName() + "is not part of Challenge " + challenge.getName());
+                sum += act.getTotalDistance();
+                i++;
+            }
+        }
+
+        return sum/i;
+    }
+
+
+    /**
+     * function updates the DB with the totalDistance
+     *
+     * @throws NotFoundException Challenge not found
+     */
+    public void totalDistanceAll() throws NotFoundException {
+        List<Activity> a = activityRepository.findAll();
+        for(Activity as : a){
+            long challenge = as.getChallengeSport().getChallenge().getId();
+            List<Bonus> challengeBonuses = bonusConverter.convertDtoListToEntityList(challengeService.getChallengeBonuses(challenge));
+            as.setTotalDistance(as.getDistance() * as.getChallengeSport().getFactor() * bonusService.getMultiplierFromBonuses(challengeBonuses, as.getDate()));
+            activityRepository.save(as);
+        }
+    }
+
+    /**
+     * Calculates the totalDistance for an activity
+     * @param activity which gets a totalDistance
+     * @return float totalDistance
+     * @throws NotFoundException Challenge not found
+     */
+    public float calcTotalDistance(Activity activity) throws NotFoundException {
+        float total = 0f;
+        long challenge = activity.getChallengeSport().getChallenge().getId();
+        List<Bonus> challengeBonuses = bonusConverter.convertDtoListToEntityList(challengeService.getChallengeBonuses(challenge));
+        total = activity.getDistance() * activity.getChallengeSport().getFactor() * bonusService.getMultiplierFromBonuses(challengeBonuses, activity.getDate());
+        return total;
+    }
+
+    /**
+     * Calculates the totalDistance for an activity
+     * @param activities List of activities to be updated for totalDistance
+     * @return float totalDistance
+     * @throws NotFoundException Challenge not found
+     */
+    public void calcTotalDistanceList(List<Activity> activities) throws InvalidActivitiesException, NotFoundException {
+        if(!activities.isEmpty()){
+            Challenge challenge = activities.get(0).getChallengeSport().getChallenge();
+            List<Bonus> challengeBonuses = bonusConverter.convertDtoListToEntityList(challengeService.getChallengeBonuses(challenge.getId()));
+            for (Activity act : activities){
+                if(act.getChallengeSport().getChallenge().getId() != challenge.getId()) //Checks if all activities are part of the same challenge
+                    throw new InvalidActivitiesException("Activity by member " + act.getMember().getEmail() + " on " + act.getDate() + " in challenge "
+                            + act.getChallengeSport().getChallenge().getName() + "is not part of Challenge " + challenge.getName());
+                act.setTotalDistance(calcTotalDistance(act));
+                activityRepository.save(act);
+            }
+        }
+    }
+
 }

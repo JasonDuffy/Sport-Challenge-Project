@@ -42,6 +42,9 @@ public class Activity {
 
     @Column(name = "date", nullable = false)
     private LocalDateTime date;
+    @Column(name ="total_Distance")
+    private Float totalDistance;
+
 
     public Activity() {}
 
@@ -93,4 +96,13 @@ public class Activity {
     public void setDate(LocalDateTime date) {
         this.date = date;
     }
+
+    public Float getTotalDistance() {
+        return totalDistance;
+    }
+
+    public void setTotalDistance(Float totalDistance) {
+        this.totalDistance = totalDistance;
+    }
+
 }

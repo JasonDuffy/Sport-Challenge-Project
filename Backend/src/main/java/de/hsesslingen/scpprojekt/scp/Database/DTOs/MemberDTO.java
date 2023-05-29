@@ -14,14 +14,17 @@ public class MemberDTO {
     Long userID;
     Long imageID;
 
+    Boolean communication;
+
     public MemberDTO() {}
 
-    public MemberDTO(String email, String firstName, String lastName, Long userID, Long imageID) {
+    public MemberDTO(String email, String firstName, String lastName, Long userID, Long imageID, Boolean communication) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.userID = userID;
         this.imageID = imageID;
+        this.communication = communication;
     }
 
     public String getEmail() {
@@ -62,5 +65,13 @@ public class MemberDTO {
 
     public void setImageID(long imageID) {
         this.imageID = imageID;
+    }
+
+    public Boolean getCommunication() {
+        return communication;
+    }
+
+    public void setCommunication(Boolean communication) {
+        this.communication = communication;
     }
 }

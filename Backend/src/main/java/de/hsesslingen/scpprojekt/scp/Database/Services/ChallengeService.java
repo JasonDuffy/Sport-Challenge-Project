@@ -14,6 +14,8 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
+import de.hsesslingen.scpprojekt.scp.Mail.Services.EmailService;
+import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -59,8 +61,12 @@ public class ChallengeService {
     @Autowired
     @Lazy
     ChallengeConverter challengeConverter;
-
-
+    @Autowired
+    EmailService emailService;
+    @Autowired
+    ChallengeSportService challengeSportService;
+    @Autowired
+    SportService sportService;
 
     public List<ChallengeDTO> getAll() {
         List<Challenge> challengeListList = challengeRepository.findAll();
@@ -83,14 +89,6 @@ public class ChallengeService {
     }
 
     /**
-     * Get ChallengeDTO with ID
-     *
-     * @param ChallengeID of the Challenge to be searched
-     * @return Challenge
-     * @throws NotFoundException Not found Challenge
-     */
-
-    /**
      * Get ChallengeID's where the given MemberID is part of
      *
      * @param memberID memberID that should return all ChallengeID's the member is part of
@@ -110,17 +108,33 @@ public class ChallengeService {
     /**
      *  add Challenge
      * @param file Image data
-     * @param sportId Id for the sport
-     * @param sportFactor Factor for the sport in this challenge
+     * @param sportId IDs for the sports
+     * @param sportFactor Factors for the sports in this challenge
      * @param challenge data of Challenge
      * @return A new challenge Entity added to the db
      * @throws IOException not an image
+     * @throws NotFoundException Sport not found
      */
-    public ChallengeDTO add(MultipartFile file, long sportId[], float sportFactor[], ChallengeDTO challenge) throws  IOException{
+    public ChallengeDTO add(MultipartFile file, long sportId[], float sportFactor[], ChallengeDTO challenge) throws IOException, NotFoundException {
         Image image = imageStorageService.store(file);
         Challenge newchallenge = challengeConverter.convertDtoToEntity(challenge);
         newchallenge.setImage(image);
         Challenge savedChallenge = challengeRepository.save(newchallenge);
+
+        for (int i = 0; i < sportId.length; i++) {
+            ChallengeSportDTO cs = new ChallengeSportDTO();
+            cs.setChallengeID(newchallenge.getId());
+            cs.setFactor(sportFactor[i]);
+            cs.setSportID(sportId[i]);
+            challengeSportService.add(cs);
+        }
+
+        try {
+            emailService.sendChallengeMail(savedChallenge);
+        } catch (MessagingException | NotFoundException e) {
+            System.out.println("Could not send email for challenge " + savedChallenge.getName());
+        }
+
         return challengeConverter.convertEntityToDto(savedChallenge);
     }
 
@@ -194,10 +208,19 @@ public class ChallengeService {
 
     /**
      * Returns all members for a challenge
-     * @param challengeID The challengeID for which the teams should be deleted
+     * @param challengeID The challengeID for which the members should be found
      * @return The members of a challenge
      */
     public List<MemberDTO> getChallengeMembers(long challengeID){
         return memberConverter.convertEntityListToDtoList(memberRepository.findMembersByChallenge_ID(challengeID));
+    }
+
+    /**
+     * Returns all emails of members of a challenge that are opted into receiving emails
+     * @param challengeID The challengeID for which the emails should be found
+     * @return All emails of members of a challenge that are opted into receiving emails
+     */
+    public List<String> getChallengeMembersEmails(long challengeID){
+        return memberRepository.findMembersEmailByChallengeID(challengeID);
     }
 }

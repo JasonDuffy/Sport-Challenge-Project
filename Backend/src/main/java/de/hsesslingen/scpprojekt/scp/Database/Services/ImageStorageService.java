@@ -26,7 +26,6 @@ public class ImageStorageService {
     @Autowired
     ImageRepository imageRepository;
 
-
     /**
      * Store an Image
      *
@@ -56,13 +55,13 @@ public class ImageStorageService {
     public Image get(Long ImageID) throws NotFoundException {
         Optional<Image> image =  imageRepository.findById(ImageID);
         if(image.isPresent()){
-            return  image.get();
+            return image.get();
         }
         throw new NotFoundException("Image with ID " + ImageID + " is not present in DB.");
     }
 
     /**
-     *  Delete Image
+     * Delete Image
      * @param image Object of Image
      * @throws NotFoundException Image Not found
      */

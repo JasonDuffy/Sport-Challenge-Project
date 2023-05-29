@@ -65,11 +65,11 @@ public class Filler {
     final private LocalDateTime date5Start = LocalDateTime.of(2022,8,1,12,0);
     final private LocalDateTime date5End = LocalDateTime.of(2022,8,31,12,0);
 
-    Member joe = new Member("Joe.Doe@example.com", "Joe", "Doe");
-    Member hanna = new Member("Hanna.Montana@example.com", "Hannah", "Montana");
-    Member god = new Member("God.Rick@example.com", "God", "Rick");
-    Member jack = new Member("Jack.Sparrow@example.com", "Jack", "Sparrow");
-    Member anakin = new Member("Anakin.Skywalker@example.com", "Anakin", "Skywalker");
+    Member joe = new Member("Joe.Doe@example.com", "Joe", "Doe", null, true);
+    Member hanna = new Member("Hanna.Montana@example.com", "Hannah", "Montana", null, false);
+    Member god = new Member("God.Rick@example.com", "God", "Rick", null, false);
+    Member jack = new Member("Jack.Sparrow@example.com", "Jack", "Sparrow", null, false);
+    Member anakin = new Member("Anakin.Skywalker@example.com", "Anakin", "Skywalker", null, false);
 
     Image pic1 = new Image("Hustle", "image/jpg", type1);
     Image pic2 = new Image("Bustle", "image/jpg", type2);
@@ -121,7 +121,7 @@ public class Filler {
     Bonus doub = new Bonus(cp1, date1Start, date1End, 2, "DoubleXP Weekend", "Doppelte Kilomete übers Wochenende");
     Bonus anni = new Bonus(cp2, date2Start, date2End, 3, "Anniversary", "Wegen Anniversary gibt es mehr Kilometer!");
     Bonus holi = new Bonus(cp3, date3Start, date3End, 4, "Holiday Event", "Während den Ferien gibt es mehr KM!");
-    Bonus finish = new Bonus(cp4, date4Start, date4End, 2, "Finished Project", "Aufgrund des beendeten Projekts gibt es mehr Kilometere für alle!");
+    Bonus finish = new Bonus(cp4, date4Start, date4End, 2, "Finished Project", "Aufgrund des beendeten Projekts gibt es mehr Kilometeer für alle!");
     Bonus lucky = new Bonus(cp5, date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
 
     @EventListener(ApplicationReadyEvent.class)

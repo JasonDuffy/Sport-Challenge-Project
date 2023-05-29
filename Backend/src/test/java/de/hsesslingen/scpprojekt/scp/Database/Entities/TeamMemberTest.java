@@ -25,7 +25,7 @@ public class TeamMemberTest {
     private LocalDateTime enddate =  LocalDateTime.of(2023,4,27, 10, 0);
     private Challenge challenge = new Challenge("Laufen", "Man läuft", startdate, enddate, imageChallenge, 2);
     private Team team =  new Team("Rasender",imageTeam, challenge);
-    private Member member =new Member("JaxL@email.com","Jax","Laterne");
+    private Member member =new Member("JaxL@email.com","Jax","Laterne", false);
 
     /**
      * Test if the TeamMember is correctly created

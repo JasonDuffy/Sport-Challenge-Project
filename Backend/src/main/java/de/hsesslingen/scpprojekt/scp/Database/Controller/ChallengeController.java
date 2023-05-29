@@ -201,6 +201,7 @@ public class ChallengeController {
                             schema = @Schema(implementation = ChallengeDTO.class))}),
             @ApiResponse(responseCode = "500", description = "Something went wrong creating the new Challenge", content = @Content),
             @ApiResponse(responseCode = "400", description = "ID arrays are not same size", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Sport not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PostMapping(path = "/", consumes = "multipart/form-data", produces = "application/json")
@@ -212,6 +213,8 @@ public class ChallengeController {
                 } catch (IOException e) {
                     System.out.println(e.getMessage());
                     return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+                } catch (NotFoundException e) {
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
                 }
             }else {
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

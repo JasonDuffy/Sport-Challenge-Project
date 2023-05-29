@@ -35,6 +35,7 @@ public class MemberConverter {
         } catch (NullPointerException e){
             memberDTO.setImageID(0);
         }
+        memberDTO.setCommunication(member.getCommunication());
         return memberDTO;
     }
 
@@ -59,6 +60,7 @@ public class MemberConverter {
         } catch (NullPointerException | NotFoundException e){
             member.setImage(null);
         }
+        member.setCommunication(memberDTO.getCommunication());
         return member;
     }
 

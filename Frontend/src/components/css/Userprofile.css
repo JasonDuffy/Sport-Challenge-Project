@@ -14,3 +14,13 @@
     aspect-ratio: 1;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
 }
+
+.checkbox {
+    display: flex;
+    gap: 5px;
+
+    color: var(--doubleslash-text-grey);
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+}

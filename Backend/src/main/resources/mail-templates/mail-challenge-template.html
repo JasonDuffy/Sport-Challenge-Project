@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Challenge-Benachrichtigung</title>
+
+    <style>
+        :root {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            font-weight: 400;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 14px;
+        }
+
+        li {
+            list-style: none;
+        }
+
+        .centerContent {
+            text-align: center;
+        }
+
+        .challengeHeader {
+            font-weight: 600;
+        }
+
+        .challengeDescription {
+            font-weight: 300;
+        }
+
+        img {
+            display: block;
+            margin: auto auto;
+            width: 50%;
+            max-width: 300px;
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <h1 class="challengeHeader centerContent">
+            Die Challenge <a th:text="${challengeName}">ChallengeName</a> wurde erstellt!
+        </h1>
+        <div>
+            <img alt="Bild der Challenge" th:src="|cid:${imageResource}|">
+        </div>
+        <h2 th:text="${description}" class="challengeDescription centerContent">Description</h2>
+        <div>
+            <ul>
+                <li>
+                    <p>Beginn: <a th:text="${startTime}">StartTime</a> Uhr</p>
+                </li>
+                <li>
+                    <p>Ende: <a th:text="${endTime}">EndTime</a> Uhr</p>
+                </li>
+                <li>
+                    <p>Ziel: <a th:text="${target}">Target</a> Punkte</p>
+                </li>
+                <li>
+                    <p>Verfügbare Sportarten: <a th:text="${sports}">Sports</a></p>
+                </li>
+            </ul>
+        </div>
+
+    </div>
+</body>
+
+</html>

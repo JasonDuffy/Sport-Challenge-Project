@@ -12,6 +12,7 @@ import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
+import de.hsesslingen.scpprojekt.scp.Mail.Services.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
@@ -75,6 +76,8 @@ public class ChallengeServiceTest {
     ChallengeSportRepository challengeSportRepository;
     @MockBean
     SportService sportService;
+    @MockBean
+    EmailService emailService; // Mocked so no emails are sent
 
     @MockBean
     Filler filler; // Mocked to avoid exceptions
@@ -373,7 +376,7 @@ public class ChallengeServiceTest {
      * @throws NotFoundException Should never be thrown
      */
     @Test
-    public void addTestSuccess() throws IOException {
+    public void addTestSuccess() throws IOException, NotFoundException {
 
         MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
 

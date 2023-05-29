@@ -49,11 +49,6 @@ public class BonusService {
 
     @Autowired
     @Lazy
-    ChallengeService challengeService;
-
-
-    @Autowired
-    @Lazy
     ActivityRepository activityRepository;
 
     @Autowired
@@ -95,33 +90,13 @@ public class BonusService {
         Bonus b = bonusConverter.convertDtoToEntity(bonus);
         Bonus savedBonus = bonusRepository.save(b);
 
-        sendBonusMail(savedBonus);
+        try {
+            emailService.sendBonusMail(savedBonus);
+        } catch (MessagingException e) {
+            System.out.println("Bonus mail for bonus " + bonus.getName() + " could not be sent!");
+        }
 
         return bonusConverter.convertEntityToDto(savedBonus);
-    }
-
-    /**
-     * Sends an email to all members of a challenge, informing them of a new bonus
-     *
-     * @param bonus Bonus that they should be notified about
-     */
-    private void sendBonusMail(Bonus bonus){
-        Map<String, Object> mailMap = new HashMap<>();
-        mailMap.put("challengeName", bonus.getChallengeSport().getChallenge().getName());
-        mailMap.put("bonusName", bonus.getName());
-        mailMap.put("startTime", bonus.getStartDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm")));
-        mailMap.put("endTime", bonus.getEndDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm")));
-        mailMap.put("factor", bonus.getFactor());
-        mailMap.put("description", bonus.getDescription());
-        mailMap.put("sport", bonus.getChallengeSport().getSport().getName());
-
-        String subject = mailMap.get("challengeName") + " hat einen neuen Bonus!";
-
-        try {
-            emailService.sendBonusMail(challengeService.getChallengeMembers(bonus.getChallengeSport().getChallenge().getId()), subject, mailMap);
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**

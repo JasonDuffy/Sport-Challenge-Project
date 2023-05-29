@@ -25,7 +25,7 @@ public class ActivityTest {
     private Challenge challenge = new Challenge("Laufen ins dritte Jahundert", "Man läuft", startdate, enddate, image, 2);
 
     private  ChallengeSport challengeSport = new ChallengeSport(3,challenge,sport);
-    private  Member member = new Member("doofen@email.com","Doof","EnSChmert");
+    private  Member member = new Member("doofen@email.com","Doof","EnSChmert", false);
     /**
      * Test if the Activity Entity is correctly created
      */

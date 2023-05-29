@@ -59,7 +59,7 @@ public class SAML2Service {
      */
     public void loginUser() {
         SAML2User user = getCurrentSAMLUser();
-        MemberDTO newMember = new MemberDTO(user.getEmail(), user.getFirstName(), user.getLastName(), 0L, 0L);
+        MemberDTO newMember = new MemberDTO(user.getEmail(), user.getFirstName(), user.getLastName(), 0L, 0L, true);
         try {
             memberService.add(newMember);
         } catch (AlreadyExistsException | NotFoundException e) {

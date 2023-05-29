@@ -16,11 +16,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class MemberDTOTest {
     @Test
     void MemberDTO_Test(){
-        MemberDTO memberDTO = new MemberDTO("max@jemamd.de","max","Mustermann",1L,2L);
+        MemberDTO memberDTO = new MemberDTO("max@jemamd.de","max","Mustermann",1L,2L, false);
         assertEquals("max@jemamd.de", memberDTO.getEmail());
         assertEquals("max", memberDTO.getFirstName());
         assertEquals("Mustermann", memberDTO.getLastName());
         assertEquals(1, memberDTO.getUserID());
         assertEquals(2L, memberDTO.getImageID());
+        assertEquals(false, memberDTO.getCommunication());
     }
 }

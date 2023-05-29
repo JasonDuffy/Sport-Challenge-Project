@@ -49,6 +49,14 @@ public class MemberService {
     }
 
     /**
+     * Returns all email addresses of members opted into communication
+     * @return List of email addresses of members opted into communication
+     */
+    public List<String> getAllEmails(){
+        return memberRepository.findAllEmails();
+    }
+
+    /**
      * Returns member with given ID in DB
      *
      * @param memberID ID of desired member
@@ -63,10 +71,10 @@ public class MemberService {
     }
 
     /**
-     * Returns member currently logged in
-     *
-     * @return Member that is logged in
-     * @throws NotFoundException Member can not be found
+     * Returns the member corresponding to the given email
+     * @param email Email Address of the member
+     * @return Member corresponding to the email address given
+     * @throws NotFoundException Thrown when no member with given email address is found
      */
     public MemberDTO getByEmail(String email) throws NotFoundException {
         Member member = memberRepository.findMemberByEmail(email);
@@ -84,7 +92,7 @@ public class MemberService {
     public MemberDTO add(MemberDTO memberDTO) throws AlreadyExistsException, NotFoundException {
         Member member = memberConverter.convertDtoToEntity(memberDTO);
         if(!memberRepository.existsMemberByEmail(member.getEmail()))
-            return memberConverter.convertEntityToDto(memberRepository.save(new Member(member.getEmail(), member.getFirstName(), member.getLastName(), member.getImage())));
+            return memberConverter.convertEntityToDto(memberRepository.save(new Member(member.getEmail(), member.getFirstName(), member.getLastName(), member.getImage(), member.getCommunication())));
         throw new AlreadyExistsException("Member with email " + member.getEmail() + " already exists in DB!");
     }
 
@@ -102,6 +110,7 @@ public class MemberService {
         newMember.setFirstName(member.getFirstName());
         newMember.setLastName(member.getLastName());
         newMember.setImageID(member.getImageID());
+        newMember.setCommunication(member.getCommunication());
         newMember.setUserID(memberID);
 
         return memberConverter.convertEntityToDto(memberRepository.save(memberConverter.convertDtoToEntity(newMember)));

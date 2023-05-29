@@ -18,10 +18,11 @@ public class MemberTest {
      */
     @Test
     void testMember(){
-        Member membertest = new Member("maxmuster@email.com","Max","Mustermann");
+        Member membertest = new Member("maxmuster@email.com","Max","Mustermann", false);
 
         assertEquals("maxmuster@email.com",membertest.getEmail());
         assertEquals("Max",membertest.getFirstName());
         assertEquals("Mustermann",membertest.getLastName());
+        assertEquals(false, membertest.getCommunication());
     }
 }

@@ -13,6 +13,8 @@ import org.hibernate.annotations.OnDeleteAction;
  *      email: Unique Email of the user
  *      first_name: User first name
  *      last_name: User first name
+ *      communication: Does the user want to receive emails for new bonuses/challenges/etc.?
+ *      Image: User image
  *
  * @author Mason Schönherr, Robin Hackh, Jason Patrick Duffy , Tom Nguyen Dinh
  */
@@ -33,6 +35,9 @@ public class Member{
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
+    @Column(name = "communication", nullable = false)
+    private Boolean communication;
+
     @ManyToOne
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "image_id", nullable = true)
@@ -41,19 +46,21 @@ public class Member{
 
     public Member(){}
 
-    public Member(String email, String firstName, String lastName, Image image) {
+    public Member(String email, String firstName, String lastName, Image image, Boolean communication) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.image = image;
+        this.communication = communication;
     }
 
     //No image provided
-    public Member(String email, String firstName, String lastName) {
+    public Member(String email, String firstName, String lastName, Boolean communication) {
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.image = null;
+        this.communication = communication;
     }
 
     public long getId() { return id; }
@@ -92,5 +99,13 @@ public class Member{
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public Boolean getCommunication() {
+        return communication;
+    }
+
+    public void setCommunication(Boolean communication) {
+        this.communication = communication;
     }
 }

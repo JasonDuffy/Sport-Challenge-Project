@@ -19,12 +19,14 @@ class Userprofile extends Component {
             firstName: "",
             lastName: "",
             image: "",
+            communication: false
         };
 
         //bind is needed for changing the state
         this.userFirstNameChange = this.userFirstNameChange.bind(this);
         this.userLastNameChange = this.userLastNameChange.bind(this);
         this.userImageChange = this.userImageChange.bind(this);
+        this.userCommunicationChange = this.userCommunicationChange.bind(this);
 
         this.submitHandler = this.submitHandler.bind(this);
     }
@@ -37,6 +39,10 @@ class Userprofile extends Component {
     }
     userImageChange(event) {
         this.setState({ image: event.target.value });
+    }
+    userCommunicationChange(event) {
+        this.setState({ communication: event.target.checked });
+
     }
 
     //Called automatically when the page is loaded
@@ -52,14 +58,17 @@ class Userprofile extends Component {
                         this.setState({ lastName: resData.lastName }, () => {
                             this.updateHeading();
                         });
-                        if(resData.imageID != 0){
+                        if (resData.imageID != 0) {
                             this.setState({ imageID: resData.imageID });
                             this.loadImage(resData.imageID);
-                        }else{
-                            this.setState({image: require(`../images/Default-User.png`)});
+                        } else {
+                            this.setState({ image: require(`../images/Default-User.png`) });
                         }
+                        this.setState({ communication: resData.communication }, () => {
+                            const checkBox = document.getElementById("communicationCheckBox");
+                            checkBox.checked = this.state.communication;
+                        });
                     }));
-
 
                 } else {
                     console.log("User is not logged in");
@@ -97,7 +106,7 @@ class Userprofile extends Component {
     }
 
     // Info message with green background
-    showSuccessMessage(message){
+    showSuccessMessage(message) {
         const infoContainer = document.getElementById("form_info_container");
         const infoMessage = document.getElementById("form_info_message");
         infoContainer.classList.add("success");
@@ -106,7 +115,7 @@ class Userprofile extends Component {
     }
 
     // Updates the greeting to display the current user's name
-    updateHeading(){
+    updateHeading() {
         document.getElementById("headingText").innerHTML = "Willkommen zurück, " + this.state.firstName + " " + this.state.lastName;
     }
 
@@ -124,7 +133,7 @@ class Userprofile extends Component {
         if (userImage.files[0] != null && userImage.files[0].size > 10000000) {
             this.showErrorMessage("Das Bild darf nicht größer als 10Mb sein!");
             return;
-        } 
+        }
         if (userImage.files[0] != null && /^image/.test(userImage.files[0].type) === false) {
             this.showErrorMessage("Es sind nur Bilder zum Hochladen erlaubt!");
             return;
@@ -157,12 +166,13 @@ class Userprofile extends Component {
     }
 
     // Uploads user profile information to server
-    upload(){
+    upload() {
         let userJsonObj = {};
         userJsonObj.email = this.state.email;
         userJsonObj.firstName = this.state.firstName;
         userJsonObj.lastName = this.state.lastName;
         userJsonObj.imageID = this.state.imageID;
+        userJsonObj.communication = this.state.communication;
 
         fetch("http://localhost:8081/members/" + this.state.userID + "/", { method: "PUT", body: JSON.stringify(userJsonObj), credentials: "include", headers: { 'Content-Type': 'application/json' } })
             .then((response) => {
@@ -224,6 +234,16 @@ class Userprofile extends Component {
                                         onChange={this.userLastNameChange}
                                         placeholder="Nachname"
                                     ></input>
+                                </div>
+                                <div className="form_input_container pd_1 mg_t_1">
+                                    <label className="checkbox">
+                                        <input
+                                            id="communicationCheckBox"
+                                            onChange={this.userCommunicationChange}
+                                            type="checkbox"
+                                        ></input>
+                                        <a>Ich möchte bei neuen Challenges, Boni und längerer Abwesenheit per E-Mail kontaktiert werden.</a>
+                                    </label>
                                 </div>
                                 <div className="center_content mg_t_2">
                                     <Button color="orange" txt="Änderungen speichern" type="submit" />

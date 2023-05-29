@@ -26,6 +26,14 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     Boolean existsMemberByEmail(String email);
 
     @Transactional
+    @Query("select m.email from Member m where m.communication = true")
+    List<String> findAllEmails();
+
+    @Transactional
     @Query("select m from Member m join TeamMember tm on m.id=tm.member.id join Team t on tm.team.id=t.id where t.challenge.id = :challengeID")
     List<Member> findMembersByChallenge_ID(@Param("challengeID") long challengeID);
+
+    @Transactional
+    @Query("select m.email from Member m join TeamMember tm on m.id=tm.member.id join Team t on tm.team.id=t.id where t.challenge.id = :challengeID and m.communication = true")
+    List<String> findMembersEmailByChallengeID(@Param("challengeID") long challengeID);
 }

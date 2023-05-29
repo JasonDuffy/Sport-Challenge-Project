@@ -80,6 +80,7 @@ public class MemberControllerTest {
         member.setUserID(1L);
         member.setFirstName("Max");
         member.setLastName("Mustermann");
+        member.setCommunication(true);
 
         when(memberService.add(any(MemberDTO.class))).thenReturn(member);
         RequestBuilder request = MockMvcRequestBuilders
@@ -93,13 +94,14 @@ public class MemberControllerTest {
                 .andReturn();
         String content = res.getResponse().getContentAsString();
 
-        Pattern pattern = Pattern.compile("\"firstName\":\"(.*)\",\"lastName\":\"(.*)\",\"userID\":(.*),");
+        Pattern pattern = Pattern.compile("\"firstName\":\"(.*)\",\"lastName\":\"(.*)\",\"userID\":(.*),\"imageID\":null,\"communication\":(.*)}");
         Matcher matcher = pattern.matcher(content);
 
         matcher.find();
         assertEquals(matcher.group(1), "Max");
         assertEquals(matcher.group(2), "Mustermann");
         assertEquals(matcher.group(3), "1");
+        assertEquals(matcher.group(4), "true");
         assertFalse(matcher.find());
 
         verify(memberService).add(any(MemberDTO.class));
@@ -169,6 +171,7 @@ public class MemberControllerTest {
         member.setUserID(1L);
         member.setFirstName("Max");
         member.setLastName("Mustermann");
+        member.setCommunication(true);
 
         when(memberService.get(1L)).thenReturn(member);
         RequestBuilder request = MockMvcRequestBuilders
@@ -180,13 +183,14 @@ public class MemberControllerTest {
 
         String content = res.getResponse().getContentAsString();
 
-        Pattern pattern = Pattern.compile("\"firstName\":\"(.*)\",\"lastName\":\"(.*)\",\"userID\":(.*),");
+        Pattern pattern = Pattern.compile("\"firstName\":\"(.*)\",\"lastName\":\"(.*)\",\"userID\":(.*),\"imageID\":null,\"communication\":(.*)}");
         Matcher matcher = pattern.matcher(content);
 
         matcher.find();
         assertEquals(matcher.group(1), "Max");
         assertEquals(matcher.group(2), "Mustermann");
         assertEquals(matcher.group(3), "1");
+        assertEquals(matcher.group(4), "true");
         assertFalse(matcher.find());
 
         verify(memberService).get(1L);
@@ -291,6 +295,7 @@ public class MemberControllerTest {
         member.setUserID(1L);
         member.setFirstName("Max");
         member.setLastName("Mustermann");
+        member.setCommunication(false);
 
         when(memberService.update(any(Long.class), any(MemberDTO.class))).thenReturn(member);
 
@@ -306,13 +311,14 @@ public class MemberControllerTest {
 
         String content = res.getResponse().getContentAsString();
 
-        Pattern pattern = Pattern.compile("\"firstName\":\"(.*)\",\"lastName\":\"(.*)\",\"userID\":(.*),");
+        Pattern pattern = Pattern.compile("\"firstName\":\"(.*)\",\"lastName\":\"(.*)\",\"userID\":(.*),\"imageID\":null,\"communication\":(.*)}");
         Matcher matcher = pattern.matcher(content);
 
         matcher.find();
         assertEquals(matcher.group(1), "Max");
         assertEquals(matcher.group(2), "Mustermann");
         assertEquals(matcher.group(3), "1");
+        assertEquals(matcher.group(4), "false");
         assertFalse(matcher.find());
 
         verify(memberService).update(any(Long.class), any(MemberDTO.class));

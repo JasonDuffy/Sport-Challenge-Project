@@ -10,9 +10,11 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
+import de.hsesslingen.scpprojekt.scp.Mail.Services.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -48,6 +50,8 @@ public class BonusServiceTest {
     BonusRepository bonusRepository;
     @MockBean
     ChallengeSportService challengeSportService;
+    @MockBean
+    EmailService emailService; // Mock so no emails are sent
 
     List<Bonus> bonusList;
 

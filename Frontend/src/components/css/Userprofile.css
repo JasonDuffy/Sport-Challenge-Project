@@ -18,4 +18,9 @@
 .checkbox {
     display: flex;
     gap: 5px;
+
+    color: var(--doubleslash-text-grey);
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
 }

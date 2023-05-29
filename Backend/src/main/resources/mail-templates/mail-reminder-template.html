@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="de">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Erinnerung</title>
+
+    <style>
+        :root {
+            padding: 0;
+            margin: 0;
+            width: 100%;
+            font-family: 'Segoe UI', sans-serif;
+            font-size: 14px;
+        }
+
+        .ending{
+            font-weight: lighter;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <div>
+            <p>
+                Hallo <a th:text="${memberFirstName}">FirstName</a>! 👋
+            </p>
+            <p>
+                Deine letzte Aktivität liegt bereits über eine Woche zurück.
+            </p>
+            <p>
+                Vergiss bitte nicht deine Aktivitäten regelmäßig einzutragen, deine Teamkollegen zählen auf dich. 😉
+            </p>
+            <p>
+                Wir wünschen dir ein schönes Wochenende und viel Spaß beim Trainieren! 💦
+            </p>
+            <p class="ending">
+                Dein Team von der Slash Challenge.
+            </p>
+        </div>
+
+    </div>
+</body>
+
+</html>

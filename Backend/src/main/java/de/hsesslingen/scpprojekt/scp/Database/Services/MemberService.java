@@ -151,4 +151,12 @@ public class MemberService {
     public List<ActivityDTO> getActivitiesForUserInChallenge(Long challengeID, Long userID) throws NotFoundException {
         return activityConverter.convertEntityListToDtoList(activityRepository.findActivitiesByChallenge_IDAndMember_ID(challengeID, userID));
     }
+
+    /**
+     * Returns all members whose last activity was more than one week ago
+     * @return List of all members whose last activity was more than one week ago
+     */
+    public List<MemberDTO> getAllMembersWhoseLastActivityWasMoreThanOneWeekAgo(){
+        return memberConverter.convertEntityListToDtoList(memberRepository.findMembersWhoseLastActivityWasMoreThanOneWeekAgo());
+    }
 }

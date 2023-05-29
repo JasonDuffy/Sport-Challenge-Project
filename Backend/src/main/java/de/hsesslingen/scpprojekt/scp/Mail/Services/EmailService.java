@@ -57,27 +57,52 @@ public class EmailService {
      * @param to List of email addresses that should be notified
      * @param subject Subject of the email
      * @param htmlBody HTML Body of the email
+     * @param anonymous Should the recipient addresses be exposed?
      * @throws MessagingException Thrown by MimeMessageHelper
      */
-    public void sendHTMLMessage(List<String> to, String subject, String htmlBody) throws MessagingException {
+    public void sendHTMLMessage(List<String> to, String subject, String htmlBody, Boolean anonymous) throws MessagingException {
         MimeMessage message = sender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
         helper.setFrom(Objects.requireNonNull(environment.getProperty("spring.mail.username")));
-        helper.setTo(Objects.requireNonNull(environment.getProperty("spring.mail.username")));
-        helper.setBcc(convertListToArray(to)); // Hide emails from each other
+
+        // Hide recipient email addresses when anonymous is true
+        if(anonymous){
+            helper.setTo(Objects.requireNonNull(environment.getProperty("spring.mail.username")));
+            helper.setBcc(convertListToArray(to)); // Hide emails from each other
+        }
+        else{
+            helper.setTo(Objects.requireNonNull(convertListToArray(to)));
+        }
+
         helper.setSubject(subject);
         helper.setText(htmlBody, true);
         sender.send(message);
     }
 
-    public void sendHTMLMessageWithImage(List<String> to, String subject, String htmlBody, String imageName, Image image) throws MessagingException {
+    /**
+     * Sends an HTML message with an image embedded
+     * @param to List of email addresses that should be notified
+     * @param subject Subject of the email
+     * @param htmlBody HTML Body of the email
+     * @param imageName Name of the image
+     * @param image Image entity to send
+     * @param anonymous Should the recipient addresses be exposed?
+     * @throws MessagingException Thrown by MimeMessageHelper
+     */
+    public void sendHTMLMessageWithImage(List<String> to, String subject, String htmlBody, String imageName, Image image, Boolean anonymous) throws MessagingException {
         MimeMessage message = sender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
-        helper.setFrom(Objects.requireNonNull(environment.getProperty("spring.mail.username")));
-        helper.setTo(Objects.requireNonNull(environment.getProperty("spring.mail.username")));
-        helper.setBcc(convertListToArray(to)); // Hide emails from each other
+        // Hide recipient email addresses when anonymous is true
+        if(anonymous){
+            helper.setTo(Objects.requireNonNull(environment.getProperty("spring.mail.username")));
+            helper.setBcc(convertListToArray(to)); // Hide emails from each other
+        }
+        else{
+            helper.setTo(Objects.requireNonNull(convertListToArray(to)));
+        }
+
         helper.setSubject(subject);
         helper.setText(htmlBody, true);
         helper.addInline(imageName, new ByteArrayResource(image.getData()), image.getType());
@@ -107,7 +132,7 @@ public class EmailService {
         String subject = mailMap.get("challengeName") + " hat einen neuen Bonus!";
         String htmlBody = thymeleafTemplateEngine.process("mail-bonus-template.html", thymeleafContext);
 
-        sendHTMLMessage(to, subject, htmlBody);
+        sendHTMLMessage(to, subject, htmlBody, true);
     }
 
     /**
@@ -141,7 +166,31 @@ public class EmailService {
         String subject = "Es gibt eine neue Challenge!";
         String htmlBody = thymeleafTemplateEngine.process("mail-challenge-template.html", thymeleafContext);
 
-        sendHTMLMessageWithImage(to, subject, htmlBody, image.getName(), image);
+        sendHTMLMessageWithImage(to, subject, htmlBody, image.getName(), image, true);
+    }
+
+    /**
+     * Sends a reminder to inactive members (last activity was more than 1 week ago)
+     * @throws MessagingException Thrown by sendHTMLMessage
+     */
+    public void sendActivityReminder() throws MessagingException {
+        List<MemberDTO> inactiveMembers = memberService.getAllMembersWhoseLastActivityWasMoreThanOneWeekAgo();
+
+        for(MemberDTO member : inactiveMembers){
+            Map<String, Object> mailMap = new HashMap<>();
+            mailMap.put("memberFirstName", member.getFirstName());
+
+            Context thymeleafContext = new Context();
+            thymeleafContext.setVariables(mailMap);
+
+            List<String> to = new ArrayList<>();
+            to.add(member.getEmail());
+
+            String subject = "Wir vermissen dich, " + member.getFirstName() + " 🙁";
+            String htmlBody = thymeleafTemplateEngine.process("mail-reminder-template.html", thymeleafContext);
+
+            sendHTMLMessage(to, subject, htmlBody, false);
+        }
     }
 
     /**

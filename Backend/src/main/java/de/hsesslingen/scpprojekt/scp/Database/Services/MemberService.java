@@ -172,4 +172,11 @@ public class MemberService {
         List<Team> team = memberRepository.findTeamsByMemberID(memberID);
         return  teamConverter.convertEntityListToDtoList(team);
     }
+    /**
+     * Returns all members who are part of the given teamID
+     * @return List of all members who are part of the given teamID
+     */
+    public List<MemberDTO> getAllMembersByTeamID(long teamID){
+        return memberConverter.convertEntityListToDtoList(memberRepository.findMembersByTeamID(teamID));
+    }
 }

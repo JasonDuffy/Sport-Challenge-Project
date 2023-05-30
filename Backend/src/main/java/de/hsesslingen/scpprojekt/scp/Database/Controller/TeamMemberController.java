@@ -2,6 +2,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.TeamMemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamMemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.TeamMember;
 import de.hsesslingen.scpprojekt.scp.Database.Services.TeamMemberService;
@@ -96,6 +97,33 @@ public class TeamMemberController {
         if (saml2Service.isLoggedIn(request)) {
             try {
                 return new ResponseEntity<>(teamMemberService.get(id), HttpStatus.OK);
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
+     * Returns a TeamMember with the given teamID and memberID
+     * @param mid memberID that the TeamMember should contain
+     * @param tid teamID that the TeamMember should contain
+     * @return TeamMemberDTO with given teamID and memberID
+     */
+    @Operation(summary = "Returns a Team Member for the given teamID and memberID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Search successful", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = TeamMemberDTO.class)) }),
+            @ApiResponse(responseCode = "404", description = "Team member not found", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @GetMapping(path = "/teams/{tid}/members/{mid}/", produces = "application/json")
+    public ResponseEntity<TeamMemberDTO> getTeamMemberByTeamIdAndMemberId(@PathVariable("tid") long teamID, @PathVariable("mid") long memberID, HttpServletRequest request) {
+        if (saml2Service.isLoggedIn(request)) {
+            try {
+                return new ResponseEntity<>(teamMemberService.getTeamMemberByTeamIdAndMemberId(teamID, memberID), HttpStatus.OK);
             } catch (NotFoundException e) {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

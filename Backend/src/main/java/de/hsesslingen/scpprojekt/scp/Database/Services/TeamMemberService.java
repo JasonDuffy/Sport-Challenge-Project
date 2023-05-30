@@ -61,6 +61,21 @@ public class TeamMemberService {
     }
 
     /**
+     * Returns the TeamMember with the given teamID and memberID
+     *
+     * @param memberID memberID that the TeamMember should contain
+     * @param teamID teamID that the TeamMember should contain
+     * @return TeamMember with given teamID and memberID
+     * @throws NotFoundException TeamMember can not be found
+     */
+    public TeamMemberDTO getTeamMemberByTeamIdAndMemberId(long teamID, long memberID) throws NotFoundException {
+        Optional<TeamMember> teamMember = teamMemberRepository.findTeamMemberByTeamIdAndMemberId(teamID, memberID);
+        if(teamMember.isPresent())
+            return teamMemberConverter.convertEntityToDto(teamMember.get());
+        throw new NotFoundException("TeamMember with the teamID " + teamID + " and the memberID " + memberID + "is not present in DB.");
+    }
+
+    /**
      * Adds a given TeamMember to the DB
      *
      * @param teamMemberDTO  TeamMemberDTO object to be added to DB

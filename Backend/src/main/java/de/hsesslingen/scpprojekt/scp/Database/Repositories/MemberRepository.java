@@ -35,6 +35,11 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findMembersByChallenge_ID(@Param("challengeID") long challengeID);
 
     @Transactional
+    //      select m.id, m.communication, m.email, m.first_name, m.last_name, m.image_id  from member m join team_member tm on m.id=tm.member_id where tm.team_id = 7
+    @Query("select m from Member m join TeamMember tm on m.id = tm.member.id where tm.team.id = :teamID")
+    List<Member> findMembersByTeamID(@Param("teamID") long teamID);
+
+    @Transactional
     @Query("select m.email from Member m join TeamMember tm on m.id=tm.member.id join Team t on tm.team.id=t.id where t.challenge.id = :challengeID and m.communication = true")
     List<String> findMembersEmailByChallengeID(@Param("challengeID") long challengeID);
 

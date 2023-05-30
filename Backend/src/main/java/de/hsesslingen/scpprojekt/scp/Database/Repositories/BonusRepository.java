@@ -18,6 +18,6 @@ import java.util.List;
 @Repository
 public interface BonusRepository extends JpaRepository<Bonus,Long> {
     @Transactional
-    @Query("SELECT b FROM Bonus b JOIN b.challengeSport cs where cs.challenge.id = :challengeID")
+    @Query("SELECT b FROM Bonus b JOIN ChallengeSportBonus csb on csb.bonus.id = b.id  join ChallengeSport cs on cs.id = csb.challengeSport.id where cs.challenge.id = :challengeID")
     public List<Bonus> findBonusesByChallengeID(@Param("challengeID") long challengeID);
 }

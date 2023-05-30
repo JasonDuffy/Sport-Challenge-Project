@@ -28,10 +28,6 @@ public class Bonus {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
-    @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @JoinColumn(name = "challenge_sport_id")
-    private ChallengeSport challengeSport;
     @Column(name = "start_date", nullable = false)
     private LocalDateTime startDate;
     @Column(name = "end_date", nullable = false)
@@ -43,8 +39,7 @@ public class Bonus {
     @Column(name = "description", nullable = false)
     private String description;
 
-    public Bonus(ChallengeSport challengeSport, LocalDateTime startDate, LocalDateTime endDate, float factor, String name, String description) {
-        this.challengeSport = challengeSport;
+    public Bonus( LocalDateTime startDate, LocalDateTime endDate, float factor, String name, String description) {
         this.startDate = startDate;
         this.endDate = endDate;
         this.factor = factor;
@@ -61,15 +56,6 @@ public class Bonus {
     public void setId(long id) {
         this.id = id;
     }
-
-    public ChallengeSport getChallengeSport() {
-        return challengeSport;
-    }
-
-    public void setChallengeSport(ChallengeSport challengeSport) {
-        this.challengeSport = challengeSport;
-    }
-
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy,HH:mm")
     public LocalDateTime getStartDate() {
         return startDate;

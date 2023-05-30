@@ -45,6 +45,8 @@ public class Filler {
     @Autowired
     private TeamMemberRepository teamMemberRepository;
     @Autowired
+    private ChallengeSportBonusRepository challengeSportBonusRepository;
+    @Autowired
     @Lazy
     private ActivityService activityService;
 
@@ -118,12 +120,18 @@ public class Filler {
     Activity act4 = new Activity(cp4, jack, 7, date4Start);
     Activity act5 = new Activity(cp5, anakin, 3, date5Start);
 
-    Bonus doub = new Bonus(cp1, date1Start, date1End, 2, "DoubleXP Weekend", "Doppelte Kilomete übers Wochenende");
-    Bonus anni = new Bonus(cp2, date2Start, date2End, 3, "Anniversary", "Wegen Anniversary gibt es mehr Kilometer!");
-    Bonus holi = new Bonus(cp3, date3Start, date3End, 4, "Holiday Event", "Während den Ferien gibt es mehr KM!");
-    Bonus finish = new Bonus(cp4, date4Start, date4End, 2, "Finished Project", "Aufgrund des beendeten Projekts gibt es mehr Kilometeer für alle!");
-    Bonus lucky = new Bonus(cp5, date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
+    Bonus doub = new Bonus( date1Start, date1End, 2, "DoubleXP Weekend", "Doppelte Kilomete übers Wochenende");
+    Bonus anni = new Bonus( date2Start, date2End, 3, "Anniversary", "Wegen Anniversary gibt es mehr Kilometer!");
+    Bonus holi = new Bonus( date3Start, date3End, 4, "Holiday Event", "Während den Ferien gibt es mehr KM!");
+    Bonus finish = new Bonus( date4Start, date4End, 2, "Finished Project", "Aufgrund des beendeten Projekts gibt es mehr Kilometeer für alle!");
+    Bonus lucky = new Bonus( date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
 
+
+    ChallengeSportBonus doubl = new ChallengeSportBonus(cp1,doub);
+    ChallengeSportBonus anniv = new ChallengeSportBonus(cp2,anni);
+    ChallengeSportBonus holid = new ChallengeSportBonus(cp3,holi);
+    ChallengeSportBonus finishe = new ChallengeSportBonus(cp4,finish);
+    ChallengeSportBonus luckys = new ChallengeSportBonus(cp5,lucky);
     @EventListener(ApplicationReadyEvent.class)
     public void fillDb() throws NotFoundException {
         try {
@@ -174,6 +182,9 @@ public class Filler {
 
         bonusRepository.saveAll(Arrays.asList(
                 doub, anni, holi, finish, lucky
+        ));
+        challengeSportBonusRepository.saveAll(Arrays.asList(
+                doubl, anniv, holid, finishe, luckys
         ));
 
         activityService.totalDistanceAll();

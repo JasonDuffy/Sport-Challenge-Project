@@ -1,13 +1,13 @@
 package de.hsesslingen.scpprojekt.scp.Mail.Services;
 
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportBonusDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportBonusConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeService;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportBonusService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.MemberService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
@@ -51,6 +51,12 @@ public class EmailService {
     @Autowired
     @Lazy
     MemberService memberService;
+    @Autowired
+    @Lazy
+    ChallengeSportBonusService challengeSportBonusService;
+    @Autowired
+    @Lazy
+    ChallengeSportBonusConverter challengeSportBonusConverter;
 
     /**
      * Sends a HTML message to multiple recipient without them knowing of each other
@@ -115,26 +121,30 @@ public class EmailService {
      * @param bonus Bonus that members of the challenge should be notified about
      * @throws MessagingException Thrown by sendHTMLMessage
      */
-    public void sendBonusMail(Bonus bonus) throws MessagingException {
+   /* public void sendBonusMail(Bonus bonus) throws MessagingException, NotFoundException {
         Map<String, Object> mailMap = new HashMap<>();
-        mailMap.put("challengeName", bonus.getChallengeSport().getChallenge().getName());
-        mailMap.put("bonusName", bonus.getName());
-        mailMap.put("startTime", bonus.getStartDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm")));
-        mailMap.put("endTime", bonus.getEndDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm")));
-        mailMap.put("factor", bonus.getFactor());
-        mailMap.put("description", bonus.getDescription());
-        mailMap.put("sport", bonus.getChallengeSport().getSport().getName());
+        List <ChallengeSportBonus> csBList = challengeSportBonusConverter.convertDtoToEntityList(challengeSportBonusService.findCSBByBonusID(bonus.getId()));
+        for (ChallengeSportBonus cs : csBList){
+            mailMap.put("challengeName", cs.getChallengeSport().getChallenge().getName());
+            mailMap.put("bonusName", bonus.getName());
+            mailMap.put("startTime", bonus.getStartDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm")));
+            mailMap.put("endTime", bonus.getEndDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm")));
+            mailMap.put("factor", bonus.getFactor());
+            mailMap.put("description", bonus.getDescription());
+            mailMap.put("sport", cs.getChallengeSport().getSport().getName());
+        }
 
         Context thymeleafContext = new Context();
         thymeleafContext.setVariables(mailMap);
 
-        List<String> to = challengeService.getChallengeMembersEmails(bonus.getChallengeSport().getChallenge().getId());
-        String subject = mailMap.get("challengeName") + " hat einen neuen Bonus!";
-        String htmlBody = thymeleafTemplateEngine.process("mail-bonus-template.html", thymeleafContext);
-
-        sendHTMLMessage(to, subject, htmlBody, true);
+        for (ChallengeSportBonus cs : csBList) {
+            List<String> to = challengeService.getChallengeMembersEmails(cs.getChallengeSport().getChallenge().getId());
+            String subject = mailMap.get("challengeName") + " hat einen neuen Bonus!";
+            String htmlBody = thymeleafTemplateEngine.process("mail-bonus-template.html", thymeleafContext);
+            sendHTMLMessage(to, subject, htmlBody, true);
+        }
     }
-
+*/
     /**
      * Notifies all members of a new challenge by email
      * @param challenge Challenge the members should be notified about

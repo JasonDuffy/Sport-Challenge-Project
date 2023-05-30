@@ -16,6 +16,7 @@ import de.hsesslingen.scpprojekt.scp.Mail.Services.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -156,13 +157,11 @@ public class ChallengeServiceTest {
         challengeSportList.add(cs1); challengeSportList.add(cs2); challengeSportList.add(cs3); challengeSportList.add(cs4);
 
         Bonus b1 = new Bonus();
-        b1.setChallengeSport(cs1);
         b1.setId(1);
         b1.setStartDate(LocalDateTime.of(2023, 4, 10, 8, 0));
         b1.setEndDate(LocalDateTime.of(2023, 6, 4, 10, 0));
         b1.setFactor(2.0f);
         Bonus b2 = new Bonus();
-        b2.setChallengeSport(cs1);
         b2.setId(2);
         b2.setStartDate(LocalDateTime.of(2023, 4, 10, 8, 0));
         b2.setEndDate(LocalDateTime.of(2023, 6, 4, 10, 0));
@@ -223,7 +222,6 @@ public class ChallengeServiceTest {
         when(bonusRepository.findBonusesByChallengeID(1L)).thenAnswer(a -> {
             List<Bonus> bList = new ArrayList<>();
             for(Bonus bon : bonusList)
-                if (bon.getChallengeSport().getChallenge().getId() == 1L)
                     bList.add(bon);
             return bList;
         });
@@ -323,23 +321,7 @@ public class ChallengeServiceTest {
     @Test
     public void getChallengeBonusesTest() throws NotFoundException {
         List<BonusDTO> bonuses = challengeService.getChallengeBonuses(challengeList.get(0).getId());
-
-        int counter = 0;
-
-        for(BonusDTO b : bonuses){
-            assertEquals(1L, bonusConverter.convertDtoToEntity(b).getChallengeSport().getChallenge().getId());
-            counter++;
-        }
-
-        int realCounter = 0;
-
-        for(Bonus b : bonusList){
-            if (b.getChallengeSport().getChallenge().getId() == 1)
-                realCounter++;
-        }
-
-        assertEquals(counter, realCounter);
-
+        assertEquals(1,bonuses.get(0).getId());
         Mockito.verify(bonusRepository).findBonusesByChallengeID(1L);
     }
 

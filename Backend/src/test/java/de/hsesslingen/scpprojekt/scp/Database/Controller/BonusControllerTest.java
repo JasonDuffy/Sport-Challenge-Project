@@ -183,12 +183,10 @@ public class BonusControllerTest {
         when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
 
         BonusDTO b1 = new BonusDTO();
-        b1.setChallengeSportID(2L);
-
-        when(bonusService.add(any(BonusDTO.class))).thenReturn(b1);
+        when(bonusService.add(any(BonusDTO.class), any(long[].class))).thenReturn(b1);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .post("/bonuses/").accept(MediaType.APPLICATION_JSON)
+                .post("/bonuses/?challengesportID=1&challengesportID=2").accept(MediaType.APPLICATION_JSON)
                 .param("challengeSportID", "2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(b1));
@@ -201,9 +199,7 @@ public class BonusControllerTest {
 
         BonusDTO result = new ObjectMapper().readValue(content, BonusDTO.class);
 
-        assertEquals(result.getChallengeSportID(), 2L);
-
-        Mockito.verify(bonusService).add(any(BonusDTO.class));
+        Mockito.verify(bonusService).add(any(BonusDTO.class),any(long[].class));
     }
 
     /**
@@ -217,12 +213,11 @@ public class BonusControllerTest {
 
         BonusDTO b1 = new BonusDTO();
         b1.setId(1);
-        b1.setChallengeSportID(2L);
 
-        when(bonusService.add(any(BonusDTO.class))).thenThrow(NotFoundException.class);
+        when(bonusService.add(any(BonusDTO.class),any(long[].class))).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .post("/bonuses/").accept(MediaType.APPLICATION_JSON)
+                .post("/bonuses/?challengesportID=1&challengesportID=2").accept(MediaType.APPLICATION_JSON)
                 .param("challengeSportID", "2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(b1));
@@ -231,7 +226,7 @@ public class BonusControllerTest {
                 .andExpect(status().isNotFound())
                 .andReturn();
 
-        Mockito.verify(bonusService).add(any(BonusDTO.class));
+        Mockito.verify(bonusService).add(any(BonusDTO.class),any(long[].class));
     }
 
     /**
@@ -245,9 +240,7 @@ public class BonusControllerTest {
         b1.setId(1);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .post("/bonuses/").accept(MediaType.APPLICATION_JSON)
-                .param("challengeSportID", "1")
-                .param("memberID", "1")
+                .post("/bonuses/?challengesportID=1&challengesportID=2").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(b1));
 

@@ -25,14 +25,12 @@ public class BonusTest {
     private LocalDateTime Bonusenddate =  LocalDateTime.of(2023,3,27, 10, 0);
     private Sport sport= new Sport("Laufen",3);
     private Challenge challenge = new Challenge("Laufen ins dritte Jahundert", "Man läuft", Chastartdate, Chaenddate, image, 2);
-    private ChallengeSport challengeSport = new ChallengeSport(3,challenge,sport);
     /**
      * Test if the Bonus Entity is correctly created
      */
     @Test
     void BonusTest(){
-        Bonus bonusTest = new Bonus(challengeSport,Bonusstartdate,Bonusenddate,10.0f,"Jahresfeier","Zur Feier unseren Jahres Tages");
-        assertEquals(challengeSport,bonusTest.getChallengeSport());
+        Bonus bonusTest = new Bonus(Bonusstartdate,Bonusenddate,10.0f,"Jahresfeier","Zur Feier unseren Jahres Tages");
         assertEquals(Bonusstartdate,bonusTest.getStartDate());
         assertEquals(Bonusenddate,bonusTest.getEndDate());
         assertEquals(10, bonusTest.getFactor());

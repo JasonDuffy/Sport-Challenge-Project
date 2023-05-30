@@ -4,6 +4,7 @@ import { faCircleDown, faGripVertical } from "@fortawesome/free-solid-svg-icons"
 import "./css/Form.css";
 import "./css/AddTeam.css";
 import Button from "./Button";
+import withRouter from "./withRouter";
 
 class AddTeam extends Component {
   constructor(props) {
@@ -11,10 +12,12 @@ class AddTeam extends Component {
 
     this.state = {
       teamName: "",
+      teamNameHeading: "",
       teamChallengId: 0,
       challengesData: [],
       allMembers: [],
       imageSource: "",
+      imageID: 0,
       firstDrag: true,
     };
 
@@ -56,7 +59,7 @@ class AddTeam extends Component {
       event.preventDefault();
 
       //If no member are in the Team and you drag one to it the overlay will be hidden
-      if(this.state.firstDrag  && event.target.id === "drag_target_overlay" ){
+      if (this.state.firstDrag && event.target.id === "drag_target_overlay") {
         document.getElementById("drag_target_overlay").classList.remove("first_drag");
         this.setState({ firstDrag: false });
         dragged.parentNode.removeChild(dragged);
@@ -69,13 +72,13 @@ class AddTeam extends Component {
         dragged.parentNode.removeChild(dragged);
         event.target.appendChild(dragged);
       } else if (event.target.className === "drag_member_drop" && event.target !== dragged) {
-        const dropTarget = event.target.parentNode.parentNode; 
+        const dropTarget = event.target.parentNode.parentNode;
         dragged.parentNode.removeChild(dragged);
         dropTarget.appendChild(dragged);
       }
 
       //If you dragged the last member out of the team the overlay will show again
-      if(document.getElementById("member_in_team_dropzone").childNodes.length === 1){
+      if (document.getElementById("member_in_team_dropzone").childNodes.length === 1) {
         document.getElementById("drag_target_overlay").classList.add("first_drag");
         this.setState({ firstDrag: true });
       }
@@ -106,7 +109,10 @@ class AddTeam extends Component {
           newDragMember.classList.add("drag_member");
           newDragMember.setAttribute("draggable", true);
           newDragMember.setAttribute("data-member-id", member.id);
-          newDragMember.innerHTML = '<div class="drag_member_drop"></div><p>' + member.fullName + '</p><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="grip-vertical" class="svg-inline--fa fa-grip-vertical " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M40 352l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zm192 0l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 320c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 192l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 160c-22.1 0-40-17.9-40-40L0 72C0 49.9 17.9 32 40 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40z"></path></svg>';
+          newDragMember.innerHTML =
+            '<div class="drag_member_drop"></div><p>' +
+            member.fullName +
+            '</p><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="grip-vertical" class="svg-inline--fa fa-grip-vertical " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M40 352l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zm192 0l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 320c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 192l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 160c-22.1 0-40-17.9-40-40L0 72C0 49.9 17.9 32 40 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40z"></path></svg>';
           memberAvailableEl.appendChild(newDragMember);
         }
       }
@@ -121,13 +127,14 @@ class AddTeam extends Component {
     window.scrollTo(0, 0);
   }
 
-  clearAllInputs(){
+  clearAllInputs() {
     document.getElementById("member_search_input").value = "";
     const teamImageEl = document.getElementById("team_image");
     teamImageEl.value = null;
 
     const memberInTeam = document.getElementById("member_in_team_dropzone");
-    memberInTeam.innerHTML = '<div id="drag_target_overlay" class="first_drag"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-down" class="svg-inline--fa fa-circle-down fa-3x " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 0a256 256 0 1 0 0 512A256 256 0 1 0 256 0zM376.9 294.6L269.8 394.5c-3.8 3.5-8.7 5.5-13.8 5.5s-10.1-2-13.8-5.5L135.1 294.6c-4.5-4.2-7.1-10.1-7.1-16.3c0-12.3 10-22.3 22.3-22.3l57.7 0 0-96c0-17.7 14.3-32 32-32l32 0c17.7 0 32 14.3 32 32l0 96 57.7 0c12.3 0 22.3 10 22.3 22.3c0 6.2-2.6 12.1-7.1 16.3z"></path></svg><p>Drop Teilnehmer hier</p></div>';
+    memberInTeam.innerHTML =
+      '<div id="drag_target_overlay" class="first_drag"><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="circle-down" class="svg-inline--fa fa-circle-down fa-3x " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M256 0a256 256 0 1 0 0 512A256 256 0 1 0 256 0zM376.9 294.6L269.8 394.5c-3.8 3.5-8.7 5.5-13.8 5.5s-10.1-2-13.8-5.5L135.1 294.6c-4.5-4.2-7.1-10.1-7.1-16.3c0-12.3 10-22.3 22.3-22.3l57.7 0 0-96c0-17.7 14.3-32 32-32l32 0c17.7 0 32 14.3 32 32l0 96 57.7 0c12.3 0 22.3 10 22.3 22.3c0 6.2-2.6 12.1-7.1 16.3z"></path></svg><p>Drop Teilnehmer hier</p></div>';
 
     const memberAvailableEl = document.getElementById("member_available_dropzone");
     memberAvailableEl.innerHTML = "";
@@ -136,13 +143,16 @@ class AddTeam extends Component {
       newDragMember.classList.add("drag_member");
       newDragMember.setAttribute("draggable", true);
       newDragMember.setAttribute("data-member-id", member.id);
-      newDragMember.innerHTML = '<div class="drag_member_drop"></div><p>' + member.fullName + '</p><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="grip-vertical" class="svg-inline--fa fa-grip-vertical " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M40 352l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zm192 0l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 320c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 192l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 160c-22.1 0-40-17.9-40-40L0 72C0 49.9 17.9 32 40 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40z"></path></svg>';
+      newDragMember.innerHTML =
+        '<div class="drag_member_drop"></div><p>' +
+        member.fullName +
+        '</p><svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="grip-vertical" class="svg-inline--fa fa-grip-vertical " role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512"><path fill="currentColor" d="M40 352l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zm192 0l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 320c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 192l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40zM40 160c-22.1 0-40-17.9-40-40L0 72C0 49.9 17.9 32 40 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0zM232 32l48 0c22.1 0 40 17.9 40 40l0 48c0 22.1-17.9 40-40 40l-48 0c-22.1 0-40-17.9-40-40l0-48c0-22.1 17.9-40 40-40z"></path></svg>';
       memberAvailableEl.appendChild(newDragMember);
     }
 
     this.setState({ teamName: "" });
     this.setState({ teamChallengId: 0 });
-    this.setState({ imageSource: ""});
+    this.setState({ imageSource: "" });
   }
 
   async submitHandle(event) {
@@ -189,43 +199,117 @@ class AddTeam extends Component {
     teamJsonObj.name = this.state.teamName;
     teamJsonObj.challengeID = this.state.teamChallengId;
 
-    let fetchBodyData = new FormData();
-    fetchBodyData.append("file", teamImageEl.files[0]);
-    fetchBodyData.append("json", JSON.stringify(teamJsonObj));
+    if (this.props.params.action === "Add") {
+      let fetchBodyData = new FormData();
+      fetchBodyData.append("file", teamImageEl.files[0]);
+      fetchBodyData.append("json", JSON.stringify(teamJsonObj));
 
-    const teamResponse = await fetch("http://localhost:8081/teams/", { method: "POST", body: fetchBodyData, credentials: "include" });
-    const teamResData = await teamResponse.json();
+      const teamResponse = await fetch("http://localhost:8081/teams/", { method: "POST", body: fetchBodyData, credentials: "include" });
+      const teamResData = await teamResponse.json();
 
-    if (!teamResponse.ok) {
-      this.showInputErrorMessage("Beim erstellen des Teams ist etwas ist etwas schief gelaufen: " + teamResponse.status + " " + teamResponse.statusText + "!");
-      return;
-    }
+      if (!teamResponse.ok) {
+        this.showInputErrorMessage("Beim erstellen des Teams ist etwas ist etwas schief gelaufen: " + teamResponse.status + " " + teamResponse.statusText + "!");
+        return;
+      }
 
-    const teamMember = teamMembersEl.childNodes;    
-    for (let i = 1; i < teamMember.length; i++) {
+      const teamMember = teamMembersEl.childNodes;
+      for (let i = 1; i < teamMember.length; i++) {
+        let teamMemberJsonObj = {};
+        teamMemberJsonObj.memberID = teamMember[i].dataset.memberId;
+        teamMemberJsonObj.teamID = teamResData.id;
+        const teamMembersResponse = await fetch("http://localhost:8081/teamMembers/", {
+          method: "POST",
+          headers: { Accept: "application/json", "Content-Type": "application/json" }, //Needed: Backend will not accept without
+          body: JSON.stringify(teamMemberJsonObj),
+          credentials: "include",
+        });
+
+        if (!teamMembersResponse.ok) {
+          this.showInputErrorMessage(
+            "Beim erstellen des Teams ist etwas ist etwas schief gelaufen: " + teamMembersResponse.status + " " + teamMembersResponse.statusText + "!"
+          );
+          return;
+        }
+      }
+
+      const infoMessageEl = document.getElementById("form_info_message");
+      infoContainerEl.classList.add("success");
+      infoMessageEl.innerText = "Das Team wurde erfolgreich erstellt! Wenn du möchtests kannst du ein weiteres Team erstellen.";
+      window.scrollTo(0, 0);
+      this.clearAllInputs();
+    } else if (this.props.params.action === "Edit") {
+      //If a new Image is set it will update the image corresponding to the team
+      if (teamImageEl.files[0] != null) {
+        //Creates body data for the update image fetch
+        let fetchImageBodyData = new FormData();
+        fetchImageBodyData.append("file", teamImageEl.files[0]);
+
+        //Gives data to the Backend and updates the Image
+        let imageResponse = await fetch("http://localhost:8081/images/" + this.state.imageID + "/", { method: "PUT", body: fetchImageBodyData, credentials: "include" });
+        if (!imageResponse.ok) {
+          this.showInputErrorMessage("Beim editieren der Challenge ist etwas schief gelaufen: " + imageResponse.status + " " + imageResponse.statusText + "!");
+        }
+      }
+
+      const teamMemberResponse = await fetch("http://localhost:8081/members/teams/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
+      const teamMemberResData = await teamMemberResponse.json();
+
+      for (const teamMember of teamMemberResData) {
+        if (teamMembersEl.querySelector('[data-member-id="' + teamMember.userID + '"][class="drag_member"]') !== null) {
+          teamMembersEl.removeChild(document.querySelector('[data-member-id="' + teamMember.userID + '"][class="drag_member"]'));
+        } else {
+          const teamMemberIdResponse = await fetch("http://localhost:8081/teamMembers/teams/" + this.props.params.id + "/members/" + teamMember.userID + "/", { method: "GET", credentials: "include" });
+          const teamMemberIdResData = await teamMemberIdResponse.json();
+          const removeTeamMemberResponse = await fetch("http://localhost:8081/teamMembers/" + teamMemberIdResData.id + "/", { method: "DELETE", credentials: "include" });
+          if (!removeTeamMemberResponse.ok) {
+            this.showInputErrorMessage(
+              "Beim editieren des Teams ist etwas ist etwas schief gelaufen: " + removeTeamMemberResponse.status + " " + removeTeamMemberResponse.statusText + "!"
+            );
+            return;
+          }
+        }
+      }
+
       let teamMemberJsonObj = {};
-      teamMemberJsonObj.memberID = teamMember[i].dataset.memberId;
-      teamMemberJsonObj.teamID = teamResData.id;
-      const teamMembersResponse = await fetch("http://localhost:8081/teamMembers/", {
-        method: "POST",
-        headers: { Accept: "application/json", "Content-Type": "application/json" }, //Needed: Backend will not accept without
-        body: JSON.stringify(teamMemberJsonObj),
+      teamMemberJsonObj.teamID = this.props.params.id;
+      const teamMember = teamMembersEl.childNodes;
+
+      for (let i = 1; i < teamMember.length; i++) {
+        teamMemberJsonObj.memberID = teamMember[i].dataset.memberId;
+
+        const teamMembersResponse = await fetch("http://localhost:8081/teamMembers/", {
+          method: "POST",
+          headers: { Accept: "application/json", "Content-Type": "application/json" }, //Needed: Backend will not accept without
+          body: JSON.stringify(teamMemberJsonObj),
+          credentials: "include",
+        });
+
+        if (!teamMembersResponse.ok) {
+          this.showInputErrorMessage(
+            "Beim editieren des Teams ist etwas ist etwas schief gelaufen: " + teamMembersResponse.status + " " + teamMembersResponse.statusText + "!"
+          );
+          return;
+        }
+      }
+
+      const teamResponse = await fetch("http://localhost:8081/teams/" + this.props.params.id + "/?imageID=" + this.state.imageID, {
+        method: "PUT",
+        headers: { Accept: "application/json", "Content-Type": "application/json" },
+        body: JSON.stringify(teamJsonObj),
         credentials: "include",
       });
 
-      if (!teamMembersResponse.ok) {
-        this.showInputErrorMessage(
-          "Beim erstellen des Teams ist etwas ist etwas schief gelaufen: " + teamMembersResponse.status + " " + teamMembersResponse.statusText + "!"
-        );
+      if (!teamResponse.ok) {
+        this.showInputErrorMessage("Beim editieren des Teams ist etwas ist etwas schief gelaufen: " + teamResponse.status + " " + teamResponse.statusText + "!");
         return;
       }
-    }
 
-    const infoMessageEl = document.getElementById("form_info_message");
-    infoContainerEl.classList.add("success");
-    infoMessageEl.innerText = "Das Team wurde erfolgreich erstellt! Wenn du möchtests kannst du ein weiteres Team erstellen.";
-    window.scrollTo(0, 0);
-    this.clearAllInputs();
+      const infoMessageEl = document.getElementById("form_info_message");
+      infoContainerEl.classList.add("success");
+      infoMessageEl.innerText = "Die Änderungen wurden erfolgreich gespeichtert! Wenn du möchtests kannst du ein weiteres Team erstellen.";
+      window.scrollTo(0, 0);
+      this.clearAllInputs();
+    }
   }
 
   async componentDidMount() {
@@ -244,6 +328,31 @@ class AddTeam extends Component {
       memberObj.id = member.userID;
       this.state.allMembers.push(memberObj);
     }
+
+    if (this.props.params.action === "Edit") {
+      const teamResponse = await fetch("http://localhost:8081/teams/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
+      const teamResData = await teamResponse.json();
+      const imageResponse = await fetch("http://localhost:8081/images/" + teamResData.imageID + "/", { method: "GET", credentials: "include" });
+      const imageResData = await imageResponse.json();
+      const teamMemberResponse = await fetch("http://localhost:8081/members/teams/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
+      const teamMemberResData = await teamMemberResponse.json();
+
+      this.setState({ teamNameHeading: teamResData.name });
+      this.setState({ teamName: teamResData.name });
+      this.setState({ imageID: teamResData.imageID });
+      this.setState({ teamChallengId: teamResData.challengeID });
+      this.setState({ imageSource: "data:" + imageResData.type + ";base64, " + imageResData.data });
+
+      const memberInTeam = document.getElementById("member_in_team_dropzone");
+      document.getElementById("drag_target_overlay").classList.remove("first_drag");
+      this.setState({ firstDrag: false });
+
+      for (const member of teamMemberResData) {
+        const memberEl = document.querySelector('[data-member-id="' + member.userID + '"][class="drag_member"]');
+        memberEl.parentNode.removeChild(memberEl);
+        memberInTeam.appendChild(memberEl);
+      }
+    }
   }
 
   render() {
@@ -252,7 +361,8 @@ class AddTeam extends Component {
         <div className="section_container">
           <div className="section_content">
             <div className="heading_underline_center mg_b_10">
-              <span className="underline_center">Team hinzufügen</span>
+              {this.props.params.action === "Edit" && <span className="underline_center">Team {this.state.teamNameHeading} editieren</span>}
+              {this.props.params.action === "Add" && <span className="underline_center">Team hinzufügen</span>}
             </div>
             <div id="form_info_container" className="pd_1 mg_b_2">
               <span id="form_info_message"></span>
@@ -278,7 +388,7 @@ class AddTeam extends Component {
                 </div>
                 <div className="form_input_container pd_1 mg_t_2">
                   <div>
-                    <h2>Wähle ein Bild für dein Team (Optional)</h2>
+                    <h2>Wähle ein Bild für dein Team</h2>
                     <span className="form_input_description">
                       Das Bild repräsentiert dein Team in Challenges.
                       <br />
@@ -314,13 +424,17 @@ class AddTeam extends Component {
                     <div className="team_member_content mg_l_3">
                       <span className="form_input_description">Teilnehmer in deinem Team</span>
                       <div id="member_in_team_dropzone" className="member_in_team mg_t_1">
-                        <div id="drag_target_overlay" className="first_drag"><FontAwesomeIcon icon={faCircleDown} size="3x"/><p>Drop Teilnehmer hier</p></div>
+                        <div id="drag_target_overlay" className="first_drag">
+                          <FontAwesomeIcon icon={faCircleDown} size="3x" />
+                          <p>Drop Teilnehmer hier</p>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="center_content mg_t_2">
-                  <Button color="orange" txt="Team hinzufügen" type="submit" />
+                  {this.props.params.action === "Edit" && <Button color="orange" txt="Änderungen Speichern" type="submit" />}
+                  {this.props.params.action === "Add" && <Button color="orange" txt="Team hinzufügen" type="submit" />}
                 </div>
               </form>
             </div>
@@ -331,4 +445,4 @@ class AddTeam extends Component {
   }
 }
 
-export default AddTeam;
+export default withRouter(AddTeam);

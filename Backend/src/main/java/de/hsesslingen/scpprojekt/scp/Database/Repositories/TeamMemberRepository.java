@@ -3,9 +3,11 @@ package de.hsesslingen.scpprojekt.scp.Database.Repositories;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.TeamMember;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * TeamMember Repository
@@ -17,4 +19,8 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember,Long> {
 
     @Transactional
     public List<TeamMember> findAllByTeamId(long teamID);
+
+    @Transactional
+    @Query("select tm from TeamMember tm where tm.team.id = :teamID and tm.member.id = :memberID")
+    public Optional<TeamMember> findTeamMemberByTeamIdAndMemberId(long teamID, long memberID);
 }

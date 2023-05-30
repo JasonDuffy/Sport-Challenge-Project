@@ -159,4 +159,12 @@ public class MemberService {
     public List<MemberDTO> getAllMembersWhoseLastActivityWasMoreThanOneWeekAgo(){
         return memberConverter.convertEntityListToDtoList(memberRepository.findMembersWhoseLastActivityWasMoreThanOneWeekAgo());
     }
+
+    /**
+     * Returns all members who are part of the given teamID
+     * @return List of all members who are part of the given teamID
+     */
+    public List<MemberDTO> getAllMembersByTeamID(long teamID){
+        return memberConverter.convertEntityListToDtoList(memberRepository.findMembersByTeamID(teamID));
+    }
 }

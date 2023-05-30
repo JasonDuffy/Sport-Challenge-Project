@@ -5,6 +5,7 @@ import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ActivityService;
@@ -323,6 +324,29 @@ public class MemberController {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
             }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
+     * REST API for returning Team data of a given memberID
+     *
+     * @param memberID id of the Member
+     * @param request automatically filled by browser
+     * @return Team data corresponding to the given memberID 404 otherwise
+     */
+    @Operation(summary = "Get teams by memberID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Search successful",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = TeamDTO.class))}),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @GetMapping(path ="/{id}/teams/", produces = "application/json")
+    public ResponseEntity <List<TeamDTO>> getTeamByMemberID(@PathVariable("id") long memberID, HttpServletRequest request) {
+        if (saml2Service.isLoggedIn(request)){
+            return new ResponseEntity<>(memberService.getAllTeamsForMember(memberID), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

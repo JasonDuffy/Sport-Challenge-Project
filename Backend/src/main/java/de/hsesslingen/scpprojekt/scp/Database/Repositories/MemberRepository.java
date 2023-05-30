@@ -1,6 +1,7 @@
 package de.hsesslingen.scpprojekt.scp.Database.Repositories;
 
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -40,4 +41,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     @Transactional
     @Query("select m from Member m join Activity a on a.member.id=m.id where a.date = (select max(act.date) from Activity act where act.member.id=m.id) and a.date <= (current date - 7) and m.communication = true")
     List<Member> findMembersWhoseLastActivityWasMoreThanOneWeekAgo();
+
+    @Transactional
+    @Query("select t from Team t join TeamMember tm on t.id= tm.team.id join Member m on tm.member.id = m.id where m.id = :memberID ")
+    List<Team> findTeamsByMemberID(@Param("memberID") long memberID);
 }

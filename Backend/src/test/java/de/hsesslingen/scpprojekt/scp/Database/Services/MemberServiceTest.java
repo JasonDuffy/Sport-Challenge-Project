@@ -289,4 +289,13 @@ public class MemberServiceTest {
 
         verify(activityRepository).findActivitiesByChallenge_IDAndMember_ID(1L, 1L);
     }
+
+    /**
+     *  Test if getAllTeamsForMember works
+     */
+    @Test
+    public void membersByTeamIDTest() {
+        memberService.getAllTeamsForMember(1);
+        verify(memberService).getAllTeamsForMember(1);
+    }
 }

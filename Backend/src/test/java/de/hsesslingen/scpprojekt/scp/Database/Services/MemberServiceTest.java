@@ -296,6 +296,6 @@ public class MemberServiceTest {
     @Test
     public void membersByTeamIDTest() {
         memberService.getAllTeamsForMember(1);
-        verify(memberService).getAllTeamsForMember(1);
+        verify(memberRepository).findTeamsByMemberID(1);
     }
 }

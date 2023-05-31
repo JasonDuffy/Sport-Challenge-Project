@@ -73,7 +73,7 @@ public class MemberServiceTest {
             memberList.add(m);
 
             when(memberRepository.findMemberByEmail("test" + i + "@example.com")).thenReturn(m);
-            when(memberRepository.findById((long)i)).thenReturn(Optional.of(m));
+            when(memberRepository.findById(i)).thenReturn(Optional.of(m));
         }
 
         when(memberRepository.findAll()).thenReturn(memberList);

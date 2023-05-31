@@ -239,5 +239,12 @@ public class TeamServiceTest {
         verify(teamRepository).deleteAll();
     }
 
-
+    /**
+     *  Test if findMembersByTeamID works
+     */
+    @Test
+    public void membersByTeamIDTest() {
+        teamService.getAllMembersByTeamID(1);
+        verify(teamRepository).findMembersByTeamID(1);
+    }
 }

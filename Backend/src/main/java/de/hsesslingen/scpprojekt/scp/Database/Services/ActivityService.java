@@ -153,10 +153,12 @@ public class ActivityService {
 
         if(!activities.isEmpty()){
             Challenge challenge = activities.get(0).getChallengeSport().getChallenge();
+
             for (Activity act : activities){
                 if(act.getChallengeSport().getChallenge().getId() != challenge.getId()) //Checks if all activities are part of the same challenge
                     throw new InvalidActivitiesException("Activity by member " + act.getMember().getEmail() + " on " + act.getDate() + " in challenge "
                             + act.getChallengeSport().getChallenge().getName() + "is not part of Challenge " + challenge.getName());
+
                 sum += act.getTotalDistance();
             }
         }
@@ -167,8 +169,10 @@ public class ActivityService {
     public float getAVGDistanceForActivities(List<Activity> activities) throws InvalidActivitiesException, NotFoundException {
         Float sum = 0.0f;
         int i = 0;
+
         if(!activities.isEmpty()){
             Challenge challenge = activities.get(0).getChallengeSport().getChallenge();
+
             for (Activity act : activities){
                 if(act.getChallengeSport().getChallenge().getId() != challenge.getId()) //Checks if all activities are part of the same challenge
                     throw new InvalidActivitiesException("Activity by member " + act.getMember().getEmail() + " on " + act.getDate() + " in challenge "
@@ -220,6 +224,7 @@ public class ActivityService {
     public void calcTotalDistanceList(List<Activity> activities) throws InvalidActivitiesException, NotFoundException {
         if(!activities.isEmpty()){
             Challenge challenge = activities.get(0).getChallengeSport().getChallenge();
+
             for (Activity act : activities){
                 if(act.getChallengeSport().getChallenge().getId() != challenge.getId()) //Checks if all activities are part of the same challenge
                     throw new InvalidActivitiesException("Activity by member " + act.getMember().getEmail() + " on " + act.getDate() + " in challenge "

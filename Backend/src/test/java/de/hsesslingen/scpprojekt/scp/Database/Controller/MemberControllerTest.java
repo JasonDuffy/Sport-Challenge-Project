@@ -431,25 +431,6 @@ public class MemberControllerTest {
                 .andReturn();
     }
 
-    /**
-     * Test if 404 is correctly returned when no user activities are found
-     * @throws Exception by mockMvc
-     */
-    @Test
-    @WithMockUser
-    public void getAllActivitiesForUserTestNotFound() throws Exception {
-        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-
-        RequestBuilder request = MockMvcRequestBuilders
-                .get("/members/1/activities/").accept(MediaType.APPLICATION_JSON);
-
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isNotFound())
-                .andReturn();
-
-        verify(memberService).getActivitiesForUser(1L);
-    }
-
 
     /**
      * Test if calculated distance is returned correctly

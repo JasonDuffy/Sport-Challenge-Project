@@ -27,3 +27,48 @@
     border-top-right-radius: 16px;
     border-top-left-radius: 16px;
 }
+
+.last_activites_table {
+    border-spacing: 0;
+    width: 100%;
+    color: var(--doubleslash-text-grey);
+    font-size: 14px;
+    font-weight: bold;
+    border: 2px var(--doubleslash-text-grey) solid;
+}
+
+.last_activites_table>tbody>tr:nth-child(odd) {
+    background-color: white;
+}
+
+.last_activites_table>tbody>tr:nth-child(even) {
+    background-color: var(--doubleslash-lightblue);
+}
+
+.last_activites_table>thead>tr {
+    color: white;
+    background-color: var(--doubleslash-blue);
+}
+
+.last_activites_table>thead>tr>th {
+    padding: 5px;
+    width: 22.5%;
+}
+
+.last_activites_table>thead>tr>th:last-child {
+    padding: 5px;
+    width: 10%;
+}
+
+.last_activites_table>tbody>tr>td {
+    text-align: center;
+    padding: 5px;
+}
+
+.last_activites_table>tbody>tr>td:nth-child(2),
+.last_activites_table>tbody>tr>td:nth-child(4),
+.last_activites_table>thead>tr>th:nth-child(2),
+.last_activites_table>thead>tr>th:nth-child(4) {
+    border-left: 2px var(--doubleslash-text-grey) solid;
+    border-right: 2px var(--doubleslash-text-grey) solid;
+}

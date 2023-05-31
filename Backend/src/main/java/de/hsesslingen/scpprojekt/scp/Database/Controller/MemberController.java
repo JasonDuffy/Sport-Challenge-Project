@@ -249,19 +249,13 @@ public class MemberController {
             @ApiResponse(responseCode = "200", description = "Activities for User found.",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ActivityDTO.class))}),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
-            @ApiResponse(responseCode = "404", description = "No activities found.", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @GetMapping(path = "/{id}/activities/", produces = "application/json")
     public ResponseEntity<List<ActivityDTO>> getAllActivitiesForUser(@PathVariable("id") long userID, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)) {
             List<ActivityDTO> userActivities = memberService.getActivitiesForUser(userID);
-
-            if (!userActivities.isEmpty()) {
-                return new ResponseEntity<>(userActivities, HttpStatus.OK);
-            }
-
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(userActivities, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

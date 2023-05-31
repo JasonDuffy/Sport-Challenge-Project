@@ -75,7 +75,7 @@ class MyChallengeOverview extends Component {
     const dateOptions = {day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit"};
     let activityJsonObj = {};
     activityJsonObj.challengeSportID = this.state.activitySportId;
-    activityJsonObj.memberID = 1;
+    activityJsonObj.memberID = this.props.memberId;
     activityJsonObj.distance = this.state.activityDistance;
     activityJsonObj.date = new Date().toLocaleDateString("de-GE", dateOptions).replace(" ", "");
 

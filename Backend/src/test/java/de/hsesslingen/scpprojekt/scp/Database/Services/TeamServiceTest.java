@@ -260,4 +260,12 @@ public class TeamServiceTest {
         verify(activityRepository).findActivitiesByChallenge_ID(1);
         verify(teamMemberRepository).findAllByTeamId(1);
     }
+    /**  
+     * Test if findMembersByTeamID works
+     */
+    @Test
+    public void membersByTeamIDTest() {
+        teamService.getAllMembersByTeamID(1);
+        verify(teamRepository).findMembersByTeamID(1);
+    }
 }

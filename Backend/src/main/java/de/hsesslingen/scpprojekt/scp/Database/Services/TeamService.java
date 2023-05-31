@@ -3,12 +3,11 @@ package de.hsesslingen.scpprojekt.scp.Database.Services;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.TeamConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.TeamMember;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.*;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +40,9 @@ public class TeamService {
     @Autowired
     @Lazy
     ChallengeConverter challengeConverter;
+    @Autowired
+    @Lazy
+    MemberConverter memberConverter;
 
     @Autowired
     ActivityRepository activityRepository;
@@ -160,6 +162,11 @@ public class TeamService {
             }
         }
         return newA;
+    }
+
+    public List<MemberDTO> getAllMembersByTeamID(long teamID){
+        List<Member> members = teamRepository.findMembersByTeamID(teamID);
+        return  memberConverter.convertEntityListToDtoList(members);
     }
 
 }

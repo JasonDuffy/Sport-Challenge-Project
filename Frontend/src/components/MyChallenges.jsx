@@ -1,7 +1,6 @@
-import React from "react";
+import { Component, React } from "react";
 import MyChallengeOverview from "./MyChallengeOverview";
 import "./css/MyChallenges.css";
-import { Component } from "react";
 
 class MyChallenges extends Component {
   constructor(props) {
@@ -19,7 +18,11 @@ class MyChallenges extends Component {
     //let challengeIDsResponse = await fetch("http://localhost:8081/challenges/members/" + loggedInMemberResData.userID + "/", { method: "GET", credentials: "include" });
     let challengeIDsResponse = await fetch("http://localhost:8081/challenges/members/3/", { method: "GET", credentials: "include" });
     let challengeIDsResData = await challengeIDsResponse.json();
-    this.setState({ challengeIDs: challengeIDsResData});
+    this.setState({ challengeIDs: challengeIDsResData });
+
+    const pageLoading = document.getElementById("page_loading");
+    pageLoading.parentNode.removeChild(pageLoading);
+    document.getElementById("page").style.display = "block";
   }
 
   render() {

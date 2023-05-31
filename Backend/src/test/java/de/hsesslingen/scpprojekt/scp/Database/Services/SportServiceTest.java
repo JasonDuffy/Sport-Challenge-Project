@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests of BonusService
+ * Tests of SportService
  *
  * @author Tom Nguyen Dinh
  */
@@ -53,7 +53,7 @@ public class SportServiceTest {
             when(sportRepository.findById(i)).thenReturn(Optional.of(sp));
         }
         when(sportRepository.findAll()).thenReturn(sportList);
-        when(sportRepository.save(any(Sport.class))).then(AdditionalAnswers.returnsFirstArg()); //Return given bonus class
+        when(sportRepository.save(any(Sport.class))).then(AdditionalAnswers.returnsFirstArg()); //Return given sport class
     }
 
     /**

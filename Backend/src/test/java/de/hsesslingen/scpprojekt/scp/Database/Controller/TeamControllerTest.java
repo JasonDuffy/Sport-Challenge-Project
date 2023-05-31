@@ -3,13 +3,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.TeamConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ActivityService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ImageStorageService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.TeamService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockMultipartFile;
 
@@ -42,8 +44,7 @@ import java.util.regex.Pattern;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
@@ -63,7 +64,12 @@ public class TeamControllerTest {
     @MockBean
     ImageStorageService imageStorageService;
     @MockBean
+    ActivityService activityService;
+    @MockBean
     SAML2Service saml2Service;
+    @MockBean
+    private ActivityConverter activityConverter;
+
 
     /**
      * Test for get team by ID SUCCESS
@@ -443,4 +449,181 @@ public class TeamControllerTest {
                 .andReturn();
     }
 
+    /**
+     * Test for getting Distance for a team in a challenge Success
+     * @throws Exception Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void getDistanceSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+        List<ActivityDTO> a = new ArrayList<>();
+        ActivityDTO activity = new ActivityDTO();
+        activity.setId(1);
+        ActivityDTO activity1 = new ActivityDTO();
+        activity1.setId(2);
+        a.add(activity);
+        a.add(activity1);
+
+        when(teamService.getTeamChallengeActivity(1L,1L)).thenReturn(a);
+        when(activityService.getDistanceForActivities(any())).thenReturn(10f);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/teams/1/challenges/1/Distance/").accept(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        String content = res.getResponse().getContentAsString();
+        assertEquals(content, "10.0");
+
+        verify(teamService).getTeamChallengeActivity(1L,1L);
+        verify(activityService).getDistanceForActivities(any());
+    }
+
+    /**
+     * Test for internal Server Error
+     * @throws Exception Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void getDistanceServerError() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+        List<ActivityDTO> a = new ArrayList<>();
+        ActivityDTO activity = new ActivityDTO();
+        activity.setId(1);
+        ActivityDTO activity1 = new ActivityDTO();
+        activity1.setId(2);
+        a.add(activity);
+        a.add(activity1);
+
+        when(teamService.getTeamChallengeActivity(1L,1L)).thenReturn(a);
+        when(activityService.getDistanceForActivities(any())).thenThrow(InvalidActivitiesException.class);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/teams/1/challenges/1/Distance/").accept(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isInternalServerError())
+                .andReturn();
+        verify(teamService).getTeamChallengeActivity(1L,1L);
+        verify(activityService).getDistanceForActivities(any());
+    }
+
+    /**
+     *  Test for Unknown User thrown
+     * @throws Exception Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void getDistanceNotLoggedIn() throws Exception {
+        List<ActivityDTO> a = new ArrayList<>();
+        ActivityDTO activity = new ActivityDTO();
+        activity.setId(1);
+        ActivityDTO activity1 = new ActivityDTO();
+        activity1.setId(2);
+        a.add(activity);
+        a.add(activity1);
+
+        when(teamService.getTeamChallengeActivity(1L,1L)).thenReturn(a);
+        when(activityService.getDistanceForActivities(any())).thenThrow(InvalidActivitiesException.class);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/teams/1/challenges/1/Distance/").accept(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
+    /**
+     * Test for getting Distance for a team in a challenge Success
+     * @throws Exception Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void getAvgDistanceSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+        List<ActivityDTO> a = new ArrayList<>();
+        ActivityDTO activity = new ActivityDTO();
+        activity.setId(1);
+        ActivityDTO activity1 = new ActivityDTO();
+        activity1.setId(2);
+        a.add(activity);
+        a.add(activity1);
+
+        when(teamService.getTeamChallengeActivity(1L,1L)).thenReturn(a);
+        when(activityService.getAVGDistanceForActivities(any())).thenReturn(10f);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/teams/1/challenges/1/AvgDistance/").accept(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        String content = res.getResponse().getContentAsString();
+        assertEquals(content, "10.0");
+
+        verify(teamService).getTeamChallengeActivity(1L,1L);
+        verify(activityService).getAVGDistanceForActivities(any());
+    }
+
+    /**
+     * Test for Internal Server Error
+     * @throws Exception Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void getAvgDistanceServerError() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+        List<ActivityDTO> a = new ArrayList<>();
+        ActivityDTO activity = new ActivityDTO();
+        activity.setId(1);
+        ActivityDTO activity1 = new ActivityDTO();
+        activity1.setId(2);
+        a.add(activity);
+        a.add(activity1);
+
+        when(teamService.getTeamChallengeActivity(1L,1L)).thenReturn(a);
+        when(activityService.getAVGDistanceForActivities(any())).thenThrow(InvalidActivitiesException.class);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/teams/1/challenges/1/AvgDistance/").accept(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isInternalServerError())
+                .andReturn();
+        verify(teamService).getTeamChallengeActivity(1L,1L);
+        verify(activityService).getAVGDistanceForActivities(any());
+    }
+
+    /**
+     *  Test for Unknown user thrown
+     * @throws Exception Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void getAVGDistanceNotLoggedIn() throws Exception {
+        List<ActivityDTO> a = new ArrayList<>();
+        ActivityDTO activity = new ActivityDTO();
+        activity.setId(1);
+        ActivityDTO activity1 = new ActivityDTO();
+        activity1.setId(2);
+        a.add(activity);
+        a.add(activity1);
+
+        when(teamService.getTeamChallengeActivity(1L,1L)).thenReturn(a);
+        when(activityService.getAVGDistanceForActivities(any())).thenThrow(InvalidActivitiesException.class);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/teams/1/challenges/1/AvgDistance/").accept(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
 }

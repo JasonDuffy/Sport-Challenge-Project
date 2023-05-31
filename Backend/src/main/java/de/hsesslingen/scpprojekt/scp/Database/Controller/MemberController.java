@@ -354,7 +354,7 @@ public class MemberController {
     }
 
     
-     /* REST API for returning Member data of a given teamID
+     /** REST API for returning Member data of a given teamID
      *
      * @param teamID ID of the Team the members should be part of
      * @param request automatically filled by browser

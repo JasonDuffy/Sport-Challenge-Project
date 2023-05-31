@@ -3,6 +3,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Filler;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.*;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ActivityService;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportBonusService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -44,6 +45,8 @@ public class Filler {
     private TeamRepository teamRepository;
     @Autowired
     private TeamMemberRepository teamMemberRepository;
+    @Autowired
+    private ChallengeSportBonusRepository challengeSportBonusRepository;
     @Autowired
     @Lazy
     private ActivityService activityService;
@@ -124,6 +127,13 @@ public class Filler {
     Bonus finish = new Bonus(cp4, date4Start, date4End, 2, "Finished Project", "Aufgrund des beendeten Projekts gibt es mehr Kilometeer für alle!");
     Bonus lucky = new Bonus(cp5, date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
 
+    ChallengeSportBonus dou =new ChallengeSportBonus(cp1,doub);
+    ChallengeSportBonus ann =new ChallengeSportBonus(cp2,anni);
+    ChallengeSportBonus hol =new ChallengeSportBonus(cp3,holi);
+    ChallengeSportBonus finis =new ChallengeSportBonus(cp4,finish);
+    ChallengeSportBonus luck =new ChallengeSportBonus(cp5,lucky);
+
+
     @EventListener(ApplicationReadyEvent.class)
     public void fillDb() throws NotFoundException {
         try {
@@ -174,6 +184,10 @@ public class Filler {
 
         bonusRepository.saveAll(Arrays.asList(
                 doub, anni, holi, finish, lucky
+        ));
+
+        challengeSportBonusRepository.saveAll(Arrays.asList(
+                dou, ann, hol, finis, luck
         ));
 
         activityService.totalDistanceAll();

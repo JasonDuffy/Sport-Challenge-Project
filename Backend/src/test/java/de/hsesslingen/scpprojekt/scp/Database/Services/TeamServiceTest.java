@@ -1,18 +1,24 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.TeamConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
 import de.hsesslingen.scpprojekt.scp.Database.Filler.Filler;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.TeamMemberRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.TeamRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.checkerframework.checker.units.qual.A;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -50,6 +56,11 @@ public class TeamServiceTest {
     ImageStorageService imageStorageService;
     @MockBean
     Filler filler;
+
+    @MockBean
+    ActivityRepository activityRepository;
+    @MockBean
+    TeamMemberRepository teamMemberRepository;
 
     @Autowired
     TeamConverter teamConverter;
@@ -239,5 +250,14 @@ public class TeamServiceTest {
         verify(teamRepository).deleteAll();
     }
 
-
+    /**
+     *  Test for getTeamChallengeActivity Success
+     * @throws NotFoundException shouldn't be thrown
+     */
+    @Test
+    public void getActivitiesFromTeamAndChallengeTestSuccess() throws NotFoundException {
+        teamService.getTeamChallengeActivity(1L,1L);
+        verify(activityRepository).findActivitiesByChallenge_ID(1);
+        verify(teamMemberRepository).findAllByTeamId(1);
+    }
 }

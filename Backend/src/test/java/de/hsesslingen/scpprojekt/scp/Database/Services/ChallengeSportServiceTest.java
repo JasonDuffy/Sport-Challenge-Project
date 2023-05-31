@@ -104,7 +104,7 @@ public class ChallengeSportServiceTest {
         when(sportService.get(2L)).thenReturn(sp2);
         when(sportService.get(3L)).thenReturn(sp3);
 
-        when(challengeSportRepository.save(any(ChallengeSport.class))).then(AdditionalAnswers.returnsFirstArg()); //Return given bonus class
+        when(challengeSportRepository.save(any(ChallengeSport.class))).then(AdditionalAnswers.returnsFirstArg()); //Return given challengeSport class
     }
 
     /**

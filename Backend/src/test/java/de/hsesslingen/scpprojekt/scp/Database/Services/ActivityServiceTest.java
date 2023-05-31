@@ -86,6 +86,7 @@ public class ActivityServiceTest {
         cs.setId(2L);
         cs.setChallenge(c1);
         cs.setSport(sport);
+        cs.setFactor(1);
 
         Image image = new Image();
         image.setId(1L);
@@ -393,6 +394,69 @@ public class ActivityServiceTest {
 
         assertEquals(distance, activityService.getDistanceForActivities(challenge1Acts));
     }
+
+
+    /**
+     * Tests if getAvgDistanceForActivities correctly sums up the distance
+     * @throws InvalidActivitiesException Thrown when not all Activities are part of the same challenge
+     */
+    @Test
+    public void getAvgDistanceForActivitiesTest() throws InvalidActivitiesException, NotFoundException {
+        Sport sport = new Sport();
+        sport.setId(1);
+
+        Challenge challenge = new Challenge();
+        challenge.setId(1);
+
+        ChallengeSport challengeSport = new ChallengeSport();
+        challengeSport.setId(1);
+        challengeSport.setChallenge(challenge);
+        challengeSport.setSport(sport);
+
+        Bonus b1 = new Bonus();
+        b1.setChallengeSport(challengeSport);
+        b1.setId(1);
+        b1.setStartDate(LocalDateTime.of(2023, 4, 10, 8, 0));
+        b1.setEndDate(LocalDateTime.of(2023, 6, 4, 10, 0));
+        b1.setFactor(2.0f);
+
+        Bonus b2 = new Bonus();
+        b2.setChallengeSport(challengeSport);
+        b2.setId(2);
+        b2.setStartDate(LocalDateTime.of(2023, 4, 10, 8, 0));
+        b2.setEndDate(LocalDateTime.of(2023, 6, 4, 10, 0));
+        b2.setFactor(3.0f);
+
+        List<BonusDTO> bonusList = new ArrayList<>();
+        bonusList.add(bonusConverter.convertEntityToDto(b1)); bonusList.add(bonusConverter.convertEntityToDto(b2));
+
+        when(challengeService.getChallengeBonuses(1L)).thenReturn(bonusList);
+        when(challengeSportService.get(1L)).thenReturn(csConverter.convertEntityToDto(challengeSport));
+        List<Activity> challenge1Acts = new ArrayList<>();
+
+        for(Activity a : activityList){
+            challenge1Acts.add(a);
+        }
+
+        float distance = 10f;
+
+        for (Activity a : challenge1Acts){
+            float bonusfactor = 0.0f;
+
+            for(BonusDTO b : bonusList){
+                bonusfactor += b.getFactor();
+            }
+
+            if (bonusfactor == 0.0f)
+                bonusfactor = 1.0f;
+
+            distance += a.getDistance() * a.getChallengeSport().getFactor() * bonusfactor;
+        }
+
+        assertEquals(distance, activityService.getAVGDistanceForActivities(challenge1Acts));
+    }
+
+
 
     /**
      * Tests if empty array correctly results in 0 being returned

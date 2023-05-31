@@ -232,7 +232,7 @@ public class TeamController {
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "500", description = "Not all activities are part of the same challenge.", content = @Content)
     })
-    @GetMapping(path = "/{id}/challenges/{chid}/AvgDistance", produces = "application/json")
+    @GetMapping(path = "/{id}/challenges/{chid}/AvgDistance/", produces = "application/json")
     public ResponseEntity<Float> getAVGDistanceForTeamOfChallenge(@PathVariable("id") long teamID,@PathVariable("chid") long challengeID, HttpServletRequest request){
         if (saml2Service.isLoggedIn(request)){
             try{
@@ -264,7 +264,7 @@ public class TeamController {
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "500", description = "Not all activities are part of the same challenge.", content = @Content)
     })
-    @GetMapping(path = "/{id}/challenges/{chid}/Distance", produces = "application/json")
+    @GetMapping(path = "/{id}/challenges/{chid}/Distance/", produces = "application/json")
     public ResponseEntity<Float> getDistanceForTeamOfChallenge(@PathVariable("id") long teamID,@PathVariable("chid") long challengeID, HttpServletRequest request){
         if (saml2Service.isLoggedIn(request)){
             try{

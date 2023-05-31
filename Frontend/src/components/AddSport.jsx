@@ -18,6 +18,7 @@ class AddSport extends Component {
     this.state = {
       sportName: "",
       sportFactor: 1,
+      loading: false,
     };
 
     //bind is needed for changing the state
@@ -53,6 +54,9 @@ class AddSport extends Component {
 
   async submitHandle(event) {
     event.preventDefault();
+
+    //Deactivate Button and add the loading circle
+    this.setState({ loading: true });
 
     const infoContainerEl = document.getElementById("form_info_container");
     const infoMessageEl = document.getElementById("form_info_message");
@@ -93,6 +97,8 @@ class AddSport extends Component {
       }
     }
 
+    //Activates the again Button and removes the loading circle
+    this.setState({ loading: false });
   }
 
   async componentDidMount() {
@@ -136,8 +142,8 @@ class AddSport extends Component {
                   <input className="mg_t_2" type="number" value={this.state.sportFactor} onChange={this.sportFactorChange}></input>
                 </div>
                 <div className="center_content mg_t_2">
-                  {this.props.params.action === "Edit" && <Button color="orange" txt="Änderungen speichern" type="submit" />}
-                  {this.props.params.action === "Add" && <Button color="orange" txt="Sportart hinzufügen" type="submit" />}
+                  {this.props.params.action === "Edit" && <Button color="orange" txt="Änderungen speichern" type="submit" loading={this.state.loading} />}
+                  {this.props.params.action === "Add" && <Button color="orange" txt="Sportart hinzufügen" type="submit" loading={this.state.loading} />}
                 </div>
               </form>
             </div>

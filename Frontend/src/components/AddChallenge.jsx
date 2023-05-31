@@ -25,6 +25,7 @@ class AddChallenge extends Component {
       imageSource: "",
       imageID: 0,
       allSport: [],
+      loading: false,
     };
 
     //bind is needed for changing the state
@@ -112,6 +113,9 @@ class AddChallenge extends Component {
   //==================================================START COMPONENT FUNCTIONS==================================================
   async submitHandle(event) {
     event.preventDefault(); //prevents the reload
+
+    //Deactivate Button and add the loading circle
+    this.setState({ loading: true });
 
     //Vars needed in the function
     const challengeImageEl = document.getElementById("challenge_image");
@@ -325,6 +329,9 @@ class AddChallenge extends Component {
       }
     }
     //==================================================END FETCH TO BACKEND==================================================
+
+    //Activates the again Button and removes the loading circle
+    this.setState({ loading: false });
   }
 
   async componentDidMount() {
@@ -479,8 +486,8 @@ class AddChallenge extends Component {
                   </div>
                 </div>
                 <div className="center_content mg_t_2">
-                  {this.props.params.action === "Edit" && <Button color="orange" txt="Änderungen speichern" type="submit" />}
-                  {this.props.params.action === "Add" && <Button color="orange" txt="Challenge erstellen" type="submit" />}
+                  {this.props.params.action === "Edit" && <Button color="orange" txt="Änderungen speichern" type="submit" loading={this.state.loading} />}
+                  {this.props.params.action === "Add" && <Button color="orange" txt="Challenge erstellen" type="submit" loading={this.state.loading} />}
                 </div>
               </form>
             </div>

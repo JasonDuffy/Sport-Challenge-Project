@@ -94,6 +94,8 @@ public class EmailService {
         MimeMessage message = sender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
+        helper.setFrom(Objects.requireNonNull(environment.getProperty("spring.mail.username")));
+
         // Hide recipient email addresses when anonymous is true
         if(anonymous){
             helper.setTo(Objects.requireNonNull(environment.getProperty("spring.mail.username")));
@@ -186,7 +188,7 @@ public class EmailService {
             List<String> to = new ArrayList<>();
             to.add(member.getEmail());
 
-            String subject = "Wir vermissen dich, " + member.getFirstName() + " 🙁";
+            String subject = "Wir vermissen dich, " + mailMap.get("memberFirstName") + " 🙁";
             String htmlBody = thymeleafTemplateEngine.process("mail-reminder-template.html", thymeleafContext);
 
             sendHTMLMessage(to, subject, htmlBody, false);

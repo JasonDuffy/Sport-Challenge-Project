@@ -242,7 +242,7 @@ class Userprofile extends Component {
                                             onChange={this.userCommunicationChange}
                                             type="checkbox"
                                         ></input>
-                                        <a>Ich möchte bei neuen Challenges, Boni und längerer Abwesenheit per E-Mail kontaktiert werden.</a>
+                                        <a>Ich möchte bei neuen Challenges, Boni und Inaktivität per E-Mail kontaktiert werden.</a>
                                     </label>
                                 </div>
                                 <div className="center_content mg_t_2">

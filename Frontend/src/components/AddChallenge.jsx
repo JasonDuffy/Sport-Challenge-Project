@@ -364,6 +364,10 @@ class AddChallenge extends Component {
         document.querySelector('[data-sport-id="' + sportResData[i].sportID + '"][type="checkbox"]').checked = true;
       }
     }
+
+    const pageLoading = document.getElementById("page_loading");
+    pageLoading.parentNode.removeChild(pageLoading);
+    document.getElementById("page").style.display = "block";
   }
   //==================================================END COMPONENT FUNCTIONS==================================================
 

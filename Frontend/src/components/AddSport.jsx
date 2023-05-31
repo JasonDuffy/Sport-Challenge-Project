@@ -110,6 +110,10 @@ class AddSport extends Component {
       this.setState({ sportName: sportResData.name });
       this.setState({ sportFactor: sportResData.factor });
     }
+
+    const pageLoading = document.getElementById("page_loading");
+    pageLoading.parentNode.removeChild(pageLoading);
+    document.getElementById("page").style.display = "block";
   }
 
   render() {

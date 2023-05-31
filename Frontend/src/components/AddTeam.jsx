@@ -360,6 +360,10 @@ class AddTeam extends Component {
         memberInTeam.appendChild(memberEl);
       }
     }
+
+    const pageLoading = document.getElementById("page_loading");
+    pageLoading.parentNode.removeChild(pageLoading);
+    document.getElementById("page").style.display = "block";
   }
 
   render() {

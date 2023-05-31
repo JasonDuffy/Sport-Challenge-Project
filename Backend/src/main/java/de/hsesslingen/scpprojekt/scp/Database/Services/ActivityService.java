@@ -218,7 +218,6 @@ public class ActivityService {
     /**
      * Calculates the totalDistance for an activity
      * @param activities List of activities to be updated for totalDistance
-     * @return float totalDistance
      * @throws NotFoundException Challenge not found
      */
     public void calcTotalDistanceList(List<Activity> activities) throws InvalidActivitiesException, NotFoundException {

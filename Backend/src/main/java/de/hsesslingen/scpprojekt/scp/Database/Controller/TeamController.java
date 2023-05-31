@@ -2,6 +2,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ActivityService;
@@ -232,7 +233,7 @@ public class TeamController {
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "500", description = "Not all activities are part of the same challenge.", content = @Content)
     })
-    @GetMapping(path = "/{id}/challenges/{chid}/AvgDistance", produces = "application/json")
+    @GetMapping(path = "/{id}/challenges/{chid}/AvgDistance/", produces = "application/json")
     public ResponseEntity<Float> getAVGDistanceForTeamOfChallenge(@PathVariable("id") long teamID,@PathVariable("chid") long challengeID, HttpServletRequest request){
         if (saml2Service.isLoggedIn(request)){
             try{
@@ -264,7 +265,7 @@ public class TeamController {
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "500", description = "Not all activities are part of the same challenge.", content = @Content)
     })
-    @GetMapping(path = "/{id}/challenges/{chid}/Distance", produces = "application/json")
+    @GetMapping(path = "/{id}/challenges/{chid}/Distance/", produces = "application/json")
     public ResponseEntity<Float> getDistanceForTeamOfChallenge(@PathVariable("id") long teamID,@PathVariable("chid") long challengeID, HttpServletRequest request){
         if (saml2Service.isLoggedIn(request)){
             try{
@@ -279,4 +280,26 @@ public class TeamController {
         }
     }
 
+    /**
+     * REST API for returning Members  of a given TeamID
+     *
+     * @param teamID id of the Team that should be returned
+     * @param request automatically filled by browser
+     * @return Member data corresponding to the given teamID 404 otherwise
+     */
+    @Operation(summary = "Get members by teamID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Search successful",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = MemberDTO.class))}),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @GetMapping(path ="/{id}/members/", produces = "application/json")
+    public ResponseEntity <List<MemberDTO>> getTeamByMemberID(@PathVariable("id") long teamID, HttpServletRequest request) {
+        if (saml2Service.isLoggedIn(request)){
+            return new ResponseEntity<>(teamService.getAllMembersByTeamID(teamID), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
 }

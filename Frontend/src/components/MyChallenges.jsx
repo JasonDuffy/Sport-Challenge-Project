@@ -1,7 +1,6 @@
-import React from "react";
+import { Component, React } from "react";
 import MyChallengeOverview from "./MyChallengeOverview";
 import "./css/MyChallenges.css";
-import { Component } from "react";
 import MyChallengesTableRow from "./MyChallengesTableRow";
 
 class MyChallenges extends Component {
@@ -29,6 +28,10 @@ class MyChallenges extends Component {
     this.setState({ loggedInID: loggedInMemberResData.userID });
     this.setState({ activityIDs: activitiesResData })
     this.setState({ challengeIDs: challengeIDsResData });
+
+    const pageLoading = document.getElementById("page_loading");
+    pageLoading.parentNode.removeChild(pageLoading);
+    document.getElementById("page").style.display = "block";
   }
 
   render() {

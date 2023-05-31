@@ -23,8 +23,12 @@ public interface ActivityRepository extends JpaRepository<Activity,Long> {
     public List<Activity> findActivitiesByMember_Id(Long memberID);
 
     @Transactional
-    @Query("SELECT a FROM Activity a JOIN a.challengeSport cs where cs.challenge.id = :challengeID")
-    public List<Activity> findActivitiesByChallenge_ID(@Param("challengeID") long challengeID);
+    @Query("SELECT a FROM Activity a " +
+            "JOIN ChallengeSport cs ON cs.id=a.challengeSport.id " +
+            "JOIN Team t ON t.challenge.id=cs.challenge.id " +
+            "JOIN TeamMember tm ON tm.team.id=t.id AND tm.member.id=a.member.id " +
+            "WHERE cs.challenge.id = :challengeID")
+    public List<Activity> findActivitiesByChallenge_ID(@Param("challengeID") long challengeID); // Only returns activities of members that are part of a team
 
     @Transactional
     @Query("SELECT a FROM Activity a JOIN a.challengeSport cs where cs.challenge.id = :challengeID AND a.member.id = :memberID")

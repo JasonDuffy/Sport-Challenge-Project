@@ -49,7 +49,7 @@ function Navbar() {
                 <a className="top_nav_dropdown_item" href="/Add/Team/0">
                   Add Team
                 </a>
-                <a className="top_nav_dropdown_item" href="/Add/1/Bonus/0">
+                <a className="top_nav_dropdown_item" href="/Add/Bonus/0">
                   Add Bonus
                 </a>
                 <a className="top_nav_dropdown_item" href="/Add/Sport/0">
@@ -85,7 +85,7 @@ function Navbar() {
                   <a href="/Add/Team/0">Add Team</a>
                 </li>
                 <li>
-                  <a href="/Add/1/Bonus/0">Add Bonus</a>
+                  <a href="/Add/Bonus/0">Add Bonus</a>
                 </li>
                 <li>
                   <a href="/Add/Sport/0">Add Sport</a>

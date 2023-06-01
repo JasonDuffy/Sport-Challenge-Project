@@ -22,7 +22,9 @@ class AddBonus extends Component{
       bonusFactor: 1,
       bonusStartDate: "",
       bonusEndDate: "", 
-      allSport: []
+      challengeId: 0,
+      allSport: [],
+      challengesData: [],
     };
     
       //bind is needed for changing the state
@@ -31,7 +33,9 @@ class AddBonus extends Component{
       this.bonusFactorChange = this.bonusFactorChange.bind(this);
       this.bonusStartDateChange = this.bonusStartDateChange.bind(this);
       this.bonusEndDateChange = this.bonusEndDateChange.bind(this);
+      this.challengeIdChange = this.challengeIdChange.bind(this);
       this.submitHandle = this.submitHandle.bind(this);
+      this.allSport = this.fillSport.bind(this);
     }
 
   bonusNameChange(event) {
@@ -55,6 +59,26 @@ class AddBonus extends Component{
     this.setState({ bonusEndDate: event.target.value });
   }
 
+  challengeIdChange(event) {
+    this.setState({ challengeId: event.target.value }, () => {
+      this.fillSport();
+    });
+  }
+
+  //Fills the table with the accordings sports after picking a challenge
+  async fillSport() {
+    let challengeResponse = await fetch("http://localhost:8081/challenge-sports/challenges/" + this.state.challengeId + "/", { method: "GET", credentials: "include" });
+    let challengeResData = await challengeResponse.json();
+
+    for (const item of challengeResData) {
+      let sportResponse = await fetch("http://localhost:8081/sports/" + item.sportID + "/", { method: "GET", credentials: "include" });
+      let sportResData = await sportResponse.json();
+
+      item.name = sportResData.name;
+    }
+    this.setState({ allSport: challengeResData});
+  }
+
   clearAllInputs(){
     const sportCheckboxEl = document.getElementsByClassName("form_sport_checkbox");
 
@@ -63,10 +87,19 @@ class AddBonus extends Component{
     this.setState({ bonusFactor: 1 });
     this.setState({ bonusStartDate: "" });
     this.setState({ bonusEndDate: "" });
+    this.setState({ challengeId: 0 });
 
     for (const element of sportCheckboxEl) {
       element.checked = false;
     }
+  }
+
+  showInputErrorMessage(message) {
+    const infoContainerEl = document.getElementById("form_info_container");
+    const infoMessageEl = document.getElementById("form_info_message");
+    infoContainerEl.classList.add("error");
+    infoMessageEl.innerText = message;
+    window.scrollTo(0, 0);
   }
 
   async submitHandle(event) {
@@ -74,7 +107,6 @@ class AddBonus extends Component{
 
     const sportCheckboxEl = document.getElementsByClassName("form_sport_checkbox");
     const dateOptions = { day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit" };
-    const sportNumberEl = document.getElementsByClassName("form_sport_number");
     const infoContainerEl = document.getElementById("form_info_container");
     const infoMessageEl = document.getElementById("form_info_message");
 
@@ -83,7 +115,7 @@ class AddBonus extends Component{
     let startDateFormat = startDate.toLocaleDateString("de-GE", dateOptions).replace(" ", "");
     let endDateFormat = endDate.toLocaleDateString("de-GE", dateOptions).replace(" ", "");
     let sportCheckedId = [];
-    let bonusFactor = [];
+    
 
     infoContainerEl.classList.remove("error");
     infoContainerEl.classList.remove("success");
@@ -101,48 +133,75 @@ class AddBonus extends Component{
     bonusJsonObj.startDate = startDateFormat;
     bonusJsonObj.endDate = endDateFormat;
 
-    //Checks if min one Challenge is checked
+    for (let i = 0; i < sportCheckboxEl.length; i++) {
+      if (sportCheckboxEl[i].checked) {
+        sportCheckedId.push(sportCheckboxEl[i].dataset.sportId);
+      }
+    }
+
+    //Checks if min one Sport is checked
     if (sportCheckedId.length === 0) {
     this.showInputErrorMessage("Du musst mindestens eine Sportart für deinen Bonus auswählen!");
     return;
     }
 
+    //Checks if the a name is null
+    if (this.state.bonusName === "") {
+      this.showInputErrorMessage("Bitte gebe deinem Bonus einen Namen!");
+      return;
+    }
+
     //Checks for Edit in URL
     if(this.props.params.action === "Edit") {
-      let bonusResponse = await fetch("http://localhost:8081/bonus/" + this.props.params.id, + "/", { method: "PUT", body: JSON.stringify(bonusJsonObj), credentials: "include", headers: { "Content-Type": "application/json"}});
+      let bonusResponse = await fetch("http://localhost:8081/bonuses/" + this.props.params.id, + "/", { method: "PUT", body: JSON.stringify(bonusJsonObj), credentials: "include", headers: { "Content-Type": "application/json"}});
       if(bonusResponse.ok){
         infoContainerEl.classList.add("success");
-        infoMessageEl.innerHTML = "Der Bonus wurde erfolgreich editiert!";
+        infoMessageEl.innerHTML = "Der Bonus wurde erfolgreich aktualisiert!";
         window.scrollTo(0, 0);
         this.clearAllInputs();
       }else{
         this.showInputErrorMessage("Beim editieren der Sportart ist etwas schief gelaufen: " + bonusResponse.status + " " + bonusResponse.statusText + "!");
       }
     }else{
-
       //Gives data to the Backend and writes it into the DB
-      let bonusResponse = await fetch("http://localhost:8081/bonus/", { method: "POST", body: JSON.stringify(bonusJsonObj), credentials: "include", headers: { "Content-Type": "application/json"}});
-      if (bonusResponse.ok) {
-        infoContainerEl.classList.add("success");
-        infoMessageEl.innerHTML = "Der Bonus wurde erolgreich erstellt! Du kannst noch weitere Bonuse erstellen!";
-        window.scrollTo(0, 0);
-        this.clearAllInputs();
-      } else {
-        this.showInputErrorMessage("Beim erstellen des Bonuses ist etwas schief gelaufen: " + bonusResponse.status + " " + bonusResponse.statusText + "!");
-      }
-    }
 
-    for (let i = 0; i < sportCheckboxEl.length; i++) {
-      if (sportCheckboxEl[i].checked) {
-        sportCheckedId.push(sportCheckboxEl[i].dataset.sportId);
+      let challengeResponse = await fetch("http://localhost:8081/challenge-sport-bonuses/", { method: "GET", credentials: "include" });
+      if(challengeResponse.ok){
+        let challengeResData = [];
+        challengeResponse.json().then((response) => {
+          challengeResData.id = response.id;
+          challengeResData.challengeSportID = response.challengeSportID;
+          challengeResData.bonusID = response.bonusID;
+          //challengeResData = challengeResponse.JSON();
+    
+          let bonusResponse = fetch("http://localhost:8081/bonuses/" + challengeResData + "/", { method: "POST", body: JSON.stringify(bonusJsonObj), credentials: "include", headers: { "Content-Type": "application/json" }});
+          if (bonusResponse.ok) {
+            infoContainerEl.classList.add("success");
+            infoMessageEl.innerHTML = "Der Bonus wurde erolgreich erstellt! Du kannst noch weitere Bonuse erstellen!";
+            window.scrollTo(0, 0);
+            this.clearAllInputs();
+          } else {
+            this.showInputErrorMessage("Beim erstellen des Bonuses ist etwas schief gelaufen: " + bonusResponse.status + " " + bonusResponse.statusText + "!");
+          }
+        });
       }
+      
     }
   }
 
   async componentDidMount(){
-    //Loads all the Bonuses and writes them in to the table below
+    //Loads all the Sports and writes them in to the table below
+    let response = await fetch("http://localhost:8081/sports/", { method: "GET", credentials: "include" });
+    let resData = await response.json();
+    this.setState({ allSport: resData });
+
+    const challengeResponse = await fetch("http://localhost:8081/challenges/?type=current", { method: "GET", credentials: "include" });
+    const challengeResData = await challengeResponse.json();
+    this.setState({ challengesData: challengeResData });
+
+    //If it is in edit mode
     if ( this.props.params.action === "Edit"){
-      let bonusResponse = await fetch("http://localhost:8081/bonus/" + this.props.params.id, + "/", { method: "GET", credentials: "include" });
+      let bonusResponse = await fetch("http://localhost:8081/bonuses/" + this.props.params.id, + "/", { method: "GET", credentials: "include" });
       let bonusResData = await bonusResponse.json();
       const sportCheckboxEl = document.getElementsByClassName("form_sport_checkbox");
   
@@ -157,6 +216,9 @@ class AddBonus extends Component{
         element.checked = false;
       }
     }
+    const pageLoading = document.getElementById("page_loading");
+    pageLoading.parentNode.removeChild(pageLoading);
+    document.getElementById("page").style.display = "block";
   }
 
   render() {
@@ -174,7 +236,7 @@ class AddBonus extends Component{
             <div className="form_container">
               <form onSubmit={this.submitHandle}>
                 <div className="form_input_container pd_1">
-                  <h2>Was ist der Anlass des Bonuses?</h2>
+                  <h2>Gib dem Bonus einen Namen</h2>
                   <input
                     className="mg_t_2"
                     type="text"
@@ -185,7 +247,7 @@ class AddBonus extends Component{
                   ></input>
                 </div>
                 <div className="form_input_container pd_1 mg_t_2">
-                  <h2>Beschreibe den Bonus</h2>
+                  <h2>Was ist der Anlass des Bonuses?</h2>
                   <div className="form_input_description_content">
                     <textarea
                       className="mg_t_2"
@@ -195,6 +257,19 @@ class AddBonus extends Component{
                       placeholder="Beschreibe den Bonus"
                     ></textarea>
                   </div>
+                </div>
+                <div className="form_input_container pd_1 mg_t_2">
+                  <h2>Wähle eine Challenge für den Bonus aus</h2>
+                  <select className="mg_t_1" value={this.state.challengeId} onChange={this.challengeIdChange}>
+                    <option value={0} disabled>
+                      Challenge wählen
+                    </option>
+                    {this.state.challengesData.map((item) => (
+                      <option key={item.id} value={item.id}>
+                        {item.name}
+                      </option>
+                    ))}
+                  </select>
                 </div>
                   <div className="form_input_container pd_1 mg_t_2">
                     <h2>Welchen Faktor soll der Bonus haben?</h2>
@@ -214,19 +289,12 @@ class AddBonus extends Component{
                         <tr>
                         <th>Sportart</th>
                         <th>Select</th>
-                      </tr>
-                    </thead>
+                        </tr>
+                      </thead>
                     <tbody>
                       {this.state.allSport.map((item) => (
                        <tr key={item.id}>
                           <td>{item.name}</td>
-                          <td>
-                            <input
-                              className="form_sport_number"
-                              data-sport-id={item.id}
-                              type="number"
-                            ></input>
-                          </td>
                           <td>
                             <input
                               className="form_table_checkbox form_sport_checkbox"

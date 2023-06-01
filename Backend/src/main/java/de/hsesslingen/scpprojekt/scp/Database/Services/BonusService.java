@@ -107,11 +107,12 @@ public class BonusService {
             List<Activity> a = activityRepository.findActivitiesByChallengeSport_Id(cb.getChallengeSportID());
             activityService.calcTotalDistanceList(a);
         }
-       /* try {
+        
+       try {
             emailService.sendBonusMail(savedBonus);
         } catch (MessagingException e) {
             System.out.println("Bonus mail for bonus " + bonus.getName() + " could not be sent!");
-        }*/
+        }
 
         return bonusConverter.convertEntityToDto(savedBonus);
     }

@@ -123,23 +123,27 @@ public class EmailService {
      * @param bonus Bonus that members of the challenge should be notified about
      * @throws MessagingException Thrown by sendHTMLMessage
      */
-    public void sendBonusMail(Bonus bonus) throws MessagingException {
+    public void sendBonusMail(Bonus bonus) throws MessagingException, NotFoundException {
         Map<String, Object> mailMap = new HashMap<>();
         List <ChallengeSportBonus> csBList = challengeSportBonusConverter.convertDtoToEntityList(challengeSportBonusService.findCSBByBonusID(bonus.getId()));
-        for (ChallengeSportBonus cs : csBList){
-            mailMap.put("challengeName", cs.getChallengeSport().getChallenge().getName());
-            mailMap.put("bonusName", bonus.getName());
-            mailMap.put("startTime", bonus.getStartDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm")));
-            mailMap.put("endTime", bonus.getEndDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm")));
-            mailMap.put("factor", bonus.getFactor());
-            mailMap.put("description", bonus.getDescription());
-            mailMap.put("sport", cs.getChallengeSport().getSport().getName());
+
+        mailMap.put("challengeName", csBList.get(0).getChallengeSport().getChallenge().getName());
+        mailMap.put("bonusName", bonus.getName());
+        mailMap.put("startTime", bonus.getStartDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm")));
+        mailMap.put("endTime", bonus.getEndDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm")));
+        mailMap.put("factor", bonus.getFactor());
+        mailMap.put("description", bonus.getDescription());
+
+        StringBuilder sports = new StringBuilder(csBList.get(0).getChallengeSport().getSport().getName());
+        for(int i = 1; i < csBList.size(); i++){
+            sports.append(", ").append(csBList.get(i).getChallengeSport().getSport().getName());
         }
+        mailMap.put("sports", sports);
 
         Context thymeleafContext = new Context();
         thymeleafContext.setVariables(mailMap);
 
-        List<String> to = challengeService.getChallengeMembersEmails(bonus.getChallengeSport().getChallenge().getId());
+        List<String> to = challengeService.getChallengeMembersEmails(csBList.get(0).getChallengeSport().getChallenge().getId());
         String subject = mailMap.get("challengeName") + " hat einen neuen Bonus!";
         String htmlBody = thymeleafTemplateEngine.process("mail-bonus-template.html", thymeleafContext);
 
@@ -166,7 +170,7 @@ public class EmailService {
         List<ChallengeSport> challengeSportList = challengeSportConverter.convertDtoListToEntityList(challengeSportService.getAllChallengeSportsOfChallenge(challenge.getId()));
         StringBuilder sports = new StringBuilder(challengeSportList.get(0).getSport().getName() + " (Faktor: " + challengeSportList.get(0).getFactor() + ")");
         for(int i = 1; i < challengeSportList.size(); i++){
-            sports.append(", ").append(challengeSportList.get(i).getSport().getName()).append("(Faktor: ").append(challengeSportList.get(i).getFactor()).append(")");
+            sports.append(", ").append(challengeSportList.get(i).getSport().getName()).append(" (Faktor: ").append(challengeSportList.get(i).getFactor()).append(")");
         }
         mailMap.put("sports", sports);
 

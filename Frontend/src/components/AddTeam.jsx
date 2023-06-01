@@ -19,6 +19,7 @@ class AddTeam extends Component {
       imageSource: "",
       imageID: 0,
       firstDrag: true,
+      loading: false,
     };
 
     this.teamChallengIdChange = this.teamChallengIdChange.bind(this);
@@ -157,6 +158,9 @@ class AddTeam extends Component {
 
   async submitHandle(event) {
     event.preventDefault();
+
+    //Deactivate Button and add the loading circle
+    this.setState({ loading: true });
 
     const infoContainerEl = document.getElementById("form_info_container");
     const teamImageEl = document.getElementById("team_image");
@@ -310,6 +314,9 @@ class AddTeam extends Component {
       window.scrollTo(0, 0);
       this.clearAllInputs();
     }
+
+    //Activates the again Button and removes the loading circle
+    this.setState({ loading: false });
   }
 
   async componentDidMount() {
@@ -353,6 +360,10 @@ class AddTeam extends Component {
         memberInTeam.appendChild(memberEl);
       }
     }
+
+    const pageLoading = document.getElementById("page_loading");
+    pageLoading.parentNode.removeChild(pageLoading);
+    document.getElementById("page").style.display = "block";
   }
 
   render() {
@@ -433,8 +444,8 @@ class AddTeam extends Component {
                   </div>
                 </div>
                 <div className="center_content mg_t_2">
-                  {this.props.params.action === "Edit" && <Button color="orange" txt="Änderungen Speichern" type="submit" />}
-                  {this.props.params.action === "Add" && <Button color="orange" txt="Team hinzufügen" type="submit" />}
+                  {this.props.params.action === "Edit" && <Button color="orange" txt="Änderungen Speichern" type="submit" loading={this.state.loading} />}
+                  {this.props.params.action === "Add" && <Button color="orange" txt="Team hinzufügen" type="submit" loading={this.state.loading} />}
                 </div>
               </form>
             </div>

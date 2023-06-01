@@ -153,7 +153,6 @@ public class ActivityService {
 
         if(!activities.isEmpty()){
             Challenge challenge = activities.get(0).getChallengeSport().getChallenge();
-            List<Bonus> challengeBonuses = bonusConverter.convertDtoListToEntityList(challengeService.getChallengeBonuses(challenge.getId()));
 
             for (Activity act : activities){
                 if(act.getChallengeSport().getChallenge().getId() != challenge.getId()) //Checks if all activities are part of the same challenge
@@ -173,7 +172,7 @@ public class ActivityService {
 
         if(!activities.isEmpty()){
             Challenge challenge = activities.get(0).getChallengeSport().getChallenge();
-            List<Bonus> challengeBonuses = bonusConverter.convertDtoListToEntityList(challengeService.getChallengeBonuses(challenge.getId()));
+
             for (Activity act : activities){
                 if(act.getChallengeSport().getChallenge().getId() != challenge.getId()) //Checks if all activities are part of the same challenge
                     throw new InvalidActivitiesException("Activity by member " + act.getMember().getEmail() + " on " + act.getDate() + " in challenge "
@@ -219,13 +218,12 @@ public class ActivityService {
     /**
      * Calculates the totalDistance for an activity
      * @param activities List of activities to be updated for totalDistance
-     * @return float totalDistance
      * @throws NotFoundException Challenge not found
      */
     public void calcTotalDistanceList(List<Activity> activities) throws InvalidActivitiesException, NotFoundException {
         if(!activities.isEmpty()){
             Challenge challenge = activities.get(0).getChallengeSport().getChallenge();
-            List<Bonus> challengeBonuses = bonusConverter.convertDtoListToEntityList(challengeService.getChallengeBonuses(challenge.getId()));
+
             for (Activity act : activities){
                 if(act.getChallengeSport().getChallenge().getId() != challenge.getId()) //Checks if all activities are part of the same challenge
                     throw new InvalidActivitiesException("Activity by member " + act.getMember().getEmail() + " on " + act.getDate() + " in challenge "

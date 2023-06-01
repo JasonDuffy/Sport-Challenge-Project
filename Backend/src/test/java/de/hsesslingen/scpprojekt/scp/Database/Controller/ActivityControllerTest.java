@@ -190,8 +190,6 @@ public class ActivityControllerTest {
 
         RequestBuilder request = MockMvcRequestBuilders
                 .post("/activities/").accept(MediaType.APPLICATION_JSON)
-                .param("challengeSportID", "2")
-                .param("memberID", "0")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(a1));
 

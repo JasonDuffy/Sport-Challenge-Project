@@ -3,6 +3,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Filler;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.*;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ActivityService;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportBonusService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -132,6 +133,7 @@ public class Filler {
     ChallengeSportBonus holid = new ChallengeSportBonus(cp3,holi);
     ChallengeSportBonus finishe = new ChallengeSportBonus(cp4,finish);
     ChallengeSportBonus luckys = new ChallengeSportBonus(cp5,lucky);
+    
     @EventListener(ApplicationReadyEvent.class)
     public void fillDb() throws NotFoundException {
         try {

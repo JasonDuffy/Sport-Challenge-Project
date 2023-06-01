@@ -100,6 +100,8 @@ public class EmailService {
         MimeMessage message = sender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
 
+        helper.setFrom(Objects.requireNonNull(environment.getProperty("spring.mail.username")));
+
         // Hide recipient email addresses when anonymous is true
         if(anonymous){
             helper.setTo(Objects.requireNonNull(environment.getProperty("spring.mail.username")));
@@ -121,7 +123,7 @@ public class EmailService {
      * @param bonus Bonus that members of the challenge should be notified about
      * @throws MessagingException Thrown by sendHTMLMessage
      */
-   /* public void sendBonusMail(Bonus bonus) throws MessagingException, NotFoundException {
+    public void sendBonusMail(Bonus bonus) throws MessagingException {
         Map<String, Object> mailMap = new HashMap<>();
         List <ChallengeSportBonus> csBList = challengeSportBonusConverter.convertDtoToEntityList(challengeSportBonusService.findCSBByBonusID(bonus.getId()));
         for (ChallengeSportBonus cs : csBList){
@@ -137,14 +139,13 @@ public class EmailService {
         Context thymeleafContext = new Context();
         thymeleafContext.setVariables(mailMap);
 
-        for (ChallengeSportBonus cs : csBList) {
-            List<String> to = challengeService.getChallengeMembersEmails(cs.getChallengeSport().getChallenge().getId());
-            String subject = mailMap.get("challengeName") + " hat einen neuen Bonus!";
-            String htmlBody = thymeleafTemplateEngine.process("mail-bonus-template.html", thymeleafContext);
-            sendHTMLMessage(to, subject, htmlBody, true);
-        }
+        List<String> to = challengeService.getChallengeMembersEmails(bonus.getChallengeSport().getChallenge().getId());
+        String subject = mailMap.get("challengeName") + " hat einen neuen Bonus!";
+        String htmlBody = thymeleafTemplateEngine.process("mail-bonus-template.html", thymeleafContext);
+
+        sendHTMLMessage(to, subject, htmlBody, true);
     }
-*/
+
     /**
      * Notifies all members of a new challenge by email
      * @param challenge Challenge the members should be notified about
@@ -196,7 +197,7 @@ public class EmailService {
             List<String> to = new ArrayList<>();
             to.add(member.getEmail());
 
-            String subject = "Wir vermissen dich, " + member.getFirstName() + " 🙁";
+            String subject = "Wir vermissen dich, " + mailMap.get("memberFirstName") + " 🙁";
             String htmlBody = thymeleafTemplateEngine.process("mail-reminder-template.html", thymeleafContext);
 
             sendHTMLMessage(to, subject, htmlBody, false);

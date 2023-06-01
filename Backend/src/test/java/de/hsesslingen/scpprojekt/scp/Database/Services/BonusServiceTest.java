@@ -5,6 +5,7 @@ import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportBonusDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportBonusConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Filler.Filler;
@@ -35,7 +36,7 @@ import static org.mockito.Mockito.*;
 /**
  * Tests of BonusService
  *
- * @author Jason Patrick Duffy
+ * @author Jason Patrick Duffy, Tom Nguyen Dinh
  */
 @ActiveProfiles("test")
 @SpringBootTest
@@ -47,6 +48,9 @@ public class BonusServiceTest {
     @Autowired
     @Lazy
     ChallengeSportConverter csConverter;
+    @Autowired
+    @Lazy
+    ChallengeConverter challengeConverter;
 
     @Autowired
     @Lazy
@@ -60,9 +64,15 @@ public class BonusServiceTest {
     ChallengeSportBonusService challengeSportBonusService;
     @MockBean
     Filler filler;
-   /* @MockBean
+    @MockBean
+    ChallengeService challengeService;
+    @MockBean
+    SportService sportService;
+    @MockBean
+    ImageStorageService imageStorageService;
+    @MockBean
     EmailService emailService; // Mock so no emails are sent
-*/
+
     List<Bonus> bonusList;
 
     /**
@@ -149,8 +159,12 @@ public class BonusServiceTest {
      */
     @Test
     public void addTestSuccess() throws NotFoundException, InvalidActivitiesException {
+        Image im = new Image();
+        im.setId(1);
+
         Challenge c1 = new Challenge();
         c1.setId(1L);
+        c1.setImage(im);
 
         Sport sport = new Sport();
         sport.setId(1);
@@ -160,6 +174,9 @@ public class BonusServiceTest {
         cs.setSport(sport);
         cs.setChallenge(c1);
 
+        when(sportService.get(1L)).thenReturn(sport);
+        when(imageStorageService.get(1L)).thenReturn(im);
+        when(challengeService.get(1L)).thenReturn(challengeConverter.convertEntityToDto(c1));
         when(challengeSportService.get(1L)).thenReturn(csConverter.convertEntityToDto(cs));
         when(challengeSportBonusService.add(any(ChallengeSportBonusDTO.class))).thenReturn(any(ChallengeSportBonusDTO.class));
         long [] a ={1} ;
@@ -191,8 +208,12 @@ public class BonusServiceTest {
      */
     @Test
     public void updateTestSuccess() throws NotFoundException, InvalidActivitiesException {
+        Image im = new Image();
+        im.setId(1);
+
         Challenge c1 = new Challenge();
         c1.setId(1L);
+        c1.setImage(im);
 
         Sport sport = new Sport();
         sport.setId(1);
@@ -201,8 +222,10 @@ public class BonusServiceTest {
         cs.setId(1);
         cs.setSport(sport);
         cs.setChallenge(c1);
+        when(sportService.get(1L)).thenReturn(sport);
+        when(imageStorageService.get(1L)).thenReturn(im);
+        when(challengeService.get(1L)).thenReturn(challengeConverter.convertEntityToDto(c1));
         when(challengeSportService.get(1L)).thenReturn(csConverter.convertEntityToDto(cs));
-
         bonusList.get(1).setFactor(10.5f);
 
         BonusDTO newBonus = bonusService.update(0L, bonusConverter.convertEntityToDto(bonusList.get(1)));

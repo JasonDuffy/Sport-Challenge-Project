@@ -21,6 +21,8 @@ public interface TeamMemberRepository extends JpaRepository<TeamMember,Long> {
     public List<TeamMember> findAllByTeamId(long teamID);
 
     @Transactional
+    public List<TeamMember> findAllByMember_Id(long memberID);
+
     @Query("select tm from TeamMember tm where tm.team.id = :teamID and tm.member.id = :memberID")
     public Optional<TeamMember> findTeamMemberByTeamIdAndMemberId(long teamID, long memberID);
 }

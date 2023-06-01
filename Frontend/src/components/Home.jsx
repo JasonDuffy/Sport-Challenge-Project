@@ -21,6 +21,10 @@ class Home extends Component {
     response = await fetch("http://localhost:8081/challenges/?type=past", { method: "GET", credentials: "include" });
     resData = await response.json();
     this.setState({ pastChallenge: resData });
+
+    const pageLoading = document.getElementById("page_loading");
+    pageLoading.parentNode.removeChild(pageLoading);
+    document.getElementById("page").style.display = "block";
   }
 
   render() {

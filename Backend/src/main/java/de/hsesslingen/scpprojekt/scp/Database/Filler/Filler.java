@@ -128,53 +128,29 @@ public class Filler {
 
     Member joe = new Member("Joe.Doe@example.com", "Joe", "Doe", null, true);
     Member hanna = new Member("Hanna.Montana@example.com", "Hannah", "Montana", null, false);
-    Member god = new Member("God.Rick@example.com", "God", "Rick", null, false);
     Member jack = new Member("Jack.Sparrow@example.com", "Jack", "Sparrow", null, false);
-    Member anakin = new Member("Anakin.Skywalker@example.com", "Anakin", "Skywalker", null, false);
     Member kevin = new Member("kevin.kevin@example.com", "Kevin", "Kevin", null, false);
-    Member laura = new Member("laura.kimpel@example.com", "Laura", "Kimpel", null, true);
     Member darth = new Member("darth.vader@example.com", "Darth", "Vader", null, true);
-    Member spongebob = new Member("spongebob.schwammkopf@example.com", "Spongebob", "Schwammkopf", null, false);
     Member ryu = new Member("ryu.hayabusa@example.com", "Ryu", "Hayabusa", null, false);
-    Member dante = new Member("dante.sparda@example.com", "Dante", "Sparda", null, false);
     Member crash = new Member("crash.bandicoot@example.com", "Crash", "Bandicoot", null, false);
-    Member david = new Member("david.sprung@example.com", "David", "Sprung", null, false);
     Member vergil = new Member("vergil.sparda@example.com", "Vergil", "Sparda", null, false);
-    Member master = new Member("master.chief@example.com", "Master", "Chief", null, false);
     Member cloud = new Member("cloud.strife@example.com", "Cloud", "Strife", null, false);
-    Member tifa = new Member("tifa.lockhart@example.com", "Tifa", "Lockhart", null, false);
     Member aerith = new Member("aerith.gainsborough@example.com", "Aerith", "Gainsborough", null, false);
-    Member squall = new Member("squall.leonheart@example.com", "Squall", "Leonheart", null, false);
     Member donald = new Member("donald.trump@example.com", "Donald", "Trump", null, false);
-    Member barrack = new Member("barrack.obama@example.com", "Barrack", "Obama", null, false);
     Member zack = new Member("zack.fair@example.com", "Zack", "Fair", null, false);
-    Member oliver = new Member("oliver.sikes@example.com", "Oliver", "Sikes", null, false);
     Member ryan = new Member("ryan.reynolds@example.com", "Ryan", "Reynolds", null, false);
-    Member dwayne = new Member("dwayne.johnson@example.com", "Dwayne", "Johnson", null, false);
     Member dan = new Member("dan.reynolds@example.com", "Dan", "Reynolds", null, false);
-    Member obiwan = new Member("obiwan.kenobi@example.com", "Obiwan", "Kenobi", null, false);
     Member luke = new Member("luke.skywalker@example.com", "Luke", "Skywalker", null, false);
-    Member boba = new Member("boba.fet@example.com", "Boba", "Fet", null, false);
     Member arnold = new Member("arnold.schwarznegger@example.com", "Arnold", "Schwarznegger", null, false);
-    Member leonardo = new Member("leonardo.davinci@example.com", "Leonardo", "Davinci", null, false);
     Member elon = new Member("elon.musk@example.com", "Elon", "Musk", null, false);
-    Member mickey = new Member("mickey.mouse@example.com", "Mickey", "Mouse", null, false);
     Member minnie = new Member("minnie.mouse@example.com", "Minnie", "Mouse", null, false);
-    Member lara = new Member("lara.croft@example.com", "Lara", "Croft", null, false);
     Member davis = new Member("davis.schulz@example.com", "Davis", "Schulz", null, false);
-    Member morgan = new Member("morgan.freeman@example.com", "Morgan", "Freeman", null, false);
     Member jim = new Member("jim.carry@example.com", "Jim", "Carry", null, false);
-    Member will = new Member("will.smith@example.com", "Will", "Smith", null, false);
     Member terry = new Member("terry.cruise@example.com", "Terry", "Cruise", null, false);
-    Member noctis = new Member("noctis.lucis@example.com", "Noctis", "Lucis", null, false);
     Member jeeper = new Member("jeeper.creeper@example.com", "Jeeper", "Creeper", null, false);
-    Member achim = new Member("achim.lutz@example.com", "Achim", "Lutz", null, false);
     Member felix = new Member("felix.kjellberg@example.com", "Felix", "Kjellberg", null, false);
-    Member mark = new Member("mark.fischbach@example.com", "Mark", "Fischbach", null, false);
     Member optimus = new Member("optimus.prime@example.com", "Optimus", "Prime", null, false);
-    Member bumble = new Member("bumble.bee@example.com", "Bumble", "Bee", null, false);
     Member helene = new Member("helene.fischer@example.com", "Helene", "Fischer", null, false);
-    Member robin = new Member("robin.hackh@example.com", "Robin", "Hackh", null, false);
 
     Image pic1 = new Image("Hustle", "image/jpg", type1);
     Image pic2 = new Image("Bustle", "image/jpg", type2);
@@ -219,130 +195,100 @@ public class Filler {
 
 
     Team red = new Team("Team Red", pic1, hustle);
-    Team redHater = new Team("Team RedHater", pic1, hustle);
-    Team blue = new Team("Team Blue", pic2, hustle);
-    Team blue2 = new Team("Team Blue2", pic2, bustle);
+    Team blue = new Team("Team Blue2", pic2, bustle);
     Team blueHater = new Team("Team Blue Hater", pic2, bustle);
     Team besten = new Team("Die Besten", pic3, anniversary);
     Team polka = new Team("Team Polka", pic3, anniversary);
-    Team social = new Team("Team Social", pic3, anniversary);
     Team antiSocial = new Team("Team Anti Social", pic3, anniversary);
     Team anderen = new Team("Die Anderen", pic4, one);
-    Team blaze = new Team("Team Blaze", pic4, one);
     Team chase = new Team("Team Chase", pic4, one);
     Team musketiere = new Team("Die drei Musketiere und ihre Handlanger", pic5, summer);
     Team dynamite = new Team("Team Dynamite", pic5, summer);
-    Team villains = new Team("Die Villains", pic5, ps5);
     Team gamer = new Team("Team Gamer", pic5, ps5);
-    Team powerRangers = new Team("Die Power Rangers", pic5, spaceday);
+
     Team autobots = new Team("Team Autobots", pic5, spaceday);
     Team metalheads = new Team("Die Metal Heads", pic5, winter);
-    Team schlagerfans = new Team("Die Schlagerfans", pic5, winter);
 
     TeamMember tm1 = new TeamMember(red, joe);
     TeamMember tm2 = new TeamMember(red, hanna);
-    TeamMember tm3 = new TeamMember(red, god);
-    TeamMember tm4 = new TeamMember(red, jack);
-    TeamMember tm5 = new TeamMember(redHater, anakin);
-    TeamMember tm6 = new TeamMember(redHater, kevin);
-    TeamMember tm7 = new TeamMember(blue, laura);
-    TeamMember tm8 = new TeamMember(blue, darth);
-    TeamMember tm9 = new TeamMember(blue2, spongebob);
-    TeamMember tm10 = new TeamMember(blue2, ryu);
-    TeamMember tm11 = new TeamMember(blue2, dante);
-    TeamMember tm12 = new TeamMember(blueHater, crash);
-    TeamMember tm13 = new TeamMember(blueHater, david);
-    TeamMember tm14 = new TeamMember(besten, vergil);
-    TeamMember tm15 = new TeamMember(besten, master);
-    TeamMember tm16 = new TeamMember(besten, cloud);
-    TeamMember tm17 = new TeamMember(polka, tifa);
-    TeamMember tm18 = new TeamMember(polka, aerith);
-    TeamMember tm19 = new TeamMember(social, squall);
-    TeamMember tm20 = new TeamMember(social, donald);
-    TeamMember tm21 = new TeamMember(antiSocial, barrack);
-    TeamMember tm22 = new TeamMember(antiSocial, zack);
-    TeamMember tm23 = new TeamMember(anderen, oliver);
-    TeamMember tm24 = new TeamMember(anderen, ryan);
-    TeamMember tm25 = new TeamMember(anderen, dwayne);
-    TeamMember tm26 = new TeamMember(blaze, dan);
-    TeamMember tm27 = new TeamMember(blaze, obiwan);
-    TeamMember tm28 = new TeamMember(chase, luke);
-    TeamMember tm29 = new TeamMember(chase, boba);
-    TeamMember tm30 = new TeamMember(chase, arnold);
-    TeamMember tm31 = new TeamMember(musketiere, leonardo);
-    TeamMember tm32 = new TeamMember(musketiere, elon);
-    TeamMember tm33 = new TeamMember(dynamite, jeeper);
-    TeamMember tm34 = new TeamMember(dynamite, achim);
-    TeamMember tm35 = new TeamMember(villains, mickey);
-    TeamMember tm36 = new TeamMember(villains, minnie);
-    TeamMember tm37 = new TeamMember(villains, lara);
-    TeamMember tm38 = new TeamMember(gamer, felix);
-    TeamMember tm39 = new TeamMember(gamer, mark);
-    TeamMember tm40 = new TeamMember(powerRangers, davis);
-    TeamMember tm41 = new TeamMember(powerRangers, morgan);
-    TeamMember tm42 = new TeamMember(powerRangers, jim);
-    TeamMember tm43 = new TeamMember(autobots, optimus);
-    TeamMember tm44 = new TeamMember(autobots, bumble);
-    TeamMember tm45 = new TeamMember(metalheads, will);
-    TeamMember tm46 = new TeamMember(metalheads, terry);
-    TeamMember tm47 = new TeamMember(metalheads, noctis);
-    TeamMember tm48 = new TeamMember(schlagerfans, helene);
-    TeamMember tm49 = new TeamMember(schlagerfans, robin);
+    TeamMember tm3 = new TeamMember(blue, jack);
+    TeamMember tm4 = new TeamMember(blueHater, kevin);
+    TeamMember tm5 = new TeamMember(blue, darth);
+    TeamMember tm6 = new TeamMember(blue, ryu);
+    TeamMember tm7 = new TeamMember(blueHater, crash);
+    TeamMember tm8 = new TeamMember(besten, vergil);
+    TeamMember tm9 = new TeamMember(besten, cloud);
+    TeamMember tm10 = new TeamMember(polka, aerith);
+    TeamMember tm11 = new TeamMember(anderen, donald);
+    TeamMember tm12 = new TeamMember(antiSocial, zack);
+    TeamMember tm13 = new TeamMember(anderen, ryan);
+    TeamMember tm14 = new TeamMember(antiSocial, dan);
+    TeamMember tm15 = new TeamMember(chase, luke);
+    TeamMember tm16 = new TeamMember(chase, arnold);
+    TeamMember tm17 = new TeamMember(musketiere, elon);
+    TeamMember tm18 = new TeamMember(dynamite, jeeper);
+    TeamMember tm19 = new TeamMember(autobots, minnie);
+    TeamMember tm20 = new TeamMember(gamer, felix);
+    TeamMember tm21 = new TeamMember(metalheads, davis);
+    TeamMember tm22 = new TeamMember(dynamite, jim);
+    TeamMember tm23 = new TeamMember(autobots, optimus);
+    TeamMember tm24 = new TeamMember(metalheads, terry);
+    TeamMember tm25 = new TeamMember(metalheads, helene);
 
     Activity act1 = new Activity(cp1a, joe, 4, date1);
     Activity act2 = new Activity(cp1b, hanna, 3, date2);
-    Activity act3 = new Activity(cp1c, god, 5, date3);
-    Activity act4 = new Activity(cp2a, spongebob, 7, date4);
+    Activity act3 = new Activity(cp1c, hanna, 5, date3);
+    Activity act4 = new Activity(cp2a, ryu, 7, date4);
     Activity act5 = new Activity(cp2b, ryu, 2, date5);
     Activity act6 = new Activity(cp3, vergil, 8, date6);
-    Activity act7 = new Activity(cp4a, oliver, 1, date7);
+    Activity act7 = new Activity(cp4a, ryan, 1, date7);
     Activity act8 = new Activity(cp4b, ryan, 2, date8);
-    Activity act9 = new Activity(cp4c, dwayne, 3, date9);
+    Activity act9 = new Activity(cp4c, dan, 3, date9);
     Activity act10 = new Activity(cp4d, dan, 4, date10);
-    Activity act11 = new Activity(cp4e, obiwan, 5, date11);
-    Activity act12 = new Activity(cp5a, leonardo, 6, date12);
+    Activity act11 = new Activity(cp4e, ryan, 5, date11);
+    Activity act12 = new Activity(cp5a, jeeper, 6, date12);
     Activity act13 = new Activity(cp5b, elon, 1, date13);
     Activity act14 = new Activity(cp5c, jeeper, 2, date14);
-    Activity act15 = new Activity(cp6a, mickey, 6, date15);
+    Activity act15 = new Activity(cp6a, minnie, 6, date15);
     Activity act16 = new Activity(cp6b, minnie, 5, date16);
     Activity act17 = new Activity(cp7, davis, 2, date17);
-    Activity act18 = new Activity(cp8, will, 3, date18);
+    Activity act18 = new Activity(cp8, terry, 3, date18);
     Activity act19 = new Activity(cp1a, jack, 4, date19);
-    Activity act20 = new Activity(cp1b, anakin, 9, date20);
-    Activity act21 = new Activity(cp1c, laura, 7, date21);
-    Activity act22 = new Activity(cp2a, dante, 3, date22);
+    Activity act20 = new Activity(cp1b, jack, 9, date20);
+    Activity act21 = new Activity(cp1c, hanna, 7, date21);
+    Activity act22 = new Activity(cp2a, crash, 3, date22);
     Activity act23 = new Activity(cp2b, crash, 2, date23);
-    Activity act24 = new Activity(cp3, master, 6, date24);
+    Activity act24 = new Activity(cp3, vergil, 6, date24);
     Activity act25 = new Activity(cp4a, luke, 3, date25);
-    Activity act26 = new Activity(cp4b, boba, 8, date26);
+    Activity act26 = new Activity(cp4b, arnold, 8, date26);
     Activity act27 = new Activity(cp4c, arnold, 1, date27);
-    Activity act28 = new Activity(cp4d, oliver, 1, date28);
+    Activity act28 = new Activity(cp4d, ryan, 1, date28);
     Activity act29 = new Activity(cp4e, ryan, 2, date29);
-    Activity act30 = new Activity(cp5a, achim, 3, date30);
-    Activity act31 = new Activity(cp5b, leonardo, 3, date31);
+    Activity act30 = new Activity(cp5a, elon, 3, date30);
+    Activity act31 = new Activity(cp5b, elon, 3, date31);
     Activity act32 = new Activity(cp5c, elon, 4, date32);
-    Activity act33 = new Activity(cp6a, lara, 5, date33);
+    Activity act33 = new Activity(cp6a, felix, 5, date33);
     Activity act34 = new Activity(cp6b, felix, 6, date34);
-    Activity act35 = new Activity(cp7, morgan, 2, date35);
+    Activity act35 = new Activity(cp7, davis, 2, date35);
     Activity act36 = new Activity(cp8, terry, 4, date36);
     Activity act37 = new Activity(cp1a, darth, 4, date37);
     Activity act38 = new Activity(cp1b, joe, 3, date38);
     Activity act39 = new Activity(cp1c, hanna, 5, date39);
-    Activity act40 = new Activity(cp2a, david, 7, date40);
-    Activity act41 = new Activity(cp2b, spongebob, 2, date41);
-    Activity act42 = new Activity(cp3, tifa, 3, date42);
-    Activity act43 = new Activity(cp4a, dwayne, 1, date43);
+    Activity act40 = new Activity(cp2a, ryu, 7, date40);
+    Activity act41 = new Activity(cp2b, crash, 2, date41);
+    Activity act42 = new Activity(cp3, vergil, 3, date42);
+    Activity act43 = new Activity(cp4a, dan, 1, date43);
     Activity act44 = new Activity(cp4b, dan, 10, date44);
-    Activity act45 = new Activity(cp4c, obiwan, 9, date45);
+    Activity act45 = new Activity(cp4c, luke, 9, date45);
     Activity act46 = new Activity(cp4d, luke, 4, date46);
     Activity act47 = new Activity(cp4e, arnold, 2, date47);
     Activity act48 = new Activity(cp5a, jeeper, 5, date48);
-    Activity act49 = new Activity(cp5b, achim, 6, date49);
-    Activity act50 = new Activity(cp5c, leonardo, 7, date50);
-    Activity act51 = new Activity(cp6a, mark, 8, date51);
-    Activity act52 = new Activity(cp6b, mickey, 3, date52);
+    Activity act49 = new Activity(cp5b, jeeper, 6, date49);
+    Activity act50 = new Activity(cp5c, elon, 7, date50);
+    Activity act51 = new Activity(cp6a, felix, 8, date51);
+    Activity act52 = new Activity(cp6b, minnie, 3, date52);
     Activity act53 = new Activity(cp7, optimus, 2, date53);
-    Activity act54 = new Activity(cp8, robin, 1, date54);
+    Activity act54 = new Activity(cp8, helene, 1, date54);
 
 
     Bonus doubA = new Bonus(cp1a, date1Start, date1End, 2, "DoubleXP Weekend", "Doppelte Kilomete übers Wochenende");
@@ -383,53 +329,29 @@ public class Filler {
         memberRepository.saveAll(Arrays.asList(
                 joe,
                 hanna,
-                god,
                 jack,
-                anakin,
                 kevin,
-                laura,
                 darth,
-                spongebob,
                 ryu,
-                dante,
                 crash,
-                david,
                 vergil,
-                master,
                 cloud,
-                tifa,
                 aerith,
-                squall,
                 donald,
-                barrack,
                 zack,
-                oliver,
                 ryan,
-                dwayne,
                 dan,
-                obiwan,
                 luke,
-                boba,
                 arnold,
-                leonardo,
                 elon,
-                mickey,
                 minnie,
-                lara,
                 davis,
-                morgan,
                 jim,
-                will,
                 terry,
-                noctis,
                 jeeper,
-                achim,
                 felix,
-                mark,
                 optimus,
-                bumble,
-                helene,
-                robin
+                helene
         ));
 
         imageRepository.saveAll(Arrays.asList(
@@ -450,16 +372,13 @@ public class Filler {
         ));
 
         teamRepository.saveAll(Arrays.asList(
-                red, redHater, blue, blue2, blueHater, besten, polka, social, antiSocial,
-                anderen, blaze, chase, musketiere, dynamite, villains, gamer, powerRangers, autobots,
-                metalheads, schlagerfans
+                red, blue, blueHater, besten, polka, antiSocial, anderen, chase, musketiere,
+                dynamite, gamer, autobots, metalheads
         ));
 
         teamMemberRepository.saveAll(Arrays.asList(
                 tm1, tm2, tm3, tm4, tm5, tm6, tm7, tm8, tm9, tm10, tm11, tm12, tm13, tm14, tm15,
-                tm16, tm17, tm18, tm19, tm20, tm21, tm22, tm23, tm24, tm25, tm26, tm27, tm28, tm29,
-                tm30, tm31, tm32, tm33, tm34, tm35, tm36, tm37, tm38, tm39, tm40, tm41, tm42, tm43,
-                tm44, tm45, tm46, tm47, tm48, tm49
+                tm16, tm17, tm18, tm19, tm20, tm21, tm22, tm23, tm24, tm25
         ));
 
         activityRepository.saveAll(Arrays.asList(

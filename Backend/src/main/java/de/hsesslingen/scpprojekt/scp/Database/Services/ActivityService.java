@@ -8,19 +8,21 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
+import de.hsesslingen.scpprojekt.scp.Exceptions.InactiveChallengeException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * Service of the activity entity
  *
- * @author Jason Patrick Duffy
+ * @author Jason Patrick Duffy, Tom Nguyen Dinh
  */
 
 @Service
@@ -71,11 +73,16 @@ public class ActivityService {
      * @param activity         ActivityDTO object to be added to DB
      * @return Added Activity DTO object
      */
-    public ActivityDTO add(ActivityDTO activity) throws NotFoundException {
+    public ActivityDTO add(ActivityDTO activity) throws NotFoundException, InactiveChallengeException {
         Activity a = activityConverter.convertDtoToEntity(activity);
-        a.setTotalDistance(calcTotalDistance(a));
-        Activity savedActivity = activityRepository.save(a);
-        return activityConverter.convertEntityToDto(savedActivity);
+        Challenge challenge = a.getChallengeSport().getChallenge();
+        LocalDateTime now = LocalDateTime.now();
+        if (challenge.getEndDate().isAfter(now) && now.isAfter(challenge.getStartDate())) {
+            a.setTotalDistance(calcTotalDistance(a));
+            Activity savedActivity = activityRepository.save(a);
+            return activityConverter.convertEntityToDto(savedActivity);
+        }else
+            throw new InactiveChallengeException("This activity is denied, because the challenge "+challenge.getName() +" is no longer active");
     }
 
     /**

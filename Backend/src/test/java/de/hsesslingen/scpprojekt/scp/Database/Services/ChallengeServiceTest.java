@@ -454,10 +454,9 @@ public class ChallengeServiceTest {
      */
     @Test
     public void currentChallengesMemberIDTestSuccess() throws NotFoundException {
-       LocalDateTime now = LocalDateTime.now();
         when(challengeRepository.findChallengesByMemberIDAndDate(any(long.class),any(LocalDateTime.class))).thenReturn(challengeList);
         challengeService.getCurrentChallengeMemberID(1L);
-        verify(challengeRepository).findChallengesByMemberIDAndDate(1,now);
+        verify(challengeRepository).findChallengesByMemberIDAndDate(any(long.class  ),any(LocalDateTime.class));
     }
 
     /**

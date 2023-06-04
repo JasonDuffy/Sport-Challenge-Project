@@ -939,7 +939,7 @@ public class ChallengeControllerTest {
     }
 
     /**
-     * Test if all teams are returned correctly
+     * Test if all members are returned correctly
      * @throws Exception by mockMvc
      */
     @Test
@@ -957,7 +957,8 @@ public class ChallengeControllerTest {
         when(challengeService.getChallengeMembers(1L)).thenReturn(mList);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .get("/challenges/1/members/").accept(MediaType.APPLICATION_JSON);
+                .get("/challenges/1/members/").accept(MediaType.APPLICATION_JSON)
+                .param("type", "all");;
 
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isOk())
@@ -979,6 +980,47 @@ public class ChallengeControllerTest {
     }
 
     /**
+     * Test if all non members are returned correctly
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void getNonMembersForChallengeTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
+        MemberDTO m1 = new MemberDTO();
+        m1.setUserID(1L);
+        MemberDTO m2 = new MemberDTO();
+        m2.setUserID(2L);
+        List<MemberDTO> mList = new ArrayList<>();
+        mList.add(m1); mList.add(m2);
+
+        when(challengeService.getChallengeNonMembers(1L)).thenReturn(mList);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/challenges/1/members/").accept(MediaType.APPLICATION_JSON)
+                .param("type", "non");
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        String content = res.getResponse().getContentAsString();
+
+        Pattern pattern = Pattern.compile("\"userID\":(\\d)");
+        Matcher matcher = pattern.matcher(content);
+
+        matcher.find();
+        assertEquals(matcher.group(1), "1");
+        matcher.find();
+        assertEquals(matcher.group(1), "2");
+        assertFalse(matcher.find());
+
+        verify(challengeService).getChallengeNonMembers(1L);
+    }
+
+    /**
      * Test if unknown user is correctly turned away
      * @throws Exception by mockMvc
      */
@@ -986,7 +1028,8 @@ public class ChallengeControllerTest {
     @WithAnonymousUser
     public void getMembersForChallengeTestNotLoggedIn() throws Exception {
         RequestBuilder request = MockMvcRequestBuilders
-                .get("/challenges/1/members/").accept(MediaType.APPLICATION_JSON);
+                .get("/challenges/1/members/").accept(MediaType.APPLICATION_JSON)
+                .param("type", "all");
 
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isForbidden())
@@ -1006,7 +1049,8 @@ public class ChallengeControllerTest {
         when(challengeService.getChallengeMembers(1L)).thenReturn(mList);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .get("/challenges/1/members/").accept(MediaType.APPLICATION_JSON);
+                .get("/challenges/1/members/").accept(MediaType.APPLICATION_JSON)
+                .param("type", "all");;
 
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isNotFound())

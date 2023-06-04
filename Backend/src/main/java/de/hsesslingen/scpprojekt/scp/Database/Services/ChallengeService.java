@@ -216,6 +216,15 @@ public class ChallengeService {
     }
 
     /**
+     * Returns all non members for a challenge
+     * @param challengeID The challengeID for which the non members should be found
+     * @return The non members of a challenge
+     */
+    public List<MemberDTO> getChallengeNonMembers(long challengeID){
+        return memberConverter.convertEntityListToDtoList(memberRepository.findNonMembersByChallenge_ID(challengeID));
+    }
+
+    /**
      * Returns all emails of members of a challenge that are opted into receiving emails
      * @param challengeID The challengeID for which the emails should be found
      * @return All emails of members of a challenge that are opted into receiving emails

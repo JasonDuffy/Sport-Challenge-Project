@@ -7,9 +7,11 @@ import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.MemberRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ActivityService;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.MemberService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.AlreadyExistsException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
@@ -66,6 +68,8 @@ public class MemberControllerTest {
     ActivityConverter activityConverter;
     @MockBean
     ActivityService activityService;
+    @MockBean
+    ChallengeService challengeService;
 
     /**
      *Test for Successfully creating a member
@@ -687,6 +691,72 @@ public class MemberControllerTest {
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/members/loggedIn/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
+    /**
+     *  Test if  Current Challenges for user is correct
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void GetCurrentChallengeSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+        MemberDTO memberDTO = new MemberDTO();
+        memberDTO.setUserID(1);
+        memberDTO.setEmail("max@example.com");
+
+        when(memberService.get(1)).thenReturn(memberDTO);
+        when(challengeService.getCurrentChallengeMemberID(1)).thenReturn(anyList());
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/members/1/challenges/current/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+        verify(challengeService).getCurrentChallengeMemberID(1);
+    }
+
+    /**
+     *  Test if  Not Found  is correct
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void GetCurrentChallengeNotFound() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+        MemberDTO memberDTO = new MemberDTO();
+        memberDTO.setUserID(1);
+        memberDTO.setEmail("max@example.com");
+
+        when(memberService.get(1)).thenReturn(memberDTO);
+        when(challengeService.getCurrentChallengeMemberID(1)).thenThrow(NotFoundException.class);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/members/1/challenges/current/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isNotFound())
+                .andReturn();
+        verify(challengeService).getCurrentChallengeMemberID(1);
+    }
+
+    /**
+     *  Test if Unknown user is thrown correct
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void GetCurrentChallengeNotLoggedIn() throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/members/1/challenges/current/").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON);
 
         MvcResult res = mockMvc.perform(request)

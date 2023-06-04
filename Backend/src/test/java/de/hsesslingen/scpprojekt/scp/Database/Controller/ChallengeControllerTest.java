@@ -294,6 +294,51 @@ public class ChallengeControllerTest {
     }
 
     @Test
+    @WithMockUser
+    public void getFutureChallengesSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
+        LocalDateTime start = LocalDateTime.of(2022, 8, 8, 10, 0);
+        LocalDateTime end = LocalDateTime.of(2023, 10, 8, 10, 0);
+
+        ChallengeDTO challenge = new ChallengeDTO();
+        challenge.setId(1L);
+        challenge.setStartDate(start);
+        challenge.setEndDate(end);
+
+        LocalDateTime start2 = LocalDateTime.of(2023, 8, 8, 10, 0);
+        LocalDateTime end2 = LocalDateTime.of(2023, 10, 8, 10, 0);
+
+        ChallengeDTO challenge2 = new ChallengeDTO();
+        challenge2.setId(2L);
+        challenge2.setStartDate(start2);
+        challenge2.setEndDate(end2);
+
+        List<ChallengeDTO> challengeList = new ArrayList<>();
+        challengeList.add(challenge);
+        challengeList.add(challenge2);
+
+        when(challengeService.getAll()).thenReturn(challengeList);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/challenges/").accept(MediaType.APPLICATION_JSON).param("type", "future");
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        String content = res.getResponse().getContentAsString(); //Not converted to object as the date format is not compatible with LocalDateTime
+
+        Pattern pattern = Pattern.compile("\\{\"id\":(\\d),");
+        Matcher matcher = pattern.matcher(content);
+
+        matcher.find();
+        assertEquals(matcher.group(1), "2");
+        assertFalse(matcher.find());
+    }
+
+    @Test
     @WithAnonymousUser
     public void getAllChallengesNotLoggedIn() throws Exception {
         RequestBuilder request = MockMvcRequestBuilders

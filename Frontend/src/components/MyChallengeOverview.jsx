@@ -19,6 +19,7 @@ class MyChallengeOverview extends Component {
       challengeSports: [],
       activityDistance: 1,
       activitySportId: 0,
+      loading: false,
     };
 
     //bind is needed for changing the state
@@ -63,6 +64,9 @@ class MyChallengeOverview extends Component {
   async submitHandle(event) {
     event.preventDefault();
 
+    //Deactivate Button and add the loading circle
+    this.setState({ loading: true });
+
     if (this.state.activitySportId === 0) {
       this.showInputErrorMessage("Bitte wähle eine Sportart aus!");
       return;
@@ -71,7 +75,7 @@ class MyChallengeOverview extends Component {
     const dateOptions = {day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit"};
     let activityJsonObj = {};
     activityJsonObj.challengeSportID = this.state.activitySportId;
-    activityJsonObj.memberID = 1;
+    activityJsonObj.memberID = this.props.memberId;
     activityJsonObj.distance = this.state.activityDistance;
     activityJsonObj.date = new Date().toLocaleDateString("de-GE", dateOptions).replace(" ", "");
 
@@ -86,6 +90,9 @@ class MyChallengeOverview extends Component {
     }else{
       this.showInputErrorMessage("Beim hinzufügen deiner Aktivität ist ein Fehler aufgetreten: " + activityResponse.status + " " + activityResponse.statusText + "!");
     }
+
+    //Activates the again Button and removes the loading circle
+    this.setState({ loading: false });
   }
 
   async componentDidMount() {
@@ -153,7 +160,7 @@ class MyChallengeOverview extends Component {
               </select>
             </div>
             <div className="center_content mg_t_2">
-              <Button color="orange" txt="Aktivität hinzufügen" type="submit" />
+              <Button color="orange" txt="Aktivität hinzufügen" type="submit" loading={this.state.loading} />
             </div>
           </form>
         </div>

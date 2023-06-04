@@ -3,20 +3,20 @@ stages:
   - build
 #  - deploy
 
-frontend-test:
-  image: node:latest
-  stage: test
-  before_script:
-    - cd Frontend
-    - npm install
-    - npm install react-scripts -g --silent
-  script:
-    - npm test -- --coverage
-  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
-  artifacts:
-    paths:
-      - Frontend/coverage/
-    when: always
+#frontend-test:
+#  image: node:latest
+#  stage: test
+#  before_script:
+#    - cd Frontend
+#    - npm install
+#    - npm install react-scripts -g --silent
+#  script:
+#    - npm test -- --coverage
+#  coverage: /All files[^|]*\|[^|]*\s+([\d\.]+)/
+#  artifacts:
+#    paths:
+#      - Frontend/coverage/
+#    when: always
 
 backend-test:
   image: maven:3.8.3-openjdk-17

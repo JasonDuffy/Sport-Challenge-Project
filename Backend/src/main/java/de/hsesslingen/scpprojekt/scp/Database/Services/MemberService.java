@@ -1,28 +1,29 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
-import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.TeamConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.MemberRepository;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.TeamMemberRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.AlreadyExistsException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /**
  * Service of the Member entity
  *
- * @author Jason Patrick Duffy
+ * @author Jason Patrick Duffy, Tom Nguyen Dinh
  */
 
 @Service
@@ -37,6 +38,9 @@ public class MemberService {
     @Autowired
     @Lazy
     ActivityConverter activityConverter;
+    @Autowired
+    @Lazy
+    TeamConverter teamConverter;
 
     /**
      * Returns all members in database
@@ -160,6 +164,14 @@ public class MemberService {
         return memberConverter.convertEntityListToDtoList(memberRepository.findMembersWhoseLastActivityWasMoreThanOneWeekAgo());
     }
 
+    /**
+     * Returns all members whose last activity was more than one week ago
+     * @return List of all members whose last activity was more than one week ago
+     */
+    public List<TeamDTO> getAllTeamsForMember(long memberID){
+        List<Team> team = memberRepository.findTeamsByMemberID(memberID);
+        return  teamConverter.convertEntityListToDtoList(team);
+    }
     /**
      * Returns all members who are part of the given teamID
      * @return List of all members who are part of the given teamID

@@ -73,7 +73,7 @@ public class MemberServiceTest {
             memberList.add(m);
 
             when(memberRepository.findMemberByEmail("test" + i + "@example.com")).thenReturn(m);
-            when(memberRepository.findById((long)i)).thenReturn(Optional.of(m));
+            when(memberRepository.findById(i)).thenReturn(Optional.of(m));
         }
 
         when(memberRepository.findAll()).thenReturn(memberList);
@@ -288,5 +288,14 @@ public class MemberServiceTest {
         assertEquals(counter, realCounter);
 
         verify(activityRepository).findActivitiesByChallenge_IDAndMember_ID(1L, 1L);
+    }
+
+    /**
+     *  Test if getAllTeamsForMember works
+     */
+    @Test
+    public void membersByTeamIDTest() {
+        memberService.getAllTeamsForMember(1);
+        verify(memberRepository).findTeamsByMemberID(1);
     }
 }

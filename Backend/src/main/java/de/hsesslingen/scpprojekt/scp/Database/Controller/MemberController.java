@@ -5,6 +5,7 @@ import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ActivityService;
@@ -248,19 +249,13 @@ public class MemberController {
             @ApiResponse(responseCode = "200", description = "Activities for User found.",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = ActivityDTO.class))}),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
-            @ApiResponse(responseCode = "404", description = "No activities found.", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @GetMapping(path = "/{id}/activities/", produces = "application/json")
     public ResponseEntity<List<ActivityDTO>> getAllActivitiesForUser(@PathVariable("id") long userID, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)) {
             List<ActivityDTO> userActivities = memberService.getActivitiesForUser(userID);
-
-            if (!userActivities.isEmpty()) {
-                return new ResponseEntity<>(userActivities, HttpStatus.OK);
-            }
-
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(userActivities, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -331,7 +326,29 @@ public class MemberController {
     }
 
     /**
-     * REST API for returning Member data of a given teamID
+     * REST API for returning Team data of a given memberID
+     *
+     * @param memberID id of the Member
+     * @param request automatically filled by browser
+     * @return Team data corresponding to the given memberID 404 otherwise
+     */
+    @Operation(summary = "Get teams by memberID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Search successful",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = TeamDTO.class))}),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @GetMapping(path ="/{id}/teams/", produces = "application/json")
+    public ResponseEntity <List<TeamDTO>> getTeamByMemberID(@PathVariable("id") long memberID, HttpServletRequest request) {
+        if (saml2Service.isLoggedIn(request)){
+            return new ResponseEntity<>(memberService.getAllTeamsForMember(memberID), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+    }
+
+    
+     /** REST API for returning Member data of a given teamID
      *
      * @param teamID ID of the Team the members should be part of
      * @param request automatically filled by browser

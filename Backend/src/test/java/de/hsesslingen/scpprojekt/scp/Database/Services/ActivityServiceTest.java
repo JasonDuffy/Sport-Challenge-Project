@@ -9,6 +9,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
+import de.hsesslingen.scpprojekt.scp.Exceptions.ActivityDateException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InactiveChallengeException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
@@ -104,6 +105,7 @@ public class ActivityServiceTest {
             a.setChallengeSport(cs);
             a.setMember(m);
             a.setTotalDistance(10F);
+            a.setDate(LocalDateTime.now());
             activityList.add(a);
             when(activityRepository.findById(i)).thenReturn(Optional.of(a));
         }
@@ -168,7 +170,7 @@ public class ActivityServiceTest {
      * @throws NotFoundException Should never be thrown
      */
     @Test
-    public void addTestSuccess() throws NotFoundException, InactiveChallengeException {
+    public void addTestSuccess() throws NotFoundException, InactiveChallengeException, ActivityDateException {
 
         Challenge c1 = new Challenge();
         c1.setId(1L);

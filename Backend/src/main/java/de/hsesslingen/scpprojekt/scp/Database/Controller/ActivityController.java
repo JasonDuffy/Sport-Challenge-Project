@@ -3,6 +3,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ActivityService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.ActivityDateException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InactiveChallengeException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -131,7 +132,7 @@ public class ActivityController {
             } catch (NotFoundException e) {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            } catch (InactiveChallengeException e) {
+            } catch (InactiveChallengeException | ActivityDateException e) {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }

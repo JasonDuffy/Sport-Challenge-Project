@@ -8,6 +8,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
+import de.hsesslingen.scpprojekt.scp.Exceptions.ActivityDateException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InactiveChallengeException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
@@ -16,6 +17,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,6 +44,8 @@ public class ActivityService {
 
     @Autowired
     ChallengeService challengeService;
+
+    private static final String DATE_FORMATTER= "dd.MM.yyyy, HH:mm";
 
     /**
      * Returns all activities in database
@@ -73,14 +77,25 @@ public class ActivityService {
      * @param activity         ActivityDTO object to be added to DB
      * @return Added Activity DTO object
      */
-    public ActivityDTO add(ActivityDTO activity) throws NotFoundException, InactiveChallengeException {
+    public ActivityDTO add(ActivityDTO activity) throws NotFoundException, InactiveChallengeException, ActivityDateException {
         Activity a = activityConverter.convertDtoToEntity(activity);
         Challenge challenge = a.getChallengeSport().getChallenge();
         LocalDateTime now = LocalDateTime.now();
+        LocalDateTime active = a.getDate();
         if (challenge.getEndDate().isAfter(now) && now.isAfter(challenge.getStartDate())) {
-            a.setTotalDistance(calcTotalDistance(a));
-            Activity savedActivity = activityRepository.save(a);
-            return activityConverter.convertEntityToDto(savedActivity);
+            if (challenge.getEndDate().isAfter(active) && active.isAfter(challenge.getStartDate())) {
+                a.setTotalDistance(calcTotalDistance(a));
+                Activity savedActivity = activityRepository.save(a);
+                return activityConverter.convertEntityToDto(savedActivity);
+            }
+            else {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern(DATE_FORMATTER);
+                String activityDate = a.getDate().format(formatter);
+                String startDate = challenge.getStartDate().format(formatter);
+                String endDate = challenge.getEndDate().format(formatter);
+                throw new ActivityDateException
+                        ("The date of "+activityDate+" the activity is not in the challenge period of "+startDate+" - "+endDate+" .");
+            }
         }else
             throw new InactiveChallengeException("This activity is denied, because the challenge "+challenge.getName() +" is no longer active");
     }

@@ -5,6 +5,7 @@ import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ActivityService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.InactiveChallengeException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
@@ -36,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Tests for Activity Controller REST API
- * @author Jason Patrick Duffy
+ * @author Jason Patrick Duffy, Tom Nguyen Dinh
  */
 @ActiveProfiles("test")
 @WebMvcTest(ActivityController.class)
@@ -208,9 +209,35 @@ public class ActivityControllerTest {
     }
 
     /**
-     * Test if 404 is returned when member is not found
+     * Test if 400 is returned when challenge is no longer active
      * @throws Exception by mockMvc
      */
+    @Test
+    @WithMockUser
+    public void createActivityTesTBadRequest() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
+        ActivityDTO a1 = new ActivityDTO();
+        a1.setId(1);
+        a1.setChallengeSportID(2L);
+        a1.setMemberID(0L);
+
+        when(activityService.add(any(ActivityDTO.class))).thenThrow(InactiveChallengeException.class);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .post("/activities/").accept(MediaType.APPLICATION_JSON)
+                .param("challengeSportID", "2")
+                .param("memberID", "0")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsString(a1));
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isBadRequest())
+                .andReturn();
+
+        Mockito.verify(activityService).add(any(ActivityDTO.class));
+    }
+
     @Test
     @WithMockUser
     public void createActivityTestNotFound() throws Exception {

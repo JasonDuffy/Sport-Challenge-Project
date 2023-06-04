@@ -18,6 +18,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -116,6 +117,7 @@ public class EmailService {
      * @param bonus Bonus that members of the challenge should be notified about
      * @throws MessagingException Thrown by sendHTMLMessage
      */
+    @Async
     public void sendBonusMail(Bonus bonus) throws MessagingException {
         Map<String, Object> mailMap = new HashMap<>();
         mailMap.put("challengeName", bonus.getChallengeSport().getChallenge().getName());
@@ -142,6 +144,7 @@ public class EmailService {
      * @throws MessagingException Thrown by sendHTMLMessage
      * @throws NotFoundException Thrown by ChallengeSportConverter
      */
+    @Async
     public void sendChallengeMail(Challenge challenge) throws MessagingException, NotFoundException {
         Map<String, Object> mailMap = new HashMap<>();
         mailMap.put("challengeName", challenge.getName());
@@ -174,6 +177,7 @@ public class EmailService {
      * Sends a reminder to inactive members (last activity was more than 1 week ago)
      * @throws MessagingException Thrown by sendHTMLMessage
      */
+    @Async
     public void sendActivityReminder() throws MessagingException {
         List<MemberDTO> inactiveMembers = memberService.getAllMembersWhoseLastActivityWasMoreThanOneWeekAgo();
 

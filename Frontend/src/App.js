@@ -12,6 +12,7 @@ import Userprofile from "./components/Userprofile";
 import Test from "./components/Test";
 import AddSport from "./components/AddSport";
 import AddBonus from "./components/AddBonus";
+import Sports from "./components/Sports";
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/Challenge/:id" element={<Challenge />} />
         <Route path="/My-Challenges" element={<MyChallenges />} />
         <Route path="/Profile" element={<Userprofile />} />
+        <Route path="/Sports" element={<Sports />} />
         <Route path="/:action/Challenge/:id" element={<AddChallenge />} />
         <Route path="/:action/Team/:id" element={<AddTeam />} />
         <Route path="/:action/Bonus/:id" element={<AddBonus />} />

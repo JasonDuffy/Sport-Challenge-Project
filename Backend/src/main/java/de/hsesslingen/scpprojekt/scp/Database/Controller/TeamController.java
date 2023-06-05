@@ -1,6 +1,7 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
@@ -218,10 +219,38 @@ public class TeamController {
     }
 
     /**
+     * Rest API for returning all activities of a team
+     *
+     * @param teamID ID of Team
+     * @param request automatically filled by browser
+     * @return 200 activities found else 500
+     */
+    @Operation(summary = "Get average distance of a team in a challenge with bonuses applied")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Activities for User found.",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = ActivityDTO.class))}),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Team not found.", content = @Content)
+    })
+    @GetMapping(path = "/{id}/activities/", produces = "application/json")
+    public ResponseEntity<List<ActivityDTO>> getActivitiesForTeam(@PathVariable("id") long teamID, HttpServletRequest request){
+        if (saml2Service.isLoggedIn(request)){
+            try{
+                return new ResponseEntity<>(teamService.getTeamChallengeActivity(teamID), HttpStatus.OK);
+            } catch (NotFoundException e){
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
      * Rest API for getting average distance in a team from a challenge
      *
      * @param teamID ID of Team
-     * @param challengeID ID of Challenge
      * @param request automatically filled by browser
      * @return 200 activities found else 500
      */
@@ -233,11 +262,11 @@ public class TeamController {
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "500", description = "Not all activities are part of the same challenge.", content = @Content)
     })
-    @GetMapping(path = "/{id}/challenges/{chid}/AvgDistance/", produces = "application/json")
-    public ResponseEntity<Float> getAVGDistanceForTeamOfChallenge(@PathVariable("id") long teamID,@PathVariable("chid") long challengeID, HttpServletRequest request){
+    @GetMapping(path = "/{id}/avgDistance/", produces = "application/json")
+    public ResponseEntity<Float> getAVGDistanceForTeamOfChallenge(@PathVariable("id") long teamID, HttpServletRequest request){
         if (saml2Service.isLoggedIn(request)){
             try{
-                List<Activity> activities = activityConverter.convertDtoListToEntityList(teamService.getTeamChallengeActivity(challengeID,teamID));
+                List<Activity> activities = activityConverter.convertDtoListToEntityList(teamService.getTeamChallengeActivity(teamID));
 
                 return new ResponseEntity<>(activityService.getAVGDistanceForActivities(activities), HttpStatus.OK);
             } catch (InvalidActivitiesException | NotFoundException e){
@@ -253,7 +282,6 @@ public class TeamController {
      * Rest API for getting distance in a team from a challenge
      *
      * @param teamID ID of Team
-     * @param challengeID ID of Challenge
      * @param request automatically filled by browser
      * @return 200 activities found else 500
      */
@@ -265,11 +293,11 @@ public class TeamController {
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "500", description = "Not all activities are part of the same challenge.", content = @Content)
     })
-    @GetMapping(path = "/{id}/challenges/{chid}/Distance/", produces = "application/json")
-    public ResponseEntity<Float> getDistanceForTeamOfChallenge(@PathVariable("id") long teamID,@PathVariable("chid") long challengeID, HttpServletRequest request){
+    @GetMapping(path = "/{id}/distance/", produces = "application/json")
+    public ResponseEntity<Float> getDistanceForTeamOfChallenge(@PathVariable("id") long teamID, HttpServletRequest request){
         if (saml2Service.isLoggedIn(request)){
             try{
-                List<Activity> activities = activityConverter.convertDtoListToEntityList(teamService.getTeamChallengeActivity(challengeID,teamID));
+                List<Activity> activities = activityConverter.convertDtoListToEntityList(teamService.getTeamChallengeActivity(teamID));
                 return new ResponseEntity<>(activityService.getDistanceForActivities(activities), HttpStatus.OK);
             } catch (InvalidActivitiesException | NotFoundException e){
                 System.out.println(e.getMessage());

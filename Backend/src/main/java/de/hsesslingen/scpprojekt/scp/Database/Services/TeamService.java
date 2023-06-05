@@ -145,13 +145,12 @@ public class TeamService {
     /**
      *  Get Activity from a team of a challenge
      *
-     * @param challengeID challenge ID
      * @param teamID ID of Team
      * @return List of Activities
      */
-    public List<ActivityDTO> getTeamChallengeActivity(Long challengeID, Long teamID) throws NotFoundException {
-        get(teamID);
-        List<ActivityDTO> a = activityConverter.convertEntityListToDtoList(activityRepository.findActivitiesByChallenge_ID(challengeID));
+    public List<ActivityDTO> getTeamChallengeActivity(Long teamID) throws NotFoundException {
+        TeamDTO team = get(teamID);
+        List<ActivityDTO> a = activityConverter.convertEntityListToDtoList(activityRepository.findActivitiesByChallenge_ID(team.getChallengeID()));
         List <TeamMember> t = teamMemberRepository.findAllByTeamId(teamID);
         List<ActivityDTO> newA = new ArrayList<>();
         for (ActivityDTO as : a){

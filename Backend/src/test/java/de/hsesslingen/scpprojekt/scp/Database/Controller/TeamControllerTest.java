@@ -465,11 +465,11 @@ public class TeamControllerTest {
         a.add(activity);
         a.add(activity1);
 
-        when(teamService.getTeamChallengeActivity(1L,1L)).thenReturn(a);
+        when(teamService.getTeamChallengeActivity(1L)).thenReturn(a);
         when(activityService.getDistanceForActivities(any())).thenReturn(10f);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .get("/teams/1/challenges/1/Distance/").accept(MediaType.APPLICATION_JSON);
+                .get("/teams/1/distance/").accept(MediaType.APPLICATION_JSON);
 
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isOk())
@@ -479,7 +479,7 @@ public class TeamControllerTest {
         String content = res.getResponse().getContentAsString();
         assertEquals(content, "10.0");
 
-        verify(teamService).getTeamChallengeActivity(1L,1L);
+        verify(teamService).getTeamChallengeActivity(1L);
         verify(activityService).getDistanceForActivities(any());
     }
 
@@ -499,16 +499,16 @@ public class TeamControllerTest {
         a.add(activity);
         a.add(activity1);
 
-        when(teamService.getTeamChallengeActivity(1L,1L)).thenReturn(a);
+        when(teamService.getTeamChallengeActivity(1L)).thenReturn(a);
         when(activityService.getDistanceForActivities(any())).thenThrow(InvalidActivitiesException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .get("/teams/1/challenges/1/Distance/").accept(MediaType.APPLICATION_JSON);
+                .get("/teams/1/distance/").accept(MediaType.APPLICATION_JSON);
 
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isInternalServerError())
                 .andReturn();
-        verify(teamService).getTeamChallengeActivity(1L,1L);
+        verify(teamService).getTeamChallengeActivity(1L);
         verify(activityService).getDistanceForActivities(any());
     }
 
@@ -527,11 +527,11 @@ public class TeamControllerTest {
         a.add(activity);
         a.add(activity1);
 
-        when(teamService.getTeamChallengeActivity(1L,1L)).thenReturn(a);
+        when(teamService.getTeamChallengeActivity(1L)).thenReturn(a);
         when(activityService.getDistanceForActivities(any())).thenThrow(InvalidActivitiesException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .get("/teams/1/challenges/1/Distance/").accept(MediaType.APPLICATION_JSON);
+                .get("/teams/1/distance/").accept(MediaType.APPLICATION_JSON);
 
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isForbidden())
@@ -554,11 +554,11 @@ public class TeamControllerTest {
         a.add(activity);
         a.add(activity1);
 
-        when(teamService.getTeamChallengeActivity(1L,1L)).thenReturn(a);
+        when(teamService.getTeamChallengeActivity(1L)).thenReturn(a);
         when(activityService.getAVGDistanceForActivities(any())).thenReturn(10f);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .get("/teams/1/challenges/1/AvgDistance/").accept(MediaType.APPLICATION_JSON);
+                .get("/teams/1/avgDistance/").accept(MediaType.APPLICATION_JSON);
 
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isOk())
@@ -568,7 +568,7 @@ public class TeamControllerTest {
         String content = res.getResponse().getContentAsString();
         assertEquals(content, "10.0");
 
-        verify(teamService).getTeamChallengeActivity(1L,1L);
+        verify(teamService).getTeamChallengeActivity(1L);
         verify(activityService).getAVGDistanceForActivities(any());
     }
 
@@ -588,16 +588,16 @@ public class TeamControllerTest {
         a.add(activity);
         a.add(activity1);
 
-        when(teamService.getTeamChallengeActivity(1L,1L)).thenReturn(a);
+        when(teamService.getTeamChallengeActivity(1L)).thenReturn(a);
         when(activityService.getAVGDistanceForActivities(any())).thenThrow(InvalidActivitiesException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .get("/teams/1/challenges/1/AvgDistance/").accept(MediaType.APPLICATION_JSON);
+                .get("/teams/1/avgDistance/").accept(MediaType.APPLICATION_JSON);
 
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isInternalServerError())
                 .andReturn();
-        verify(teamService).getTeamChallengeActivity(1L,1L);
+        verify(teamService).getTeamChallengeActivity(1L);
         verify(activityService).getAVGDistanceForActivities(any());
     }
 
@@ -616,11 +616,87 @@ public class TeamControllerTest {
         a.add(activity);
         a.add(activity1);
 
-        when(teamService.getTeamChallengeActivity(1L,1L)).thenReturn(a);
+        when(teamService.getTeamChallengeActivity(1L)).thenReturn(a);
         when(activityService.getAVGDistanceForActivities(any())).thenThrow(InvalidActivitiesException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .get("/teams/1/challenges/1/AvgDistance/").accept(MediaType.APPLICATION_JSON);
+                .get("/teams/1/avgDistance/").accept(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
+    /**
+     * Test for getting Distance for a team in a challenge Success
+     * @throws Exception Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void getActivitiesForTeamSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+        List<ActivityDTO> a = new ArrayList<>();
+        ActivityDTO activity = new ActivityDTO();
+        activity.setId(1);
+        ActivityDTO activity1 = new ActivityDTO();
+        activity1.setId(2);
+        a.add(activity);
+        a.add(activity1);
+
+        when(teamService.getTeamChallengeActivity(1L)).thenReturn(a);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/teams/1/activities/").accept(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        String content = res.getResponse().getContentAsString();
+
+        Pattern pattern = Pattern.compile("\"id\":(\\d*)");
+        Matcher matcher = pattern.matcher(content);
+
+
+        matcher.find();
+        assertEquals(matcher.group(1), "1");
+        matcher.find();
+        assertEquals(matcher.group(1), "2");
+        assertFalse(matcher.find());
+
+        verify(teamService).getTeamChallengeActivity(1L);
+    }
+
+    /**
+     * Test for Not Found error
+     * @throws Exception Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void getActivitiesForTeamNotFound() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
+        when(teamService.getTeamChallengeActivity(1L)).thenThrow(NotFoundException.class);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/teams/1/activities/").accept(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isNotFound())
+                .andReturn();
+        verify(teamService).getTeamChallengeActivity(1L);
+    }
+
+    /**
+     *  Test for Unknown user thrown
+     * @throws Exception Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void getActivitiesForTeamLoggedin() throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/teams/1/activities/").accept(MediaType.APPLICATION_JSON);
 
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isForbidden())

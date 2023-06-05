@@ -256,7 +256,7 @@ public class TeamServiceTest {
      */
     @Test
     public void getActivitiesFromTeamAndChallengeTestSuccess() throws NotFoundException {
-        teamService.getTeamChallengeActivity(1L,1L);
+        teamService.getTeamChallengeActivity(1L);
         verify(activityRepository).findActivitiesByChallenge_ID(1);
         verify(teamMemberRepository).findAllByTeamId(1);
     }

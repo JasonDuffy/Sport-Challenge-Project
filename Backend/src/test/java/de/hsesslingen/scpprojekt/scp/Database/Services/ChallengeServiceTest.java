@@ -78,6 +78,8 @@ public class ChallengeServiceTest {
     SportService sportService;
     @MockBean
     EmailService emailService; // Mocked so no emails are sent
+    @MockBean
+    MemberService memberService;
 
     @MockBean
     Filler filler; // Mocked to avoid exceptions
@@ -100,6 +102,8 @@ public class ChallengeServiceTest {
         m2.setId(2L);
         m2.setEmail("test2@example.com");
         memberList.add(m1); memberList.add(m2);
+        when(memberService.get(1L)).thenReturn(memberConverter.convertEntityToDto(m1));
+        when(memberService.get(2L)).thenReturn(memberConverter.convertEntityToDto(m2));
 
         Sport s1 = new Sport();
         s1.setId(1);
@@ -118,6 +122,8 @@ public class ChallengeServiceTest {
         Challenge ch1 = new Challenge();
         ch1.setId(1);
         ch1.setImage(image);
+        ch1.setStartDate(LocalDateTime.now().minusDays(2));
+        ch1.setEndDate(LocalDateTime.now().plusDays(1));
         Challenge ch2 = new Challenge();
         ch2.setId(2);
         ch2.setImage(image);
@@ -441,5 +447,25 @@ public class ChallengeServiceTest {
     public void deleteAllTest(){
         challengeService.deleteAll();
         verify(challengeRepository).deleteAll();
+    }
+
+    /**
+     * Test if current challenges for memberId is correct
+     */
+    @Test
+    public void currentChallengesMemberIDTestSuccess() throws NotFoundException {
+        when(challengeRepository.findChallengesByMemberIDAndDate(any(long.class),any(LocalDateTime.class))).thenReturn(challengeList);
+        challengeService.getCurrentChallengeMemberID(1L);
+        verify(challengeRepository).findChallengesByMemberIDAndDate(any(long.class  ),any(LocalDateTime.class));
+    }
+
+    /**
+     * Test Not Found for current challenges for memberId is correctly handled
+     */
+    @Test
+    public void currentChallengesMemberIDTestNotFound(){
+        assertThrows(NotFoundException.class, () -> {
+            challengeService.getCurrentChallengeMemberID(1);
+        });
     }
 }

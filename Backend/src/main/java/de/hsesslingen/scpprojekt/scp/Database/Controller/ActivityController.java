@@ -3,6 +3,8 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ActivityService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.ActivityDateException;
+import de.hsesslingen.scpprojekt.scp.Exceptions.InactiveChallengeException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -118,6 +120,7 @@ public class ActivityController {
             @ApiResponse(responseCode = "201", description = "Activity successfully added",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ActivityDTO.class))}),
+            @ApiResponse(responseCode = "400", description = "Inactive Challenge for activity", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "404", description = "Member or ChallengeSport not found", content = @Content)
     })
@@ -129,6 +132,9 @@ public class ActivityController {
             } catch (NotFoundException e) {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } catch (InactiveChallengeException | ActivityDateException e) {
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

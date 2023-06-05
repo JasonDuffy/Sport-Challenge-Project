@@ -2,6 +2,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
@@ -9,11 +10,13 @@ import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ActivityService;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.MemberService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.AlreadyExistsException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -24,6 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,6 +50,8 @@ public class MemberController {
     ActivityConverter activityConverter;
     @Autowired
     ActivityService activityService;
+    @Autowired
+    ChallengeService challengeService;
 
     /**
      * REST API for returning data of all Members
@@ -365,6 +371,31 @@ public class MemberController {
     public ResponseEntity<List<MemberDTO>> getMemberByTeamID(@PathVariable("id") long teamID, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)) {
             return new ResponseEntity<>(memberService.getAllMembersByTeamID(teamID), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    @Operation(summary = "Get all current Challenges for a member")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Search successful.",
+                    content = {@Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = ChallengeDTO.class)))}),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
+            @ApiResponse(responseCode = "404", description = "No current challenges for this user", content = @Content)
+    })
+    @GetMapping(path = "/{id}/challenges/current/", produces = "application/json")
+    public ResponseEntity<List<ChallengeDTO>> getCurrentChallengesByMemberDate(@PathVariable("id") long memberID, HttpServletRequest request) {
+        if (saml2Service.isLoggedIn(request)) {
+            List<ChallengeDTO> challengeList = new ArrayList<>();
+            try {
+                challengeList = challengeService.getCurrentChallengeMemberID(memberID);
+            } catch (NotFoundException e) {
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+            return new ResponseEntity<>(challengeList, HttpStatus.OK);
+
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

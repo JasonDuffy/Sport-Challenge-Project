@@ -105,17 +105,17 @@ public class ChallengeController {
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @GetMapping(path = "/", produces = "application/json")
-    public ResponseEntity<List<ChallengeDTO>> getChallenges(@Parameter(description = "Which challenges should be returned. \"current\" for only current challenges, \"past\" for only past and anything else for all") @RequestParam String type, HttpServletRequest request) {
+    public ResponseEntity<List<ChallengeDTO>> getChallenges(@Parameter(description = "Which challenges should be returned. \"current\" for only current challenges, \"past\" for only past,  \"future\" for only future and anything else for all") @RequestParam String type, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
             List<ChallengeDTO> challenges = challengeService.getAll();
+
+            LocalDateTime today = LocalDateTime.now();
 
             switch(type){
                 case "current":
                     List<ChallengeDTO> currentChallenges = new ArrayList<>();
 
                     for (ChallengeDTO challenge: challenges){
-                        LocalDateTime today = LocalDateTime.now();
-
                         if(challenge.getEndDate().isAfter(today) && today.isAfter(challenge.getStartDate())){
                             currentChallenges.add(challenge);
                         }
@@ -126,13 +126,21 @@ public class ChallengeController {
                     List<ChallengeDTO> pastChallenges = new ArrayList<>();
 
                     for (ChallengeDTO challenge: challenges){
-                        LocalDateTime today =  LocalDateTime.now();
-
                         if(challenge.getEndDate().isBefore(today)){
                             pastChallenges.add(challenge);
                         }
                     }
                     challenges = pastChallenges;
+                    break;
+                case "future":
+                    List<ChallengeDTO> futureChallenges = new ArrayList<>();
+
+                    for (ChallengeDTO challenge: challenges){
+                        if(challenge.getStartDate().isAfter(today)){
+                            futureChallenges.add(challenge);
+                        }
+                    }
+                    challenges = futureChallenges;
                     break;
                 default: //all challenges
                     break;
@@ -445,9 +453,16 @@ public class ChallengeController {
             @ApiResponse(responseCode = "404", description = "Members not found", content = @Content)
     })
     @GetMapping(path = "/{id}/members/", produces = "application/json")
-    public ResponseEntity<List<MemberDTO>> getMembersForChallenge(@PathVariable("id") long challengeID, HttpServletRequest request) {
+    public ResponseEntity<List<MemberDTO>> getMembersForChallenge(@PathVariable("id") long challengeID, @Parameter(description = "Which members should be returned. \"non\" for only non members of challenge and anything else for all") @RequestParam String type, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)) {
-            List<MemberDTO> memberList = challengeService.getChallengeMembers(challengeID);
+            List<MemberDTO> memberList;
+
+            if (type.equals("non")){
+                memberList = challengeService.getChallengeNonMembers(challengeID);
+            } else{
+                memberList = challengeService.getChallengeMembers(challengeID);
+            }
+
             if (!memberList.isEmpty()) {
                 return new ResponseEntity<>(memberList, HttpStatus.OK);
             } else {

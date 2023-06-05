@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.core.env.Environment;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.test.context.ActiveProfiles;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
@@ -26,7 +27,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.mockito.Mockito.*;
 
 /**
@@ -55,6 +58,8 @@ public class EmailServiceTest {
     private Environment environment;
     @Autowired
     private SpringTemplateEngine thymeleafTemplateEngine;
+    @Autowired
+    private ThreadPoolTaskExecutor pool; // Testing async methods
 
     /**
      * Test of sendHTMLMessage
@@ -143,7 +148,7 @@ public class EmailServiceTest {
      * @throws MessagingException Should never be thrown
      */
     @Test
-    public void sendBonusMailTest() throws MessagingException {
+    public void sendBonusMailTest() throws MessagingException, InterruptedException {
         Challenge challenge = new Challenge();
         challenge.setName("Test Challenge");
         challenge.setId(1L);
@@ -179,6 +184,10 @@ public class EmailServiceTest {
 
         emailService.sendBonusMail(bonus);
 
+        // Wait for execution to finish
+        boolean awaitTermination = pool.getThreadPoolExecutor().awaitTermination(1, TimeUnit.SECONDS);
+        assertFalse(awaitTermination);
+
         verify(sender).send(mockMessage);
         verify(mockMessage).setFrom(fromAddress);
         verify(mockMessage).setSubject("Test Challenge hat einen neuen Bonus!", "UTF-8");
@@ -192,7 +201,7 @@ public class EmailServiceTest {
      * @throws NotFoundException Should never be thrown
      */
     @Test
-    public void sendChallengeMailTest() throws MessagingException, NotFoundException {
+    public void sendChallengeMailTest() throws MessagingException, NotFoundException, InterruptedException {
         Image image = new Image();
         image.setData("123".getBytes());
         image.setName("Test Image");
@@ -246,6 +255,10 @@ public class EmailServiceTest {
 
         emailService.sendChallengeMail(challenge);
 
+        // Wait for execution to finish
+        boolean awaitTermination = pool.getThreadPoolExecutor().awaitTermination(1, TimeUnit.SECONDS);
+        assertFalse(awaitTermination);
+
         verify(sender).send(mockMessage);
         verify(mockMessage).setFrom(fromAddress);
         verify(mockMessage).setSubject("Es gibt eine neue Challenge!", "UTF-8");
@@ -258,7 +271,7 @@ public class EmailServiceTest {
      * @throws MessagingException Should never be thrown
      */
     @Test
-    public void sendActivityReminderTest() throws MessagingException {
+    public void sendActivityReminderTest() throws MessagingException, InterruptedException {
         MemberDTO member1 = new MemberDTO();
         member1.setFirstName("Test First Name 1");
         member1.setEmail("test1@example.com");
@@ -277,6 +290,10 @@ public class EmailServiceTest {
         when(sender.createMimeMessage()).thenReturn(mockMessage);
 
         emailService.sendActivityReminder();
+
+        // Wait for execution to finish
+        boolean awaitTermination = pool.getThreadPoolExecutor().awaitTermination(1, TimeUnit.SECONDS);
+        assertFalse(awaitTermination);
 
         verify(sender, times(memberList.size())).send(mockMessage);
         verify(mockMessage, times(memberList.size())).setFrom(fromAddress);

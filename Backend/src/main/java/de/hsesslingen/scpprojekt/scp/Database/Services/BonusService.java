@@ -167,4 +167,24 @@ public class BonusService {
 
         return factor;
     }
+
+    /**
+     * Returns all bonuses for the given challenge
+     * @param challengeID ID of the challenge for which the bonuses should be returned
+     * @param type "past" for past bonuses, "current" for current bonuses, "future" for future bonuses and anything else for all
+     * @return List of BonusDTO objects corresponding to the given options
+     */
+    public List<BonusDTO> getChallengeBonuses(long challengeID, String type){
+        switch(type){
+            case "past":
+                return bonusConverter.convertEntityListToDtoList(bonusRepository.findPastBonusesByChallengeID(challengeID));
+            case "current":
+                return bonusConverter.convertEntityListToDtoList(bonusRepository.findCurrentBonusesByChallengeID(challengeID));
+            case "future":
+                return bonusConverter.convertEntityListToDtoList(bonusRepository.findFutureBonusesByChallengeID(challengeID));
+            default:
+                return bonusConverter.convertEntityListToDtoList(bonusRepository.findBonusesByChallengeID(challengeID));
+        }
+
+    }
 }

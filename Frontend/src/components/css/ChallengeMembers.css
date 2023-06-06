@@ -1,0 +1,26 @@
+/**
+ * CSS styles the graphs of the team panel
+ * 
+ * @author Jason Patrick Duffy
+ */
+
+.teamContainer{
+    display: flex;
+    flex-direction: column;
+    max-width: 100px;
+    max-height: 100px;
+    margin: 15px;
+    font-weight: bolder;
+}
+
+.teamContainerImage{
+    min-width: 100px;
+    min-height: 100px;
+    aspect-ratio: 1;
+}
+
+.challengeMembers{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+}

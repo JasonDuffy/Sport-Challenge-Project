@@ -18,6 +18,30 @@ import java.util.List;
 @Repository
 public interface BonusRepository extends JpaRepository<Bonus,Long> {
     @Transactional
-    @Query("SELECT b FROM Bonus b JOIN b.challengeSport cs where cs.challenge.id = :challengeID")
+    @Query("SELECT b FROM Bonus b JOIN b.challengeSport cs where cs.challenge.id = :challengeID order by b.startDate asc")
     public List<Bonus> findBonusesByChallengeID(@Param("challengeID") long challengeID);
+
+    @Transactional
+    @Query("SELECT b FROM Bonus b JOIN b.challengeSport cs " +
+            "where cs.challenge.id = :challengeID " +
+            "and b.startDate <= current date " +
+            "and b.endDate > current date " +
+            "order by b.startDate asc")
+    public List<Bonus> findCurrentBonusesByChallengeID(@Param("challengeID") long challengeID);
+
+    @Transactional
+    @Query("SELECT b FROM Bonus b JOIN b.challengeSport cs " +
+            "where cs.challenge.id = :challengeID " +
+            "and b.startDate <= current date " +
+            "and b.endDate <= current date " +
+            "order by b.startDate asc")
+    public List<Bonus> findPastBonusesByChallengeID(@Param("challengeID") long challengeID);
+
+    @Transactional
+    @Query("SELECT b FROM Bonus b JOIN b.challengeSport cs " +
+            "where cs.challenge.id = :challengeID " +
+            "and b.startDate > current date " +
+            "and b.endDate > current date " +
+            "order by b.startDate asc")
+    public List<Bonus> findFutureBonusesByChallengeID(@Param("challengeID") long challengeID);
 }

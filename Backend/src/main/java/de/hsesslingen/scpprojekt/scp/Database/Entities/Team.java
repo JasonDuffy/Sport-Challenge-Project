@@ -25,7 +25,7 @@ public class Team {
     private long id;
     @Column(name = "name", nullable = false)
     private String name;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "image_id")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

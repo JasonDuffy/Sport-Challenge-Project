@@ -38,7 +38,7 @@ public class Member{
     @Column(name = "communication", nullable = false)
     private Boolean communication;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "image_id", nullable = true)
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

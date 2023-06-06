@@ -1,0 +1,67 @@
+/**
+ * CSS styles for Challenge Page
+ * 
+ * @author Jason Patrick Duffy
+ */
+
+.imageContainer {
+    display: block;
+    position: relative;
+    margin-left: auto;
+    margin-right: auto;
+    width: 80vw;
+    max-height: 700px;
+    max-width: 700px;
+}
+
+.textContainer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: auto;
+    text-align: center;
+    z-index: 3;
+    color: var(--doubleslash-text-white);
+}
+
+.challengeName {
+    font-size: 50px;
+    text-align: center;
+    font-weight: 700;
+    margin: 0 auto;
+    padding: 0;
+    position: relative;
+}
+
+.challengeDescription {
+    font-size: 16px;
+    text-align: center;
+    font-weight: 400;
+    margin: 0 auto;
+    padding: 0;
+    position: relative;
+}
+
+.imageOverlay {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    border-radius: 3%;
+    opacity: 35%;
+    background-color: var(--doubleslash-darkgrey);
+    z-index: 2;
+}
+
+.challengeImage {
+    width: 100%;
+    border-radius: 3%;
+    z-index: 1;
+}
+
+.teamPanel{
+    border: 1px solid var(--doubleslash-darkgrey);
+    padding: 5px;
+}

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
 import "./css/MyChallengesTableRow.css";
 import "./css/Form.css";
 

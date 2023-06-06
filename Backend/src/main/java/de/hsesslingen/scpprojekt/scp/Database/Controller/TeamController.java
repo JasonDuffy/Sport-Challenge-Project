@@ -266,9 +266,10 @@ public class TeamController {
     public ResponseEntity<Float> getAVGDistanceForTeamOfChallenge(@PathVariable("id") long teamID, HttpServletRequest request){
         if (saml2Service.isLoggedIn(request)){
             try{
+                int memberCount = teamService.getMemberCountForTeam(teamID);
                 List<Activity> activities = activityConverter.convertDtoListToEntityList(teamService.getTeamChallengeActivity(teamID));
 
-                return new ResponseEntity<>(activityService.getAVGDistanceForActivities(activities), HttpStatus.OK);
+                return new ResponseEntity<>(activityService.getAVGDistanceForActivities(memberCount, activities), HttpStatus.OK);
             } catch (InvalidActivitiesException | NotFoundException e){
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

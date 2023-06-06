@@ -39,7 +39,7 @@ public class Challenge {
     @Column(name = "end_date", nullable = false)
     private LocalDateTime endDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "image_id")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)

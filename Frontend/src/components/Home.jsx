@@ -42,50 +42,56 @@ class Home extends Component {
               <ul className="col challenge_list">
                 {this.state.currentChallenge.map(item => (
                   <li className="challenge_list_item" key={item.id}>
-                    <ChallengeOverview id={item.id}/>
-                  </li>
-                ))}
-              </ul>
-              <div className="center_content mg_t_2">
-                <Button color="orange" txt="Neue Challenge" />
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <section className="background_lightblue">
-          <div className="section_container">
-            <div className="section_content">
-              <div className="heading_underline_center mg_b_8">
-                <span className="underline_center">Zukünftige Challenges</span>
-              </div>
-              <ul className="col challenge_list">
-                {this.state.futureChallenge.map(item => (
-                  <li className="challenge_list_item" key={item.id}>
                     <ChallengeOverview id={item.id} />
                   </li>
                 ))}
               </ul>
+              <div className="center_content mg_t_2">
+                <a href={'../Add/Challenge/0'} style={{ color: "#ffeeee" }}>
+                  <Button color="orange" txt="Challenge erstellen" />
+                </a>
+              </div>
             </div>
           </div>
         </section>
 
-        <section className="background_white">
-          <div className="section_container">
-            <div className="section_content">
-              <div className="heading_underline_center mg_b_8">
-                <span className="underline_center">Vorhergegangene Challenges</span>
+        {this.state.futureChallenge.length > 0 && (
+          <section className="background_lightblue">
+            <div className="section_container">
+              <div className="section_content">
+                <div className="heading_underline_center mg_b_8">
+                  <span className="underline_center">Zukünftige Challenges</span>
+                </div>
+                <ul className="col challenge_list">
+                  {this.state.futureChallenge.map(item => (
+                    <li className="challenge_list_item" key={item.id}>
+                      <ChallengeOverview id={item.id} />
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul className="col challenge_list">
-              {this.state.pastChallenge.map(item => (
-                  <li className="challenge_list_item" key={item.id}>
-                    <ChallengeOverview id={item.id}/>
-                  </li>
-                ))}
-              </ul>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
+
+        {this.state.pastChallenge.length > 0 && (
+          <section className={this.state.futureChallenge.length > 0 ? ("background_white") : ("background_lightblue")}>
+            <div className="section_container">
+              <div className="section_content">
+                <div className="heading_underline_center mg_b_8">
+                  <span className="underline_center">Vorherige Challenges</span>
+                </div>
+                <ul className="col challenge_list">
+                  {this.state.pastChallenge.map(item => (
+                    <li className="challenge_list_item" key={item.id}>
+                      <ChallengeOverview id={item.id} />
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </section>
+        )}
       </>
     );
   }

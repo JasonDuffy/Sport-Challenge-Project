@@ -27,4 +27,8 @@ public interface TeamRepository extends JpaRepository<Team,Long> {
     @Transactional
     @Query("select m from Member m join TeamMember tm on m.id= tm.member.id join Team t on tm.team.id = t.id where t.id = :teamID ")
     List<Member> findMembersByTeamID(@Param("teamID") long teamID);
+
+    @Transactional
+    @Query("select count(*) from TeamMember tm group by tm.team.id having tm.team.id=:teamID")
+    public int countMembersOfTeam(@Param("teamID") long teamID);
 }

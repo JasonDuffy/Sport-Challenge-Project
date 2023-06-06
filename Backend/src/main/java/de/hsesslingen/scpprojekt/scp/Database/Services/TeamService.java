@@ -168,4 +168,13 @@ public class TeamService {
         return  memberConverter.convertEntityListToDtoList(members);
     }
 
+    /**
+     * Counts the members of the given team and returns it
+     * @param teamID ID of the team whose member count is wanted
+     * @return Member count of team
+     */
+    public int getMemberCountForTeam(long teamID){
+        return teamRepository.countMembersOfTeam(teamID);
+    }
+
 }

@@ -188,9 +188,8 @@ public class ActivityService {
         return sum;
     }
 
-    public float getAVGDistanceForActivities(List<Activity> activities) throws InvalidActivitiesException, NotFoundException {
+    public float getAVGDistanceForActivities(int memberCount, List<Activity> activities) throws InvalidActivitiesException, NotFoundException {
         Float sum = 0.0f;
-        int i = 0;
 
         if(!activities.isEmpty()){
             Challenge challenge = activities.get(0).getChallengeSport().getChallenge();
@@ -200,11 +199,10 @@ public class ActivityService {
                     throw new InvalidActivitiesException("Activity by member " + act.getMember().getEmail() + " on " + act.getDate() + " in challenge "
                             + act.getChallengeSport().getChallenge().getName() + "is not part of Challenge " + challenge.getName());
                 sum += act.getTotalDistance();
-                i++;
             }
         }
 
-        return sum/i;
+        return sum/(float)memberCount;
     }
 
 

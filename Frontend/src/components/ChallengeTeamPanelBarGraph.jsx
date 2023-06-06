@@ -11,7 +11,6 @@ class ChallengeTeamPanelBarGraph extends Component {
         super(props);
 
         this.state = {
-            teamID: props.id,
             width: props.width,
             aspect: props.aspect,
             lineColor: props.lineColor,
@@ -27,8 +26,8 @@ class ChallengeTeamPanelBarGraph extends Component {
      * Returns a bar graph with a bar for each team member showing their current points
      */
     pointsBarGraph() {
-        let data = this.state.activities;
-        let members = this.state.members;
+        let data = structuredClone(this.state.activities);
+        let members = structuredClone(this.state.members);
 
         // Data can only be properly formatted when at least 1 data point exists
         if (data.length > 0) {

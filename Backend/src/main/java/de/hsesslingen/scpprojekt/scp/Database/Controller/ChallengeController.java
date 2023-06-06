@@ -1,19 +1,11 @@
 package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.*;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.MemberRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Repositories.SportRepository;
-import de.hsesslingen.scpprojekt.scp.Database.Services.ActivityService;
-import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeService;
-import de.hsesslingen.scpprojekt.scp.Database.Services.ImageStorageService;
+import de.hsesslingen.scpprojekt.scp.Database.Repositories.*;
+import de.hsesslingen.scpprojekt.scp.Database.Services.*;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
@@ -30,6 +22,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Description;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -41,6 +34,8 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * REST controller for Challenge.
@@ -60,6 +55,10 @@ public class ChallengeController {
     private ActivityConverter activityConverter;
     @Autowired
     private ActivityService activityService;
+    @Autowired
+    private BonusService bonusService;
+    @Autowired
+    private SportService sportService;
 
     /**
      * REST API for returning Challenge data of a given ID
@@ -408,6 +407,54 @@ public class ChallengeController {
             } else {
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
             }
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
+     * Get bonuses for challenge
+     *
+     * @param challengeID corresponding ID of Challenge
+     * @param type which bonuses to get; "past" for past bonuses, "current" for current bonuses, "future" for future bonuses and anything else for all
+     * @param request     automatically filled by browser
+     * @return 200 for success or 404 for not finding the bonus
+     */
+    @Operation(summary = "Get all bonuses for the challenge")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Bonuses found",
+                    content = {@Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = BonusDTO.class)))}),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @GetMapping(path = "/{id}/bonuses/", produces = "application/json")
+    public ResponseEntity<List<BonusDTO>> getBonusesForChallenge(@PathVariable("id") long challengeID, @Parameter(description = "which bonuses to get; \"past\" for past bonuses, \"current\" for current bonuses, \"future\" for future bonuses and anything else for all") @RequestParam("type") String type, HttpServletRequest request) {
+        if (saml2Service.isLoggedIn(request)) {
+            List<BonusDTO> bonusList = bonusService.getChallengeBonuses(challengeID, type);
+            return new ResponseEntity<>(bonusList, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
+     * Get all sports for a challenge
+     *
+     * @param challengeID corresponding ID of Challenge
+     * @param request     automatically filled by browser
+     * @return 200 for success or 404 for not finding the bonus
+     */
+    @Operation(summary = "Get all sports for the challenge")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Bonuses found",
+                    content = {@Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = Object.class)))}),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @GetMapping(path = "/{id}/sports/", produces = "application/json")
+    public ResponseEntity<List<Sport>> getSportsForChallenge(@PathVariable("id") long challengeID, HttpServletRequest request) {
+        if (saml2Service.isLoggedIn(request)) {
+            return new ResponseEntity<>(sportService.getSportsForChallenge(challengeID), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

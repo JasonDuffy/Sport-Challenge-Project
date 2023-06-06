@@ -436,6 +436,7 @@ public class TeamControllerTest {
         Team team = new Team();
         team.setId(1);
 
+        when(saml2Service.isLoggedIn(any())).thenReturn(false);
         when(teamService.update(any(Long.class),any(Long.class),any(TeamDTO.class))).thenReturn(any(TeamDTO.class));
 
         RequestBuilder request = MockMvcRequestBuilders
@@ -555,7 +556,7 @@ public class TeamControllerTest {
         a.add(activity1);
 
         when(teamService.getTeamChallengeActivity(1L)).thenReturn(a);
-        when(activityService.getAVGDistanceForActivities(any())).thenReturn(10f);
+        when(activityService.getAVGDistanceForActivities(anyInt(), any())).thenReturn(10f);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/teams/1/avgDistance/").accept(MediaType.APPLICATION_JSON);
@@ -569,7 +570,7 @@ public class TeamControllerTest {
         assertEquals(content, "10.0");
 
         verify(teamService).getTeamChallengeActivity(1L);
-        verify(activityService).getAVGDistanceForActivities(any());
+        verify(activityService).getAVGDistanceForActivities(anyInt(), any());
     }
 
     /**
@@ -589,7 +590,7 @@ public class TeamControllerTest {
         a.add(activity1);
 
         when(teamService.getTeamChallengeActivity(1L)).thenReturn(a);
-        when(activityService.getAVGDistanceForActivities(any())).thenThrow(InvalidActivitiesException.class);
+        when(activityService.getAVGDistanceForActivities(anyInt(), any())).thenThrow(InvalidActivitiesException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/teams/1/avgDistance/").accept(MediaType.APPLICATION_JSON);
@@ -598,7 +599,7 @@ public class TeamControllerTest {
                 .andExpect(status().isInternalServerError())
                 .andReturn();
         verify(teamService).getTeamChallengeActivity(1L);
-        verify(activityService).getAVGDistanceForActivities(any());
+        verify(activityService).getAVGDistanceForActivities(anyInt(), any());
     }
 
     /**
@@ -608,17 +609,6 @@ public class TeamControllerTest {
     @Test
     @WithAnonymousUser
     public void getAVGDistanceNotLoggedIn() throws Exception {
-        List<ActivityDTO> a = new ArrayList<>();
-        ActivityDTO activity = new ActivityDTO();
-        activity.setId(1);
-        ActivityDTO activity1 = new ActivityDTO();
-        activity1.setId(2);
-        a.add(activity);
-        a.add(activity1);
-
-        when(teamService.getTeamChallengeActivity(1L)).thenReturn(a);
-        when(activityService.getAVGDistanceForActivities(any())).thenThrow(InvalidActivitiesException.class);
-
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/teams/1/avgDistance/").accept(MediaType.APPLICATION_JSON);
 

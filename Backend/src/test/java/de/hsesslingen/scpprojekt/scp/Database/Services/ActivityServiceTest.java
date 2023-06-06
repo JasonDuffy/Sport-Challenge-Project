@@ -459,7 +459,7 @@ public class ActivityServiceTest {
             distance += a.getDistance() * a.getChallengeSport().getFactor() * bonusfactor;
         }
 
-        assertEquals(distance, activityService.getAVGDistanceForActivities(challenge1Acts));
+        assertEquals(distance, activityService.getAVGDistanceForActivities(10, challenge1Acts));
     }
 
     /**

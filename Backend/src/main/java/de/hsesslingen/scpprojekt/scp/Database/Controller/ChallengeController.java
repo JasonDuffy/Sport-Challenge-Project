@@ -246,8 +246,7 @@ public class ChallengeController {
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ChallengeDTO.class))}),
             @ApiResponse(responseCode = "404", description = "Challenge not found", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
-            @ApiResponse(responseCode = "417", description = "Something went wrong updating the  Challenge", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
 
     })
     @PutMapping(path = "/{id}/", produces = "application/json")
@@ -279,7 +278,7 @@ public class ChallengeController {
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @DeleteMapping(path = "/{id}/",produces = "application/json")
-    public ResponseEntity<Void> deleteChallenge(@PathVariable("id") long ID,HttpServletRequest request) throws NotFoundException {
+    public ResponseEntity<Void> deleteChallenge(@PathVariable("id") long ID,HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
             try {
                 challengeService.delete(ID);
@@ -305,19 +304,14 @@ public class ChallengeController {
             @ApiResponse(responseCode = "200", description = "Activities for Challenge found.",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ActivityDTO.class))}),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
-            @ApiResponse(responseCode = "404", description = "No activities found.", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @GetMapping(path = "/{id}/activities/", produces = "application/json")
     public ResponseEntity<List<ActivityDTO>> getAllActivitiesForChallenge(@PathVariable("id") long challengeID, HttpServletRequest request){
         if (saml2Service.isLoggedIn(request)){
             List<ActivityDTO> challengeActivities = challengeService.getActivitiesForChallenge(challengeID);
 
-            if(!challengeActivities.isEmpty()){
-                return new ResponseEntity<>(challengeActivities, HttpStatus.OK);
-            }
-
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(challengeActivities, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -388,25 +382,20 @@ public class ChallengeController {
      *
      * @param challengeID corresponding ID of Challenge
      * @param request     automatically filled by browser
-     * @return 200 for success or 404 for not finding the challenge
+     * @return 200 for success
      */
     @Operation(summary = "Get all Teams for the Challenge")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Search for the teams successful",
                     content = {@Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = TeamDTO.class)))}),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
-            @ApiResponse(responseCode = "404", description = "No teams found", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @GetMapping(path = "/{id}/teams/", produces = "application/json")
     public ResponseEntity<List<TeamDTO>> getAllTeamsForChallenge(@PathVariable("id") long challengeID, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)) {
             List<TeamDTO> teamList = challengeService.getChallengeTeams(challengeID);
-            if (!teamList.isEmpty()) {
-                return new ResponseEntity<>(teamList, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
+            return new ResponseEntity<>(teamList, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
@@ -470,8 +459,7 @@ public class ChallengeController {
     @Operation(summary = "Delete all Teams in given Challenge")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", description = "All teams for the challenge deleted", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Challenge not found", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
 
     })
     @DeleteMapping(path = "/{id}/teams/")
@@ -489,15 +477,14 @@ public class ChallengeController {
      *
      * @param challengeID ID of the corresponding Challenge
      * @param request automatically filled by browser
-     * @return 200 for success else 404 for not finding Challenge
+     * @return 200 for success
      */
     @Operation(summary = "Get all members of the Challenge")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Members found.",
                     content = {@Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = MemberDTO.class)))}),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
-            @ApiResponse(responseCode = "404", description = "Members not found", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @GetMapping(path = "/{id}/members/", produces = "application/json")
     public ResponseEntity<List<MemberDTO>> getMembersForChallenge(@PathVariable("id") long challengeID, @Parameter(description = "Which members should be returned. \"non\" for only non members of challenge and anything else for all") @RequestParam String type, HttpServletRequest request) {
@@ -510,11 +497,7 @@ public class ChallengeController {
                 memberList = challengeService.getChallengeMembers(challengeID);
             }
 
-            if (!memberList.isEmpty()) {
-                return new ResponseEntity<>(memberList, HttpStatus.OK);
-            } else {
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
+            return new ResponseEntity<>(memberList, HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

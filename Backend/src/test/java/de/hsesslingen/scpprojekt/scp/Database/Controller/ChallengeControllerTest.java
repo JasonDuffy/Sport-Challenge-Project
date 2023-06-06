@@ -91,6 +91,8 @@ public class ChallengeControllerTest {
     @MockBean
     SportService sportService;
     @MockBean
+    BonusService bonusService;
+    @MockBean
     SAML2Service saml2Service;
 
 
@@ -651,25 +653,6 @@ public class ChallengeControllerTest {
     }
 
     /**
-     * Test if 404 is correctly returned when no activities are found
-     * @throws Exception by mockMvc
-     */
-    @Test
-    @WithMockUser
-    public void getAllActivitiesForChallengeTestNotFound() throws Exception {
-        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-
-        RequestBuilder request = MockMvcRequestBuilders
-                .get("/challenges/1/activities/").accept(MediaType.APPLICATION_JSON);
-
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isNotFound())
-                .andReturn();
-
-        verify(challengeService).getActivitiesForChallenge(1L);
-    }
-
-    /**
      //     * Test if calculated distance is returned correctly
      //     * @throws Exception by mockMvc
      //     */
@@ -883,28 +866,6 @@ public class ChallengeControllerTest {
     }
 
     /**
-     * Test if not found is returned correctly
-     * @throws Exception by mockMvc
-     */
-    @Test
-    @WithMockUser
-    public void getAllTeamsForChallengeTestNotFound() throws Exception {
-        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-
-        List<TeamDTO> tList = new ArrayList<>();
-        when(challengeService.getChallengeTeams(1L)).thenReturn(tList);
-
-        RequestBuilder request = MockMvcRequestBuilders
-                .get("/challenges/1/teams/").accept(MediaType.APPLICATION_JSON);
-
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isNotFound())
-                .andReturn();
-
-        verify(challengeService).getChallengeTeams(1L);
-    }
-
-    /**
      * Test if all teams are deleted
      * @throws Exception by mockMvc
      */
@@ -1034,28 +995,5 @@ public class ChallengeControllerTest {
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isForbidden())
                 .andReturn();
-    }
-
-    /**
-     * Test if not found is returned correctly
-     * @throws Exception by mockMvc
-     */
-    @Test
-    @WithMockUser
-    public void getMembersForChallengeTestNotFound() throws Exception {
-        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-
-        List<MemberDTO> mList = new ArrayList<>();
-        when(challengeService.getChallengeMembers(1L)).thenReturn(mList);
-
-        RequestBuilder request = MockMvcRequestBuilders
-                .get("/challenges/1/members/").accept(MediaType.APPLICATION_JSON)
-                .param("type", "all");;
-
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isNotFound())
-                .andReturn();
-
-        verify(challengeService).getChallengeMembers(1L);
     }
 }

@@ -13,7 +13,7 @@ class ChallengeTeamPanelAreaGraph extends Component {
         this.state = {
             teamID: props.id,
             width: props.width,
-            height: props.height,
+            aspect: props.aspect,
             lineColor: props.lineColor,
             fillColor: props.fillColor,
             activities: props.activities
@@ -29,6 +29,9 @@ class ChallengeTeamPanelAreaGraph extends Component {
         return new Date(b.date) - new Date(a.date);
     }
 
+    /**
+     * Returns an area chart chronicling the progress of the given team over time
+     */
     activitiesOverTimeChart() {
         let data = this.state.activities;
 
@@ -108,7 +111,7 @@ class ChallengeTeamPanelAreaGraph extends Component {
             }
 
             return (
-                <ResponsiveContainer width={this.state.width} height={this.state.height}>
+                <ResponsiveContainer width={this.state.width} aspect={this.state.aspect}>
                     <AreaChart data={formattedDataArray}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="dateString" interval="preserveStartEnd"/>
@@ -122,7 +125,7 @@ class ChallengeTeamPanelAreaGraph extends Component {
         }
         else {
             return (
-                <ResponsiveContainer width={this.state.width} height={this.state.height}>
+                <ResponsiveContainer width={this.state.width} aspect={this.state.aspect}>
                     <AreaChart data={data}>
                         <CartesianGrid strokeDasharray="3 3" />
                         <XAxis dataKey="dateString" interval="preserveStartEnd" />

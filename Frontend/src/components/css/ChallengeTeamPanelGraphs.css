@@ -1,0 +1,14 @@
+/**
+ * CSS styles the graphs of the team panel
+ * 
+ * @author Jason Patrick Duffy
+ */
+
+.graphContainer{
+    display: flex;
+    flex-direction: row;
+}
+
+.otherContainer{
+    width: 100%;
+}

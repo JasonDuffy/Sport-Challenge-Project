@@ -308,24 +308,6 @@ class Challenge extends Component {
                             {this.state.currentBonuses.map((item) => (
                                 this.bonusRowMaker(type, item)
                             ))}
-                            <tr>
-                                <td>
-                                    Gesamtbonus
-                                </td>
-                                <td>
-                                </td>
-                                <td>
-                                </td>
-                                <td>
-                                </td>
-                                <td>
-                                </td>
-                                <td>
-                                    {"XX"}
-                                </td>
-                                <td>
-                                </td>
-                            </tr>
                         </tbody>
                     </table>
                 </div>

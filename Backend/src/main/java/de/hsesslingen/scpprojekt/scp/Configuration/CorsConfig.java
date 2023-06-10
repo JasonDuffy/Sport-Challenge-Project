@@ -23,7 +23,7 @@ public class CorsConfig {
                 // Set to URL of frontend
                 final String frontendURL = "http://localhost:3000";
 
-                registry.addMapping("/**").allowedOrigins(frontendURL).allowedHeaders("*").allowCredentials(true); // Allows the frontend to access all of the server
+                registry.addMapping("/**").allowedOrigins(frontendURL).allowedHeaders("*").allowCredentials(true).allowedMethods("*"); // Allows the frontend to access all of the server
             }
         };
     }

@@ -4,6 +4,7 @@ import Button from "./Button";
 import { useState, useEffect } from "react";
 import "./css/ChallengeOverview.css";
 import { useNavigate } from "react-router-dom";
+import GlobalVariables from "../GlobalVariables.js"
 
 /**
  * Displays a Challenge with Image, Overlay and Data.
@@ -28,11 +29,11 @@ function ChallengeOverview(props) {
 
   useEffect(() => {
     async function getChallengeData(){
-      const challengeResponse = await fetch("http://localhost:8081/challenges/" + props.id + "/", { method: "GET", credentials: "include" });
+      const challengeResponse = await fetch(GlobalVariables.serverURL + "/challenges/" + props.id + "/", { method: "GET", credentials: "include" });
       const challengeResData = await challengeResponse.json();
-      const imageResponse = await fetch("http://localhost:8081/images/" + challengeResData.imageID + "/", { method: "GET", credentials: "include" });
+      const imageResponse = await fetch(GlobalVariables.serverURL + "/images/" + challengeResData.imageID + "/", { method: "GET", credentials: "include" });
       const imageResData = await imageResponse.json();
-      const challengeDistanceResponse = await fetch("http://localhost:8081/challenges/" + props.id + "/distance/", { method: "GET", credentials: "include" });
+      const challengeDistanceResponse = await fetch(GlobalVariables.serverURL + "/challenges/" + props.id + "/distance/", { method: "GET", credentials: "include" });
       const challengeDistanceResData = await challengeDistanceResponse.json();
 
       setChallengeName(challengeResData.name);

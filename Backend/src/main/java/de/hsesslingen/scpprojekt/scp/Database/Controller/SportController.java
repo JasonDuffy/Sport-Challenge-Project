@@ -23,7 +23,6 @@ import java.util.Optional;
  *
  * @author Tom Nguyen Dinh, Jason Patrick Duffy
  */
-@CrossOrigin(origins="http://localhost:3000", allowedHeaders = "*", allowCredentials = "true")
 @RestController
 @RequestMapping("/sports")
 public class SportController {

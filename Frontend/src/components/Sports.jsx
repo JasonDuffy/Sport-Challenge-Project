@@ -2,6 +2,7 @@ import { Component, React } from "react";
 import "./css/MyChallenges.css";
 import SportsTableRow from "./SportsTableRow";
 import Button from "./Button";
+import GlobalVariables from "../GlobalVariables.js"
 
 /**
  * Page providing an overview of all available sports and allowing edit and add of sports
@@ -17,7 +18,7 @@ class Sports extends Component {
   }
 
   async componentDidMount() {
-    let sportsResponse = await fetch("http://localhost:8081/sports/", { method: "GET", credentials: "include" });
+    let sportsResponse = await fetch(GlobalVariables.serverURL + "/sports/", { method: "GET", credentials: "include" });
     let sportsResData = await sportsResponse.json();
 
     this.setState({ sports: sportsResData })

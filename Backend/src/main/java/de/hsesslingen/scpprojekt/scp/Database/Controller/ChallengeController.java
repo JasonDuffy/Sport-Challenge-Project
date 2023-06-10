@@ -42,7 +42,6 @@ import java.util.Optional;
  *
  * @author Robin Hackh, Jason Patrick Duffy, Tom Nguyen Dinh
  */
-@CrossOrigin(origins="http://localhost:3000", allowedHeaders = "*", allowCredentials = "true")
 @RestController
 @RequestMapping("/challenges")
 public class ChallengeController {

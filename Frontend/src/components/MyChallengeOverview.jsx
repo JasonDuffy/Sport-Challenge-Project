@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./css/MyChallengeOverview.css";
 import "./css/Form.css";
 import Button from "./Button";
+import GlobalVariables from "../GlobalVariables.js"
 
 class MyChallengeOverview extends Component {
   constructor(props) {
@@ -79,7 +80,7 @@ class MyChallengeOverview extends Component {
     activityJsonObj.distance = this.state.activityDistance;
     activityJsonObj.date = new Date().toLocaleDateString("de-GE", dateOptions).replace(" ", "");
 
-    const activityResponse = await fetch("http://localhost:8081/activities/", {
+    const activityResponse = await fetch(GlobalVariables.serverURL + "/activities/", {
       method: "POST",
       headers: { Accept: "application/json", "Content-Type": "application/json" }, //Needed: Backend will not accept without
       body: JSON.stringify(activityJsonObj),
@@ -96,17 +97,17 @@ class MyChallengeOverview extends Component {
   }
 
   async componentDidMount() {
-    let challengeResponse = await fetch("http://localhost:8081/challenges/" + this.props.id + "/", { method: "GET", credentials: "include" });
+    let challengeResponse = await fetch(GlobalVariables.serverURL + "/challenges/" + this.props.id + "/", { method: "GET", credentials: "include" });
     let challengeResData = await challengeResponse.json();
-    let imageResponse = await fetch("http://localhost:8081/images/" + challengeResData.imageID + "/", { method: "GET", credentials: "include" });
+    let imageResponse = await fetch(GlobalVariables.serverURL + "/images/" + challengeResData.imageID + "/", { method: "GET", credentials: "include" });
     let imageResData = await imageResponse.json();
-    let distanceResponse = await fetch("http://localhost:8081/challenges/" + this.props.id + "/distance/", { method: "GET", credentials: "include" });
+    let distanceResponse = await fetch(GlobalVariables.serverURL + "/challenges/" + this.props.id + "/distance/", { method: "GET", credentials: "include" });
     let distanceResData = await distanceResponse.json();
-    let challengeSportResponse = await fetch("http://localhost:8081/challenge-sports/challenges/" + this.props.id + "/", { method: "GET", credentials: "include" });
+    let challengeSportResponse = await fetch(GlobalVariables.serverURL + "/challenge-sports/challenges/" + this.props.id + "/", { method: "GET", credentials: "include" });
     let challengeSportResData = await challengeSportResponse.json();
 
     for (let i = 0; i < challengeSportResData.length; i++) {
-      let sportResponse = await fetch("http://localhost:8081/sports/" + challengeSportResData[i].sportID + "/", { method: "GET", credentials: "include" });
+      let sportResponse = await fetch(GlobalVariables.serverURL + "/sports/" + challengeSportResData[i].sportID + "/", { method: "GET", credentials: "include" });
       let sportResData = await sportResponse.json();
       challengeSportResData[i].sportName = sportResData.name;
     }

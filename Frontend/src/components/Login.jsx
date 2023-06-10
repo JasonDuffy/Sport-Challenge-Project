@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import Button from "./Button";
 import "./css/Login.css";
+import GlobalVariables from "../GlobalVariables.js"
 
 class Login extends Component {
   constructor() {
@@ -8,7 +9,7 @@ class Login extends Component {
   }
 
   loginUser() {
-    window.open("http://localhost:8081/saml/login/", "_self");
+    window.open(GlobalVariables.serverURL + "/saml/login/", "_self");
   }
 
   componentDidMount() {

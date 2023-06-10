@@ -3,6 +3,7 @@ import withRouter from "./withRouter";
 import Button from "./Button";
 import "./css/AddChallenge.css";
 import "./css/Form.css";
+import GlobalVariables from "../GlobalVariables.js"
 
 /**
  * Add Challenge page of the App
@@ -66,8 +67,8 @@ class AddChallenge extends Component {
     this.setState({ challengeEndDate: event.target.value });
   }
 
-  previewImageChange(event){
-    this.setState({ imageSource: URL.createObjectURL(event.target.files[0])});
+  previewImageChange(event) {
+    this.setState({ imageSource: URL.createObjectURL(event.target.files[0]) });
   }
   //==================================================END STATE CHANGE FUNCTIONS==================================================
 
@@ -205,7 +206,7 @@ class AddChallenge extends Component {
       fetchBodyData.append("json", JSON.stringify(challengeJsonObj));
 
       //Gives data to the Backend and writes it into the DB
-      let challengeResponse = await fetch("http://localhost:8081/challenges/", { method: "POST", body: fetchBodyData, credentials: "include" });
+      let challengeResponse = await fetch(GlobalVariables.serverURL + "/challenges/", { method: "POST", body: fetchBodyData, credentials: "include" });
       if (challengeResponse.ok) {
         let challengeResData = await challengeResponse.json();
         infoContainerEl.classList.add("success");
@@ -221,7 +222,7 @@ class AddChallenge extends Component {
 
 
 
-    //==================================================UPDATE CHALLENGE==================================================
+      //==================================================UPDATE CHALLENGE==================================================
     } else if (this.props.params.action == "Edit") {
       //If a new Image is set it will update the image corresponding to the challenge
       if (challengeImageEl.files[0] != null) {
@@ -230,7 +231,7 @@ class AddChallenge extends Component {
         fetchImageBodyData.append("file", challengeImageEl.files[0]);
 
         //Gives data to the Backend and updates the Image
-        let imageResponse = await fetch("http://localhost:8081/images/" + this.state.imageID + "/", { method: "PUT", body: fetchImageBodyData, credentials: "include" });
+        let imageResponse = await fetch(GlobalVariables.serverURL + "/images/" + this.state.imageID + "/", { method: "PUT", body: fetchImageBodyData, credentials: "include" });
         if (!imageResponse.ok) {
           this.showInputErrorMessage("Beim editieren der Challenge ist etwas schief gelaufen: " + imageResponse.status + " " + imageResponse.statusText + "!");
         }
@@ -243,7 +244,7 @@ class AddChallenge extends Component {
       let challengeSportId = []; //Array which contains the ChallengeSportId's needed for the update
 
       //All challengeSports that contains the Challenge ID 
-      let sportResponse = await fetch("http://localhost:8081/challenge-sports/challenges/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
+      let sportResponse = await fetch(GlobalVariables.serverURL + "/challenge-sports/challenges/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
       let sportResData = await sportResponse.json();
 
       //Search and saves the Sports that need a update
@@ -272,7 +273,7 @@ class AddChallenge extends Component {
         if (sportIdInDB.includes(sportCheckboxCheckedEl[i].dataset.sportId)) {
           //UPDATE Challenge Sport
 
-          sportResponse = await fetch("http://localhost:8081/challenge-sports/" + challengeSportId[0] + "/", {
+          sportResponse = await fetch(GlobalVariables.serverURL + "/challenge-sports/" + challengeSportId[0] + "/", {
             method: "PUT",
             headers: { Accept: "application/json", "Content-Type": "application/json" }, //Needed: Backend will not accept without
             body: JSON.stringify(challengeSportJsonObj),
@@ -287,7 +288,7 @@ class AddChallenge extends Component {
         } else {
           //ADD new Challenge Sport
 
-          sportResponse = await fetch("http://localhost:8081/challenge-sports/", {
+          sportResponse = await fetch(GlobalVariables.serverURL + "/challenge-sports/", {
             method: "POST",
             headers: { Accept: "application/json", "Content-Type": "application/json" }, //Needed: Backend will not accept without
             body: JSON.stringify(challengeSportJsonObj),
@@ -308,7 +309,7 @@ class AddChallenge extends Component {
       fetchChallengeBodyData.append("json", JSON.stringify(challengeJsonObj));
 
       //Gives data to the Backend and updates the Challenge
-      let challengeResponse = await fetch("http://localhost:8081/challenges/" + this.props.params.id + "/", {
+      let challengeResponse = await fetch(GlobalVariables.serverURL + "/challenges/" + this.props.params.id + "/", {
         method: "PUT",
         body: fetchChallengeBodyData,
         credentials: "include",
@@ -336,18 +337,18 @@ class AddChallenge extends Component {
 
   async componentDidMount() {
     //Loads all the Sports and writes them in to the table below
-    let response = await fetch("http://localhost:8081/sports/", { method: "GET", credentials: "include" });
+    let response = await fetch(GlobalVariables.serverURL + "/sports/", { method: "GET", credentials: "include" });
     let resData = await response.json();
     this.setState({ allSport: resData });
 
     //If the component is in edit mode
     if (this.props.params.action === "Edit") {
       //fetch the data of the challenge from the backend
-      let challengeResponse = await fetch("http://localhost:8081/challenges/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
+      let challengeResponse = await fetch(GlobalVariables.serverURL + "/challenges/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
       let challengeResData = await challengeResponse.json();
-      let sportResponse = await fetch("http://localhost:8081/challenge-sports/challenges/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
+      let sportResponse = await fetch(GlobalVariables.serverURL + "/challenge-sports/challenges/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
       let sportResData = await sportResponse.json();
-      let imageResponse = await fetch("http://localhost:8081/images/" + challengeResData.imageID + "/", { method: "GET", credentials: "include" });
+      let imageResponse = await fetch(GlobalVariables.serverURL + "/images/" + challengeResData.imageID + "/", { method: "GET", credentials: "include" });
       let imageResData = await imageResponse.json();
 
       //prefills the Input fields with the current challenge data
@@ -423,6 +424,7 @@ class AddChallenge extends Component {
                     <textarea
                       className="mg_t_2"
                       type="textArea"
+                      maxLength={2048}
                       value={this.state.challengeDescription}
                       onChange={this.challengeDescriptionChange}
                       placeholder="Beschreibe deine Challenge"

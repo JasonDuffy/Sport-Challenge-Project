@@ -5,6 +5,7 @@ import "./css/Form.css";
 import "./css/AddTeam.css";
 import Button from "./Button";
 import withRouter from "./withRouter";
+import GlobalVariables from "../GlobalVariables.js"
 
 class AddTeam extends Component {
   constructor(props) {
@@ -208,7 +209,7 @@ class AddTeam extends Component {
       fetchBodyData.append("file", teamImageEl.files[0]);
       fetchBodyData.append("json", JSON.stringify(teamJsonObj));
 
-      const teamResponse = await fetch("http://localhost:8081/teams/", { method: "POST", body: fetchBodyData, credentials: "include" });
+      const teamResponse = await fetch(GlobalVariables.serverURL + "/teams/", { method: "POST", body: fetchBodyData, credentials: "include" });
       const teamResData = await teamResponse.json();
 
       if (!teamResponse.ok) {
@@ -221,7 +222,7 @@ class AddTeam extends Component {
         let teamMemberJsonObj = {};
         teamMemberJsonObj.memberID = teamMember[i].dataset.memberId;
         teamMemberJsonObj.teamID = teamResData.id;
-        const teamMembersResponse = await fetch("http://localhost:8081/teamMembers/", {
+        const teamMembersResponse = await fetch(GlobalVariables.serverURL + "/teamMembers/", {
           method: "POST",
           headers: { Accept: "application/json", "Content-Type": "application/json" }, //Needed: Backend will not accept without
           body: JSON.stringify(teamMemberJsonObj),
@@ -249,22 +250,22 @@ class AddTeam extends Component {
         fetchImageBodyData.append("file", teamImageEl.files[0]);
 
         //Gives data to the Backend and updates the Image
-        let imageResponse = await fetch("http://localhost:8081/images/" + this.state.imageID + "/", { method: "PUT", body: fetchImageBodyData, credentials: "include" });
+        let imageResponse = await fetch(GlobalVariables.serverURL + "/images/" + this.state.imageID + "/", { method: "PUT", body: fetchImageBodyData, credentials: "include" });
         if (!imageResponse.ok) {
           this.showInputErrorMessage("Beim editieren der Challenge ist etwas schief gelaufen: " + imageResponse.status + " " + imageResponse.statusText + "!");
         }
       }
 
-      const teamMemberResponse = await fetch("http://localhost:8081/members/teams/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
+      const teamMemberResponse = await fetch(GlobalVariables.serverURL + "/members/teams/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
       const teamMemberResData = await teamMemberResponse.json();
 
       for (const teamMember of teamMemberResData) {
         if (teamMembersEl.querySelector('[data-member-id="' + teamMember.userID + '"][class="drag_member"]') !== null) {
           teamMembersEl.removeChild(document.querySelector('[data-member-id="' + teamMember.userID + '"][class="drag_member"]'));
         } else {
-          const teamMemberIdResponse = await fetch("http://localhost:8081/teamMembers/teams/" + this.props.params.id + "/members/" + teamMember.userID + "/", { method: "GET", credentials: "include" });
+          const teamMemberIdResponse = await fetch(GlobalVariables.serverURL + "/teamMembers/teams/" + this.props.params.id + "/members/" + teamMember.userID + "/", { method: "GET", credentials: "include" });
           const teamMemberIdResData = await teamMemberIdResponse.json();
-          const removeTeamMemberResponse = await fetch("http://localhost:8081/teamMembers/" + teamMemberIdResData.id + "/", { method: "DELETE", credentials: "include" });
+          const removeTeamMemberResponse = await fetch(GlobalVariables.serverURL + "/teamMembers/" + teamMemberIdResData.id + "/", { method: "DELETE", credentials: "include" });
           if (!removeTeamMemberResponse.ok) {
             this.showInputErrorMessage(
               "Beim editieren des Teams ist etwas ist etwas schief gelaufen: " + removeTeamMemberResponse.status + " " + removeTeamMemberResponse.statusText + "!"
@@ -281,7 +282,7 @@ class AddTeam extends Component {
       for (let i = 1; i < teamMember.length; i++) {
         teamMemberJsonObj.memberID = teamMember[i].dataset.memberId;
 
-        const teamMembersResponse = await fetch("http://localhost:8081/teamMembers/", {
+        const teamMembersResponse = await fetch(GlobalVariables.serverURL + "/teamMembers/", {
           method: "POST",
           headers: { Accept: "application/json", "Content-Type": "application/json" }, //Needed: Backend will not accept without
           body: JSON.stringify(teamMemberJsonObj),
@@ -296,7 +297,7 @@ class AddTeam extends Component {
         }
       }
 
-      const teamResponse = await fetch("http://localhost:8081/teams/" + this.props.params.id + "/?imageID=" + this.state.imageID, {
+      const teamResponse = await fetch(GlobalVariables.serverURL + "/teams/" + this.props.params.id + "/?imageID=" + this.state.imageID, {
         method: "PUT",
         headers: { Accept: "application/json", "Content-Type": "application/json" },
         body: JSON.stringify(teamJsonObj),
@@ -322,9 +323,9 @@ class AddTeam extends Component {
   async componentDidMount() {
     this.dragHandler();
 
-    const challengeResponse = await fetch("http://localhost:8081/challenges/?type=current", { method: "GET", credentials: "include" });
+    const challengeResponse = await fetch(GlobalVariables.serverURL + "/challenges/?type=current", { method: "GET", credentials: "include" });
     const challengeResData = await challengeResponse.json();
-    const memberResponse = await fetch("http://localhost:8081/members/", { method: "GET", credentials: "include" });
+    const memberResponse = await fetch(GlobalVariables.serverURL + "/members/", { method: "GET", credentials: "include" });
     const memberResData = await memberResponse.json();
 
     this.setState({ challengesData: challengeResData });
@@ -337,11 +338,11 @@ class AddTeam extends Component {
     }
 
     if (this.props.params.action === "Edit") {
-      const teamResponse = await fetch("http://localhost:8081/teams/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
+      const teamResponse = await fetch(GlobalVariables.serverURL + "/teams/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
       const teamResData = await teamResponse.json();
-      const imageResponse = await fetch("http://localhost:8081/images/" + teamResData.imageID + "/", { method: "GET", credentials: "include" });
+      const imageResponse = await fetch(GlobalVariables.serverURL + "/images/" + teamResData.imageID + "/", { method: "GET", credentials: "include" });
       const imageResData = await imageResponse.json();
-      const teamMemberResponse = await fetch("http://localhost:8081/members/teams/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
+      const teamMemberResponse = await fetch(GlobalVariables.serverURL + "/members/teams/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
       const teamMemberResData = await teamMemberResponse.json();
 
       this.setState({ teamNameHeading: teamResData.name });

@@ -52,7 +52,7 @@ class SAML2ControllerTest {
 
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isPermanentRedirect())
-                .andExpect(header().string("location", "http://localhost:3000/"))
+                .andExpect(header().string("location", "http://localhost:3000"))
                 .andReturn();
 
         verify(saml2Service).loginUser();

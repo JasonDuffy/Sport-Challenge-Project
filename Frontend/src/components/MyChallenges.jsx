@@ -2,6 +2,7 @@ import { Component, React } from "react";
 import MyChallengeOverview from "./MyChallengeOverview";
 import "./css/MyChallenges.css";
 import MyChallengesTableRow from "./MyChallengesTableRow";
+import GlobalVariables from "../GlobalVariables.js"
 
 class MyChallenges extends Component {
   constructor(props) {
@@ -15,14 +16,14 @@ class MyChallenges extends Component {
   }
 
   async componentDidMount() {
-    let loggedInMemberResponse = await fetch("http://localhost:8081/members/loggedIn/", { method: "GET", credentials: "include" });
+    let loggedInMemberResponse = await fetch(GlobalVariables.serverURL + "/members/loggedIn/", { method: "GET", credentials: "include" });
     let loggedInMemberResData = await loggedInMemberResponse.json();
     //EINFÜGEN FÜR DYNAMISCHE GENERIERUNG -> AKTUELL NICH MÖGLICH, DA MAX MUSTERMANN KEINER CHALLENGE ANGEHÖRT
-    //let challengeIDsResponse = await fetch("http://localhost:8081/challenges/members/" + loggedInMemberResData.userID + "/", { method: "GET", credentials: "include" });
-    let challengeIDsResponse = await fetch("http://localhost:8081/challenges/members/3/", { method: "GET", credentials: "include" });
+    //let challengeIDsResponse = await fetch(GlobalVariables.serverURL + "/challenges/members/" + loggedInMemberResData.userID + "/", { method: "GET", credentials: "include" });
+    let challengeIDsResponse = await fetch(GlobalVariables.serverURL + "/challenges/members/3/", { method: "GET", credentials: "include" });
     let challengeIDsResData = await challengeIDsResponse.json();
 
-    let activitiesResponse = await fetch("http://localhost:8081/members/" + loggedInMemberResData.userID + "/activities/", { method: "GET", credentials: "include" });
+    let activitiesResponse = await fetch(GlobalVariables.serverURL + "/members/" + loggedInMemberResData.userID + "/activities/", { method: "GET", credentials: "include" });
     let activitiesResData = await activitiesResponse.json();
 
     this.setState({ loggedInID: loggedInMemberResData.userID });

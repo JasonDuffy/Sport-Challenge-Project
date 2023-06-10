@@ -2,8 +2,6 @@ package de.hsesslingen.scpprojekt.scp.Authentication.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2User;
-import de.hsesslingen.scpprojekt.scp.Database.Services.MemberService;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -17,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.net.URI;
 
@@ -59,7 +56,6 @@ public class SAML2Controller {
      *
      * @return ResponseEntity that redirects the user to the frontend
      */
-    @Hidden // Hidden as it should not be used in an API request
     @Operation(summary = "Redirect user to Frontend")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "308", description = "Redirection successful.",
@@ -69,7 +65,7 @@ public class SAML2Controller {
     public ResponseEntity<Void> login(){
         saml2Service.loginUser();
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("http://localhost:3000/"));
+        headers.setLocation(URI.create("http://localhost:3000"));
         return new ResponseEntity<>(headers, HttpStatus.PERMANENT_REDIRECT);
     }
 }

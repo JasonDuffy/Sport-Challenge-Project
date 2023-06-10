@@ -8,7 +8,7 @@ const GlobalVariables = {
     serverName: "localhost", // Set to hostname of backend server
 }
 
-// Outside of declaration as it would not be possible to access otherwise
+// Outside of declaration as it would not be possible to access name, port and protocol otherwise
 GlobalVariables.serverURL = GlobalVariables.serverProtocol + "://" + GlobalVariables.serverName + ":" + GlobalVariables.serverPort;
 
 export default GlobalVariables;

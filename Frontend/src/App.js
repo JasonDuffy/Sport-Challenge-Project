@@ -9,14 +9,9 @@ import Login from "./components/Login";
 import MyChallenges from "./components/MyChallenges";
 import Navbar from "./components/Navbar";
 import Userprofile from "./components/Userprofile";
-import Test from "./components/Test";
 import AddSport from "./components/AddSport";
 import AddBonus from "./components/AddBonus";
 import Sports from "./components/Sports";
-
-const globalVars = {
-  serverURL: "http://localhost:8081",
-}
 
 function App() {
   return (
@@ -24,7 +19,6 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/Test" element={<Test />} />
         <Route path="/Login" element={<Login />} />
         <Route path="/Challenge/:id" element={<Challenge />} />
         <Route path="/My-Challenges" element={<MyChallenges />} />

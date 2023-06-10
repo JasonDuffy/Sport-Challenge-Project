@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import "./css/ChallengeMembers.css"
+import GlobalVariables from "../GlobalVariables.js"
 
 /**
  * Provides a single team member in a div
@@ -19,7 +20,7 @@ class ChallengeMembers extends Component {
 
     async componentDidMount() {
         try{
-            let teamImage = await fetch("http://localhost:8081/images/" + this.state.team.imageID + "/", { method: "GET", credentials: "include" });
+            let teamImage = await fetch(GlobalVariables.serverURL + "/images/" + this.state.team.imageID + "/", { method: "GET", credentials: "include" });
             let teamImageResData = await teamImage.json();
 
             this.setState({ image: "data:" + teamImageResData.type + ";base64, " + teamImageResData.data }, () => {

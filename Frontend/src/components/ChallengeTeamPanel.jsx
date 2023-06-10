@@ -3,8 +3,9 @@ import ChallengeTeamPanelAreaGraph from "./ChallengeTeamPanelAreaGraph";
 import ChallengeTeamPanelBarGraph from "./ChallengeTeamPanelBarGraph";
 import ChallengeTeamPanelTable from "./ChallengeTeamPanelTable";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faPencil } from "@fortawesome/free-solid-svg-icons";
 import "./css/ChallengeTeamPanelGraphs.css";
+import GlobalVariables from "../GlobalVariables.js"
 
 /**
  * Provides the team panel for the challenge page
@@ -49,7 +50,7 @@ class ChallengeTeamPanel extends Component {
     async load() {
         if (this.state.teamID !== 0) {
             // ACTIVITIES FETCH --------------------------------------
-            let activities = await fetch("http://localhost:8081/teams/" + this.props.id + "/activities/", { method: "GET", credentials: "include" });
+            let activities = await fetch(GlobalVariables.serverURL + "/teams/" + this.props.id + "/activities/", { method: "GET", credentials: "include" });
             let activitiesResData = await activities.json();
 
             this.setState({ teamActivities: activitiesResData }, () => {
@@ -57,7 +58,7 @@ class ChallengeTeamPanel extends Component {
             });
 
             // MEMBERS FETCH --------------------------------------
-            let members = await fetch("http://localhost:8081/teams/" + this.props.id + "/members/", { method: "GET", credentials: "include" });
+            let members = await fetch(GlobalVariables.serverURL + "/teams/" + this.props.id + "/members/", { method: "GET", credentials: "include" });
             let memberData = await members.json();
 
             this.setState({ teamMembers: memberData }, () => {
@@ -65,7 +66,7 @@ class ChallengeTeamPanel extends Component {
             });
 
             // TEAM FETCH --------------------------------------
-            let team = await fetch("http://localhost:8081/teams/" + this.props.id + "/", { method: "GET", credentials: "include" });
+            let team = await fetch(GlobalVariables.serverURL + "/teams/" + this.props.id + "/", { method: "GET", credentials: "include" });
             let teamData = await team.json();
 
             this.setState({ teamData: teamData }, () => {

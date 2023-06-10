@@ -14,6 +14,10 @@ import AddSport from "./components/AddSport";
 import AddBonus from "./components/AddBonus";
 import Sports from "./components/Sports";
 
+const globalVars = {
+  serverURL: "http://localhost:8081",
+}
+
 function App() {
   return (
     <>

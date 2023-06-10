@@ -3,6 +3,7 @@ import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import React, { useState } from "react";
 import "./css/Navbar.css";
 import AnimateHeight from "react-animate-height";
+import GlobalVariables from "../GlobalVariables.js"
 
 function Navbar() {
   const [height, setHeight] = useState(0);

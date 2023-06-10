@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCheck, faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
 import "./css/MyChallengesTableRow.css";
 import "./css/Form.css";
+import GlobalVariables from "../GlobalVariables.js"
 
 class SportsTableRow extends Component {
   constructor(props) {
@@ -18,14 +19,14 @@ class SportsTableRow extends Component {
   }
 
   async deleteRow(event) {
-    const sportsResponse = await fetch("http://localhost:8081/sports/" + this.props.id + "/", { method: "DELETE", credentials: "include" });
+    const sportsResponse = await fetch(GlobalVariables.serverURL + "/sports/" + this.props.id + "/", { method: "DELETE", credentials: "include" });
     if (sportsResponse.ok) {
       this.setState({ deleted: true });
     }
   }
 
   async componentDidMount() {
-    let sportsResponse = await fetch("http://localhost:8081/sports/" + this.props.id + "/", { method: "GET", credentials: "include" });
+    let sportsResponse = await fetch(GlobalVariables.serverURL + "/sports/" + this.props.id + "/", { method: "GET", credentials: "include" });
     let sportsResData = await sportsResponse.json();
 
     this.setState({ sportsName: sportsResData.name });

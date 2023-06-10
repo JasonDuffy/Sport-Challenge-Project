@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import withRouter from "./withRouter";
 import Button from "./Button";
 import "./css/Form.css";
+import GlobalVariables from "../GlobalVariables.js"
 
 /**
  * Add Sport page of the App
@@ -75,7 +76,7 @@ class AddSport extends Component {
     sportJsonObj.factor = this.state.sportFactor;
 
     if(this.props.params.action === "Edit"){
-      let sportResponse = await fetch("http://localhost:8081/sports/" + this.props.params.id + "/", { method: "PUT", body: JSON.stringify(sportJsonObj), credentials: "include", headers: { "Content-Type": "application/json" }});
+      let sportResponse = await fetch(GlobalVariables.serverURL + "/sports/" + this.props.params.id + "/", { method: "PUT", body: JSON.stringify(sportJsonObj), credentials: "include", headers: { "Content-Type": "application/json" }});
       if(sportResponse.ok){
         infoContainerEl.classList.add("success");
         infoMessageEl.innerHTML = "Die Sportart wurde erolgreich editiert!";
@@ -86,7 +87,7 @@ class AddSport extends Component {
       }
     }else{
       //Gives data to the Backend and writes it into the DB
-      let sportResponse = await fetch("http://localhost:8081/sports/", { method: "POST", body: JSON.stringify(sportJsonObj), credentials: "include", headers: { "Content-Type": "application/json" }});
+      let sportResponse = await fetch(GlobalVariables.serverURL + "/sports/", { method: "POST", body: JSON.stringify(sportJsonObj), credentials: "include", headers: { "Content-Type": "application/json" }});
       if(sportResponse.ok){
         infoContainerEl.classList.add("success");
         infoMessageEl.innerHTML = "Die Sportart wurde erolgreich erstellt! Wenn du möchtests kannst du eine weitere Sportarten erstellen.";
@@ -103,7 +104,7 @@ class AddSport extends Component {
 
   async componentDidMount() {
     if (this.props.params.action === "Edit") {
-      let sportResponse = await fetch("http://localhost:8081/sports/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
+      let sportResponse = await fetch(GlobalVariables.serverURL + "/sports/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
       let sportResData = await sportResponse.json();
 
       sportNameHeading = sportResData.name;

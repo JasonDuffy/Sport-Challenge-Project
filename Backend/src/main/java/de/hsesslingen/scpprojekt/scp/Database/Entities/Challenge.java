@@ -32,7 +32,7 @@ public class Challenge {
     private long id;
     @Column(name = "name", nullable = false)
     private String name;
-    @Column(name = "description", nullable = false)
+    @Column(name = "description", nullable = false, length = 2048)
     private String description;
     @Column(name = "start_date", nullable = false)
     private LocalDateTime startDate;

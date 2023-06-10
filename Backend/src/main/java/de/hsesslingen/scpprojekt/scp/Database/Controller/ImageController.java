@@ -27,7 +27,6 @@ import java.util.Optional;
  *
  * @author Robin Hackh, Tom Nguyen Dinh
  */
-@CrossOrigin(origins="http://localhost:3000", allowedHeaders = "*", allowCredentials = "true")
 @RestController
 @RequestMapping("/images")
 public class ImageController {

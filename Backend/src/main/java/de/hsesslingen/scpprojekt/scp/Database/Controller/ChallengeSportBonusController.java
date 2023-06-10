@@ -22,7 +22,6 @@ import java.util.List;
  *
  * @author Robin Hackh
  */
-@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*", allowCredentials = "true")
 @RestController
 @RequestMapping("/challenge-sport-bonuses")
 public class ChallengeSportBonusController {

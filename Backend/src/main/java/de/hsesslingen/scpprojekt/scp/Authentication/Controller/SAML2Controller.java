@@ -26,7 +26,6 @@ import java.net.URI;
  *
  * @author Jason Patrick Duffy
  */
-@CrossOrigin(origins="http://localhost:3000", allowedHeaders = "*", allowCredentials = "true")
 @RestController
 @RequestMapping(path = "/saml/", produces = "application/json")
 public class SAML2Controller {

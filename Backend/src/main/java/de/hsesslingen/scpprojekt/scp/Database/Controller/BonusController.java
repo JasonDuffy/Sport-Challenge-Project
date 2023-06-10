@@ -23,7 +23,6 @@ import java.util.List;
  *
  * @author Jason Patrick Duffy
  */
-@CrossOrigin(origins="http://localhost:3000", allowedHeaders = "*", allowCredentials = "true")
 @RestController
 @RequestMapping("/bonuses")
 public class BonusController {

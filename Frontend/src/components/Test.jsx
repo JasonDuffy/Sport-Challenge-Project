@@ -1,18 +1,19 @@
 import React from "react";
 import Button from "./Button";
 import { useState, useEffect } from "react";
+import GlobalVariables from "../GlobalVariables.js"
 
 const userAction = async () => {
-  const res = await fetch("http://localhost:8081/saml/user/", { method: "GET", credentials: "include" });
+  const res = await fetch(GlobalVariables.serverURL + "/saml/user/", { method: "GET", credentials: "include" });
   console.log(res);
   const data = await res.json();
   console.log(data);
 };
 const userAction2 = () => {
-  window.open("http://localhost:8081/saml/login/", "_self");
+  window.open(GlobalVariables.serverURL + "/saml/login/", "_self");
 };
 const userAction3 = async () => {
-  const res = await fetch("http://localhost:8081/member/0", { method: "GET", credentials: "include" });
+  const res = await fetch(GlobalVariables.serverURL + "/member/0", { method: "GET", credentials: "include" });
   console.log(res);
   const data = await res.json();
   console.log(data);
@@ -28,13 +29,13 @@ function Test() {
     var formData = new FormData();
     const file = fileinput.files[0];
     formData.append("file", file);
-    const res = await fetch("http://localhost:8081/image/upload/", { method: "POST", body: formData, credentials: "include" });
+    const res = await fetch(GlobalVariables.serverURL + "/image/upload/", { method: "POST", body: formData, credentials: "include" });
     console.log(res);
   };
 
   async function loadImg(){
     const imageDisplay = document.getElementById("image_display");
-    const res = await fetch("http://localhost:8081/image/1", { method: "GET", credentials: "include" });
+    const res = await fetch(GlobalVariables.serverURL + "/image/1", { method: "GET", credentials: "include" });
     console.log(res);
     const data = await res.json();
     console.log(data);

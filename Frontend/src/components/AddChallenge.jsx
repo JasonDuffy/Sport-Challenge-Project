@@ -395,7 +395,7 @@ class AddChallenge extends Component {
                     className="mg_t_2"
                     type="text"
                     value={this.state.challengeName}
-                    maxLength={15}
+                    maxLength={64}
                     onChange={this.challengeNameChange}
                     placeholder="Challenge Name"
                   ></input>
@@ -424,7 +424,7 @@ class AddChallenge extends Component {
                     <textarea
                       className="mg_t_2"
                       type="textArea"
-                      maxLength={2048}
+                      maxLength={400}
                       value={this.state.challengeDescription}
                       onChange={this.challengeDescriptionChange}
                       placeholder="Beschreibe deine Challenge"

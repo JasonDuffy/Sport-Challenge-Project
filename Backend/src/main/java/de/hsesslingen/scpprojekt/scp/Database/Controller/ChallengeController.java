@@ -58,6 +58,8 @@ public class ChallengeController {
     private BonusService bonusService;
     @Autowired
     private SportService sportService;
+    @Autowired
+    private ChallengeSportService challengeSportService;
 
     /**
      * REST API for returning Challenge data of a given ID
@@ -436,13 +438,37 @@ public class ChallengeController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Bonuses found",
                     content = {@Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = Object.class)))}),
+                            array = @ArraySchema(schema = @Schema(implementation = Sport.class)))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @GetMapping(path = "/{id}/sports/", produces = "application/json")
     public ResponseEntity<List<Sport>> getSportsForChallenge(@PathVariable("id") long challengeID, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)) {
             return new ResponseEntity<>(sportService.getSportsForChallenge(challengeID), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
+     * Get effective factor of sport in challenge
+     *
+     * @param challengeID corresponding ID of Challenge
+     * @param sportsID corresponding ID of Sport
+     * @param request     automatically filled by browser
+     * @return 200 for success or 404 for not finding the bonus
+     */
+    @Operation(summary = "Get effective factor for a challenge")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Bonuses found",
+                    content = {@Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Float.class))}),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @GetMapping(path = "/{id}/sports/{sportsID}/effective", produces = "application/json")
+    public ResponseEntity<Float> getEffectiveFactorForSportInChallenge(@PathVariable("id") long challengeID, @PathVariable("sportsID") long sportsID, HttpServletRequest request) {
+        if (saml2Service.isLoggedIn(request)) {
+            return new ResponseEntity<>(challengeSportService.getEffectiveFactorForSportInChallenge(challengeID, sportsID), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

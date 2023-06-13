@@ -31,6 +31,9 @@ public class ChallengeSportService {
     @Autowired
     @Lazy
     ActivityService activityService;
+    @Autowired
+    @Lazy
+    BonusService bonusService;
 
     @Autowired
     @Lazy
@@ -119,5 +122,9 @@ public class ChallengeSportService {
      */
     public void deleteAll() {
         challengeSportRepository.deleteAll();
+    }
+
+    public float getEffectiveFactorForSportInChallenge(long challengeID, long sportID){
+        return 1.0f;
     }
 }

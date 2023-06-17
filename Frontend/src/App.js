@@ -1,17 +1,17 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import AddChallenge from "./components/AddChallenge";
-import AddTeam from "./components/AddTeam";
-import Challenge from "./components/Challenge";
-import "./components/css/root.css";
-import Home from "./components/Home";
-import Login from "./components/Login";
-import MyChallenges from "./components/MyChallenges";
-import Navbar from "./components/Navbar";
-import Userprofile from "./components/Userprofile";
-import AddSport from "./components/AddSport";
-import AddBonus from "./components/AddBonus";
-import Sports from "./components/Sports";
+import AddChallenge from "./pages/AddChallenge";
+import AddTeam from "./pages/AddTeam";
+import Challenge from "./pages/Challenge";
+import "./assets/root.css";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import MyChallenges from "./pages/MyChallenges";
+import Navbar from "./components/Navbar/Navbar";
+import Userprofile from "./pages/Profile";
+import AddSport from "./pages/AddSport";
+import AddBonus from "./pages/AddBonus";
+import Sports from "./pages/Sports";
 
 function App() {
   return (
@@ -20,14 +20,14 @@ function App() {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/Login" element={<Login />} />
-        <Route path="/Challenge/:id" element={<Challenge />} />
+        <Route path="/Challenge" element={<Challenge />} />
         <Route path="/My-Challenges" element={<MyChallenges />} />
         <Route path="/Profile" element={<Userprofile />} />
         <Route path="/Sports" element={<Sports />} />
-        <Route path="/:action/Challenge/:id" element={<AddChallenge />} />
-        <Route path="/:action/Team/:id" element={<AddTeam />} />
-        <Route path="/:action/Bonus/:id" element={<AddBonus />} />
-        <Route path="/:action/Sport/:id" element={<AddSport />} />
+        <Route path="/Challenge/:action" element={<AddChallenge />} />
+        <Route path="/Team/:action" element={<AddTeam />} />
+        <Route path="/Bonus/:action" element={<AddBonus />} />
+        <Route path="/Sport/:action" element={<AddSport />} />
       </Routes>
     </>
   );

@@ -1,10 +1,10 @@
 import React from "react";
 import PropTypes from "prop-types";
-import Button from "./Button";
+import Button from "../ui/button/Button";
 import { useState, useEffect } from "react";
-import "./css/ChallengeOverview.css";
+import "./ChallengeOverview.css";
 import { useNavigate } from "react-router-dom";
-import GlobalVariables from "../GlobalVariables.js"
+import GlobalVariables from "../../GlobalVariables.js"
 
 /**
  * Displays a Challenge with Image, Overlay and Data.
@@ -53,7 +53,7 @@ function ChallengeOverview(props) {
       <div className="challenge_bg">
         <img src={imageSource} alt="Challenge-Image" className="challenge_bg_image"></img>
         <div className="challenge_bg_color"></div>
-        <img src={require(`../images/Challenge-Overlay.png`)} alt="SCP" className="challenge_bg_image_overlay"></img>
+        <img src={require(`../../assets/images/Challenge-Overlay.png`)} alt="SCP" className="challenge_bg_image_overlay"></img>
       </div>
       <div className="challenge_wrap">
         <h1 className="challenge_title">{challengeName}</h1>

@@ -1,13 +1,13 @@
 import React, { Component } from "react";
-import ChallengeTeamPanel from "./ChallengeTeamPanel";
-import withRouter from "./withRouter";
-import "./css/Challenge.css";
+import ChallengeTeamPanel from "../../components/ChallengeTeamPanel/ChallengeTeamPanel";
+import withRouter from "../withRouter";
+import "./Challenge.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMedal, faPencil } from "@fortawesome/free-solid-svg-icons";
-import ChallengeTeamPanelAreaGraph from "./ChallengeTeamPanelAreaGraph";
-import ChallengeTeamBarGraph from "./ChallengeTeamBarGraph";
-import ChallengeMembers from "./ChallengeMembers";
-import Button from "./Button"
+import ChallengeTeamPanelAreaGraph from "../../components/ChallengeTeamPanelAreaGraph/ChallengeTeamPanelAreaGraph";
+import ChallengeTeamBarGraph from "../../components/ChallengeTeamBarGraph/ChallengeTeamBarGraph";
+import ChallengeMembers from "../../components/ChallengeMembers/ChallengeMembers";
+import Button from "../../components/ui/button/Button";
 
 /**
  * Displays all information for a given challenge

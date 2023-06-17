@@ -1,11 +1,11 @@
 import React, { Component } from "react";
-import ChallengeTeamPanelAreaGraph from "./ChallengeTeamPanelAreaGraph";
-import ChallengeTeamPanelBarGraph from "./ChallengeTeamPanelBarGraph";
-import ChallengeTeamPanelTable from "./ChallengeTeamPanelTable";
+import ChallengeTeamPanelAreaGraph from "../ChallengeTeamPanelAreaGraph/ChallengeTeamPanelAreaGraph";
+import ChallengeTeamPanelBarGraph from "../ChallengeTeamPanelBarGraph/ChallengeTeamPanelBarGraph";
+import ChallengeTeamPanelTable from "../ChallengeTeamPanelTable/ChallengeTeamPanelTable";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil } from "@fortawesome/free-solid-svg-icons";
-import "./css/ChallengeTeamPanelGraphs.css";
-import GlobalVariables from "../GlobalVariables.js"
+import "./ChallengeTeamPanelGraphs.css";
+import GlobalVariables from "../../GlobalVariables.js"
 
 /**
  * Provides the team panel for the challenge page

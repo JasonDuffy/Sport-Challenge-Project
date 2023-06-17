@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleDown, faGripVertical } from "@fortawesome/free-solid-svg-icons";
-import "./css/Form.css";
-import "./css/AddTeam.css";
-import Button from "./Button";
-import withRouter from "./withRouter";
-import GlobalVariables from "../GlobalVariables.js"
+import "../../components/form/Form.css";
+import "./AddTeam.css";
+import Button from "../../components/ui/button/Button";
+import withRouter from "../withRouter";
+import GlobalVariables from "../../GlobalVariables.js"
 
 class AddTeam extends Component {
   constructor(props) {

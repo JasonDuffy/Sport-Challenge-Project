@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import Button from "./Button";
-import "./css/AddBonus.css";
-import "./css/Form.css";
-import withRouter from "./withRouter";
-import GlobalVariables from "../GlobalVariables.js"
+import Button from "../../components/ui/button/Button";
+import "./AddBonus.css";
+import "../../components/form/Form.css";
+import withRouter from "../withRouter";
+import GlobalVariables from "../../GlobalVariables.js"
 
 /**
  * Add Bonus page of the App
@@ -25,7 +25,7 @@ class AddBonus extends Component{
       bonusEndDate: "", 
       allSport: []
     };
-    
+
       //bind is needed for changing the state
       this.bonusNameChange = this.bonusNameChange.bind(this);
       this.bonusDescriptionChange = this.bonusDescriptionChange.bind(this);
@@ -158,6 +158,13 @@ class AddBonus extends Component{
         element.checked = false;
       }
     }
+
+    document.getElementById("page_loading").style.display = "none";
+    document.getElementById("page").style.display = "block";
+
+    const data = this.props.location.state.id;
+
+    console.log("ID:---" + data);
   }
 
   render() {

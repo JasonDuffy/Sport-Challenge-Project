@@ -1,8 +1,7 @@
 import { Component, React } from "react";
-import "./css/MyChallenges.css";
-import SportsTableRow from "./SportsTableRow";
-import Button from "./Button";
-import GlobalVariables from "../GlobalVariables.js"
+import SportsTableRow from "../../components/SportsTableRow/SportsTableRow";
+import Button from "../../components/ui/button/Button";
+import GlobalVariables from "../../GlobalVariables.js"
 
 /**
  * Page providing an overview of all available sports and allowing edit and add of sports

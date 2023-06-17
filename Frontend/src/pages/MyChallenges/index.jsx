@@ -1,8 +1,8 @@
 import { Component, React } from "react";
-import MyChallengeOverview from "./MyChallengeOverview";
-import "./css/MyChallenges.css";
-import MyChallengesTableRow from "./MyChallengesTableRow";
-import GlobalVariables from "../GlobalVariables.js"
+import MyChallengeOverview from "../../components/MyChallengeOverview/MyChallengeOverview";
+import "./MyChallenges.css";
+import MyChallengesTableRow from "../../components/MyChallengesTableRow/MyChallengesTableRow";
+import GlobalVariables from "../../GlobalVariables.js"
 
 class MyChallenges extends Component {
   constructor(props) {

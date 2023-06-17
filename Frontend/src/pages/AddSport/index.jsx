@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import withRouter from "./withRouter";
-import Button from "./Button";
-import "./css/Form.css";
-import GlobalVariables from "../GlobalVariables.js"
+import withRouter from "../withRouter";
+import Button from "../../components/ui/button/Button";
+import "../../components/form/Form.css";
+import GlobalVariables from "../../GlobalVariables.js"
 
 /**
  * Add Sport page of the App

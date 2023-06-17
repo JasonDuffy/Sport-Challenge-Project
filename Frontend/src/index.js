@@ -8,7 +8,7 @@ import "./components/css/Index.css";
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <>
-    <div id="page_loading" className="page_loading_container">
+    <div id="page_loading" className="page_loading_container" style={{ display: "flex" }}>
       <div className="page_loading_ring">
         <div></div>
         <div></div>
@@ -16,10 +16,10 @@ root.render(
         <div></div>
       </div>
     </div>
-    <div id="page" style={{display: "none"}}>
-    <BrowserRouter>
-      <App />
-    </BrowserRouter>
+    <div id="page" style={{ display: "none" }}>
+      <BrowserRouter>
+        <App />
+      </BrowserRouter>
     </div>
   </>
 );

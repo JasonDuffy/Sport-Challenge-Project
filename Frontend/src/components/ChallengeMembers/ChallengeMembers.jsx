@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import "./css/ChallengeMembers.css"
-import GlobalVariables from "../GlobalVariables.js"
+import "./ChallengeMembers.css"
+import GlobalVariables from "../../GlobalVariables.js"
 
 /**
  * Provides a single team member in a div
@@ -28,7 +28,7 @@ class ChallengeMembers extends Component {
             })
         } catch (error){ // Handle teams without image
             console.log("Team " + this.state.team.name + " does not have an image.");
-            this.setState({ image: require(`../images/Default-Team.png`) }, () => {
+            this.setState({ image: require(`../../assets/images/Default-Team.png`) }, () => {
                 this.setState({ imageLoaded: true });
             })
         }

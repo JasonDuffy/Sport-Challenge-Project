@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import "./css/MyChallengeOverview.css";
-import "./css/Form.css";
-import Button from "./Button";
-import GlobalVariables from "../GlobalVariables.js"
+import "./MyChallengeOverview.css";
+import "../form/Form.css";
+import Button from "../ui/button/Button";
+import GlobalVariables from "../../GlobalVariables.js"
 
 class MyChallengeOverview extends Component {
   constructor(props) {

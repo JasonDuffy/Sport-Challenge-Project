@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
-import "./css/MyChallengesTableRow.css";
-import "./css/Form.css";
-import GlobalVariables from "../GlobalVariables.js"
+import "./MyChallengesTableRow.css";
+import "../form/Form.css";
+import GlobalVariables from "../../GlobalVariables.js"
 
 class MyChallengesTableRow extends Component {
   constructor(props) {

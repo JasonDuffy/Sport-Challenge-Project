@@ -1,17 +1,19 @@
 import React, { Component } from "react";
-import "./css/Home.css";
-import Button from "./Button";
-import ChallengeOverview from "./ChallengeOverview";
-import GlobalVariables from "../GlobalVariables.js"
+import "./Home.css";
+import Button from "../../components/ui/button/Button";
+import ChallengeOverview from "../../components/ChallengeOverview/ChallengeOverview";
+import GlobalVariables from "../../GlobalVariables.js";
+import withRouter from "../withRouter";
+import { Link } from "react-router-dom";
 
 /**
  * Home page of the App
- * 
+ *
  * @author Robin Hackh
  */
 class Home extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = { currentChallenge: [], pastChallenge: [], futureChallenge: [] };
   }
 
@@ -26,8 +28,7 @@ class Home extends Component {
     resData = await response.json();
     this.setState({ futureChallenge: resData });
 
-    const pageLoading = document.getElementById("page_loading");
-    pageLoading.parentNode.removeChild(pageLoading);
+    document.getElementById("page_loading").style.display = "none";
     document.getElementById("page").style.display = "block";
   }
 
@@ -41,16 +42,16 @@ class Home extends Component {
                 <span className="underline_center">Aktive Challenges</span>
               </div>
               <ul className="col challenge_list">
-                {this.state.currentChallenge.map(item => (
+                {this.state.currentChallenge.map((item) => (
                   <li className="challenge_list_item" key={item.id}>
                     <ChallengeOverview id={item.id} />
                   </li>
                 ))}
               </ul>
               <div className="center_content mg_t_2">
-                <a href={'../Add/Challenge/0'} style={{ color: "#ffeeee" }}>
+                <Link to="/Challenge/add" state={{ id: 0 }}>
                   <Button color="orange" txt="Challenge erstellen" />
-                </a>
+                </Link>
               </div>
             </div>
           </div>
@@ -64,7 +65,7 @@ class Home extends Component {
                   <span className="underline_center">Zukünftige Challenges</span>
                 </div>
                 <ul className="col challenge_list">
-                  {this.state.futureChallenge.map(item => (
+                  {this.state.futureChallenge.map((item) => (
                     <li className="challenge_list_item" key={item.id}>
                       <ChallengeOverview id={item.id} />
                     </li>
@@ -76,14 +77,14 @@ class Home extends Component {
         )}
 
         {this.state.pastChallenge.length > 0 && (
-          <section className={this.state.futureChallenge.length > 0 ? ("background_white") : ("background_lightblue")}>
+          <section className={this.state.futureChallenge.length > 0 ? "background_white" : "background_lightblue"}>
             <div className="section_container">
               <div className="section_content">
                 <div className="heading_underline_center mg_b_8">
                   <span className="underline_center">Vorherige Challenges</span>
                 </div>
                 <ul className="col challenge_list">
-                  {this.state.pastChallenge.map(item => (
+                  {this.state.pastChallenge.map((item) => (
                     <li className="challenge_list_item" key={item.id}>
                       <ChallengeOverview id={item.id} />
                     </li>
@@ -98,4 +99,4 @@ class Home extends Component {
   }
 }
 
-export default Home;
+export default withRouter(Home);

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import Button from "./Button";
-import "./css/Login.css";
-import GlobalVariables from "../GlobalVariables.js"
+import Button from "../../components/ui/button/Button";
+import "./Login.css";
+import GlobalVariables from "../../GlobalVariables.js"
 
 class Login extends Component {
   constructor() {
@@ -24,7 +24,7 @@ class Login extends Component {
         <div className="section_container">
           <div className="section_content">
             <div className="center_content mg_t_10">
-              <img className="login_logo" alt="scp_logo" src={require("../images/Challenge-Overlay.png")}></img>
+              <img className="login_logo" alt="scp_logo" src={require("../../assets/images/Challenge-Overlay.png")}></img>
             </div>
             <div className="center_content mg_t_2">
               <Button color="orange" txt="Login" action={this.loginUser} />

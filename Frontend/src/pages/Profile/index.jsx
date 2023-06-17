@@ -1,8 +1,8 @@
 import React, { Component } from "react";
-import Button from "./Button";
-import "./css/Form.css";
-import "./css/Userprofile.css";
-import GlobalVariables from "../GlobalVariables.js"
+import Button from "../../components/ui/button/Button";
+import "../../components/form/Form.css";
+import "./Profile.css";
+import GlobalVariables from "../../GlobalVariables.js"
 /**
  * Page that shows the user profile of the current user and allows editing
  *
@@ -62,7 +62,7 @@ class Userprofile extends Component {
               this.setState({ imageID: resData.imageID });
               this.loadImage(resData.imageID);
             } else {
-              this.setState({ image: require(`../images/Default-User.png`) });
+              this.setState({ image: require(`../../assets/images/Default-User.png`) });
             }
             this.setState({ communication: resData.communication }, () => {
               const checkBox = document.getElementById("communicationCheckBox");

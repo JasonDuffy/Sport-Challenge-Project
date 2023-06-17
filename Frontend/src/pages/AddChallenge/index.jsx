@@ -1,9 +1,9 @@
 import React, { Component } from "react";
-import withRouter from "./withRouter";
-import Button from "./Button";
-import "./css/AddChallenge.css";
-import "./css/Form.css";
-import GlobalVariables from "../GlobalVariables.js"
+import withRouter from "../withRouter";
+import Button from "../../components/ui/button/Button";
+import "./AddChallenge.css";
+import "../../components/form/Form.css";
+import GlobalVariables from "../../GlobalVariables.js"
 
 /**
  * Add Challenge page of the App

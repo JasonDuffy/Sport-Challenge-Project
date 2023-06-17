@@ -92,7 +92,6 @@ public class ChallengeSportBonusServiceTest {
 
         Bonus b = new Bonus() ;
         b.setId(3);
-        b.setChallengeSport(cs);
 
         for (long i = 0; i < 10; i++){
             ChallengeSportBonus a = new ChallengeSportBonus();
@@ -175,7 +174,6 @@ public class ChallengeSportBonusServiceTest {
 
         Bonus b = new Bonus();
         b.setId(3);
-        b.setChallengeSport(cs);
 
         when(bonusService.get(2L)).thenReturn(bonusConverter.convertEntityToDto(b));
 

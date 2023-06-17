@@ -55,7 +55,6 @@ public class BonusConverterTest {
         bonus = new Bonus();
         bonuses = new ArrayList<>();
         bonus.setId(3);
-        bonus.setChallengeSport(challengeSport);
         bonuses.add(bonus);
 
 
@@ -66,14 +65,12 @@ public class BonusConverterTest {
     @Test
     public void convertEntityToDtoTest(){
         BonusDTO a = bonusConverter.convertEntityToDto(bonus);
-        assertEquals(2,a.getChallengeSportID());
         assertEquals(3,a.getId());
     }
 
     @Test
     public void convertEntityListToDtoListTEST(){
         List<BonusDTO> bonusDTOS1 = bonusConverter.convertEntityListToDtoList(bonuses);
-        assertEquals(2,bonusDTOS1.get(0).getChallengeSportID());
         assertEquals(3,bonusDTOS1.get(0).getId());
     }
 
@@ -81,7 +78,6 @@ public class BonusConverterTest {
     public void convertDtoToEntityTEST() throws NotFoundException {
         Bonus a = bonusConverter.convertDtoToEntity(bonusDTO);
         assertEquals(3,a.getId());
-        assertEquals(2,a.getChallengeSport().getId());
 
     }
 
@@ -89,7 +85,6 @@ public class BonusConverterTest {
     public void convertDtoListToEntityListTest() throws NotFoundException {
         List<Bonus> bonusList = bonusConverter.convertDtoListToEntityList(bonusDTOS);
         assertEquals(3,bonusList.get(0).getId());
-        assertEquals(2,bonusList.get(0).getChallengeSport().getId());;
     }
 }
 

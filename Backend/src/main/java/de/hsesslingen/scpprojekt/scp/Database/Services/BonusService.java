@@ -1,10 +1,13 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportBonusDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSportBonus;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
@@ -55,6 +58,10 @@ public class BonusService {
     @Lazy
     ActivityService activityService;
 
+    @Autowired
+    @Lazy
+    ChallengeSportBonusService challengeSportBonusService;
+
 
     /**
      * Returns all bonuses in database
@@ -86,11 +93,22 @@ public class BonusService {
      * @param bonus            Bonus object to be added to DB
      * @return Added bonus object
      */
-    public BonusDTO add(BonusDTO bonus) throws NotFoundException {
+    public BonusDTO add(BonusDTO bonus, long[] challengeSportID) throws NotFoundException, InvalidActivitiesException {
         Bonus b = bonusConverter.convertDtoToEntity(bonus);
         Bonus savedBonus = bonusRepository.save(b);
-
-        try {
+        for (int i = 0; i < challengeSportID.length; i++) {
+            ChallengeSportBonusDTO csb = new ChallengeSportBonusDTO();
+            csb.setBonusID(b.getId());
+            csb.setChallengeSportID(challengeSportID[i]);
+            challengeSportBonusService.add(csb);
+        }
+        List<ChallengeSportBonusDTO> csbList = challengeSportBonusService.findCSBByBonusID(b.getId());
+        for (ChallengeSportBonusDTO cb : csbList){
+            List<Activity> a = activityRepository.findActivitiesByChallengeSport_Id(cb.getChallengeSportID());
+            activityService.calcTotalDistanceList(a);
+        }
+        
+       try {
             emailService.sendBonusMail(savedBonus);
         } catch (MessagingException e) {
             System.out.println("Bonus mail for bonus " + bonus.getName() + " could not be sent!");
@@ -118,10 +136,12 @@ public class BonusService {
             newBonus.setDescription(convertedBonus.getDescription());
             newBonus.setEndDate(convertedBonus.getEndDate());
             newBonus.setStartDate(convertedBonus.getStartDate());
-            newBonus.setChallengeSport(convertedBonus.getChallengeSport());
 
-            List<Activity> a = activityRepository.findActivitiesByChallengeSport_Id(newBonus.getChallengeSport().getId());
-            activityService.calcTotalDistanceList(a);
+            List<ChallengeSportBonusDTO> csbList = challengeSportBonusService.findCSBByBonusID(newBonus.getId());
+            for (ChallengeSportBonusDTO cb : csbList){
+                List<Activity> a = activityRepository.findActivitiesByChallengeSport_Id(cb.getChallengeSportID());
+                activityService.calcTotalDistanceList(a);
+            }
 
             Bonus savedBonus = bonusRepository.save(newBonus);
             return bonusConverter.convertEntityToDto(savedBonus);

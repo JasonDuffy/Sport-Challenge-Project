@@ -96,4 +96,9 @@ public class ChallengeSportBonusService {
         get(challengeSportBonusID);
         challengeSportBonusRepository.deleteById(challengeSportBonusID);
     }
+
+    public List<ChallengeSportBonusDTO> findCSBByBonusID(long bonusID) throws NotFoundException {
+        List<ChallengeSportBonus> csblist = challengeSportBonusRepository.findAllByBonusId(bonusID);
+        return challengeSportBonusConverter.convertEntityToDtoList(csblist);
+    }
 }

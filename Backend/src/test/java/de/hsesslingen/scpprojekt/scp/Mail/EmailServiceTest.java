@@ -1,10 +1,12 @@
 package de.hsesslingen.scpprojekt.scp.Mail;
 
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportBonusConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeService;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportBonusService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.MemberService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
@@ -47,9 +49,13 @@ public class EmailServiceTest {
     ChallengeSportService challengeSportService;
     @MockBean
     MemberService memberService;
+    @MockBean
+    ChallengeSportBonusService challengeSportBonusService;
 
     @Autowired
     ChallengeSportConverter challengeSportConverter;
+    @Autowired
+    ChallengeSportBonusConverter challengeSportBonusConverter;
     @Autowired
     ChallengeConverter challengeConverter;
     @Autowired
@@ -148,26 +154,58 @@ public class EmailServiceTest {
      * @throws MessagingException Should never be thrown
      */
     @Test
-    public void sendBonusMailTest() throws MessagingException, InterruptedException {
+    public void sendBonusMailTest() throws MessagingException, NotFoundException {
+        Image image = new Image();
+        image.setId(1L);
+
         Challenge challenge = new Challenge();
         challenge.setName("Test Challenge");
         challenge.setId(1L);
+        challenge.setImage(image);
+
+        when(challengeService.get(1L)).thenReturn(challengeConverter.convertEntityToDto(challenge));
 
         Sport sport = new Sport();
+        sport.setId(1L);
         sport.setName("Test Sport");
         sport.setFactor(10.0f);
 
+        Sport sport2 = new Sport();
+        sport2.setId(2L);
+        sport2.setName("Test Sport2");
+        sport2.setFactor(10.0f);
+
         ChallengeSport challengeSport = new ChallengeSport();
+        challengeSport.setId(1L);
         challengeSport.setChallenge(challenge);
         challengeSport.setSport(sport);
 
+        ChallengeSport challengeSport2 = new ChallengeSport();
+        challengeSport2.setId(2L);
+        challengeSport2.setChallenge(challenge);
+        challengeSport2.setSport(sport2);
+
+        when(challengeSportService.get(1L)).thenReturn(challengeSportConverter.convertEntityToDto(challengeSport));
+        when(challengeSportService.get(2L)).thenReturn(challengeSportConverter.convertEntityToDto(challengeSport2));
+
         Bonus bonus = new Bonus();
-        bonus.setChallengeSport(challengeSport);
         bonus.setName("Test Bonus");
+        bonus.setId(1L);
         bonus.setStartDate(LocalDateTime.of(2023, 1, 1, 0, 0));
         bonus.setEndDate(LocalDateTime.of(2024, 1, 1, 0, 0));
         bonus.setFactor(10.0f);
         bonus.setDescription("Test Bonus Description");
+
+        ChallengeSportBonus csBonus1 = new ChallengeSportBonus();
+        csBonus1.setBonus(bonus);
+        csBonus1.setChallengeSport(challengeSport);
+        ChallengeSportBonus csBonus2 = new ChallengeSportBonus();
+        csBonus2.setBonus(bonus);
+        csBonus2.setChallengeSport(challengeSport2);
+        List<ChallengeSportBonus> csBonusList = new ArrayList<>();
+        csBonusList.add(csBonus1); csBonusList.add(csBonus2);
+
+        when(challengeSportBonusService.findCSBByBonusID(1L)).thenReturn(challengeSportBonusConverter.convertEntityToDtoList(csBonusList));
 
         List<String> to = new ArrayList<>();
         to.add("test@example.com"); to.add("test2@example.com");

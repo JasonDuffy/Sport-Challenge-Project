@@ -6,6 +6,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Services.BonusService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -99,13 +100,15 @@ public class BonusController {
             @ApiResponse(responseCode = "404", description = "ChallengeSport not found", content = @Content)
     })
     @PostMapping(path = "/", produces = "application/json")
-    public ResponseEntity<BonusDTO> createBonus(@RequestBody BonusDTO bonus, HttpServletRequest request) {
+    public ResponseEntity<BonusDTO> createBonus(@RequestBody BonusDTO bonus, @RequestParam("challengesportID") long challengesportID[], HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
             try{
-                return new ResponseEntity<>(bonusService.add(bonus), HttpStatus.CREATED);
+                return new ResponseEntity<>(bonusService.add(bonus,challengesportID), HttpStatus.CREATED);
             } catch (NotFoundException e) {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            } catch (InvalidActivitiesException e) {
+                throw new RuntimeException(e);
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

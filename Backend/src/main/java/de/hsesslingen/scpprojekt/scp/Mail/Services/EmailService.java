@@ -1,12 +1,13 @@
 package de.hsesslingen.scpprojekt.scp.Mail.Services;
 
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportBonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportBonusConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeService;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportBonusService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.MemberService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
@@ -51,6 +52,12 @@ public class EmailService {
     @Autowired
     @Lazy
     MemberService memberService;
+    @Autowired
+    @Lazy
+    ChallengeSportBonusService challengeSportBonusService;
+    @Autowired
+    @Lazy
+    ChallengeSportBonusConverter challengeSportBonusConverter;
 
     /**
      * Sends a HTML message to multiple recipient without them knowing of each other
@@ -120,18 +127,25 @@ public class EmailService {
     @Async
     public void sendBonusMail(Bonus bonus) throws MessagingException {
         Map<String, Object> mailMap = new HashMap<>();
-        mailMap.put("challengeName", bonus.getChallengeSport().getChallenge().getName());
+        List <ChallengeSportBonus> csBList = challengeSportBonusConverter.convertDtoToEntityList(challengeSportBonusService.findCSBByBonusID(bonus.getId()));
+
+        mailMap.put("challengeName", csBList.get(0).getChallengeSport().getChallenge().getName());
         mailMap.put("bonusName", bonus.getName());
         mailMap.put("startTime", bonus.getStartDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm")));
         mailMap.put("endTime", bonus.getEndDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm")));
         mailMap.put("factor", bonus.getFactor());
         mailMap.put("description", bonus.getDescription());
-        mailMap.put("sport", bonus.getChallengeSport().getSport().getName());
+
+        StringBuilder sports = new StringBuilder(csBList.get(0).getChallengeSport().getSport().getName());
+        for(int i = 1; i < csBList.size(); i++){
+            sports.append(", ").append(csBList.get(i).getChallengeSport().getSport().getName());
+        }
+        mailMap.put("sports", sports);
 
         Context thymeleafContext = new Context();
         thymeleafContext.setVariables(mailMap);
 
-        List<String> to = challengeService.getChallengeMembersEmails(bonus.getChallengeSport().getChallenge().getId());
+        List<String> to = challengeService.getChallengeMembersEmails(csBList.get(0).getChallengeSport().getChallenge().getId());
         String subject = mailMap.get("challengeName") + " hat einen neuen Bonus!";
         String htmlBody = thymeleafTemplateEngine.process("mail-bonus-template.html", thymeleafContext);
 
@@ -159,7 +173,7 @@ public class EmailService {
         List<ChallengeSport> challengeSportList = challengeSportConverter.convertDtoListToEntityList(challengeSportService.getAllChallengeSportsOfChallenge(challenge.getId()));
         StringBuilder sports = new StringBuilder(challengeSportList.get(0).getSport().getName() + " (Faktor: " + challengeSportList.get(0).getFactor() + ")");
         for(int i = 1; i < challengeSportList.size(); i++){
-            sports.append(", ").append(challengeSportList.get(i).getSport().getName()).append("(Faktor: ").append(challengeSportList.get(i).getFactor()).append(")");
+            sports.append(", ").append(challengeSportList.get(i).getSport().getName()).append(" (Faktor: ").append(challengeSportList.get(i).getFactor()).append(")");
         }
         mailMap.put("sports", sports);
 

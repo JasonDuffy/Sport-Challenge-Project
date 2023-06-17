@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 public class BonusDTO {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private long id;
-    private Long challengeSportID;
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private float factor;
@@ -22,9 +21,8 @@ public class BonusDTO {
 
     public BonusDTO(){}
 
-    public BonusDTO(long id, Long challengeSportID, LocalDateTime startDate, LocalDateTime endDate, float factor, String name, String description) {
+    public BonusDTO(long id, LocalDateTime startDate, LocalDateTime endDate, float factor, String name, String description) {
         this.id = id;
-        this.challengeSportID = challengeSportID;
         this.startDate = startDate;
         this.endDate = endDate;
         this.factor = factor;
@@ -38,14 +36,6 @@ public class BonusDTO {
 
     public void setId(long id) {
         this.id = id;
-    }
-
-    public Long getChallengeSportID() {
-        return challengeSportID;
-    }
-
-    public void setChallengeSportID(Long challengeSportID) {
-        this.challengeSportID = challengeSportID;
     }
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd.MM.yyyy,HH:mm")

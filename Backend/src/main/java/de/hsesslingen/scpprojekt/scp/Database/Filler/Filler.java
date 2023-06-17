@@ -299,18 +299,22 @@ public class Filler {
     Bonus anniA = new Bonus(cp2a, date2Start, date2End, 3, "Anniversary", "Wegen Anniversary gibt es mehr Kilometer!");
     Bonus anniB = new Bonus(cp2b, date2Start, date2End, 3, "Anniversary", "Wegen Anniversary gibt es mehr Kilometer!");
 
-    Bonus holi = new Bonus(cp3, date3Start, date3End, 4, "Holiday Event", "Während den Ferien gibt es mehr KM!");
-
-    Bonus finishA = new Bonus(cp4a, date4Start, date4End, 2, "Finished Project", "Aufgrund des beendeten Projekts gibt es mehr Kilometeer für alle!");
-    Bonus finishB = new Bonus(cp4b, date4Start, date4End, 2, "Finished Project", "Aufgrund des beendeten Projekts gibt es mehr Kilometeer für alle!");
-    Bonus finishC = new Bonus(cp4c, date4Start, date4End, 2, "Finished Project", "Aufgrund des beendeten Projekts gibt es mehr Kilometeer für alle!");
-    Bonus finishD = new Bonus(cp4d, date4Start, date4End, 2, "Finished Project", "Aufgrund des beendeten Projekts gibt es mehr Kilometeer für alle!");
-    Bonus finishE = new Bonus(cp4e, date4Start, date4End, 2, "Finished Project", "Aufgrund des beendeten Projekts gibt es mehr Kilometeer für alle!");
+    Bonus doub = new Bonus( date1Start, date1End, 2, "DoubleXP Weekend", "Doppelte Kilomete übers Wochenende");
+    Bonus anni = new Bonus( date2Start, date2End, 3, "Anniversary", "Wegen Anniversary gibt es mehr Kilometer!");
+    Bonus holi = new Bonus( date3Start, date3End, 4, "Holiday Event", "Während den Ferien gibt es mehr KM!");
+    Bonus finish = new Bonus( date4Start, date4End, 2, "Finished Project", "Aufgrund des beendeten Projekts gibt es mehr Kilometeer für alle!");
+    Bonus lucky = new Bonus( date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
 
     Bonus luckyA = new Bonus(cp5a, date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
     Bonus luckyB = new Bonus(cp5b, date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
     Bonus luckyC = new Bonus(cp5c, date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
 
+    ChallengeSportBonus doubl = new ChallengeSportBonus(cp1,doub);
+    ChallengeSportBonus anniv = new ChallengeSportBonus(cp2,anni);
+    ChallengeSportBonus holid = new ChallengeSportBonus(cp3,holi);
+    ChallengeSportBonus finishe = new ChallengeSportBonus(cp4,finish);
+    ChallengeSportBonus luckys = new ChallengeSportBonus(cp5,lucky);
+    
     @EventListener(ApplicationReadyEvent.class)
     public void fillDb() throws NotFoundException {
         try {
@@ -391,8 +395,10 @@ public class Filler {
         ));
 
         bonusRepository.saveAll(Arrays.asList(
-                doubA, doubB, doubC, anniA, anniB, holi, finishA, finishB, finishC, finishD, finishE,
-                luckyA, luckyB, luckyC
+                doub, anni, holi, finish, lucky
+        ));
+        challengeSportBonusRepository.saveAll(Arrays.asList(
+                doubl, anniv, holid, finishe, luckys
         ));
 
         activityService.totalDistanceAll();

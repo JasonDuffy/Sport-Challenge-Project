@@ -1,7 +1,10 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportBonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportBonusConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
@@ -20,6 +23,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.io.File;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -48,6 +52,10 @@ public class BonusServiceTest {
     @Lazy
     ChallengeConverter challengeConverter;
 
+    @Autowired
+    @Lazy
+    ChallengeSportBonusConverter csBonusConverter;
+
     @MockBean
     BonusRepository bonusRepository;
     @MockBean
@@ -55,13 +63,13 @@ public class BonusServiceTest {
     @MockBean
     ChallengeSportBonusService challengeSportBonusService;
     @MockBean
+    Filler filler;
+    @MockBean
     ChallengeService challengeService;
     @MockBean
     SportService sportService;
     @MockBean
     ImageStorageService imageStorageService;
-    @MockBean
-    Filler filler;
     @MockBean
     EmailService emailService; // Mock so no emails are sent
 
@@ -88,7 +96,6 @@ public class BonusServiceTest {
         for (long i = 0; i < 10; i++){
             Bonus b = new Bonus();
             b.setId(i);
-            b.setChallengeSport(cs);
             b.setStartDate(LocalDateTime.of(2023, 4, 1, 0, 0, 0));
             b.setEndDate(LocalDateTime.of(2023, 6, 1, 0, 0, 0));
             bonusList.add(b);
@@ -111,7 +118,7 @@ public class BonusServiceTest {
         for(BonusDTO b : bonuses){
             boolean test = false;
             for (Bonus b1 : bonusList){
-                if (b1.getId() == b.getId() && b1.getChallengeSport().getId() == b.getChallengeSportID()) {
+                if (b1.getId() == b.getId()) {
                     test = true;
                     break;
                 }
@@ -151,7 +158,7 @@ public class BonusServiceTest {
      * @throws NotFoundException Should never be thrown
      */
     @Test
-    public void addTestSuccess() throws NotFoundException {
+    public void addTestSuccess() throws NotFoundException, InvalidActivitiesException {
         Image im = new Image();
         im.setId(1);
 
@@ -171,14 +178,15 @@ public class BonusServiceTest {
         when(imageStorageService.get(1L)).thenReturn(im);
         when(challengeService.get(1L)).thenReturn(challengeConverter.convertEntityToDto(c1));
         when(challengeSportService.get(1L)).thenReturn(csConverter.convertEntityToDto(cs));
+        when(challengeSportBonusService.add(any(ChallengeSportBonusDTO.class))).thenReturn(any(ChallengeSportBonusDTO.class));
+        long [] a ={1} ;
 
-        BonusDTO newBonus = bonusService.add(bonusConverter.convertEntityToDto(bonusList.get(0)));
+        BonusDTO newBonus = bonusService.add(bonusConverter.convertEntityToDto(bonusList.get(0)),a);
 
         assertEquals(newBonus.getId(), bonusList.get(0).getId());
-        assertEquals(newBonus.getChallengeSportID(), cs.getId());
 
         verify(bonusRepository).save(any(Bonus.class));
-        verify(challengeSportService).get(1L);
+        verify(challengeSportBonusService).add(any(ChallengeSportBonusDTO.class));
     }
 
     /**
@@ -187,10 +195,10 @@ public class BonusServiceTest {
      */
     @Test
     public void addTestFail() throws NotFoundException {
-        when(challengeSportService.get(any(Long.class))).thenThrow(NotFoundException.class);
-
+        when(challengeSportBonusService.add(any(ChallengeSportBonusDTO.class))).thenThrow(NotFoundException.class);
+        long[] a = {1,2,3,10};
         assertThrows(NotFoundException.class, () -> {
-           bonusService.add(new BonusDTO(0L, 0L, null, null, 1.0f, null, null));
+           bonusService.add(new BonusDTO( 0L, null, null, 1.0f, null, null),a);
         });
     }
 
@@ -224,21 +232,20 @@ public class BonusServiceTest {
 
         assertEquals(newBonus.getId(), bonusList.get(0).getId());
         assertEquals(newBonus.getFactor(), bonusList.get(1).getFactor());
-        assertEquals(newBonus.getChallengeSportID(), cs.getId());
 
         verify(bonusRepository).save(any(Bonus.class));
     }
 
     /**
      * Test if exception is correctly thrown
-     * @throws NotFoundException Should never be thrown
+     *
      */
     @Test
-    public void updateTestFail() throws NotFoundException {
-        when(challengeSportService.get(any(Long.class))).thenThrow(NotFoundException.class);
+    public void updateTestFail() {
 
+        when(bonusRepository.findById(any(Long.class))).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> {
-            bonusService.update(0L, bonusConverter.convertEntityToDto(bonusList.get(0)));
+            bonusService.update(10L, bonusConverter.convertEntityToDto(bonusList.get(1)));
         });
     }
 
@@ -274,16 +281,21 @@ public class BonusServiceTest {
      /**
      * Test if multiplier is correctly calculated
      */
+
     @Test
-    public void getMultiplierFromBonusesTest(){
+    public void getMultiplierFromBonusesTest() throws NotFoundException {
         LocalDateTime currentDate = LocalDateTime.of(2023, 5, 1, 15, 0);
         float bonusfactor = 0.0f;
 
         for(Bonus b : bonusList){
-            if (b.getChallengeSport().getChallenge().getId() == 1
-                    && !b.getStartDate().isAfter(currentDate)
-                    && !b.getEndDate().isBefore(currentDate))
-                bonusfactor += b.getFactor();
+            List <ChallengeSportBonus> csbList = csBonusConverter.convertDtoToEntityList(challengeSportBonusService.findCSBByBonusID(b.getId()));
+            for (ChallengeSportBonus cs :csbList ){
+                if (cs.getChallengeSport().getChallenge().getId() == 1
+                        && !b.getStartDate().isAfter(currentDate)
+                        && !b.getEndDate().isBefore(currentDate))
+                    bonusfactor += b.getFactor();
+            }
+
         }
 
         if (bonusfactor == 0.0f)

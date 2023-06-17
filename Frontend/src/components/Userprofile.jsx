@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import Button from "./Button";
 import "./css/Form.css";
 import "./css/Userprofile.css";
+import GlobalVariables from "../GlobalVariables.js"
 /**
  * Page that shows the user profile of the current user and allows editing
  *
@@ -47,7 +48,7 @@ class Userprofile extends Component {
   //Called automatically when the page is loaded
   componentDidMount() {
     // Get information of logged in user, save it in state variables and load image
-    fetch("http://localhost:8081/members/loggedIn/", { method: "GET", credentials: "include" })
+    fetch(GlobalVariables.serverURL + "/members/loggedIn/", { method: "GET", credentials: "include" })
       .then((response) => {
         if (response.ok) {
           response.json().then((resData) => {
@@ -83,7 +84,7 @@ class Userprofile extends Component {
 
   // Loads image from given ID and places it in state variable
   loadImage(imageID) {
-    fetch("http://localhost:8081/images/" + imageID + "/", { method: "GET", credentials: "include" })
+    fetch(GlobalVariables.serverURL + "/images/" + imageID + "/", { method: "GET", credentials: "include" })
       .then((response) => {
         if (response.ok) {
           response.json().then((resData) => {
@@ -146,7 +147,7 @@ class Userprofile extends Component {
 
     if (userImage.files[0] != null) {
       // Uploads image
-      fetch("http://localhost:8081/images/", { method: "POST", body: imageBodyData, credentials: "include" })
+      fetch(GlobalVariables.serverURL + "/images/", { method: "POST", body: imageBodyData, credentials: "include" })
         .then((response) => {
           if (response.ok) {
             response.json().then((resData) => {
@@ -175,7 +176,7 @@ class Userprofile extends Component {
     userJsonObj.imageID = this.state.imageID;
     userJsonObj.communication = this.state.communication;
 
-    fetch("http://localhost:8081/members/" + this.state.userID + "/", {
+    fetch(GlobalVariables.serverURL + "/members/" + this.state.userID + "/", {
       method: "PUT",
       body: JSON.stringify(userJsonObj),
       credentials: "include",

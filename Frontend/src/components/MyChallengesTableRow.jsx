@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
 import "./css/MyChallengesTableRow.css";
 import "./css/Form.css";
+import GlobalVariables from "../GlobalVariables.js"
 
 class MyChallengesTableRow extends Component {
   constructor(props) {
@@ -43,12 +44,12 @@ class MyChallengesTableRow extends Component {
 
 
   async editRow() {
-    let allChallengeSportResponse = await fetch("http://localhost:8081/challenge-sports/challenges/" + this.state.challengeId + "/", { method: "GET", credentials: "include" });
+    let allChallengeSportResponse = await fetch(GlobalVariables.serverURL + "/challenge-sports/challenges/" + this.state.challengeId + "/", { method: "GET", credentials: "include" });
     let allChallengeSportResData = await allChallengeSportResponse.json();
     let allSportsHelper = [];
 
     for (const challengeSport of allChallengeSportResData) {
-        let sportResponse = await fetch("http://localhost:8081/sports/" + challengeSport.sportID + "/", { method: "GET", credentials: "include" });
+        let sportResponse = await fetch(GlobalVariables.serverURL + "/sports/" + challengeSport.sportID + "/", { method: "GET", credentials: "include" });
         let sportResData = await sportResponse.json();
         sportResData.id = challengeSport.id;
         allSportsHelper.push(sportResData);
@@ -59,7 +60,7 @@ class MyChallengesTableRow extends Component {
   }
 
   async saveChangedRow() {
-    let activitieResponse = await fetch("http://localhost:8081/activities/" + this.props.id + "/", { method: "GET", credentials: "include" });
+    let activitieResponse = await fetch(GlobalVariables.serverURL + "/activities/" + this.props.id + "/", { method: "GET", credentials: "include" });
     let activitieResData = await activitieResponse.json();
 
     const dateOptions = {day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit"};
@@ -69,7 +70,7 @@ class MyChallengesTableRow extends Component {
     activityJsonObj.distance = this.state.distance;
     activityJsonObj.date = new Date().toLocaleDateString("de-GE", dateOptions).replace(" ", "");
 
-    const activityResponse = await fetch("http://localhost:8081/activities/" + this.props.id + "/", {
+    const activityResponse = await fetch(GlobalVariables.serverURL + "/activities/" + this.props.id + "/", {
       method: "PUT",
       headers: { Accept: "application/json", "Content-Type": "application/json" }, //Needed: Backend will not accept without
       body: JSON.stringify(activityJsonObj),
@@ -81,23 +82,23 @@ class MyChallengesTableRow extends Component {
   }
 
   async deleteRow(event) {
-    const activityResponse = await fetch("http://localhost:8081/activities/" + this.props.id + "/", { method: "DELETE", credentials: "include" });
+    const activityResponse = await fetch(GlobalVariables.serverURL + "/activities/" + this.props.id + "/", { method: "DELETE", credentials: "include" });
     if(activityResponse.ok){
         this.setState({ deleted: true });
     }
   }
 
   async componentDidMount() {
-    let activityResponse = await fetch("http://localhost:8081/activities/" + this.props.id + "/", { method: "GET", credentials: "include" });
+    let activityResponse = await fetch(GlobalVariables.serverURL + "/activities/" + this.props.id + "/", { method: "GET", credentials: "include" });
     let activityResData = await activityResponse.json();
-    let challengeSportResponse = await fetch("http://localhost:8081/challenge-sports/" + activityResData.challengeSportID + "/", {
+    let challengeSportResponse = await fetch(GlobalVariables.serverURL + "/challenge-sports/" + activityResData.challengeSportID + "/", {
       method: "GET",
       credentials: "include",
     });
     let challengeSportResData = await challengeSportResponse.json();
-    let challengeResponse = await fetch("http://localhost:8081/challenges/" + challengeSportResData.challengeID + "/", { method: "GET", credentials: "include" });
+    let challengeResponse = await fetch(GlobalVariables.serverURL + "/challenges/" + challengeSportResData.challengeID + "/", { method: "GET", credentials: "include" });
     let challengeResData = await challengeResponse.json();
-    let sportResponse = await fetch("http://localhost:8081/sports/" + challengeSportResData.sportID + "/", { method: "GET", credentials: "include" });
+    let sportResponse = await fetch(GlobalVariables.serverURL + "/sports/" + challengeSportResData.sportID + "/", { method: "GET", credentials: "include" });
     let sportResData = await sportResponse.json();
 
     this.setState({ challengeName: challengeResData.name });

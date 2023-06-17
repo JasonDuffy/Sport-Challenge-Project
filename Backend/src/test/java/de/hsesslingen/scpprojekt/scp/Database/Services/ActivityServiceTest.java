@@ -9,6 +9,8 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
+import de.hsesslingen.scpprojekt.scp.Exceptions.ActivityDateException;
+import de.hsesslingen.scpprojekt.scp.Exceptions.InactiveChallengeException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import org.junit.jupiter.api.BeforeEach;
@@ -78,6 +80,8 @@ public class ActivityServiceTest {
 
         Challenge c1 = new Challenge();
         c1.setId(1L);
+        c1.setStartDate(LocalDateTime.now().minusMonths(1));
+        c1.setEndDate(LocalDateTime.now().plusMonths(1));
 
         Sport sport = new Sport();
         sport.setId(1L);
@@ -101,6 +105,7 @@ public class ActivityServiceTest {
             a.setChallengeSport(cs);
             a.setMember(m);
             a.setTotalDistance(10F);
+            a.setDate(LocalDateTime.now());
             activityList.add(a);
             when(activityRepository.findById(i)).thenReturn(Optional.of(a));
         }
@@ -165,10 +170,11 @@ public class ActivityServiceTest {
      * @throws NotFoundException Should never be thrown
      */
     @Test
-    public void addTestSuccess() throws NotFoundException {
+    public void addTestSuccess() throws NotFoundException, InactiveChallengeException, ActivityDateException {
 
         Challenge c1 = new Challenge();
         c1.setId(1L);
+
 
         Sport sport = new Sport();
         sport.setId(1L);

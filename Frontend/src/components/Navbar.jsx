@@ -3,6 +3,7 @@ import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import React, { useState } from "react";
 import "./css/Navbar.css";
 import AnimateHeight from "react-animate-height";
+import GlobalVariables from "../GlobalVariables.js"
 
 function Navbar() {
   const [height, setHeight] = useState(0);
@@ -33,10 +34,10 @@ function Navbar() {
         </div>
         <ul className="top_nav_item_list">
           <li>
-            <a href="/">Home</a>
+            <a href="/">Slash Challenge</a>
           </li>
           <li>
-            <a href="/My-Challenges">My Challenges</a>
+            <a href="/My-Challenges">Meine Challenges</a>
           </li>
           <li>
             <div className="top_nav_dropdown" id="top_nav_management" onClick={changeDropDownState}>
@@ -44,19 +45,19 @@ function Navbar() {
               <FontAwesomeIcon className="nav_dropdown_icon" icon={faCaretDown} />
               <AnimateHeight duration={200} height={height} className="top_nav_dropdown_menu">
                 <a className="top_nav_dropdown_item" href="/Add/Challenge/0">
-                  Add Challenge
+                  Neue Challenge
                 </a>
                 <a className="top_nav_dropdown_item" href="/Add/Team/0">
-                  Add Team
+                  Neues Team
                 </a>
-                <a className="top_nav_dropdown_item" href="/Add/Bonus/0">
-                  Add Bonus
+                <a className="top_nav_dropdown_item" href="/Add/1/Bonus/0">
+                  Neuer Bonus
                 </a>
-                <a className="top_nav_dropdown_item" href="/Add/Sport/0">
-                  Add Sport
+                <a className="top_nav_dropdown_item" href="/Sports">
+                  Sportarten
                 </a>
                 <a className="top_nav_dropdown_item" href="/Profile">
-                  Userprofile
+                  Benutzerprofil
                 </a>
               </AnimateHeight>
             </div>
@@ -66,7 +67,7 @@ function Navbar() {
       <nav className="mobile_nav" id="mobile_nav">
         <div className="mobile_nav_list">
           <div className="mobile_nav_list_item">
-            <a href="/">Home</a>
+            <a href="/">Slash Challenge</a>
           </div>
           <div className="mobile_nav_list_item">
             <a href="/My-Challenges">My Challenges</a>
@@ -79,19 +80,19 @@ function Navbar() {
             <AnimateHeight duration={200} height={height} className="mobile_nav_dropdown_menu">
               <ul>
                 <li>
-                  <a href="/Add/Challenge/0">Add Challenge</a>
+                  <a href="/Add/Challenge/0">Neue Challenge</a>
                 </li>
                 <li>
-                  <a href="/Add/Team/0">Add Team</a>
+                  <a href="/Add/Team/0">Neues Team</a>
                 </li>
                 <li>
-                  <a href="/Add/Bonus/0">Add Bonus</a>
+                  <a href="/Add/1/Bonus/0">Neuer Bonus</a>
                 </li>
                 <li>
-                  <a href="/Add/Sport/0">Add Sport</a>
+                  <a href="/Sports">Sportarten</a>
                 </li>
                 <li>
-                  <a href="/Profile">Userprofile</a>
+                  <a href="/Profile">Benutzerprofil</a>
                 </li>
               </ul>
             </AnimateHeight>

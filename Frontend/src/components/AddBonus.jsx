@@ -3,6 +3,7 @@ import Button from "./Button";
 import "./css/AddBonus.css";
 import "./css/Form.css";
 import withRouter from "./withRouter";
+import GlobalVariables from "../GlobalVariables.js"
 
 /**
  * Add Bonus page of the App
@@ -153,7 +154,7 @@ class AddBonus extends Component{
 
     //Checks for Edit in URL
     if(this.props.params.action === "Edit") {
-      let bonusResponse = await fetch("http://localhost:8081/bonuses/" + this.props.params.id, + "/", { method: "PUT", body: JSON.stringify(bonusJsonObj), credentials: "include", headers: { "Content-Type": "application/json"}});
+      let bonusResponse = await fetch(GlobalVariables.serverURL + "/bonus/" + this.props.params.id, + "/", { method: "PUT", body: JSON.stringify(bonusJsonObj), credentials: "include", headers: { "Content-Type": "application/json"}});
       if(bonusResponse.ok){
         infoContainerEl.classList.add("success");
         infoMessageEl.innerHTML = "Der Bonus wurde erfolgreich aktualisiert!";
@@ -164,6 +165,16 @@ class AddBonus extends Component{
       }
     }else{
       //Gives data to the Backend and writes it into the DB
+      let bonusResponse = await fetch(GlobalVariables.serverURL + "/bonus/", { method: "POST", body: JSON.stringify(bonusJsonObj), credentials: "include", headers: { "Content-Type": "application/json"}});
+      if (bonusResponse.ok) {
+        infoContainerEl.classList.add("success");
+        infoMessageEl.innerHTML = "Der Bonus wurde erolgreich erstellt! Du kannst noch weitere Bonuse erstellen!";
+        window.scrollTo(0, 0);
+        this.clearAllInputs();
+      } else {
+        this.showInputErrorMessage("Beim erstellen des Bonuses ist etwas schief gelaufen: " + bonusResponse.status + " " + bonusResponse.statusText + "!");
+      }
+    }
 
       let challengeResponse = await fetch("http://localhost:8081/challenge-sport-bonuses/", { method: "GET", credentials: "include" });
       if(challengeResponse.ok){
@@ -201,7 +212,7 @@ class AddBonus extends Component{
 
     //If it is in edit mode
     if ( this.props.params.action === "Edit"){
-      let bonusResponse = await fetch("http://localhost:8081/bonuses/" + this.props.params.id, + "/", { method: "GET", credentials: "include" });
+      let bonusResponse = await fetch(GlobalVariables.serverURL + "/bonus/" + this.props.params.id, + "/", { method: "GET", credentials: "include" });
       let bonusResData = await bonusResponse.json();
       const sportCheckboxEl = document.getElementsByClassName("form_sport_checkbox");
   

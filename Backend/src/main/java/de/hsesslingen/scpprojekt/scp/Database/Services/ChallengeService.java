@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -216,11 +217,29 @@ public class ChallengeService {
     }
 
     /**
+     * Returns all non members for a challenge
+     * @param challengeID The challengeID for which the non members should be found
+     * @return The non members of a challenge
+     */
+    public List<MemberDTO> getChallengeNonMembers(long challengeID){
+        return memberConverter.convertEntityListToDtoList(memberRepository.findNonMembersByChallenge_ID(challengeID));
+    }
+
+    /**
      * Returns all emails of members of a challenge that are opted into receiving emails
      * @param challengeID The challengeID for which the emails should be found
      * @return All emails of members of a challenge that are opted into receiving emails
      */
     public List<String> getChallengeMembersEmails(long challengeID){
         return memberRepository.findMembersEmailByChallengeID(challengeID);
+    }
+
+    public List<ChallengeDTO> getCurrentChallengeMemberID(long memberID) throws NotFoundException {
+        List<Challenge> challengeList = challengeRepository.findChallengesByMemberIDAndDate(memberID, LocalDateTime.now());
+        if (!challengeList.isEmpty()) {
+            return challengeConverter.convertEntityListToDtoList(challengeList);
+        } else {
+            throw new NotFoundException("No current challenges for this user");
+        }
     }
 }

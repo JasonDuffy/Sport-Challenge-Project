@@ -125,7 +125,7 @@ public class EmailService {
      * @throws MessagingException Thrown by sendHTMLMessage
      */
     @Async
-    public void sendBonusMail(Bonus bonus) throws MessagingException {
+    public void sendBonusMail(Bonus bonus) throws MessagingException, NotFoundException {
         Map<String, Object> mailMap = new HashMap<>();
         List <ChallengeSportBonus> csBList = challengeSportBonusConverter.convertDtoToEntityList(challengeSportBonusService.findCSBByBonusID(bonus.getId()));
 

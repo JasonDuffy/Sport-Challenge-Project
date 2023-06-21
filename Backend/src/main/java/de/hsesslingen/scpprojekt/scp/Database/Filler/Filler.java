@@ -45,6 +45,8 @@ public class Filler {
     private ActivityRepository activityRepository;
     @Autowired
     private BonusRepository bonusRepository;
+    @Autowired
+    private ChallengeSportBonusRepository challengeSportBonusRepository;
 
     @Autowired
     @Lazy
@@ -292,28 +294,28 @@ public class Filler {
     Activity act54 = new Activity(cp8, helene, 1, date54);
 
 
-    Bonus doubA = new Bonus(cp1a, date1Start, date1End, 2, "DoubleXP Weekend", "Doppelte Kilomete übers Wochenende");
-    Bonus doubB = new Bonus(cp1b, date1Start, date1End, 2, "DoubleXP Weekend", "Doppelte Kilomete übers Wochenende");
-    Bonus doubC = new Bonus(cp1c, date1Start, date1End, 2, "DoubleXP Weekend", "Doppelte Kilomete übers Wochenende");
+    Bonus doubA = new Bonus(date1Start, date1End, 2, "DoubleXP Weekend", "Doppelte Kilomete übers Wochenende");
+    Bonus doubB = new Bonus(date1Start, date1End, 2, "DoubleXP Weekend", "Doppelte Kilomete übers Wochenende");
+    Bonus doubC = new Bonus(date1Start, date1End, 2, "DoubleXP Weekend", "Doppelte Kilomete übers Wochenende");
 
-    Bonus anniA = new Bonus(cp2a, date2Start, date2End, 3, "Anniversary", "Wegen Anniversary gibt es mehr Kilometer!");
-    Bonus anniB = new Bonus(cp2b, date2Start, date2End, 3, "Anniversary", "Wegen Anniversary gibt es mehr Kilometer!");
+    Bonus anniA = new Bonus(date2Start, date2End, 3, "Anniversary", "Wegen Anniversary gibt es mehr Kilometer!");
+    Bonus anniB = new Bonus(date2Start, date2End, 3, "Anniversary", "Wegen Anniversary gibt es mehr Kilometer!");
 
-    Bonus doub = new Bonus( date1Start, date1End, 2, "DoubleXP Weekend", "Doppelte Kilomete übers Wochenende");
-    Bonus anni = new Bonus( date2Start, date2End, 3, "Anniversary", "Wegen Anniversary gibt es mehr Kilometer!");
-    Bonus holi = new Bonus( date3Start, date3End, 4, "Holiday Event", "Während den Ferien gibt es mehr KM!");
-    Bonus finish = new Bonus( date4Start, date4End, 2, "Finished Project", "Aufgrund des beendeten Projekts gibt es mehr Kilometeer für alle!");
-    Bonus lucky = new Bonus( date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
+    Bonus doub = new Bonus(date1Start, date1End, 2, "DoubleXP Weekend", "Doppelte Kilomete übers Wochenende");
+    Bonus anni = new Bonus(date2Start, date2End, 3, "Anniversary", "Wegen Anniversary gibt es mehr Kilometer!");
+    Bonus holi = new Bonus(date3Start, date3End, 4, "Holiday Event", "Während den Ferien gibt es mehr KM!");
+    Bonus finish = new Bonus(date4Start, date4End, 2, "Finished Project", "Aufgrund des beendeten Projekts gibt es mehr Kilometeer für alle!");
+    Bonus lucky = new Bonus(date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
 
-    Bonus luckyA = new Bonus(cp5a, date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
-    Bonus luckyB = new Bonus(cp5b, date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
-    Bonus luckyC = new Bonus(cp5c, date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
+    Bonus luckyA = new Bonus(date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
+    Bonus luckyB = new Bonus(date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
+    Bonus luckyC = new Bonus(date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
 
-    ChallengeSportBonus doubl = new ChallengeSportBonus(cp1,doub);
-    ChallengeSportBonus anniv = new ChallengeSportBonus(cp2,anni);
+    ChallengeSportBonus doubl = new ChallengeSportBonus(cp1a,doub);
+    ChallengeSportBonus anniv = new ChallengeSportBonus(cp2a,anni);
     ChallengeSportBonus holid = new ChallengeSportBonus(cp3,holi);
-    ChallengeSportBonus finishe = new ChallengeSportBonus(cp4,finish);
-    ChallengeSportBonus luckys = new ChallengeSportBonus(cp5,lucky);
+    ChallengeSportBonus finishe = new ChallengeSportBonus(cp4a,finish);
+    ChallengeSportBonus luckys = new ChallengeSportBonus(cp5a,lucky);
     
     @EventListener(ApplicationReadyEvent.class)
     public void fillDb() throws NotFoundException {

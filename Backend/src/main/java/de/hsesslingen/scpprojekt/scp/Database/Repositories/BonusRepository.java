@@ -22,24 +22,30 @@ public interface BonusRepository extends JpaRepository<Bonus,Long> {
     public List<Bonus> findBonusesByChallengeID(@Param("challengeID") long challengeID);
 
     @Transactional
-    @Query("SELECT b FROM Bonus b JOIN b.challengeSport cs " +
-            "where cs.challenge.id = :challengeID " +
+    @Query("SELECT DISTINCT b FROM Bonus b " +
+            "JOIN ChallengeSportBonus csb ON csb.bonus.id=b.id " +
+            "JOIN ChallengeSport cs ON csb.challengeSport.id=cs.id " +
+            "WHERE cs.challenge.id = :challengeID " +
             "and b.startDate <= current date " +
             "and b.endDate > current date " +
             "order by b.startDate asc")
     public List<Bonus> findCurrentBonusesByChallengeID(@Param("challengeID") long challengeID);
 
     @Transactional
-    @Query("SELECT b FROM Bonus b JOIN b.challengeSport cs " +
-            "where cs.challenge.id = :challengeID " +
+    @Query("SELECT DISTINCT b FROM Bonus b " +
+            "JOIN ChallengeSportBonus csb ON csb.bonus.id=b.id " +
+            "JOIN ChallengeSport cs ON csb.challengeSport.id=cs.id " +
+            "WHERE cs.challenge.id = :challengeID " +
             "and b.startDate <= current date " +
             "and b.endDate <= current date " +
             "order by b.startDate asc")
     public List<Bonus> findPastBonusesByChallengeID(@Param("challengeID") long challengeID);
 
     @Transactional
-    @Query("SELECT b FROM Bonus b JOIN b.challengeSport cs " +
-            "where cs.challenge.id = :challengeID " +
+    @Query("SELECT DISTINCT b FROM Bonus b " +
+            "JOIN ChallengeSportBonus csb ON csb.bonus.id=b.id " +
+            "JOIN ChallengeSport cs ON csb.challengeSport.id=cs.id " +
+            "WHERE cs.challenge.id = :challengeID " +
             "and b.startDate > current date " +
             "and b.endDate > current date " +
             "order by b.startDate asc")

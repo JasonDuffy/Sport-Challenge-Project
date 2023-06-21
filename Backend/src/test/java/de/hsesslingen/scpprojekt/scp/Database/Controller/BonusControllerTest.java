@@ -3,7 +3,9 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
 import de.hsesslingen.scpprojekt.scp.Database.Services.BonusService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
@@ -35,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Tests for Bonus Controller REST API
- * @author Jason Patrick Duffy
+ * @author Jason Patrick Duffy, Tom Nguyen Dinh
  */
 @ActiveProfiles("test")
 @WebMvcTest(BonusController.class)
@@ -425,6 +427,45 @@ public class BonusControllerTest {
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isForbidden())
                 .andReturn();
+    }
+
+    @Test
+    @WithMockUser
+    public void getSportsForBonusTestSuccess() throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+        Sport sport = new Sport("Laufen",1);
+        List<Sport> sports = new ArrayList<>();
+        sports.add(sport);
+        when(bonusService.getSportsForBonus(1)).thenReturn(sports);
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/bonuses/1/sports/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String content = res.getResponse().getContentAsString();
+
+        Pattern pattern = Pattern.compile("\"name\":\"(.*?)\"");
+        Matcher matcher = pattern.matcher(content);
+
+        matcher.find();
+        assertEquals(matcher.group(1), "Laufen");
+        assertFalse(matcher.find());
+
+    }
+    @Test
+    @WithAnonymousUser
+    public void getSportsForBonusTestNotLoggedIn() throws Exception{
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/bonuses/1/sports/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+
     }
 
 }

@@ -5,6 +5,7 @@ import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.TeamConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ActivityService;
@@ -687,6 +688,61 @@ public class TeamControllerTest {
     public void getActivitiesForTeamLoggedin() throws Exception {
         RequestBuilder request = MockMvcRequestBuilders
                 .get("/teams/1/activities/").accept(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
+    /**
+     * Test if Member for a Team are correctly thrown
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void getTeamByMemberIDTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
+        MemberDTO memberDTO = new MemberDTO();
+        MemberDTO memberDTO2 = new MemberDTO();
+        memberDTO.setUserID(1);
+        memberDTO2.setUserID(3);
+
+        List<MemberDTO> memberDTOS = new ArrayList<>();
+        memberDTOS.add(memberDTO);
+        memberDTOS.add(memberDTO2);
+
+        when(teamService.getAllMembersByTeamID(any(Long.class))).thenReturn(memberDTOS);
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/teams/1/members/").accept(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+        String content = res.getResponse().getContentAsString();
+
+        Pattern pattern = Pattern.compile("\"userID\":(\\d*)");
+        Matcher matcher = pattern.matcher(content);
+
+        matcher.find();
+        assertEquals(matcher.group(1), "1");
+        matcher.find();
+        assertEquals(matcher.group(1), "3");
+        assertFalse(matcher.find());
+
+        verify(teamService).getAllMembersByTeamID(1L);
+
+    }
+
+    /**
+     * Test for Unknown user
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void getTeamByMemberIDTestNotLoggedIn() throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/teams/1/members/").accept(MediaType.APPLICATION_JSON);
 
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isForbidden())

@@ -30,6 +30,7 @@ public class ScheduledTasks {
         try {
             emailService.sendActivityReminder();
         } catch (MessagingException e) {
+            System.out.println(e.getMessage());
             System.out.println("Could not message inactive members!");
         }
     }

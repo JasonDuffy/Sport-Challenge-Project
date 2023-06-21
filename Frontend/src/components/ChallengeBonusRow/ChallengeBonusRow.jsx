@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMedal, faPencil } from "@fortawesome/free-solid-svg-icons";
 
 /**
-* Creates a new table row and returns it
+* Creates a new bonus table row and returns it
 * @author Jason Patrick Duffy
 */
 class ChallengeBonusRow extends Component {
@@ -51,9 +51,9 @@ class ChallengeBonusRow extends Component {
                     {this.state.bonus.endDate}
                 </td>
                 <td>
-                    {this.state.bonus.factor}
+                    {parseFloat(this.state.bonus.factor).toFixed(1)}
                 </td>
-                {this.state.type === "current" && (
+                {(this.state.type === "current" || this.state.type === "future") && (
                     <td>
                         <div className="row_edit_icon icon_faPencil">
                             <Link to="/bonus/edit" state={{ bonusID: this.state.bonus.id }}>

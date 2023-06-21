@@ -10,6 +10,7 @@ import ChallengeTeamBarGraph from "../../components/ChallengeTeamBarGraph/Challe
 import ChallengeMembers from "../../components/ChallengeMembers/ChallengeMembers";
 import Button from "../../components/ui/button/Button";
 import GlobalVariables from "../../GlobalVariables.js"
+import ChallengeSportsRow from "../../components/ChallengeSportsRow/ChallengeSportsRow"
 
 /**
  * Displays all information for a given challenge
@@ -346,27 +347,6 @@ class Challenge extends Component {
     }
 
     /**
-    * Creates a new sports row and returns it
-    * @param sports Sports DTO object 
-    * @returns New table row
-    */
-    sportsRowMaker(sports) {
-        return (
-            <tr key={"sport " + sports.name}>
-                <td>
-                    {sports.name}
-                </td>
-                <td>
-                    {sports.factor}
-                </td>
-                <td>
-                    {"XX"}
-                </td>
-            </tr>
-        );
-    }
-
-    /**
      * Creates the sports table
      * @returns Sports table in div
      */
@@ -383,7 +363,7 @@ class Challenge extends Component {
                     </thead>
                     <tbody>
                         {this.state.sports.map((item) => (
-                            this.sportsRowMaker(item)
+                            <ChallengeSportsRow key={item.id} challengeID={this.state.challengeID} sport={structuredClone(item)} />
                         ))}
                     </tbody>
                 </table>

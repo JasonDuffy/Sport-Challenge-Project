@@ -205,6 +205,29 @@ public class BonusService {
             default:
                 return bonusConverter.convertEntityListToDtoList(bonusRepository.findBonusesByChallengeID(challengeID));
         }
+    }
 
+    /**
+     * Returns multiplier for given challenges and sport at this time
+     * @param challengeID The challengeID for which multiplier should be returned
+     * @param sportID The sportsID for which the multiplier should be returned
+     * @return The calculated multiplier at this moment
+     */
+    public float getCurrentMultiplierFromBonusesForChallengeAndSport(long challengeID, long sportID){
+        List<Bonus> bonuses = bonusRepository.findCurrentBonusesByChallengeIDAndSportID(challengeID, sportID);
+        return getMultiplierFromBonuses(bonuses, LocalDateTime.now());
+    }
+
+
+    /**
+     * Returns multiplier for given challenges and sport at the given date
+     * @param challengeID The challengeID for which multiplier should be returned
+     * @param sportID The sportsID for which the multiplier should be returned
+     * @param time The time for which the factor should be calculated
+     * @return The calculated multiplier at the given time
+     */
+    public float getMultiplierFromBonusesForChallengeAndSportAndSpecificTime(long challengeID, long sportID, LocalDateTime time){
+        List<Bonus> bonuses = bonusRepository.findBonusesByChallengeIDAndSportIDAtSpecificTime(challengeID, sportID, time);
+        return getMultiplierFromBonuses(bonuses, time);
     }
 }

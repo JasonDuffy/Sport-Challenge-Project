@@ -3,6 +3,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Services;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
@@ -124,7 +125,19 @@ public class ChallengeSportService {
         challengeSportRepository.deleteAll();
     }
 
+    /**
+     * Returns the current factor for a sport in a challenge including bonuses
+     * @param challengeID ID of Challenge for which the factor should be returned
+     * @param sportID ID of Sport for which the factor should be returned
+     * @return The factor for the given challenge and sport combination
+     */
     public float getEffectiveFactorForSportInChallenge(long challengeID, long sportID){
-        return 1.0f;
+        ChallengeSport thisChallengeSport = challengeSportRepository.findChallengeSportByChallenge_IdAndSport_Id(challengeID, sportID);
+
+        if (thisChallengeSport == null) // Sport is not part of challenge
+            return 0.0f;
+
+        float bonusMultiplier = bonusService.getCurrentMultiplierFromBonusesForChallengeAndSport(challengeID, sportID);
+        return thisChallengeSport.getFactor() * bonusMultiplier;
     }
 }

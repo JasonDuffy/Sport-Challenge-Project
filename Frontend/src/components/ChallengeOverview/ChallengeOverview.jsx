@@ -31,8 +31,14 @@ function ChallengeOverview(props) {
     async function getChallengeData(){
       const challengeResponse = await fetch(GlobalVariables.serverURL + "/challenges/" + props.id + "/", { method: "GET", credentials: "include" });
       const challengeResData = await challengeResponse.json();
-      const imageResponse = await fetch(GlobalVariables.serverURL + "/images/" + challengeResData.imageID + "/", { method: "GET", credentials: "include" });
-      const imageResData = await imageResponse.json();
+
+      if (challengeResData.imageID != null){
+        const imageResponse = await fetch(GlobalVariables.serverURL + "/images/" + challengeResData.imageID + "/", { method: "GET", credentials: "include" });
+        const imageResData = await imageResponse.json();
+        setImageSource("data:" + imageResData.type + ";base64, " + imageResData.data);
+      } else {
+        setImageSource(require(`../../assets/images/Default-Challenge.png`));
+      }
       const challengeDistanceResponse = await fetch(GlobalVariables.serverURL + "/challenges/" + props.id + "/distance/", { method: "GET", credentials: "include" });
       const challengeDistanceResData = await challengeDistanceResponse.json();
 
@@ -41,7 +47,6 @@ function ChallengeOverview(props) {
       setEndDate(challengeResData.endDate.split(",")[0]);
       setDistanceGoal(challengeResData.targetDistance);
       setChallengeInfo(challengeResData.description);
-      setImageSource("data:" + imageResData.type + ";base64, " + imageResData.data);
       setDistanceDone(challengeDistanceResData);
     }
 

@@ -94,6 +94,8 @@ public class ChallengeControllerTest {
     BonusService bonusService;
     @MockBean
     SAML2Service saml2Service;
+    @MockBean
+    ChallengeSportService challengeSportService;
 
 
     @Test

@@ -150,13 +150,10 @@ class AddChallenge extends Component {
       return;
     }
 
-    //Does not check the image if Challenge is Edited and no new picture is uploaded cause of the existing image
-    if (this.props.params.action == "Add" || challengeImageEl.files[0] != null) {
-      //Checks if the file is an image, not null and smaller than 10MB
-      if (challengeImageEl.files[0] == null) {
-        this.showInputErrorMessage("Bitte lade für deine Challenge ein Bild hoch!");
-        return;
-      } else if (challengeImageEl.files[0].size > 10000000) {
+    //Does not check the image if Challenge is Edited and no new picture is uploaded because of the existing image
+    if (this.props.params.action == "add" && challengeImageEl.files[0] != null) {
+      //Checks if the file is an image and smaller than 10MB
+      if (challengeImageEl.files[0].size > 10000000) {
         this.showInputErrorMessage("Das Bild darf nicht größer als 10Mb sein!");
         return;
       } else if (/^image/.test(challengeImageEl.files[0].type) === false) {
@@ -197,12 +194,18 @@ class AddChallenge extends Component {
 
 
     //==================================================ADD CHALLENGE==================================================
-    if (this.props.params.action == "Add") {
+    if (this.props.params.action == "add") {
       //Creates body data for the fetch
       let fetchBodyData = new FormData();
       fetchBodyData.append("sportId", sportCheckedId);
       fetchBodyData.append("sportFactor", sportCheckedFactor);
-      fetchBodyData.append("file", challengeImageEl.files[0]);
+
+      if (challengeImageEl.files[0] == null) {
+        fetchBodyData.append("file", new File([""], "empty"));
+      } else {
+        fetchBodyData.append("file", challengeImageEl.files[0]);
+      }
+
       fetchBodyData.append("json", JSON.stringify(challengeJsonObj));
 
       //Gives data to the Backend and writes it into the DB
@@ -381,8 +384,8 @@ class AddChallenge extends Component {
         <div className="section_container">
           <div className="section_content">
             <div className="heading_underline_center mg_b_10">
-              {this.props.params.action === "Edit" && <span className="underline_center">Challenge {this.state.challengeNameHeading} editieren</span>}
-              {this.props.params.action === "Add" && <span className="underline_center">Challenge hinzufügen</span>}
+              {this.props.params.action === "edit" && <span className="underline_center">Challenge {this.state.challengeNameHeading} editieren</span>}
+              {this.props.params.action === "add" && <span className="underline_center">Challenge hinzufügen</span>}
             </div>
             <div id="form_info_container" className="pd_1 mg_b_2">
               <span id="form_info_message"></span>
@@ -492,8 +495,8 @@ class AddChallenge extends Component {
                   </div>
                 </div>
                 <div className="center_content mg_t_2">
-                  {this.props.params.action === "Edit" && <Button color="orange" txt="Änderungen speichern" type="submit" loading={this.state.loading} />}
-                  {this.props.params.action === "Add" && <Button color="orange" txt="Challenge erstellen" type="submit" loading={this.state.loading} />}
+                  {this.props.params.action === "edit" && <Button color="orange" txt="Änderungen speichern" type="submit" loading={this.state.loading} />}
+                  {this.props.params.action === "add" && <Button color="orange" txt="Challenge erstellen" type="submit" loading={this.state.loading} />}
                 </div>
               </form>
             </div>

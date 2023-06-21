@@ -154,7 +154,7 @@ public class EmailServiceTest {
      * @throws MessagingException Should never be thrown
      */
     @Test
-    public void sendBonusMailTest() throws MessagingException, NotFoundException {
+    public void sendBonusMailTest() throws MessagingException, NotFoundException, InterruptedException {
         Image image = new Image();
         image.setId(1L);
 

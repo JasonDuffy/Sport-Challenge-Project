@@ -117,9 +117,13 @@ public class ChallengeService {
      * @throws NotFoundException Sport not found
      */
     public ChallengeDTO add(MultipartFile file, long sportId[], float sportFactor[], ChallengeDTO challenge) throws IOException, NotFoundException {
-        Image image = imageStorageService.store(file);
         Challenge newchallenge = challengeConverter.convertDtoToEntity(challenge);
-        newchallenge.setImage(image);
+
+        if (!file.isEmpty()){
+            Image image = imageStorageService.store(file);
+            newchallenge.setImage(image);
+        }
+
         Challenge savedChallenge = challengeRepository.save(newchallenge);
 
         for (int i = 0; i < sportId.length; i++) {

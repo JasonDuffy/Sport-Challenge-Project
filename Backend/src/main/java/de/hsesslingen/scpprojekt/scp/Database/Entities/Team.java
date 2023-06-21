@@ -43,6 +43,12 @@ public class Team {
         this.challenge = challenge;
     }
 
+    public Team(String name, Challenge challenge) {
+        this.name = name;
+        this.image = null;
+        this.challenge = challenge;
+    }
+
     public long getId() {
         return id;
     }

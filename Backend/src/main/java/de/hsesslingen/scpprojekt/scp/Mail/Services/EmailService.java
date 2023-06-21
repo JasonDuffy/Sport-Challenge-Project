@@ -160,15 +160,15 @@ public class EmailService {
      */
     @Async
     public void sendChallengeMail(Challenge challenge) throws MessagingException, NotFoundException {
+        Context thymeleafContext = new Context();
+        List<String> to = memberService.getAllEmails();
+
         Map<String, Object> mailMap = new HashMap<>();
         mailMap.put("challengeName", challenge.getName());
         mailMap.put("description", challenge.getDescription());
         mailMap.put("startTime", challenge.getStartDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm")));
         mailMap.put("endTime", challenge.getEndDate().format(DateTimeFormatter.ofPattern("dd.MM.yyyy, HH:mm")));
         mailMap.put("target", challenge.getTargetDistance());
-
-        Image image = challenge.getImage();
-        mailMap.put("imageResource", image.getName());
 
         List<ChallengeSport> challengeSportList = challengeSportConverter.convertDtoListToEntityList(challengeSportService.getAllChallengeSportsOfChallenge(challenge.getId()));
         StringBuilder sports = new StringBuilder(challengeSportList.get(0).getSport().getName() + " (Faktor: " + challengeSportList.get(0).getFactor() + ")");
@@ -177,14 +177,24 @@ public class EmailService {
         }
         mailMap.put("sports", sports);
 
-        Context thymeleafContext = new Context();
-        thymeleafContext.setVariables(mailMap);
+        Image image = challenge.getImage();
+        if (image == null){
+            thymeleafContext.setVariables(mailMap);
 
-        List<String> to = memberService.getAllEmails();
-        String subject = "Es gibt eine neue Challenge!";
-        String htmlBody = thymeleafTemplateEngine.process("mail-challenge-template.html", thymeleafContext);
+            String subject = "Es gibt eine neue Challenge!";
+            String htmlBody = thymeleafTemplateEngine.process("mail-challenge-noimage-template.html", thymeleafContext);
 
-        sendHTMLMessageWithImage(to, subject, htmlBody, image.getName(), image, true);
+            sendHTMLMessage(to, subject, htmlBody, true);
+        } else{
+            mailMap.put("imageResource", image.getName());
+
+            thymeleafContext.setVariables(mailMap);
+
+            String subject = "Es gibt eine neue Challenge!";
+            String htmlBody = thymeleafTemplateEngine.process("mail-challenge-template.html", thymeleafContext);
+
+            sendHTMLMessageWithImage(to, subject, htmlBody, image.getName(), image, true);
+        }
     }
 
     /**

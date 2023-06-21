@@ -58,6 +58,15 @@ public class Challenge {
         this.targetDistance = targetDistance;
     }
 
+    public Challenge(String name, String description, LocalDateTime startDate, LocalDateTime endDate, float targetDistance) {
+        this.name = name;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.image = null;
+        this.targetDistance = targetDistance;
+    }
+
     public long getId() {
         return id;
     }

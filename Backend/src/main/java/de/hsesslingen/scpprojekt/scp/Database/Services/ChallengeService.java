@@ -101,10 +101,9 @@ public class ChallengeService {
         if(!challengeIDs.isEmpty()){
             return challengeIDs;
         }else{
-            throw new NotFoundException("The member wit the ID " + memberID + " is not part of a Challenge");
+            throw new NotFoundException("The member with the ID " + memberID + " is not part of a Challenge");
         }
     }
-
 
     /**
      *  add Challenge
@@ -143,8 +142,14 @@ public class ChallengeService {
         return challengeConverter.convertEntityToDto(savedChallenge);
     }
 
-
-
+    /**
+     *  update Challenge
+     * @param imageID ID of image to be selected
+     * @param ChallengeID ID of to be updated Challenge
+     * @param challengeDTO Data of the updated Challenge
+     * @return updated Challenge
+     * @throws NotFoundException Challenge Not Found
+     */
     public ChallengeDTO update(Long imageID, long ChallengeID, ChallengeDTO challengeDTO) throws NotFoundException {
         Optional<Challenge> challengeData = challengeRepository.findById(ChallengeID);
         Challenge convertedChallenge = challengeConverter.convertDtoToEntity(challengeDTO) ;
@@ -167,7 +172,11 @@ public class ChallengeService {
         throw  new NotFoundException("Challenge with ID " +ChallengeID+" is not present in DB.");
     }
 
-
+    /**
+     *  delete Challenge
+     * @param ChallengeID ID of challenge to be deleted
+     * @throws NotFoundException Challenge Not Found
+     */
     public void delete(long ChallengeID) throws NotFoundException {
         Optional<Challenge> challenge = challengeRepository.findById(ChallengeID);
         if (challenge.isPresent()){
@@ -175,7 +184,10 @@ public class ChallengeService {
         }else throw  new NotFoundException("Challenge with ID " +ChallengeID+" is not present in DB.");
     }
 
-
+    /**
+     *  Delete all Challenges
+     *
+     */
     public void deleteAll() {
         challengeRepository.deleteAll();
     }
@@ -242,6 +254,12 @@ public class ChallengeService {
         return memberRepository.findMembersEmailByChallengeID(challengeID);
     }
 
+    /**
+     *  ChallengeList where Member is registered
+     * @param memberID ID of Member
+     * @return List of Challenges where Member is in
+     * @throws NotFoundException No challenges Found for USer
+     */
     public List<ChallengeDTO> getCurrentChallengeMemberID(long memberID) throws NotFoundException {
         List<Challenge> challengeList = challengeRepository.findChallengesByMemberIDAndDate(memberID, LocalDateTime.now());
         if (!challengeList.isEmpty()) {

@@ -24,7 +24,7 @@ function ChallengeOverview(props) {
   const [imageSource, setImageSource] = useState("");
 
   function openChallenge() {
-    navigate("/Challenge/" + props.id);
+    navigate("/Challenge/", { state: { challengeID: props.id}});
   }
 
   useEffect(() => {

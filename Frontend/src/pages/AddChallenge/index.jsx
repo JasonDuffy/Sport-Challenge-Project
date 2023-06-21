@@ -223,10 +223,8 @@ class AddChallenge extends Component {
         this.showInputErrorMessage("Beim erstellen der Challenge ist etwas schief gelaufen: " + challengeResponse.status + " " + challengeResponse.statusText + "!");
       }
 
-
-
       //==================================================UPDATE CHALLENGE==================================================
-    } else if (this.props.params.action == "Edit") {
+    } else if (this.props.params.action == "edit") {
       //If a new Image is set it will update the image corresponding to the challenge
       if (challengeImageEl.files[0] != null) {
         //Creates body data for the update image fetch
@@ -246,8 +244,10 @@ class AddChallenge extends Component {
       let sportIdInDB = []; //Array which contains the SportId's that should be updatet
       let challengeSportId = []; //Array which contains the ChallengeSportId's needed for the update
 
+      const challengeID = this.props.location.state.challengeID;
+
       //All challengeSports that contains the Challenge ID 
-      let sportResponse = await fetch(GlobalVariables.serverURL + "/challenge-sports/challenges/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
+      let sportResponse = await fetch(GlobalVariables.serverURL + "/challenge-sports/challenges/" + challengeID + "/", { method: "GET", credentials: "include" });
       let sportResData = await sportResponse.json();
 
       //Search and saves the Sports that need a update
@@ -265,7 +265,7 @@ class AddChallenge extends Component {
       //Set's the default params
       let challengeSportJsonObj = {};
       challengeSportJsonObj.id = 0;
-      challengeSportJsonObj.challengeID = this.props.params.id;
+      challengeSportJsonObj.challengeID = challengeID;
 
       for (let i = 0; i < sportCheckboxCheckedEl.length; i++) {
         //remaining data for the fetch
@@ -304,15 +304,19 @@ class AddChallenge extends Component {
         }
       }
 
-
-
       //Creates body data for the create Challenge fetch
       let fetchChallengeBodyData = new FormData();
-      fetchChallengeBodyData.append("imageId", this.state.imageID);
+
+      if(this.state.imageID == null){
+        fetchChallengeBodyData.append("imageId", 0);
+      } else {
+        fetchChallengeBodyData.append("imageId", this.state.imageID);
+      }
+      
       fetchChallengeBodyData.append("json", JSON.stringify(challengeJsonObj));
 
       //Gives data to the Backend and updates the Challenge
-      let challengeResponse = await fetch(GlobalVariables.serverURL + "/challenges/" + this.props.params.id + "/", {
+      let challengeResponse = await fetch(GlobalVariables.serverURL + "/challenges/" + challengeID + "/", {
         method: "PUT",
         body: fetchChallengeBodyData,
         credentials: "include",
@@ -345,19 +349,24 @@ class AddChallenge extends Component {
     this.setState({ allSport: resData });
 
     //If the component is in edit mode
-    if (this.props.params.action === "Edit") {
+    if (this.props.params.action === "edit") {
       //fetch the data of the challenge from the backend
-      let challengeResponse = await fetch(GlobalVariables.serverURL + "/challenges/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
+      const challengeID = this.props.location.state.challengeID;
+      let challengeResponse = await fetch(GlobalVariables.serverURL + "/challenges/" + challengeID + "/", { method: "GET", credentials: "include" });
       let challengeResData = await challengeResponse.json();
-      let sportResponse = await fetch(GlobalVariables.serverURL + "/challenge-sports/challenges/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
+      let sportResponse = await fetch(GlobalVariables.serverURL + "/challenge-sports/challenges/" + challengeID + "/", { method: "GET", credentials: "include" });
       let sportResData = await sportResponse.json();
-      let imageResponse = await fetch(GlobalVariables.serverURL + "/images/" + challengeResData.imageID + "/", { method: "GET", credentials: "include" });
-      let imageResData = await imageResponse.json();
+
+      // Only load image when image exists
+      if (challengeResData.imageID != null){
+        let imageResponse = await fetch(GlobalVariables.serverURL + "/images/" + challengeResData.imageID + "/", { method: "GET", credentials: "include" });
+        let imageResData = await imageResponse.json();
+        this.setState({ imageSource: "data:" + imageResData.type + ";base64, " + imageResData.data });
+      }
 
       //prefills the Input fields with the current challenge data
       this.setState({ challengeNameHeading: challengeResData.name });
       this.setState({ challengeName: challengeResData.name });
-      this.setState({ imageSource: "data:" + imageResData.type + ";base64, " + imageResData.data });
       this.setState({ imageID: challengeResData.imageID });
       this.setState({ challengeDescription: challengeResData.description });
       this.setState({ challengeDistanceGoal: challengeResData.targetDistance });
@@ -436,7 +445,7 @@ class AddChallenge extends Component {
                 </div>
                 <div className="form_input_container pd_1 mg_t_2">
                   <h2>Definiere ein Ziel für deine Challenge</h2>
-                  <span className="form_input_description">Gib hier die Kilometerzahl ein, die erreicht werden soll</span>
+                  <span className="form_input_description">Gebe hier die zu erreichende Punktzahl ein. Die Punktzahl besteht aus den geleisteten Kilometern, verrechnet mit dem jeweiligen Faktor der Sportart und eventuellen Boni.</span>
                   <br />
                   <input
                     className="mg_t_2"

@@ -399,7 +399,7 @@ public class ChallengeServiceTest {
     @Test
     public void updateTestFail() throws NotFoundException {
         assertThrows(NotFoundException.class, () -> {
-            challengeService.update(1,20L, challengeConverter.convertEntityToDto(challengeList.get(0)));
+            challengeService.update(1L,20L, challengeConverter.convertEntityToDto(challengeList.get(0)));
         });
     }
     /**

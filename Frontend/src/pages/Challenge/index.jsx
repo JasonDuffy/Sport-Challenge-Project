@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import ChallengeTeamPanel from "../../components/ChallengeTeamPanel/ChallengeTeamPanel";
 import withRouter from "../withRouter";
 import "./Challenge.css";
@@ -8,6 +9,7 @@ import ChallengeTeamPanelAreaGraph from "../../components/ChallengeTeamPanelArea
 import ChallengeTeamBarGraph from "../../components/ChallengeTeamBarGraph/ChallengeTeamBarGraph";
 import ChallengeMembers from "../../components/ChallengeMembers/ChallengeMembers";
 import Button from "../../components/ui/button/Button";
+import GlobalVariables from "../../GlobalVariables.js"
 
 /**
  * Displays all information for a given challenge
@@ -18,7 +20,7 @@ class Challenge extends Component {
         super(props);
 
         this.state = {
-            challengeID: props.params.id,
+            challengeID: props.location.state.challengeID,
             challenge: [],
             distance: 0,
             activities: [],
@@ -48,7 +50,7 @@ class Challenge extends Component {
 
     async componentDidMount() {
         // CHALLENGE FETCH --------------------------------------
-        let challenge = await fetch("http://localhost:8081/challenges/" + this.props.params.id + "/", { method: "GET", credentials: "include" });
+        let challenge = await fetch(GlobalVariables.serverURL + "/challenges/" + this.state.challengeID + "/", { method: "GET", credentials: "include" });
         let challengeResData = await challenge.json();
 
         // Convert challenge dates to usable dates
@@ -66,13 +68,13 @@ class Challenge extends Component {
         });
 
         // TEAMS FETCH --------------------------------------
-        let teams = await fetch("http://localhost:8081/challenges/" + this.props.params.id + "/teams/", { method: "GET", credentials: "include" });
+        let teams = await fetch(GlobalVariables.serverURL + "/challenges/" + this.state.challengeID + "/teams/", { method: "GET", credentials: "include" });
         let teamsResData = await teams.json();
 
         // Add avgDistance to each team
         if (teamsResData.length > 0) {
             for (const team of teamsResData) {
-                let avg = await fetch("http://localhost:8081/teams/" + team.id + "/avgDistance/", { method: "GET", credentials: "include" });
+                let avg = await fetch(GlobalVariables.serverURL + "/teams/" + team.id + "/avgDistance/", { method: "GET", credentials: "include" });
                 let avgResData = await avg.text();
                 team.avgDistance = parseFloat(avgResData).toFixed(2);
                 if (isNaN(team.avgDistance)) {
@@ -90,15 +92,21 @@ class Challenge extends Component {
         }
 
         // CHALLENGE IMAGE FETCH --------------------------------------
-        let image = await fetch("http://localhost:8081/images/" + this.state.challenge.imageID + "/", { method: "GET", credentials: "include" });
-        let imageResData = await image.json();
+        if(this.state.challenge.imageID != null){
+            let image = await fetch(GlobalVariables.serverURL + "/images/" + this.state.challenge.imageID + "/", { method: "GET", credentials: "include" });
+            let imageResData = await image.json();
 
-        this.setState({ image: "data:" + imageResData.type + ";base64, " + imageResData.data }, () => {
-            this.setState({ imageLoaded: true });
-        });
+            this.setState({ image: "data:" + imageResData.type + ";base64, " + imageResData.data }, () => {
+                this.setState({ imageLoaded: true });
+            });
+        } else {
+            this.setState({ image: require(`../../assets/images/Default-Challenge.png`) }, () => {
+                this.setState({ imageLoaded: true });
+            });
+        }
 
         // ACTIVITIES FETCH --------------------------------------
-        let challengeActivities = await fetch("http://localhost:8081/challenges/" + this.props.params.id + "/activities/", { method: "GET", credentials: "include" });
+        let challengeActivities = await fetch(GlobalVariables.serverURL + "/challenges/" + this.state.challengeID + "/activities/", { method: "GET", credentials: "include" });
         let challengeActivitiesResData = await challengeActivities.json();
 
         this.setState({ activities: challengeActivitiesResData }, () => {
@@ -106,7 +114,7 @@ class Challenge extends Component {
         });
 
         // PAST BONUSES FETCH --------------------------------------
-        let past = await fetch("http://localhost:8081/challenges/" + this.props.params.id + "/bonuses/?type=past", { method: "GET", credentials: "include" });
+        let past = await fetch(GlobalVariables.serverURL + "/challenges/" + this.state.challengeID + "/bonuses/?type=past", { method: "GET", credentials: "include" });
         let pastResData = await past.json();
 
         this.setState({ pastBonuses: pastResData }, () => {
@@ -114,7 +122,7 @@ class Challenge extends Component {
         });
 
         // CURRENT BONUSES FETCH --------------------------------------
-        let current = await fetch("http://localhost:8081/challenges/" + this.props.params.id + "/bonuses/?type=current", { method: "GET", credentials: "include" });
+        let current = await fetch(GlobalVariables.serverURL + "/challenges/" + this.state.challengeID + "/bonuses/?type=current", { method: "GET", credentials: "include" });
         let currentResData = await current.json();
 
         this.setState({ currentBonuses: currentResData }, () => {
@@ -122,7 +130,7 @@ class Challenge extends Component {
         });
 
         // FUTURE BONUSES FETCH --------------------------------------
-        let future = await fetch("http://localhost:8081/challenges/" + this.props.params.id + "/bonuses/?type=future", { method: "GET", credentials: "include" });
+        let future = await fetch(GlobalVariables.serverURL + "/challenges/" + this.state.challengeID + "/bonuses/?type=future", { method: "GET", credentials: "include" });
         let futureResData = await future.json();
 
         this.setState({ futureBonuses: futureResData }, () => {
@@ -130,7 +138,7 @@ class Challenge extends Component {
         });
 
         // CHALLENGE SPORTS FETCH --------------------------------------
-        let sports = await fetch("http://localhost:8081/challenges/" + this.props.params.id + "/sports/", { method: "GET", credentials: "include" });
+        let sports = await fetch(GlobalVariables.serverURL + "/challenges/" + this.state.challengeID + "/sports/", { method: "GET", credentials: "include" });
         let sportsResData = await sports.json();
 
         this.setState({ sports: sportsResData }, () => {
@@ -138,7 +146,7 @@ class Challenge extends Component {
         });
 
         // CHALLENGE DISTANCE FETCH --------------------------------------
-        let challengeDistance = await fetch("http://localhost:8081/challenges/" + this.props.params.id + "/distance/", { method: "GET", credentials: "include" });
+        let challengeDistance = await fetch(GlobalVariables.serverURL + "/challenges/" + this.state.challengeID + "/distance/", { method: "GET", credentials: "include" });
         let challengeDistanceResData = await challengeDistance.json();
 
         this.setState({ distance: challengeDistanceResData });
@@ -252,9 +260,9 @@ class Challenge extends Component {
                 {type === "current" && (
                     <td>
                         <div className="row_edit_icon icon_faPencil">
-                            <a href={'../Edit/Bonus/' + bonus.id} style={{ color: "#ffeeee" }}>
+                            <Link to="/bonus/edit" state={{ bonusID: bonus.id }}>
                                 <FontAwesomeIcon icon={faPencil} />
-                            </a>
+                            </Link>
                         </div>
                     </td>
                 )}
@@ -413,9 +421,10 @@ class Challenge extends Component {
                                 <div className="textContainer">
                                     <div className="challengeName">
                                         {this.state.challenge.name + " "}
-                                        <a href={'../Edit/Challenge/' + this.props.params.id} style={{ color: "#ffeeee" }}>
+                                        <Link to="/challenge/edit" state={{ challengeID: this.state.challengeID }}>
                                             <FontAwesomeIcon icon={faPencil} />
-                                        </a>
+                                        </Link>
+
                                     </div>
                                     <div className="challengeProgress">
                                         <this.distanceDisplay />
@@ -431,9 +440,9 @@ class Challenge extends Component {
                             </div>
 
                             <div className="center_content mg_t_2">
-                                <a href={'../Add/Team/' + this.props.params.id} style={{ color: "#ffeeee" }}>
+                                <Link to="/team/add" state={{ challengeID: this.state.challengeID }}>
                                     <Button color="orange" txt="Challenge beitreten" />
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </div>
@@ -462,9 +471,9 @@ class Challenge extends Component {
                                 {this.bonusTableMaker("current")}
                             </div>
                             <div className="center_content mg_t_2">
-                                <a href={'../Add/Bonus/' + 0} style={{ color: "#ffeeee" }}>
+                                <Link to="/bonus/add" state={{ challengeID: this.state.challengeID }}>
                                     <Button color="orange" txt="Neuen Bonus erstellen" />
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </div>

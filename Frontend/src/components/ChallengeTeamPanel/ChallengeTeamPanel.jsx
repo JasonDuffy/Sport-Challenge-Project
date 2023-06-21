@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import { Link } from "react-router-dom";
 import ChallengeTeamPanelAreaGraph from "../ChallengeTeamPanelAreaGraph/ChallengeTeamPanelAreaGraph";
 import ChallengeTeamPanelBarGraph from "../ChallengeTeamPanelBarGraph/ChallengeTeamPanelBarGraph";
 import ChallengeTeamPanelTable from "../ChallengeTeamPanelTable/ChallengeTeamPanelTable";
@@ -89,9 +90,9 @@ class ChallengeTeamPanel extends Component {
                 </div>
                 <div className="center_content mg_t_5">
                     <div className="row_edit_icon icon_faPencil">
-                        <a href={'../Edit/Team/' + this.props.id} style={{ color: "#ffeeee"}}>
+                        <Link to="/team/edit" state={{ teamID: this.props.id }}>
                             <FontAwesomeIcon icon={faPencil} />
-                        </a>
+                        </Link>
                     </div>
                 </div>
                 <div className="graphContainer">

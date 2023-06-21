@@ -251,7 +251,7 @@ public class ChallengeController {
 
     })
     @PutMapping(path = "/{id}/", produces = "application/json")
-    public ResponseEntity<ChallengeDTO> updateChallenge(@RequestParam("imageId") long imageID, @PathVariable("id") long ID,  @RequestBody ChallengeDTO challenge, HttpServletRequest request) {
+    public ResponseEntity<ChallengeDTO> updateChallenge(@RequestParam("imageId") Long imageID, @PathVariable("id") long ID,  @RequestBody ChallengeDTO challenge, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(challengeService.update(imageID, ID, challenge), HttpStatus.OK);

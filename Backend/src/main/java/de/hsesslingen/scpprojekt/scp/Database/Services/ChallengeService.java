@@ -145,22 +145,26 @@ public class ChallengeService {
 
 
 
-    public ChallengeDTO update(long imageID, long ChallengeID, ChallengeDTO challengeDTO) throws NotFoundException {
+    public ChallengeDTO update(Long imageID, long ChallengeID, ChallengeDTO challengeDTO) throws NotFoundException {
         Optional<Challenge> challengeData = challengeRepository.findById(ChallengeID);
         Challenge convertedChallenge = challengeConverter.convertDtoToEntity(challengeDTO) ;
         if (challengeData.isPresent()){
-                Image image = imageStorageService.get(imageID);
-                Challenge updatedChallenge = challengeData.get();
-                updatedChallenge.setName(convertedChallenge.getName());
-                updatedChallenge.setImage(image);
-                updatedChallenge.setDescription(convertedChallenge.getDescription());
-                updatedChallenge.setStartDate(convertedChallenge.getStartDate());
-                updatedChallenge.setEndDate(convertedChallenge.getEndDate());
-                updatedChallenge.setTargetDistance(convertedChallenge.getTargetDistance());
+            Challenge updatedChallenge = challengeData.get();
+            updatedChallenge.setName(convertedChallenge.getName());
+            updatedChallenge.setDescription(convertedChallenge.getDescription());
+            updatedChallenge.setStartDate(convertedChallenge.getStartDate());
+            updatedChallenge.setEndDate(convertedChallenge.getEndDate());
+            updatedChallenge.setTargetDistance(convertedChallenge.getTargetDistance());
 
-                Challenge savedChallenge= challengeRepository.save(updatedChallenge);
-                return challengeConverter.convertEntityToDto(savedChallenge);
-        }throw  new NotFoundException("Challenge with ID " +ChallengeID+" is not present in DB.");
+            if (imageID != null) {
+                Image image = imageStorageService.get(imageID);
+                updatedChallenge.setImage(image);
+            }
+
+            Challenge savedChallenge= challengeRepository.save(updatedChallenge);
+            return challengeConverter.convertEntityToDto(savedChallenge);
+        }
+        throw  new NotFoundException("Challenge with ID " +ChallengeID+" is not present in DB.");
     }
 
 

@@ -93,5 +93,7 @@ public class SportService {
     public List<Sport> getSportsForChallenge(long challengeID){
         return sportRepository.findSportsForChallenge(challengeID);
     }
+
+
 }
 

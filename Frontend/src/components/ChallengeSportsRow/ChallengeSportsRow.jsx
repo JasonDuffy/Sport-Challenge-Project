@@ -19,7 +19,7 @@ class ChallengeSportsRow extends Component{
     async componentDidMount(){
         let effFactor = await fetch(GlobalVariables.serverURL + "/challenges/" + this.state.challengeID + "/sports/" + this.state.sport.id + "/effective/", { method: "GET", credentials: "include" });
         let effFactorData = await effFactor.text();
-        this.setState({ factor: effFactorData });
+        this.setState({ factor: parseFloat(effFactorData).toFixed(2) });
     }
 
     render(){
@@ -29,7 +29,7 @@ class ChallengeSportsRow extends Component{
                     {this.state.sport.name}
                 </td>
                 <td>
-                    {this.state.sport.factor}
+                    {parseFloat(this.state.sport.factor).toFixed(1)}
                 </td>
                 <td>
                     {this.state.factor}

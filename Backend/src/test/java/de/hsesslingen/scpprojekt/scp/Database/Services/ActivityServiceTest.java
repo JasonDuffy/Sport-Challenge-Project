@@ -501,9 +501,9 @@ public class ActivityServiceTest {
 
         when(challengeService.getChallengeBonuses(1L)).thenReturn(bonusList);
         when(challengeSportService.get(1L)).thenReturn(csConverter.convertEntityToDto(challengeSport));
-        when(bonusService.getMultiplierFromBonuses(bonusConverter.convertDtoListToEntityList(anyList()),any(LocalDateTime.class))).thenReturn(6f);
+        when(bonusService.getMultiplierFromBonusesForChallengeAndSportAndSpecificTime(anyLong(), anyLong(), any())).thenReturn(5f);
         float distance = activityService.calcTotalDistance(activity);
-        assertEquals(60,distance);
+        assertEquals(50,distance);
     }
 
     /**
@@ -556,11 +556,11 @@ public class ActivityServiceTest {
 
         when(challengeService.getChallengeBonuses(1L)).thenReturn(bonusList);
         when(challengeSportService.get(1L)).thenReturn(csConverter.convertEntityToDto(challengeSport));
-        when(bonusService.getMultiplierFromBonuses(bonusConverter.convertDtoListToEntityList(anyList()),any(LocalDateTime.class))).thenReturn(6f);
+        when(bonusService.getMultiplierFromBonusesForChallengeAndSportAndSpecificTime(anyLong(), anyLong(), any())).thenReturn(5f);
         activityService.calcTotalDistanceList(aList);
 
-        assertEquals(60,activity.getTotalDistance());
-        assertEquals(30,activity1.getTotalDistance());
+        assertEquals(50,activity.getTotalDistance());
+        assertEquals(25,activity1.getTotalDistance());
     }
 
     /**

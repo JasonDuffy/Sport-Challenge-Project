@@ -7,6 +7,9 @@ WORKDIR /app
 # add `/app/node_modules/.bin` to $PATH
 ENV PATH /app/node_modules/.bin:$PATH
 
+# change timezone to Berlin
+ENV TZ=Europe/Berlin
+
 # install app dependencies
 COPY package.json ./
 COPY package-lock.json ./

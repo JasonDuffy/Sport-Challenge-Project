@@ -103,11 +103,11 @@ public class TeamMemberController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
-
     /**
      * Returns a TeamMember with the given teamID and memberID
-     * @param mid memberID that the TeamMember should contain
-     * @param tid teamID that the TeamMember should contain
+     * @param teamID  teamID that the TeamMember should contain
+     * @param memberID memberID that the TeamMember should contain
+     * @param request Automatically filled by browser
      * @return TeamMemberDTO with given teamID and memberID
      */
     @Operation(summary = "Returns a Team Member for the given teamID and memberID")

@@ -2,6 +2,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
 import de.hsesslingen.scpprojekt.scp.Database.Services.BonusService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
@@ -192,6 +193,30 @@ public class BonusController {
         if (saml2Service.isLoggedIn(request)){
             bonusService.deleteAll();
             return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+
+    /**
+     * Rest API that returns all sports for a bonus
+     *
+     * @param id ID of Bonus for which the Sports should be retrieved
+     * @param request automatically filled by browser
+     * @return List of Sports for bonus
+     */
+    @Operation(summary = "Get all Sports for Bonus")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sports for Bonus found",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Sport.class))}),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @GetMapping(path = "/{id}/sports/" , produces = "application/json")
+    public ResponseEntity<List<Sport>> getSportsForBonus(@PathVariable("id") long id, HttpServletRequest request) {
+        if (saml2Service.isLoggedIn(request)){
+            return new ResponseEntity<>(bonusService.getSportsForBonus(id), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

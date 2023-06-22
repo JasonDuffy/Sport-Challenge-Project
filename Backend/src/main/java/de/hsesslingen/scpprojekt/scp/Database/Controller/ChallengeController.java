@@ -460,12 +460,12 @@ public class ChallengeController {
      */
     @Operation(summary = "Get effective factor for a challenge")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Bonuses found",
+            @ApiResponse(responseCode = "200", description = "Effective Factor calculated",
                     content = {@Content(mediaType = "application/json",
                             schema = @Schema(implementation = Float.class))}),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
-    @GetMapping(path = "/{id}/sports/{sportsID}/effective", produces = "application/json")
+    @GetMapping(path = "/{id}/sports/{sportsID}/effective/", produces = "application/json")
     public ResponseEntity<Float> getEffectiveFactorForSportInChallenge(@PathVariable("id") long challengeID, @PathVariable("sportsID") long sportsID, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)) {
             return new ResponseEntity<>(challengeSportService.getEffectiveFactorForSportInChallenge(challengeID, sportsID), HttpStatus.OK);

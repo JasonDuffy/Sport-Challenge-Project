@@ -32,6 +32,8 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: scp
       PGUSER: postgres
+      TZ: 'Europe/Berlin'
+      PGTZ: 'Europe/Berlin'
     healthcheck:
       test: ["CMD-SHELL", "pg_isready", "-d", "scp"]
       interval: 10s
@@ -48,6 +50,7 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      TZ: 'Europe/Berlin'
     ports:
       - 8080:8080
     restart: always

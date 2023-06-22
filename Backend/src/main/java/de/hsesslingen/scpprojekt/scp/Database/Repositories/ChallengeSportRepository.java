@@ -17,4 +17,7 @@ public interface ChallengeSportRepository extends JpaRepository<ChallengeSport,L
     @Transactional
     List<ChallengeSport> findChallengeSportByChallenge_Id(long challengeID);
 
+    @Transactional
+    ChallengeSport findChallengeSportByChallenge_IdAndSport_Id(long challengeID, long sportID);
+
 }

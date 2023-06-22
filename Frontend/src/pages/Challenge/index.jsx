@@ -10,6 +10,8 @@ import ChallengeTeamBarGraph from "../../components/ChallengeTeamBarGraph/Challe
 import ChallengeMembers from "../../components/ChallengeMembers/ChallengeMembers";
 import Button from "../../components/ui/button/Button";
 import GlobalVariables from "../../GlobalVariables.js"
+import ChallengeSportsRow from "../../components/ChallengeSportsRow/ChallengeSportsRow"
+import ChallengeBonusRow from "../../components/ChallengeBonusRow/ChallengeBonusRow";
 
 /**
  * Displays all information for a given challenge
@@ -231,46 +233,6 @@ class Challenge extends Component {
     }
 
     /**
-    * Creates a new table row and returns it
-    * @param type Type of the bonus row. "current" adds an edit option
-    * @param bonus Bonus DTO object 
-    * @returns New table row
-    */
-    bonusRowMaker(type, bonus) {
-        return (
-            <tr key={"bonus" + bonus.id}>
-                <td>
-                    {bonus.name}
-                </td>
-                <td>
-                    {bonus.description}
-                </td>
-                <td>
-                    {"Sportart 1, Sportart 2, Sportart 3"}
-                </td>
-                <td>
-                    {bonus.startDate}
-                </td>
-                <td>
-                    {bonus.endDate}
-                </td>
-                <td>
-                    {bonus.factor}
-                </td>
-                {type === "current" && (
-                    <td>
-                        <div className="row_edit_icon icon_faPencil">
-                            <Link to="/bonus/edit" state={{ bonusID: bonus.id }}>
-                                <FontAwesomeIcon icon={faPencil} />
-                            </Link>
-                        </div>
-                    </td>
-                )}
-            </tr>
-        );
-    }
-
-    /**
     * Creates the bonus table
     * @returns Bonus table in div
     */
@@ -291,7 +253,7 @@ class Challenge extends Component {
                         </thead>
                         <tbody>
                             {this.state.pastBonuses.map((item) => (
-                                this.bonusRowMaker(type, item)
+                                <ChallengeBonusRow key={item.id} type={type} bonus={structuredClone(item)} />
                             ))}
                         </tbody>
                     </table>
@@ -314,7 +276,7 @@ class Challenge extends Component {
                         </thead>
                         <tbody>
                             {this.state.currentBonuses.map((item) => (
-                                this.bonusRowMaker(type, item)
+                                <ChallengeBonusRow key={item.id} type={type} bonus={structuredClone(item)} />
                             ))}
                         </tbody>
                     </table>
@@ -336,34 +298,13 @@ class Challenge extends Component {
                         </thead>
                         <tbody>
                             {this.state.futureBonuses.map((item) => (
-                                this.bonusRowMaker(type, item)
+                                <ChallengeBonusRow key={item.id} type={type} bonus={structuredClone(item)} />
                             ))}
                         </tbody>
                     </table>
                 </div>
             );
         }
-    }
-
-    /**
-    * Creates a new sports row and returns it
-    * @param sports Sports DTO object 
-    * @returns New table row
-    */
-    sportsRowMaker(sports) {
-        return (
-            <tr key={"sport " + sports.name}>
-                <td>
-                    {sports.name}
-                </td>
-                <td>
-                    {sports.factor}
-                </td>
-                <td>
-                    {"XX"}
-                </td>
-            </tr>
-        );
     }
 
     /**
@@ -383,7 +324,7 @@ class Challenge extends Component {
                     </thead>
                     <tbody>
                         {this.state.sports.map((item) => (
-                            this.sportsRowMaker(item)
+                            <ChallengeSportsRow key={item.id} challengeID={this.state.challengeID} sport={structuredClone(item)} />
                         ))}
                     </tbody>
                 </table>

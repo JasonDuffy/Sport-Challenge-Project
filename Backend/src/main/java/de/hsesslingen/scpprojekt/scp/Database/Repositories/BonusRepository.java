@@ -2,12 +2,14 @@ package de.hsesslingen.scpprojekt.scp.Database.Repositories;
 
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -50,4 +52,28 @@ public interface BonusRepository extends JpaRepository<Bonus,Long> {
             "and b.endDate > current date " +
             "order by b.startDate asc")
     public List<Bonus> findFutureBonusesByChallengeID(@Param("challengeID") long challengeID);
+
+    @Transactional
+    @Query("select b from Bonus b " +
+            "join ChallengeSportBonus csb on csb.bonus.id=b.id " +
+            "join ChallengeSport cs on cs.id=csb.challengeSport.id " +
+            "where cs.sport.id = :sportID and cs.challenge.id = :challengeID " +
+            "and b.endDate > current date and b.startDate <= current date")
+    public List<Bonus> findCurrentBonusesByChallengeIDAndSportID(@Param("challengeID") long challengeID, @Param("sportID") long sportID);
+
+    @Transactional
+    @Query("select b from Bonus b " +
+            "join ChallengeSportBonus csb on csb.bonus.id=b.id " +
+            "join ChallengeSport cs on cs.id=csb.challengeSport.id " +
+            "where cs.sport.id = :sportID and cs.challenge.id = :challengeID " +
+            "and b.endDate > :dateTime and b.startDate <= :dateTime")
+    public List<Bonus> findBonusesByChallengeIDAndSportIDAtSpecificTime(@Param("challengeID") long challengeID, @Param("sportID") long sportID, @Param("dateTime")LocalDateTime time);
+
+    @Transactional
+    @Query("select s from Sport s " +
+            "join ChallengeSport cs on cs.sport.id=s.id " +
+            "join ChallengeSportBonus csb on csb.challengeSport.id=cs.id " +
+            "join Bonus b on b.id=csb.bonus.id " +
+            "where b.id=:bonusID")
+    public List<Sport> findSportsForBonus(@Param("bonusID") long bonusID);
 }

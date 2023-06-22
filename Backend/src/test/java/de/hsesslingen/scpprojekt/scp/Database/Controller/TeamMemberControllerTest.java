@@ -541,5 +541,49 @@ public class TeamMemberControllerTest {
                 .andReturn();
     }
 
+    /**
+     * Test if TeamMember correctly thrown
+     * @throws Exception  by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void getTeamMemberByTeamIdAndMemberIdTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
+        TeamMemberDTO teamMemberDTO = new TeamMemberDTO(1,1);
+        teamMemberDTO.setId(2);
+        when(teamMemberService.getTeamMemberByTeamIdAndMemberId(1,1)).thenReturn(teamMemberDTO);
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/teamMembers/teams/1/members/1/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String content = res.getResponse().getContentAsString();
+        assertEquals("{\"id\":2,\"teamID\":1,\"memberID\":1}",content);
+
+        Mockito.verify(teamMemberService).getTeamMemberByTeamIdAndMemberId(any(Long.class),any(Long.class));
+
+    }
+
+    /**
+     * Test if Unknown user is thrown
+     * @throws Exception  by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void getTeamMemberByTeamIdAndMemberIdTestNotLoggedINn() throws Exception {
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/teamMembers/teams/1/members/1/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
+
 
 }

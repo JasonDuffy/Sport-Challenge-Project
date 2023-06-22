@@ -67,6 +67,7 @@ class ChallengeTeamPanelAreaGraph extends Component {
                 end = new Date(end.getFullYear(), end.getMonth(), end.getDate()).getTime() + (1000 * 3600 * 24); // Set to now if endDate not defined
             else
                 end = this.state.endDate.getTime();
+                
 
             // Add empty activities for every day from start of data to today
             // Fills empty spaces and makes x-axis scale even

@@ -2,11 +2,8 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.*;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeConverter;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
@@ -17,21 +14,9 @@ import de.hsesslingen.scpprojekt.scp.Database.Services.*;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
-import org.junit.jupiter.api.Test;
-import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
-import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeService;
-import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
-import jakarta.servlet.http.HttpServletRequest;
-import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -50,9 +35,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -371,6 +354,25 @@ public class ChallengeControllerTest {
                 .andExpect(status().isCreated())
                 .andReturn();
         verify(challengeService).add(any(MockMultipartFile.class),any(long[].class),any(float[].class),any(ChallengeDTO.class));
+    }
+
+    /**
+     * Test if bad Request correctly thrown
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void addChallengeTestBadRequest() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+        MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
+        MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"imageID\": \"1\"}".getBytes());
+        RequestBuilder request =
+                MockMvcRequestBuilders.multipart("/challenges/?sportId=2&sportId=2&sportFactor=2")
+                        .file(file)
+                        .file(jsonFile);
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isBadRequest())
+                .andReturn();
     }
 
     /**
@@ -998,4 +1000,198 @@ public class ChallengeControllerTest {
                 .andExpect(status().isForbidden())
                 .andReturn();
     }
+
+    /**
+     * Test if challengeID is correctly thrown for a member
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void getChallengeIDsByMemberIDTestSuccess()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
+        List<Long> challengeID = new ArrayList<>();
+        challengeID.add(1L);
+        challengeID.add(5L);
+        challengeID.add(9L);
+
+        when(challengeService.getChallengeIDsByMemberID(1L)).thenReturn(challengeID);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/challenges/members/1/").accept(MediaType.APPLICATION_JSON);
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String content = res.getResponse().getContentAsString();
+        String expectedResponseBody = "[1,5,9]";
+        assertEquals(expectedResponseBody, content);
+
+        verify(challengeService).getChallengeIDsByMemberID(1L);
+    }
+
+    /**
+     *  Test if Unknown user is thrown 403
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void getChallengeIDsByMemberIDTestNotLoggedIn()throws Exception{
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/challenges/members/1/").accept(MediaType.APPLICATION_JSON);
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
+    /**
+     *  Test if Bonuses are correctly thrown for challenge
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void getBonusesForChallengeTestSuccess()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
+        BonusDTO bonusDTO = new BonusDTO();
+        bonusDTO.setId(1);
+
+        BonusDTO bonusDTO2 = new BonusDTO();
+        bonusDTO2.setId(4);
+        BonusDTO bonusDTO3 = new BonusDTO();
+        bonusDTO3.setId(8);
+
+        List<BonusDTO> bonusDTOS = new ArrayList<>();
+        bonusDTOS.add(bonusDTO);
+        bonusDTOS.add(bonusDTO2);
+        bonusDTOS.add(bonusDTO3);
+
+        when(bonusService.getChallengeBonuses(any(Long.class),any(String.class))).thenReturn(bonusDTOS);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/challenges/1/bonuses/").accept(MediaType.APPLICATION_JSON)
+                .param("type", "past");;
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String content = res.getResponse().getContentAsString();
+
+        Pattern pattern = Pattern.compile("\"id\":(\\d)");
+        Matcher matcher = pattern.matcher(content);
+
+        matcher.find();
+        assertEquals(matcher.group(1), "1");
+        matcher.find();
+        assertEquals(matcher.group(1), "4");
+        matcher.find();
+        assertEquals(matcher.group(1), "8");
+        assertFalse(matcher.find());
+
+        verify(bonusService).getChallengeBonuses(any(Long.class),any(String.class));
+    }
+
+    /**
+     * Test if Unknown user is thrown 403
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void getBonusesForChallengeTestNotLoggedIn()throws Exception{
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/challenges/1/bonuses/").accept(MediaType.APPLICATION_JSON)
+                .param("type", "past");;
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+
+    }
+
+    @Test
+    @WithMockUser
+    public void getSportsForChallengeTestSuccess()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
+        Sport sport = new Sport();
+        sport.setId(1);
+        Sport sport2 = new Sport();
+        sport2.setId(4);
+
+        List<Sport> sports = new ArrayList<>();
+        sports.add(sport);
+        sports.add(sport2);
+        when(sportService.getSportsForChallenge(any(Long.class))).thenReturn(sports);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/challenges/1/sports/").accept(MediaType.APPLICATION_JSON);
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String content = res.getResponse().getContentAsString();
+
+        Pattern pattern = Pattern.compile("\"id\":(\\d)");
+        Matcher matcher = pattern.matcher(content);
+
+        matcher.find();
+        assertEquals(matcher.group(1), "1");
+        matcher.find();
+        assertEquals(matcher.group(1), "4");
+        assertFalse(matcher.find());
+
+        verify(sportService).getSportsForChallenge(any(Long.class));
+    }
+
+    /**
+     * Test if Unknown user is thrown 403
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void getSportsForChallengeTestNotLoggedIn()throws Exception{
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/challenges/1/sports/").accept(MediaType.APPLICATION_JSON);
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+
+    }
+
+    /**
+     *  Test if effective Factor for the sport in the Challenge is thrown
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void getEffectiveFactorForSportInChallengeTestSuccess()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+        when(challengeSportService.getEffectiveFactorForSportInChallenge(any(Long.class),any(Long.class))).thenReturn(5f);
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/challenges/1/sports/1/effective/").accept(MediaType.APPLICATION_JSON);
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+        String content = res.getResponse().getContentAsString();
+
+        assertEquals("5.0",content);
+
+        verify(challengeSportService).getEffectiveFactorForSportInChallenge(any(Long.class),any(Long.class));
+
+    }
+
+    /**
+     * Test if Unknown user is thrown 403
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void getEffectiveFactorForSportInChallengeTestNotLoggedIn()throws Exception{
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/challenges/1/sports/1/effective/").accept(MediaType.APPLICATION_JSON);
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
+
 }

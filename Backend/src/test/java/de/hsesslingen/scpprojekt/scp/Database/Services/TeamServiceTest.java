@@ -196,7 +196,7 @@ public class TeamServiceTest {
 
         teamList.get(1).setName("Team Dieter");
 
-        TeamDTO newTeam = teamService.update(1L, 0L, teamConverter.convertEntityToDto(teamList.get(1)));
+        TeamDTO newTeam = teamService.update(1L, 0L, teamConverter.convertEntityToDto(teamList.get(1)), new long[]{1});
 
         assertEquals(newTeam.getId(), teamList.get(0).getId());
         assertEquals(newTeam.getName(), teamList.get(1).getName());
@@ -216,7 +216,7 @@ public class TeamServiceTest {
         when(challengeService.get(any(Long.class))).thenThrow(NotFoundException.class);
 
         assertThrows(NotFoundException.class, () -> {
-            teamService.update(1L, 0L, teamConverter.convertEntityToDto(teamList.get(0)));
+            teamService.update(1L, 0L, teamConverter.convertEntityToDto(teamList.get(0)), new long[]{1});
         });
     }
 

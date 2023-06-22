@@ -89,26 +89,24 @@ public class TeamController {
      * @param request automatically filled by browser
      * @return 200 for successful update else 404 Team not found or 417 for something went wrong
      */
-    @Operation(summary = "Updates a team")
+    @Operation(summary = "Updates or adds a new team, depending on if it already exists")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Team successfully updated",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = TeamDTO.class))}),
-            @ApiResponse(responseCode = "404", description = "Team not found", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
-            @ApiResponse(responseCode = "417", description = "Something went wrong updating the Team", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PutMapping(path = "/{id}/",produces = "application/json")
     public ResponseEntity<TeamDTO> updateTeam(@RequestParam("imageID")Long imageID,
                                            @PathVariable("id") long TeamID,
                                            @RequestBody TeamDTO team,
+                                           @RequestParam long[] memberIDs,
                                            HttpServletRequest request){
         if (saml2Service.isLoggedIn(request)){
            try{
-               return new ResponseEntity<>(teamService.update(imageID,TeamID,team), HttpStatus.OK);
+               return new ResponseEntity<>(teamService.update(imageID,TeamID,team, memberIDs), HttpStatus.OK);
             }catch (NotFoundException e){
-               System.out.println((e.getMessage()));
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+               throw new RuntimeException();
             }
         }else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

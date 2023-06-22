@@ -382,7 +382,7 @@ public class TeamControllerTest {
         Team team = new Team();
         team.setId(1);
 
-        when(teamService.update(any(Long.class),any(Long.class),any(TeamDTO.class))).thenReturn(any(TeamDTO.class));
+        when(teamService.update(any(Long.class),any(Long.class),any(TeamDTO.class), any())).thenReturn(any(TeamDTO.class));
 
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/teams/1/").accept(MediaType.APPLICATION_JSON)
@@ -394,7 +394,7 @@ public class TeamControllerTest {
                 .andExpect(status().isOk())
                 .andReturn();
 
-        Mockito.verify(teamService).update(any(Long.class),any(Long.class), any(TeamDTO.class));
+        Mockito.verify(teamService).update(any(Long.class),any(Long.class), any(TeamDTO.class), any());
 
     }
 
@@ -412,7 +412,7 @@ public class TeamControllerTest {
         team.setId(1);
 
         when(teamService.get(1L)).thenThrow(NotFoundException.class);
-        when(teamService.update(any(Long.class),any(Long.class),any(TeamDTO.class))).thenThrow(NotFoundException.class);
+        when(teamService.update(any(Long.class),any(Long.class),any(TeamDTO.class), any())).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/teams/1/").accept(MediaType.APPLICATION_JSON)
@@ -423,7 +423,7 @@ public class TeamControllerTest {
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isNotFound())
                 .andReturn();
-        Mockito.verify(teamService).update(any(Long.class),any(Long.class), any(TeamDTO.class));
+        Mockito.verify(teamService).update(any(Long.class),any(Long.class), any(TeamDTO.class), any());
 
     }
 
@@ -438,7 +438,7 @@ public class TeamControllerTest {
         team.setId(1);
 
         when(saml2Service.isLoggedIn(any())).thenReturn(false);
-        when(teamService.update(any(Long.class),any(Long.class),any(TeamDTO.class))).thenReturn(any(TeamDTO.class));
+        when(teamService.update(any(Long.class),any(Long.class),any(TeamDTO.class), any())).thenReturn(any(TeamDTO.class));
 
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/teams/1/").accept(MediaType.APPLICATION_JSON)

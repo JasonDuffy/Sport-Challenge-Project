@@ -233,31 +233,32 @@ public class ChallengeController {
     }
 
     /**
-     * Rest API for updating a challenge
+     * Rest API for updating or adding a challenge
      *
      * @param ID of Challenge which should be deleted
      * @param challenge challenge data for the Challenge update
      * @param imageID ImageID which should be stored
+     * @param sportId Array of sports to add to the challenge
+     * @param sportFactor Array of factors for the sports
      * @param request automatically filled by browser
      * @return A 200 Code and the Member data if it worked 404 otherwise
      */
-    @Operation(summary = "Updates a challenge")
+    @Operation(summary = "Updates or adds a new challenge, depending if it already exists.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Challenge successfully updated",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = ChallengeDTO.class))}),
-            @ApiResponse(responseCode = "404", description = "Challenge not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
 
     })
     @PutMapping(path = "/{id}/", produces = "application/json")
-    public ResponseEntity<ChallengeDTO> updateChallenge(@RequestParam("imageId") Long imageID, @PathVariable("id") long ID,  @RequestBody ChallengeDTO challenge, HttpServletRequest request) {
+    public ResponseEntity<ChallengeDTO> updateChallenge(@RequestParam("imageId") Long imageID, @PathVariable("id") long ID,  @RequestParam("sportId") long sportId[],
+                                                        @RequestParam("sportFactor") float sportFactor[], @RequestBody ChallengeDTO challenge, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
             try{
-                return new ResponseEntity<>(challengeService.update(imageID, ID, challenge), HttpStatus.OK);
-            } catch (NotFoundException e) {
-                System.out.println(e.getMessage());
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                return new ResponseEntity<>(challengeService.update(imageID, ID, challenge, sportId, sportFactor), HttpStatus.OK);
+            } catch (NotFoundException | InvalidActivitiesException e) {
+                throw new RuntimeException(e);
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

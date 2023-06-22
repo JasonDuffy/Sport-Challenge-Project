@@ -228,7 +228,7 @@ public class BonusServiceTest {
         when(challengeSportService.get(1L)).thenReturn(csConverter.convertEntityToDto(cs));
         bonusList.get(1).setFactor(10.5f);
 
-        BonusDTO newBonus = bonusService.update(0L, bonusConverter.convertEntityToDto(bonusList.get(1)));
+        BonusDTO newBonus = bonusService.update(0L, bonusConverter.convertEntityToDto(bonusList.get(1)), new long[]{1});
 
         assertEquals(newBonus.getId(), bonusList.get(0).getId());
         assertEquals(newBonus.getFactor(), bonusList.get(1).getFactor());
@@ -245,7 +245,7 @@ public class BonusServiceTest {
 
         when(bonusRepository.findById(any(Long.class))).thenReturn(Optional.empty());
         assertThrows(NotFoundException.class, () -> {
-            bonusService.update(10L, bonusConverter.convertEntityToDto(bonusList.get(1)));
+            bonusService.update(10L, bonusConverter.convertEntityToDto(bonusList.get(1)), new long[]{1});
         });
     }
 

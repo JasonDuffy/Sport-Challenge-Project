@@ -7,6 +7,7 @@ import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.TeamConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamMemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.*;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
@@ -16,9 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Service of Team entity
@@ -29,14 +28,20 @@ import java.util.Optional;
 public class TeamService {
 
     @Autowired
+    @Lazy
     TeamRepository teamRepository;
     @Autowired
+    @Lazy
     ChallengeService challengeService;
     @Autowired
+    @Lazy
+    TeamMemberService teamMemberService;
+    @Autowired
+    @Lazy
     ImageStorageService imageStorageService;
     @Autowired
     @Lazy
-    TeamConverter teamConverter ;
+    TeamConverter teamConverter;
     @Autowired
     @Lazy
     ChallengeConverter challengeConverter;
@@ -103,24 +108,63 @@ public class TeamService {
      * Updates a Team
      *
      * @param imageID ID of the new Image
-     * @param TeamID ID of Team which should be updated
+     * @param teamID ID of Team which should be updated
      * @param team team object with updated values
+     * @param memberIDs Arrays of members to add to the team
      * @return Updated Team
      * @throws NotFoundException not found Team or Challenge
      */
-    public TeamDTO update(Long imageID, Long TeamID, TeamDTO team) throws NotFoundException {
-        Optional<Team> teamData = teamRepository.findById(TeamID);
+    public TeamDTO update(Long imageID, Long teamID, TeamDTO team, long[] memberIDs) throws NotFoundException {
+        Optional<Team> teamData = teamRepository.findById(teamID);
         Team convertedTeam = teamConverter.convertDtoToEntity(team);
         if (teamData.isPresent()) {
                 Team updatedTeam = teamData.get();
-                Image image = imageStorageService.get(imageID);
+
+                Image image;
+                try{
+                     image = imageStorageService.get(imageID);
+                } catch (NotFoundException e){
+                    image = null;
+                }
+
                 updatedTeam.setName(convertedTeam.getName());
                 updatedTeam.setChallenge(challengeConverter.convertDtoToEntity(challengeService.get(team.getChallengeID())));
                 updatedTeam.setImage(image);
 
                 Team savedTeam = teamRepository.save(updatedTeam);
+
+                List<MemberDTO> memberList = getAllMembersByTeamID(teamID);
+                List<Long> ids = new ArrayList<>();
+                memberList.forEach((m) -> {
+                    ids.add(m.getUserID());
+                });
+
+                for (Iterator<Long> id = ids.iterator(); id.hasNext(); ){
+                    long currentNum = id.next();
+                    if (!Arrays.stream(memberIDs).boxed().toList().contains(currentNum)){ // Delete all old members
+                        teamMemberService.delete(teamMemberService.getTeamMemberByTeamIdAndMemberId(teamID, currentNum).getId());
+                        id.remove();
+                    }
+                }
+
+                for (Long id : memberIDs){
+                    if (!ids.contains(id)){ // Add all new members
+                        teamMemberService.add(new TeamMemberDTO(teamID, id));
+                    }
+                }
+
                 return teamConverter.convertEntityToDto(savedTeam);
-        }throw new NotFoundException("Team with ID " + TeamID + " is not present in DB.");
+        } else {
+            team.setImageID(imageID);
+            Team t = teamConverter.convertDtoToEntity(team);
+            Team savedTeam = teamRepository.save(t);
+
+            for (long member : memberIDs){
+                teamMemberService.add(new TeamMemberDTO(savedTeam.getId(), member));
+            }
+
+            return teamConverter.convertEntityToDto(savedTeam);
+        }
     }
 
     /**

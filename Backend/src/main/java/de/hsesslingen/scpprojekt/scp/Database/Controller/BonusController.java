@@ -117,29 +117,27 @@ public class BonusController {
     }
 
     /**
-     * REST API for updating a bonus
+     * REST API for updating or adding a bonus
      *
      * @param bonus Bonus data for the Bonus update
+     * @param id ID of the bonus to be updated
+     * @param challengeSportID Array of ChallengeSport IDs for which the bonus should be applied
      * @param request automatically filled by browser
      * @return A 200 Code and the Bonus data if it worked 404 otherwise
      */
-    @Operation(summary = "Updates a Bonus")
+    @Operation(summary = "Updates or adds a new Bonus, depending on if it already exists.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Bonus successfully updated",
                     content = { @Content(mediaType = "application/json",
                             schema = @Schema(implementation = BonusDTO.class))}),
-            @ApiResponse(responseCode = "404", description = "Bonus not found", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PutMapping(path = "/{id}/", produces = "application/json")
-    public ResponseEntity<BonusDTO> updateBonus(@PathVariable("id") long id, @RequestBody BonusDTO bonus, HttpServletRequest request) {
+    public ResponseEntity<BonusDTO> updateBonus(@PathVariable("id") long id, @RequestParam("challengeSportID") long[] challengeSportID, @RequestBody BonusDTO bonus, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
             try{
-                return new ResponseEntity<>(bonusService.update(id, bonus), HttpStatus.OK);
-            } catch (NotFoundException e) {
-                System.out.println(e.getMessage());
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            } catch (InvalidActivitiesException e) {
+                return new ResponseEntity<>(bonusService.update(id, bonus, challengeSportID), HttpStatus.OK);
+            } catch (InvalidActivitiesException | NotFoundException e) {
                 throw new RuntimeException(e);
             }
         } else {

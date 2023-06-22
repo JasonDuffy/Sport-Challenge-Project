@@ -263,7 +263,7 @@ public class BonusControllerTest {
         BonusDTO b1 = new BonusDTO();
         b1.setId(1);
 
-        when(bonusService.update(any(Long.class), any(BonusDTO.class))).thenReturn(b1);
+        when(bonusService.update(any(Long.class), any(BonusDTO.class), any())).thenReturn(b1);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/bonuses/1/").accept(MediaType.APPLICATION_JSON)
@@ -284,7 +284,7 @@ public class BonusControllerTest {
         assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(bonusService).update(any(Long.class), any(BonusDTO.class));
+        Mockito.verify(bonusService).update(any(Long.class), any(BonusDTO.class), any());
     }
 
     /**
@@ -299,7 +299,7 @@ public class BonusControllerTest {
         BonusDTO b1 = new BonusDTO();
         b1.setId(1);
 
-        when(bonusService.update(any(Long.class), any(BonusDTO.class))).thenThrow(NotFoundException.class);
+        when(bonusService.update(any(Long.class), any(BonusDTO.class), any())).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/bonuses/1/").accept(MediaType.APPLICATION_JSON)
@@ -311,7 +311,7 @@ public class BonusControllerTest {
                 .andExpect(status().isNotFound())
                 .andReturn();
 
-        Mockito.verify(bonusService).update(any(Long.class), any(BonusDTO.class));
+        Mockito.verify(bonusService).update(any(Long.class), any(BonusDTO.class), any());
     }
 
     /**

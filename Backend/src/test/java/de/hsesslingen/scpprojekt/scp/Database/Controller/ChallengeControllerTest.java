@@ -426,7 +426,7 @@ public class ChallengeControllerTest {
         ChallengeDTO c1 = new ChallengeDTO();
         c1.setId(1);
 
-        when(challengeService.update(any(Long.class), any(Long.class), any(ChallengeDTO.class))).thenReturn(c1);
+        when(challengeService.update(any(Long.class), any(Long.class), any(ChallengeDTO.class), any(), any())).thenReturn(c1);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/challenges/1/").accept(MediaType.APPLICATION_JSON)
@@ -447,7 +447,7 @@ public class ChallengeControllerTest {
         assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(challengeService).update(any(Long.class), any(Long.class), any(ChallengeDTO.class));
+        Mockito.verify(challengeService).update(any(Long.class), any(Long.class), any(ChallengeDTO.class), any(), any());
     }
 
     /**
@@ -462,7 +462,7 @@ public class ChallengeControllerTest {
         ChallengeDTO c1 = new ChallengeDTO();
         c1.setId(1);
 
-        when(challengeService.update(any(Long.class), any(Long.class), any(ChallengeDTO.class))).thenThrow(NotFoundException.class);
+        when(challengeService.update(any(Long.class), any(Long.class), any(ChallengeDTO.class), any(), any())).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/challenges/1/").accept(MediaType.APPLICATION_JSON)

@@ -1,0 +1,26 @@
+.scp_textarea_content {
+  position: relative;
+}
+
+.scp_textarea_input {
+  width: calc(100% - 14px);
+  height: calc(100% - 37px);
+  padding: 5px;
+  border: 2px var(--doubleslash-blue) solid;
+  resize: none;
+  color: var(--doubleslash-text-grey);
+  font-family: "Segoe UI", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.scp_textarea_input:focus {
+  outline: 0;
+}
+
+.scp_textarea_char_counter {
+  position: absolute;
+  right: 2px;
+  color: var(--doubleslash-text-grey);
+  font-weight: bold;
+}

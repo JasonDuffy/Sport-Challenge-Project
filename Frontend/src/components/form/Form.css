@@ -14,34 +14,6 @@
     display: flex;
 }
 
-textarea{
-    padding: 5px;
-    border: 2px var(--doubleslash-blue) solid;
-    resize: none;
-    color: var(--doubleslash-text-grey);
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 14px;
-    font-weight: 500;
-}
-
-textarea:focus {
-    outline: 0;
-}
-
-input[type="text"]{
-    border: 0;
-    border-bottom: 2px var(--doubleslash-text-grey) solid;
-    color: var(--doubleslash-text-grey);
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 14px;
-    font-weight: bold;
-    background-color: var(--doubleslash-lightblue);
-}
-
-input[type="text"]:focus{
-    outline: 0;
-}
-
 input[type="file"]{
     width: 350px;
     color: var(--doubleslash-text-grey);
@@ -69,57 +41,4 @@ input[type="file"]::file-selector-button{
 input[type="file"]:hover::file-selector-button{
     background-color: white;
     color: var(--doubleslash-blue);
-}
-
-input[type="number"]{
-    border: 0;
-    border-bottom: 2px var(--doubleslash-text-grey) solid;
-    color: var(--doubleslash-text-grey);
-    font-family: 'Segoe UI', sans-serif;
-    font-size: 14px;
-    font-weight: bold;
-    background-color: var(--doubleslash-lightblue);
-}
-
-input[type="number"]:focus{
-    outline: 0;
-}
-
-select{
-    background-color: var(--doubleslash-lightblue);
-    border: 0;
-    border-bottom: 2px var(--doubleslash-text-grey) solid;
-    color: var(--doubleslash-text-grey);
-    font-size: 14px;
-    font-weight: bold;
-}
-
-select:focus{
-    outline: 0;
-}
-
-#form_info_container, .form_info_container{
-    display: none;
-    font-size: 14px;
-    font-weight: bold;
-    text-align: center;
-}
-
-#form_info_message > a, .form_info_message > a{
-    color: #467834;
-    text-decoration: underline;
-}
-
-.error{
-    display: block !important;
-    background-color: #ffeeee;
-    color: #d2253b;
-    border: 1px solid #d2253b;
-}
-
-.success{
-    display: block !important;
-    background-color: #e7ffe7;
-    color: #64ac4a;
-    border: 1px solid #64ac4a;
 }

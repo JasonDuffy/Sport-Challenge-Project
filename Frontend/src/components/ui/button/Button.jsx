@@ -40,6 +40,9 @@ function Button(props) {
 Button.propTypes = {
   color: PropTypes.string.isRequired,
   txt: PropTypes.string.isRequired,
+  acttion: PropTypes.func,
+  type: PropTypes.string,
+  loading: PropTypes.bool,
 };
 
 export default Button;

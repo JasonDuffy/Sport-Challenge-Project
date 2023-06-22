@@ -1,0 +1,12 @@
+.scp_dropdown{
+    background-color: var(--doubleslash-lightblue);
+    border: 0;
+    border-bottom: 2px var(--doubleslash-text-grey) solid;
+    color: var(--doubleslash-text-grey);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.scp_dropdown:focus{
+    outline: 0;
+}

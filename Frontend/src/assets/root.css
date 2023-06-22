@@ -765,7 +765,8 @@
   padding: 0;
 }
 
-html, body {
+html,
+body {
   padding: 0;
   margin: 0;
   width: 100%;
@@ -778,17 +779,17 @@ html, body {
 }
 
 html {
-  --doubleslash-blue: #00A5E1;
-  --doubleslash-lightblue: #D7E9F4;
+  --doubleslash-blue: #00a5e1;
+  --doubleslash-lightblue: #d7e9f4;
   --doubleslash-orange: #ff9f00;
-  --doubleslash-text-grey: #7A7A7A;
+  --doubleslash-text-grey: #7a7a7a;
   --doubleslash-text-white: #ffffff;
   --doubleslash-darkgrey: #515151;
-  --doubleslash-lightgrey: #C6C6C6;
-  --doubleslash-accent-darkblue: #32547B;
-  --doubleslash-accent-green: #B9D478;
-  --doubleslash-accent-brown: #8B593E;
-  --doubleslash-accent-red: #C63328;
+  --doubleslash-lightgrey: #c6c6c6;
+  --doubleslash-accent-darkblue: #32547b;
+  --doubleslash-accent-green: #b9d478;
+  --doubleslash-accent-brown: #8b593e;
+  --doubleslash-accent-red: #c63328;
 }
 
 a {
@@ -851,4 +852,20 @@ a:hover {
   display: block;
   line-height: 0.01em;
   margin-top: -40px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--doubleslash-lightgrey);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--doubleslash-text-grey);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--doubleslash-darkgrey);
 }/*# sourceMappingURL=root.css.map */

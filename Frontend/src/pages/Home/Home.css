@@ -49,3 +49,7 @@
 .challenge_list_item:hover .challenge_title, .challenge_list_item:hover .challenge_date{
     transform: translate(0, 0);
 }
+
+.challenge_list_item:hover .challenge_bonus{
+    transform: scale(0);
+}

@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import "./ChallengeOverview.css";
 import { useNavigate } from "react-router-dom";
 import GlobalVariables from "../../GlobalVariables.js"
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faGift } from "@fortawesome/free-solid-svg-icons";
 
 /**
  * Displays a Challenge with Image, Overlay and Data.
@@ -22,6 +24,7 @@ function ChallengeOverview(props) {
   const [distanceGoal, setDistanceGoal] = useState(0);
   const [challengeInfo, setChallengeInfo] = useState("");
   const [imageSource, setImageSource] = useState("");
+  const [bonusData, setBonusData] = useState("");
 
   function openChallenge() {
     navigate("/Challenge/", { state: { challengeID: props.id}});
@@ -31,6 +34,9 @@ function ChallengeOverview(props) {
     async function getChallengeData(){
       const challengeResponse = await fetch(GlobalVariables.serverURL + "/challenges/" + props.id + "/", { method: "GET", credentials: "include" });
       const challengeResData = await challengeResponse.json();
+
+      const bonusResponse = await fetch(GlobalVariables.serverURL + "/challenges/" + props.id + "/bonuses/?type=current", { method: "GET", credentials: "include" });
+      const bonusResData = await bonusResponse.json();
 
       if (challengeResData.imageID != null){
         const imageResponse = await fetch(GlobalVariables.serverURL + "/images/" + challengeResData.imageID + "/", { method: "GET", credentials: "include" });
@@ -48,6 +54,7 @@ function ChallengeOverview(props) {
       setDistanceGoal(challengeResData.targetDistance);
       setChallengeInfo(challengeResData.description);
       setDistanceDone(challengeDistanceResData);
+      setBonusData(bonusResData);
     }
 
     getChallengeData();
@@ -71,6 +78,9 @@ function ChallengeOverview(props) {
         <div className="challenge_info">{challengeInfo}</div>
         <div className="challenge_btns">
           <Button color="white" txt="Infos anzeigen" action={openChallenge} />
+        </div>
+        <div className="challenge_bonus">
+            {bonusData.length > 0 && (<FontAwesomeIcon icon={faGift} />)}
         </div>
       </div>
     </>

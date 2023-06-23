@@ -1,4 +1,4 @@
-.challenge_bg > *{
+.challenge_bg>* {
     position: absolute;
     top: 0;
     left: 0;
@@ -8,7 +8,7 @@
     border-radius: 16px;
 }
 
-.challenge_wrap{
+.challenge_wrap {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -21,41 +21,56 @@
     color: var(--doubleslash-text-white);
 }
 
-.challenge_bg_color{
+.challenge_bg_color {
     transition: all .3s linear;
 }
 
-.challenge_bg_image_overlay{
+.challenge_bg_image_overlay {
     transition: all .3s linear;
 }
 
-.challenge_title{
+.challenge_title {
     font-size: 36px;
     font-weight: 600;
 }
 
-.challenge_title, .challenge_date{
+.challenge_title,
+.challenge_date {
     transition: transform .3s linear;
     transform: translate(0, 150px);
 }
 
-.challenge_date, .challenge_distance, .challenge_info{
+.challenge_bonus {
+    position: absolute;
+    bottom: 3%;
+    right: 3%;
+    font-size: large;
+    transition: transform .3s linear;
+    
+}
+
+.challenge_date,
+.challenge_distance,
+.challenge_info {
     font-weight: 500;
 }
 
-.challenge_distance, .challenge_info, .challenge_btns{
+.challenge_distance,
+.challenge_info,
+.challenge_btns {
     opacity: 0;
 }
 
-.challenge_info, .challenge_distance{
+.challenge_info,
+.challenge_distance {
     margin-bottom: 20px;
     flex-grow: 1;
 }
 
-.challenge_btns{
+.challenge_btns {
     display: flex;
 }
 
-.challenge_btns > :not(:last-child){
+.challenge_btns> :not(:last-child) {
     margin-right: 10px;
 }

@@ -138,6 +138,7 @@ public class ChallengeSportService {
             return 0.0f;
 
         float bonusMultiplier = bonusService.getCurrentMultiplierFromBonusesForChallengeAndSport(challengeID, sportID);
+
         return thisChallengeSport.getFactor() * bonusMultiplier;
     }
 }

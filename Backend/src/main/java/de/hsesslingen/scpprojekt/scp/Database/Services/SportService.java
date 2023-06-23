@@ -91,7 +91,7 @@ public class SportService {
     }
 
     /**
-     *  Get all Sports for a Challenge
+     *  Get all Sports for a Challenge with challenge specific factors already applied.
      * @param challengeID ID of Chalenge
      * @return List of Sports
      */

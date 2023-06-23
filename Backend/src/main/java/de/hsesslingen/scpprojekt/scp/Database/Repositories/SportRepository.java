@@ -19,7 +19,7 @@ import java.util.Optional;
 @Repository
 public interface SportRepository extends JpaRepository<Sport,Long> {
     @Transactional
-    @Query("select s from Sport s " +
+    @Query("select new Sport(s.id, s.name, cs.factor) from Sport s " +
             "join ChallengeSport cs on cs.sport.id=s.id " +
             "join Challenge c on cs.challenge.id=c.id " +
             "where cs.challenge.id=:challengeID")

@@ -429,7 +429,7 @@ public class ChallengeController {
     }
 
     /**
-     * Get all sports for a challenge
+     * Get all sports for a challenge with challenge specific factors applied
      *
      * @param challengeID corresponding ID of Challenge
      * @param request     automatically filled by browser

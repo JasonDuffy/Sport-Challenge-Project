@@ -192,6 +192,7 @@ public class BonusService {
 
         if ( factor == 0.0f )
             return 1.0f; //If no bonuses are applied, return factor as 1
+
         return factor;
     }
 

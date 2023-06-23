@@ -30,6 +30,12 @@ public class Sport {
         this.factor = factor;
     }
 
+    public Sport(long id, String name, float factor){
+        this.id = id;
+        this.name = name;
+        this.factor = factor;
+    }
+
     public long getId() {
         return id;
     }

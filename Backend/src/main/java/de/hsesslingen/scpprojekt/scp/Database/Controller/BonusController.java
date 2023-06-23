@@ -158,7 +158,6 @@ public class BonusController {
             @ApiResponse(responseCode = "200", description = "Bonus successfully deleted"),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "404", description = "Bonus not found", content = @Content)
-
     })
     @DeleteMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<Void> deleteBonus(@PathVariable("id") long id, HttpServletRequest request) {

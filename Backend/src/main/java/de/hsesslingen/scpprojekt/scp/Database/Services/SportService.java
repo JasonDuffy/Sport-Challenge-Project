@@ -90,6 +90,11 @@ public class SportService {
         sportRepository.deleteAll();
     }
 
+    /**
+     *  Get all Sports for a Challenge
+     * @param challengeID ID of Chalenge
+     * @return List of Sports
+     */
     public List<Sport> getSportsForChallenge(long challengeID){
         return sportRepository.findSportsForChallenge(challengeID);
     }

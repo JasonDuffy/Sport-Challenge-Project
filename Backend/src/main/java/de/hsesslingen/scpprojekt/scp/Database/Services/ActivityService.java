@@ -161,7 +161,6 @@ public class ActivityService {
                 sum += act.getDistance() * act.getChallengeSport().getFactor();
             }
         }
-
         return sum;
     }
 
@@ -188,6 +187,14 @@ public class ActivityService {
         return sum;
     }
 
+    /**
+     *  Avg Distance for activities
+     * @param memberCount Count of Members in an activity
+     * @param activities List of activities
+     * @return Avg Distance
+     * @throws InvalidActivitiesException Invalid Activity
+     * @throws NotFoundException Challenge not Found
+     */
     public float getAVGDistanceForActivities(int memberCount, List<Activity> activities) throws InvalidActivitiesException, NotFoundException {
         Float sum = 0.0f;
 

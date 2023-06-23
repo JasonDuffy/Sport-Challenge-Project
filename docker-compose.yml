@@ -18,6 +18,7 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=password
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SCP_Frontend_URL=http://localhost:3000
       - SPRING_SECURITY_SAML2_RELYINGPARTY_REGISTRATION_KEYCLOAK_ASSERTINGPARTY_METADATA-URI=http://kubernetes.docker.internal:8080/realms/SportChallenge/protocol/saml/descriptor
     networks:
       - main_net
@@ -64,6 +65,10 @@ services:
     build:
       context: .
     container_name: frontend
+    environment:
+      - REACT_APP_SERVERNAME=localhost
+      - REACT_APP_SERVERPORT=8081
+      - REACT_APP_SERVERPROTOCOL=http
     ports:
       - 3000:3000
     networks:

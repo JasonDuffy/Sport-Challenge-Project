@@ -3,6 +3,8 @@ package de.hsesslingen.scpprojekt.scp.Configuration;
 import static org.springframework.security.config.Customizer.withDefaults;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.session.DefaultCookieSerializerCustomizer;
+import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,6 +15,7 @@ import org.springframework.security.saml2.provider.service.web.DefaultRelyingPar
 import org.springframework.security.saml2.provider.service.web.Saml2MetadataFilter;
 import org.springframework.security.saml2.provider.service.web.authentication.Saml2WebSsoAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.session.web.http.CookieSerializer;
 
 /**
  * Security config that allows access after authentication by SAML2
@@ -47,5 +50,16 @@ public class SecurityConfig {
         http.csrf().disable();
 
         return http.build();
+    }
+
+    /**
+     * Sets SameSite attribute on all cookies to null. Needed for authentication to work on local and online network
+     * @return Correctly set up serializer object
+     */
+    @Bean
+    public DefaultCookieSerializerCustomizer cookieSerializerCustomizer() {
+        return cookieSerializer -> {
+            cookieSerializer.setSameSite(null);
+        };
     }
 }

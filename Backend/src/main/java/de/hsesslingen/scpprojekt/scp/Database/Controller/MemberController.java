@@ -375,6 +375,13 @@ public class MemberController {
         }
     }
 
+    /**
+     * Rest APi for getting all current challenges for Member
+     *
+     * @param memberID ID of Member
+     * @param request automatically filled by browser
+     * @return List of current challenges
+     */
     @Operation(summary = "Get all current Challenges for a member")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Search successful.",

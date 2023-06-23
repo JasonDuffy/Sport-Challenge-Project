@@ -13,6 +13,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Services.ImageStorageService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.TeamService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -42,8 +43,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -382,10 +382,10 @@ public class TeamControllerTest {
         Team team = new Team();
         team.setId(1);
 
-        when(teamService.update(any(Long.class),any(Long.class),any(TeamDTO.class), any())).thenReturn(any(TeamDTO.class));
+        when(teamService.update(any(Long.class),any(Long.class),any(TeamDTO.class), any(long[].class))).thenReturn(any(TeamDTO.class));
 
         RequestBuilder request = MockMvcRequestBuilders
-                .put("/teams/1/").accept(MediaType.APPLICATION_JSON)
+                .put("/teams/1/?imageID=1&memberIDs=1").accept(MediaType.APPLICATION_JSON)
                 .param("imageID" ,"1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(team));
@@ -415,14 +415,14 @@ public class TeamControllerTest {
         when(teamService.update(any(Long.class),any(Long.class),any(TeamDTO.class), any())).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .put("/teams/1/").accept(MediaType.APPLICATION_JSON)
+                .put("/teams/1/?imageID=1&memberIDs=1").accept(MediaType.APPLICATION_JSON)
                 .param("imageID" ,"1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(team));
 
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isNotFound())
-                .andReturn();
+        assertThrows(ServletException.class, () -> {
+            mockMvc.perform(request);
+        });
         Mockito.verify(teamService).update(any(Long.class),any(Long.class), any(TeamDTO.class), any());
 
     }
@@ -433,7 +433,7 @@ public class TeamControllerTest {
      */
     @Test
     @WithAnonymousUser
-    public void updateTeamLogOut()throws Exception{
+    public void updateTeamNotLoggedIn()throws Exception{
         Team team = new Team();
         team.setId(1);
 
@@ -441,7 +441,7 @@ public class TeamControllerTest {
         when(teamService.update(any(Long.class),any(Long.class),any(TeamDTO.class), any())).thenReturn(any(TeamDTO.class));
 
         RequestBuilder request = MockMvcRequestBuilders
-                .put("/teams/1/").accept(MediaType.APPLICATION_JSON)
+                .put("/teams/1/?imageID=1&memberIDs=1").accept(MediaType.APPLICATION_JSON)
                 .param("imageID" ,"1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(team));

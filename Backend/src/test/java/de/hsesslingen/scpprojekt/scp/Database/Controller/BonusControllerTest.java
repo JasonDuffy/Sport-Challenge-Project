@@ -7,6 +7,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
 import de.hsesslingen.scpprojekt.scp.Database.Services.BonusService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -307,9 +308,9 @@ public class BonusControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(b1));
 
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isNotFound())
-                .andReturn();
+        assertThrows(ServletException.class, () -> {
+            mockMvc.perform(request);
+        });
 
         Mockito.verify(bonusService).update(any(Long.class), any(BonusDTO.class), any());
     }

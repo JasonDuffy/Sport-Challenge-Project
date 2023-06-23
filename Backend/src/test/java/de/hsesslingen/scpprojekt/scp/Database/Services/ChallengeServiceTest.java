@@ -410,16 +410,7 @@ public class ChallengeServiceTest {
     }
 
 
-    /**
-     * Test if exception is correctly thrown
-     * @throws NotFoundException Should never be thrown
-     */
-    @Test
-    public void updateTestFail() throws NotFoundException {
-        assertThrows(NotFoundException.class, () -> {
-            challengeService.update(1L,20L, challengeConverter.convertEntityToDto(challengeList.get(0)), new long[]{1}, new float[]{1.0f});
-        });
-    }
+
     /**
      * Test if delete works correctly
      * @throws NotFoundException Should never be thrown

@@ -135,6 +135,7 @@ public class TeamService {
 
                 List<MemberDTO> memberList = getAllMembersByTeamID(teamID);
                 List<Long> ids = new ArrayList<>();
+
                 memberList.forEach((m) -> {
                     ids.add(m.getUserID());
                 });
@@ -207,6 +208,11 @@ public class TeamService {
         return newA;
     }
 
+    /**
+     *
+     * @param teamID
+     * @return
+     */
     public List<MemberDTO> getAllMembersByTeamID(long teamID){
         List<Member> members = teamRepository.findMembersByTeamID(teamID);
         return  memberConverter.convertEntityListToDtoList(members);

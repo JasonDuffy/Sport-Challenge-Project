@@ -30,11 +30,21 @@ public class TeamMemberService {
     @Lazy
     TeamMemberConverter teamMemberConverter;
 
+    /**
+     *  Return all TeamMembers
+     * @return all TeamMembers
+     */
     public List<TeamMemberDTO> getAll()  {
         List<TeamMember> teamMembers = teamMemberRepository.findAll();
         return teamMemberConverter.convertEntityListToDtoList(teamMembers);
     }
 
+    /**
+     *  Returns List TeamMember for a Challenge
+     *
+     * @param ChallengeID ID of Challenge
+     * @return List of TeamMembers for the Challenge
+     */
     public List<TeamMemberDTO> getAllTeamOfChallenge(long ChallengeID)  {
         List<TeamMember> teamMembers = teamMemberRepository.findAll();
         List<TeamMember> teamMemberList = new ArrayList<>();
@@ -72,7 +82,7 @@ public class TeamMemberService {
         Optional<TeamMember> teamMember = teamMemberRepository.findTeamMemberByTeamIdAndMemberId(teamID, memberID);
         if(teamMember.isPresent())
             return teamMemberConverter.convertEntityToDto(teamMember.get());
-        throw new NotFoundException("TeamMember with the teamID " + teamID + " and the memberID " + memberID + "is not present in DB.");
+        throw new NotFoundException("TeamMember with the teamID " + teamID + " and the memberID " + memberID + " is not present in DB.");
     }
 
     /**

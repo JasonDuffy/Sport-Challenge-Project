@@ -69,6 +69,10 @@ public class TeamMemberServiceTest {
         c1.setId(1L);
         when(challengeService.get(1L)).thenReturn(challengeConverter.convertEntityToDto(c1));
 
+        Challenge c2 = new Challenge();
+        c2.setId(2L);
+        when(challengeService.get(2L)).thenReturn(challengeConverter.convertEntityToDto(c2));
+
         Image image = new Image();
         image.setId(1L);
         when(imageStorageService.get(1L)).thenReturn(image);
@@ -80,7 +84,7 @@ public class TeamMemberServiceTest {
         Team t2 = new Team();
         t2.setImage(image);
         t2.setId(2L);
-        t2.setChallenge(c1);
+        t2.setChallenge(c2);
 
         Member m1 = new Member();
         m1.setId(1L);
@@ -270,6 +274,50 @@ public class TeamMemberServiceTest {
     public void deleteAllTest(){
         teamMemberService.deleteAll();
         verify(teamMemberRepository).deleteAll();
+    }
+
+    /**
+     * Test if getAllTeamOfChallenge works
+     */
+    @Test
+    public void  getAllTeamOfChallengeTest(){
+        List <TeamMemberDTO> teamMemberList1 = teamMemberService.getAllTeamOfChallenge(1);
+        int i = 0 ;
+        for (TeamMemberDTO t :teamMemberList1){
+            assertEquals(t.getId(), teamMemberList.get(i++).getId());
+        }
+        verify(teamMemberRepository).findAll();
+    }
+
+    /**
+     *  Test if getting TeamMember
+     * @throws NotFoundException shouldn't be thrown
+     */
+    @Test
+    public void getTeamMemberByTeamIdAndMemberIdTest () throws NotFoundException {
+        Team team = new Team();
+        team.setId(1);
+        Member member = new Member();
+        member.setId(1);
+        TeamMember teamMember = new TeamMember();
+        teamMember.setId(1);
+        teamMember.setTeam(team);
+        teamMember.setMember(member);
+
+        when(teamMemberRepository.findTeamMemberByTeamIdAndMemberId(1,1)).thenReturn(Optional.of(teamMember));
+       TeamMemberDTO teamMember1 = teamMemberService.getTeamMemberByTeamIdAndMemberId(1,1);
+
+        assertEquals(teamMember1.getId(),teamMember.getId());
+    }
+
+    /**
+     * Test if NotFound TeamMember
+     */
+    @Test
+    public void getTeamMemberByTeamIdAndMemberIdTestNotFound () {
+        assertThrows(NotFoundException.class, () -> {
+            teamMemberService.getTeamMemberByTeamIdAndMemberId(1,1);
+        });
     }
 
 }

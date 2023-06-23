@@ -174,7 +174,7 @@ public class SportController {
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PutMapping(path = "/{id}/", produces = "application/json")
-    public ResponseEntity<Sport> updateChallenge(@PathVariable("id") Long ID, @RequestBody Sport sport, HttpServletRequest request) {
+    public ResponseEntity<Sport> updateSport(@PathVariable("id") Long ID, @RequestBody Sport sport, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
             try{
                 return new ResponseEntity<>(sportService.update(ID,sport), HttpStatus.OK);

@@ -45,7 +45,6 @@ public class SportServiceTest {
     @BeforeEach
     public void setup() {
         sportList = new ArrayList<>();
-
         for (long i = 0; i < 10; i++){
             Sport sp = new Sport();
             sp.setId(i);;

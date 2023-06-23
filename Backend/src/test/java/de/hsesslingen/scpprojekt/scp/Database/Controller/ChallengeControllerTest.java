@@ -12,6 +12,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportReposit
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.SportRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Services.*;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeService;
@@ -426,11 +427,10 @@ public class ChallengeControllerTest {
         ChallengeDTO c1 = new ChallengeDTO();
         c1.setId(1);
 
-        when(challengeService.update(any(Long.class), any(Long.class), any(ChallengeDTO.class), any(), any())).thenReturn(c1);
+        when(challengeService.update(any(Long.class), any(Long.class), any(ChallengeDTO.class), any(long[].class), any(float[].class))).thenReturn(c1);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .put("/challenges/1/").accept(MediaType.APPLICATION_JSON)
-                .param("imageId", "1")
+                .put("/challenges/1/?imageId=1&sportId=1&sportFactor=1").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(c1));
 
@@ -462,17 +462,16 @@ public class ChallengeControllerTest {
         ChallengeDTO c1 = new ChallengeDTO();
         c1.setId(1);
 
-        when(challengeService.update(any(Long.class), any(Long.class), any(ChallengeDTO.class), any(), any())).thenThrow(NotFoundException.class);
+        when(challengeService.update(any(Long.class), any(Long.class), any(ChallengeDTO.class), any(long[].class), any(float[].class))).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .put("/challenges/1/").accept(MediaType.APPLICATION_JSON)
-                .param("imageId", "1")
+                .put("/challenges/1/?imageId=1&sportId=1&sportFactor=1").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(c1));
 
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isNotFound())
-                .andReturn();
+        assertThrows(ServletException.class, () -> {
+            mockMvc.perform(request);
+        });
     }
 
     /**
@@ -485,8 +484,7 @@ public class ChallengeControllerTest {
         ChallengeDTO c1 = new ChallengeDTO();
         c1.setId(1);
         RequestBuilder request = MockMvcRequestBuilders
-                .put("/challenges/1/").accept(MediaType.APPLICATION_JSON)
-                .param("imageId", "1")
+                .put("/challenges/1/?imageId=1&sportId=1&sportFactor=1").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(c1));
 

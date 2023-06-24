@@ -20,6 +20,10 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - SCP_Frontend_URL=http://localhost:3000
       - SPRING_SECURITY_SAML2_RELYINGPARTY_REGISTRATION_KEYCLOAK_ASSERTINGPARTY_METADATA-URI=http://kubernetes.docker.internal:8080/realms/SportChallenge/protocol/saml/descriptor
+      - SPRING_MAIL_HOST=smtp.gmail.com
+      - SPRING_MAIL_PORT=587
+      - SPRING_MAIL_USERNAME=slashchallengescp@gmail.com
+      - SPRING_MAIL_PASSWORD=kpcxvrxxjxoemqvy
     networks:
       - main_net
       

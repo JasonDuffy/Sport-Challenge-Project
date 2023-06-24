@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>de.hs-esslingen.scpprojekt</groupId>
 	<artifactId>scp</artifactId>
-	<version>0.6-SPRINT8</version>
+	<version>1.0</version>
 	<name>scp</name>
 	<description>Sport Challenge Projekt für doubleSlash Net-Business GmbH</description>
 	<properties>

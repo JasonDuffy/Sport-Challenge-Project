@@ -834,72 +834,6 @@ public class MemberControllerTest {
     }
 
     /**
-     * Test for getting Members for an team
-     * @throws Exception by mockMvc
-     */
-    @Test
-    @WithMockUser
-    public void getMemberByTeamIDTestSuccess()throws Exception{
-        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-        MemberDTO member = new MemberDTO();
-        member.setUserID(1L);
-        member.setFirstName("Max");
-        member.setLastName("Mustermann");
-        member.setCommunication(true);
-
-        MemberDTO member2 = new MemberDTO();
-        member2.setUserID(2L);
-        member2.setFirstName("Janik");
-        member2.setLastName("Hansen");
-        member2.setCommunication(false);
-        List<MemberDTO> memberDTOList = new ArrayList<>();
-        memberDTOList.add(member);
-        memberDTOList.add(member2);
-        when(memberService.getAllMembersByTeamID(1)).thenReturn(memberDTOList);
-        RequestBuilder request = MockMvcRequestBuilders
-                .get("/members/teams/1/")
-                .accept(MediaType.APPLICATION_JSON);
-
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isOk())
-                .andReturn();
-        String content = res.getResponse().getContentAsString();
-
-        Pattern pattern = Pattern.compile("\\{\"email\":null,\"firstName\":\"(.*?)\",\"lastName\":\"(.*?)\",\"userID\":(.*?),\"imageID\":null,\"communication\":(.*?)}");
-        Matcher matcher = pattern.matcher(content);
-
-        matcher.find();
-        assertEquals(matcher.group(1), "Max");
-        assertEquals(matcher.group(2), "Mustermann");
-        assertEquals(matcher.group(3), "1");
-        assertEquals(matcher.group(4), "true");
-
-        matcher.find();
-        assertEquals(matcher.group(1), "Janik");
-        assertEquals(matcher.group(2), "Hansen");
-        assertEquals(matcher.group(3), "2");
-        assertEquals(matcher.group(4), "false");
-
-        verify(memberService).getAllMembersByTeamID(any(long.class));
-    }
-
-    /**
-     * Test for getting Members for an team
-     * @throws Exception by mockMvc
-     */
-    @Test
-    @WithAnonymousUser
-    public void getMemberByTeamIDTestNotLoggedIn()throws Exception{
-        RequestBuilder request = MockMvcRequestBuilders
-                .get("/members/teams/1/")
-                .accept(MediaType.APPLICATION_JSON);
-
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isForbidden())
-                .andReturn();
-    }
-
-    /**
      * Test for getting all teams for a Member
      * @throws Exception by mockMvc
      */
@@ -956,6 +890,49 @@ public class MemberControllerTest {
                 .get("/members/1/teams/")
                 .accept(MediaType.APPLICATION_JSON);
 
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
+    /**
+     * Test if challengeID is correctly thrown for a member
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void getChallengeIDsByMemberIDTestSuccess()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
+        List<Long> challengeID = new ArrayList<>();
+        challengeID.add(1L);
+        challengeID.add(5L);
+        challengeID.add(9L);
+
+        when(challengeService.getChallengeIDsByMemberID(1L)).thenReturn(challengeID);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/members/1/challenges/").accept(MediaType.APPLICATION_JSON);
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String content = res.getResponse().getContentAsString();
+        String expectedResponseBody = "[1,5,9]";
+        assertEquals(expectedResponseBody, content);
+
+        verify(challengeService).getChallengeIDsByMemberID(1L);
+    }
+
+    /**
+     *  Test if Unknown user is thrown 403
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void getChallengeIDsByMemberIDTestNotLoggedIn()throws Exception{
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/members/1/challenges/").accept(MediaType.APPLICATION_JSON);
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isForbidden())
                 .andReturn();

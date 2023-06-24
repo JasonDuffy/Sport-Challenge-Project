@@ -103,7 +103,7 @@ class MyChallengeOverview extends Component {
     let imageResData = await imageResponse.json();
     let distanceResponse = await fetch(GlobalVariables.serverURL + "/challenges/" + this.props.id + "/distance/", { method: "GET", credentials: "include" });
     let distanceResData = await distanceResponse.json();
-    let challengeSportResponse = await fetch(GlobalVariables.serverURL + "/challenge-sports/challenges/" + this.props.id + "/", { method: "GET", credentials: "include" });
+    let challengeSportResponse = await fetch(GlobalVariables.serverURL + "/challenges/" + this.props.id + "/challenge-sports/", { method: "GET", credentials: "include" });
     let challengeSportResData = await challengeSportResponse.json();
 
     for (let i = 0; i < challengeSportResData.length; i++) {

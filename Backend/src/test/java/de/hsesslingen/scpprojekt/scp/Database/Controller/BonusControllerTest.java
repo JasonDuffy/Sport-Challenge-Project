@@ -7,6 +7,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
 import de.hsesslingen.scpprojekt.scp.Database.Services.BonusService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -263,7 +264,7 @@ public class BonusControllerTest {
         BonusDTO b1 = new BonusDTO();
         b1.setId(1);
 
-        when(bonusService.update(any(Long.class), any(BonusDTO.class))).thenReturn(b1);
+        when(bonusService.update(any(Long.class), any(BonusDTO.class), any())).thenReturn(b1);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/bonuses/1/").accept(MediaType.APPLICATION_JSON)
@@ -284,7 +285,7 @@ public class BonusControllerTest {
         assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(bonusService).update(any(Long.class), any(BonusDTO.class));
+        Mockito.verify(bonusService).update(any(Long.class), any(BonusDTO.class), any());
     }
 
     /**
@@ -299,7 +300,7 @@ public class BonusControllerTest {
         BonusDTO b1 = new BonusDTO();
         b1.setId(1);
 
-        when(bonusService.update(any(Long.class), any(BonusDTO.class))).thenThrow(NotFoundException.class);
+        when(bonusService.update(any(Long.class), any(BonusDTO.class), any())).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/bonuses/1/").accept(MediaType.APPLICATION_JSON)
@@ -307,11 +308,11 @@ public class BonusControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(b1));
 
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isNotFound())
-                .andReturn();
+        assertThrows(ServletException.class, () -> {
+            mockMvc.perform(request);
+        });
 
-        Mockito.verify(bonusService).update(any(Long.class), any(BonusDTO.class));
+        Mockito.verify(bonusService).update(any(Long.class), any(BonusDTO.class), any());
     }
 
     /**

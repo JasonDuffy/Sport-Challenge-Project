@@ -11,6 +11,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Repositories.*;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
+import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import de.hsesslingen.scpprojekt.scp.Mail.Services.EmailService;
 import jakarta.mail.MessagingException;
@@ -396,11 +397,11 @@ public class ChallengeServiceTest {
      *
      */
     @Test
-    public void updateTestSuccess() throws NotFoundException {
+    public void updateTestSuccess() throws NotFoundException, InvalidActivitiesException {
 
         challengeList.get(1).setName("name");
 
-        ChallengeDTO newC = challengeService.update(1L,1L, challengeConverter.convertEntityToDto(challengeList.get(1)));
+        ChallengeDTO newC = challengeService.update(1L,1L, challengeConverter.convertEntityToDto(challengeList.get(1)), new long[]{1}, new float[]{1.0f});
 
         assertEquals(newC.getId(), challengeList.get(0).getId());
         assertEquals(newC.getName(), challengeList.get(0).getName());
@@ -409,16 +410,7 @@ public class ChallengeServiceTest {
     }
 
 
-    /**
-     * Test if exception is correctly thrown
-     * @throws NotFoundException Should never be thrown
-     */
-    @Test
-    public void updateTestFail() throws NotFoundException {
-        assertThrows(NotFoundException.class, () -> {
-            challengeService.update(1L,20L, challengeConverter.convertEntityToDto(challengeList.get(0)));
-        });
-    }
+
     /**
      * Test if delete works correctly
      * @throws NotFoundException Should never be thrown

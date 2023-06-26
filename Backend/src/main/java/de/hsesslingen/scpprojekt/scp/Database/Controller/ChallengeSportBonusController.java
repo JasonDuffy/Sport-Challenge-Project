@@ -177,7 +177,6 @@ public class ChallengeSportBonusController {
             @ApiResponse(responseCode = "200", description = "ChallengeSportBonus successfully deleted"),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "404", description = "ChallengeSportBonus not found", content = @Content)
-
     })
     @DeleteMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<Void> deleteChallengeSportBonus(@PathVariable("id") long id, HttpServletRequest request) {

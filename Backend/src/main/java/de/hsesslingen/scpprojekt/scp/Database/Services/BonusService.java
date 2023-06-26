@@ -16,14 +16,12 @@ import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Service of the Bonus entity
@@ -120,13 +118,14 @@ public class BonusService {
     }
 
     /**
-     * Updates a bonus
+     * Updates or adds a bonus
      *
      * @param bonusID ID of the bonus to be updated
-     * @param bonus   Bonus object that overwrites the old bonus
-     * @return Updated bonus object
+     * @param challengeSportID Array of ChallengeSport IDs for which the bonus should be applied
+     * @param bonus Bonus object that overwrites the old bonus
+     * @return Updated or added bonus object
      */
-    public BonusDTO update(Long bonusID, BonusDTO bonus) throws NotFoundException, InvalidActivitiesException {
+    public BonusDTO update(Long bonusID, BonusDTO bonus, long[] challengeSportID) throws NotFoundException, InvalidActivitiesException {
         Optional<Bonus> optionalBonus = bonusRepository.findById(bonusID);
         Bonus convertedBonus = bonusConverter.convertDtoToEntity(bonus);
 
@@ -140,18 +139,30 @@ public class BonusService {
             newBonus.setStartDate(convertedBonus.getStartDate());
 
             List<ChallengeSportBonusDTO> csbList = challengeSportBonusService.findCSBByBonusID(newBonus.getId());
-            for (ChallengeSportBonusDTO cb : csbList){
-                List<Activity> a = activityRepository.findActivitiesByChallengeSport_Id(cb.getChallengeSportID());
+            List<Long> existingCSs = new ArrayList<>();
+            for (ChallengeSportBonusDTO cb : csbList) { // Delete all old challenge sport bonuses
+                if (!(Arrays.stream(challengeSportID).boxed().toList()).contains(cb.getChallengeSportID())){
+                    challengeSportBonusService.delete(cb.getId());
+                }
+                else{
+                    existingCSs.add(cb.getChallengeSportID());
+                }
+            }
+
+            for (long id : challengeSportID){
+                if (!existingCSs.contains(id)){
+                    challengeSportBonusService.add(new ChallengeSportBonusDTO(id, newBonus.getId()));
+                }
+                List<Activity> a = activityRepository.findActivitiesByChallengeSport_Id(id);
                 activityService.calcTotalDistanceList(a);
             }
 
             Bonus savedBonus = bonusRepository.save(newBonus);
             return bonusConverter.convertEntityToDto(savedBonus);
+        } else { // Add if bonus not found
+            return add(bonus, challengeSportID);
         }
-
-        throw new NotFoundException("Bonus with ID " + bonusID + " is not present in DB.");
     }
-
 
     /**
      * Deletes a specific bonus from the DB

@@ -182,7 +182,6 @@ public class ActivityController {
             @ApiResponse(responseCode = "200", description = "Activity successfully deleted"),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "404", description = "Activity not found", content = @Content)
-
     })
     @DeleteMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<Void> deleteActivity(@PathVariable("id") long id, HttpServletRequest request) {

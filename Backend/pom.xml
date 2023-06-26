@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>de.hs-esslingen.scpprojekt</groupId>
 	<artifactId>scp</artifactId>
-	<version>0.6-SPRINT8</version>
+	<version>1.0</version>
 	<name>scp</name>
 	<description>Sport Challenge Projekt für doubleSlash Net-Business GmbH</description>
 	<properties>
@@ -74,7 +74,14 @@
 		<dependency>
 			<groupId>org.springframework.security</groupId>
 			<artifactId>spring-security-saml2-service-provider</artifactId>
-			<version>6.0.2</version>
+			<version>6.1.1</version>
+		</dependency>
+
+		<!-- https://mvnrepository.com/artifact/org.springframework.session/spring-session-core -->
+		<dependency>
+			<groupId>org.springframework.session</groupId>
+			<artifactId>spring-session-core</artifactId>
+			<version>3.1.1</version>
 		</dependency>
 
 		<dependency>

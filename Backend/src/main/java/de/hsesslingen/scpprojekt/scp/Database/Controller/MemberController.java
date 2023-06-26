@@ -351,30 +351,13 @@ public class MemberController {
         }
         return new ResponseEntity<>(HttpStatus.FORBIDDEN);
     }
-
-    
-     /** REST API for returning Member data of a given teamID
+    /**
+     * Rest APi for getting all current challenges for Member
      *
-     * @param teamID ID of the Team the members should be part of
+     * @param memberID ID of Member
      * @param request automatically filled by browser
-     * @return Member data corresponding to the given teamID 404 otherwise
+     * @return List of current challenges
      */
-    @Operation(summary = "Get members by teamID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "search successfully",
-                    content = {@Content(mediaType = "application/json",
-                            schema = @Schema(implementation = MemberDTO.class))}),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
-    })
-    @GetMapping(path = "/teams/{id}/", produces = "application/json")
-    public ResponseEntity<List<MemberDTO>> getMemberByTeamID(@PathVariable("id") long teamID, HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)) {
-            return new ResponseEntity<>(memberService.getAllMembersByTeamID(teamID), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-    }
-
     @Operation(summary = "Get all current Challenges for a member")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Search successful.",
@@ -395,6 +378,35 @@ public class MemberController {
             }
             return new ResponseEntity<>(challengeList, HttpStatus.OK);
 
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
+     * REST API for returning ChallengeID's where the given MemberID is part of
+     *
+     * @param memberID memberID that should return all ChallengeID's the member is part of
+     * @param request automatically filled by browser
+     * @return ChallengeID's corresponding to the given memberID 404 otherwise
+     */
+    @Operation(summary = "Get all Challenge for the Member")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "No ChallengeID's found for the MemberID",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Long.class))}),
+            @ApiResponse(responseCode = "404", description = "No ChallengeID's found for the MemberID", content = @Content),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @GetMapping(path = "/{id}/challenges/" , produces = "application/json")
+    public ResponseEntity<List<Long>> getChallengeIDsByMemberID(@PathVariable("id") long memberID, HttpServletRequest request) {
+        if (saml2Service.isLoggedIn(request)){
+            try {
+                return new ResponseEntity<>(challengeService.getChallengeIDsByMemberID(memberID), HttpStatus.OK);
+            } catch (NotFoundException e){
+                System.out.println(e.getMessage());
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

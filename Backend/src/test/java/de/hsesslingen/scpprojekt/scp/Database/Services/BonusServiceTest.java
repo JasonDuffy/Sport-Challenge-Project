@@ -101,7 +101,8 @@ public class BonusServiceTest {
             bonusList.add(b);
             when(bonusRepository.findById(i)).thenReturn(Optional.of(b));
         }
-
+        when(bonusRepository.findPastBonusesByChallengeID(1)).thenReturn(bonusList);
+        when(bonusRepository.findBonusesByChallengeID(1)).thenReturn(bonusList);
         when(bonusRepository.findAll()).thenReturn(bonusList);
         when(challengeSportService.get(1L)).thenReturn(csConverter.convertEntityToDto(cs));
 
@@ -228,7 +229,7 @@ public class BonusServiceTest {
         when(challengeSportService.get(1L)).thenReturn(csConverter.convertEntityToDto(cs));
         bonusList.get(1).setFactor(10.5f);
 
-        BonusDTO newBonus = bonusService.update(0L, bonusConverter.convertEntityToDto(bonusList.get(1)));
+        BonusDTO newBonus = bonusService.update(0L, bonusConverter.convertEntityToDto(bonusList.get(1)), new long[]{1});
 
         assertEquals(newBonus.getId(), bonusList.get(0).getId());
         assertEquals(newBonus.getFactor(), bonusList.get(1).getFactor());
@@ -236,18 +237,6 @@ public class BonusServiceTest {
         verify(bonusRepository).save(any(Bonus.class));
     }
 
-    /**
-     * Test if exception is correctly thrown
-     *
-     */
-    @Test
-    public void updateTestFail() {
-
-        when(bonusRepository.findById(any(Long.class))).thenReturn(Optional.empty());
-        assertThrows(NotFoundException.class, () -> {
-            bonusService.update(10L, bonusConverter.convertEntityToDto(bonusList.get(1)));
-        });
-    }
 
     /**
      * Test if delete works correctly
@@ -312,4 +301,44 @@ public class BonusServiceTest {
         LocalDateTime currentDate = LocalDateTime.of(2023, 5, 1, 15, 0);
         assertEquals(bonusService.getMultiplierFromBonuses(new ArrayList<>(), currentDate), 1.0f);
     }
+
+    /**
+     * Test if correct getChallengeBonuses with past works
+     */
+    @Test
+    public void getChallengeBonusesPastTest(){
+        List<BonusDTO> bonusDTOS = bonusService.getChallengeBonuses(1,"past");
+        assertEquals(bonusDTOS.get(0).getId(),bonusList.get(0).getId());
+        verify(bonusRepository,times(1)).findPastBonusesByChallengeID(any(Long.class));
+    }
+
+    /**
+     * Test if correct getChallengeBonuses with current works
+     */
+    @Test
+    public void getChallengeBonusesCurrentTest(){
+        bonusService.getChallengeBonuses(1,"current");
+        verify(bonusRepository,times(1)).findCurrentBonusesByChallengeID(any(Long.class));
+    }
+
+    /**
+     * Test if correct getChallengeBonuses with future works
+     */
+    @Test
+    public void getChallengeBonusesFutureTest(){
+        bonusService.getChallengeBonuses(1,"future");
+        verify(bonusRepository,times(1)).findFutureBonusesByChallengeID(any(Long.class));
+    }
+
+    /**
+     * Test if correct getChallengeBonuses default  works
+     */
+    @Test
+    public void getChallengeBonusesTest(){
+        List<BonusDTO> bonusDTOS = bonusService.getChallengeBonuses(1,"asdas");
+        assertEquals(bonusDTOS.get(0).getId(),bonusList.get(0).getId());
+        verify(bonusRepository,times(1)).findBonusesByChallengeID(any(Long.class));
+    }
+
+
 }

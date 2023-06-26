@@ -1,6 +1,6 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { checkBonusInput, fetchFormData, fetchsportTable, saveBonus } from "./AddBonus.js";
+import { checkBonusInput, fetchBonusChallengeData, fetchBonusData, fetchFormData, fetchSportTable, saveBonus } from "./AddBonus.js";
 import "./AddBonus.css";
 import AddHeading from "../../components/AddHeading/AddHeading";
 import InfoMessage, { hideInfoMessage } from "../../components/form/InfoMessage/InfoMessage";
@@ -17,8 +17,11 @@ import Button from "../../components/ui/button/Button";
  */
 
 function AddBonus() {
+  const BONUSID = 1;
+
   const action = useParams().action.toLocaleLowerCase();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [bonusHeadingName, setBonusHeadingName] = useState("");
   const [bonusName, setBonusName] = useState("");
@@ -34,8 +37,26 @@ function AddBonus() {
   //Load Component
   useEffect(() => {
     async function load() {
-      const inputData = await fetchFormData();
-      setChallengeDropdownData(inputData.challengeDropdownResData);
+      let pageData;
+
+      if (action === "edit") {
+        pageData = await fetchBonusChallengeData(location.state.id);
+        setchallengeID(pageData.id.toString());
+
+        pageData = await fetchBonusData(location.state.id);
+        setBonusHeadingName(pageData.name);
+        setBonusName(pageData.name);
+        setBonusDescription(pageData.description);
+        setBonusFactor(pageData.factor);
+        setBonusStartDate(pageData.startDate);
+        setBonusEndDate(pageData.endDate);
+
+        pageData = await fetchFormData(pageData.id);
+      } else {
+        pageData = await fetchFormData(0);
+      }
+
+      setChallengeDropdownData(pageData.challengeDropdownResData);
     }
 
     load();
@@ -44,7 +65,7 @@ function AddBonus() {
   //If the challegneID changes update the sportTable
   useEffect(() => {
     async function reloadTable() {
-      const sportTableResData = await fetchsportTable(challengeID);
+      const sportTableResData = await fetchSportTable(location.state.id, challengeID);
       setSportTableData(sportTableResData);
     }
 
@@ -71,7 +92,7 @@ function AddBonus() {
       }
     }
 
-    if(checkBonusInput(bonusName, bonusDescription, challengeID, bonusFactor, challengeSportIDs.length, bonusStartDate, bonusEndDate)){
+    if (checkBonusInput(bonusName, bonusDescription, challengeID, bonusFactor, challengeSportIDs.length, bonusStartDate, bonusEndDate)) {
       bonusObj.startDate = bonusStartDate;
       bonusObj.endDate = bonusEndDate;
       bonusObj.factor = bonusFactor;
@@ -88,7 +109,7 @@ function AddBonus() {
     <section className="background_white">
       <div className="section_container">
         <div className="section_content">
-          <AddHeading action={action} entitie="Bonus" name={"Test"} />
+          <AddHeading action={action} entitie="Bonus" name={bonusHeadingName} />
           <InfoMessage />
           <div className="form_container">
             <form onSubmit={submitHandle}>
@@ -122,7 +143,7 @@ function AddBonus() {
                       <tr key={item.id}>
                         <td>{item.name}</td>
                         <td className="sport_table_checkbox_cell" data-challenge-sport-id={item.id}>
-                          <Checkbox checked={false} slider={true} />
+                          <Checkbox checked={item.checked} slider={true} />
                         </td>
                       </tr>
                     ))}

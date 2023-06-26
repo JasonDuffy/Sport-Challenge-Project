@@ -42,26 +42,26 @@ function Navbar() {
             <Link to="/">Slash Challenge</Link>
           </li>
           <li>
-            <Link to="/My-Challenges">Meine Challenges</Link>
+            <Link to="/my-challenges">Meine Challenges</Link>
           </li>
           <li>
             <div className="top_nav_dropdown" id="top_nav_management" onClick={changeDropDownState}>
               <span>Management</span>
               <FontAwesomeIcon className="nav_dropdown_icon" icon={faCaretDown} />
               <AnimateHeight duration={200} height={height} className="top_nav_dropdown_menu">
-                <Link className="top_nav_dropdown_item" to="/Challenge/add" state={{ id: 0 }}>
+                <Link className="top_nav_dropdown_item" to="/challenge/add" state={{ id: 0 }}>
                   Neue Challenge
                 </Link>
-                <Link className="top_nav_dropdown_item" to="/Team/add" state={{ id: 0 }}>
+                <Link className="top_nav_dropdown_item" to="/team/add" state={{ id: 0 }}>
                   Neues Team
                 </Link>
-                <Link className="top_nav_dropdown_item" to="/Bonus/add" state={{ id: 0 }}>
+                <Link className="top_nav_dropdown_item" to="/bonus/edit" state={{ id: 2 }}>
                   Neuer Bonus
                 </Link>
-                <Link className="top_nav_dropdown_item" to="/Sports">
+                <Link className="top_nav_dropdown_item" to="/sports">
                   Sportarten
                 </Link>
-                <Link className="top_nav_dropdown_item" to="/Profile">
+                <Link className="top_nav_dropdown_item" to="/profile">
                   Benutzerprofil
                 </Link>
               </AnimateHeight>
@@ -75,7 +75,7 @@ function Navbar() {
             <Link to="/">Slash Challenge</Link>
           </div>
           <div className="mobile_nav_list_item">
-            <Link to="/My-Challenges">Meine Challenges</Link>
+            <Link to="/my-challenges">Meine Challenges</Link>
           </div>
           <div className="mobile_nav_list_item">
             <span className="mobile_nav_dropdown" onClick={changeDropDownState}>
@@ -85,25 +85,25 @@ function Navbar() {
             <AnimateHeight duration={200} height={height} className="mobile_nav_dropdown_menu">
               <ul>
                 <li>
-                  <Link to="/Challenge/add" state={{ id: 0 }}>
+                  <Link to="/challenge/add" state={{ id: 0 }}>
                     Neue Challenge
                   </Link>
                 </li>
                 <li>
-                  <Link to="/Team/add" state={{ id: 0 }}>
+                  <Link to="/team/add" state={{ id: 0 }}>
                     Neues Team
                   </Link>
                 </li>
                 <li>
-                  <Link to="/Bonus/add" state={{ id: 0 }}>
+                  <Link to="/bonus/add" state={{ id: 0 }}>
                     Neuer Bonus
                   </Link>
                 </li>
                 <li>
-                  <Link to="/Sports">Sportarten</Link>
+                  <Link to="/sports">Sportarten</Link>
                 </li>
                 <li>
-                  <Link to="/Profile">Benutzerprofil</Link>
+                  <Link to="/profile">Benutzerprofil</Link>
                 </li>
               </ul>
             </AnimateHeight>

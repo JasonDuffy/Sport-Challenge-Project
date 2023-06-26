@@ -2,6 +2,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
 import de.hsesslingen.scpprojekt.scp.Database.Services.BonusService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
@@ -217,6 +218,29 @@ public class BonusController {
     public ResponseEntity<List<Sport>> getSportsForBonus(@PathVariable("id") long id, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)){
             return new ResponseEntity<>(bonusService.getSportsForBonus(id), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
+    /**
+     * Rest API that returns all sports for a bonus
+     *
+     * @param id ID of Bonus for which the Challenge should be retrieved
+     * @param request automatically filled by browser
+     * @return Data of the Challenge for bonus
+     */
+    @Operation(summary = "Get the Challenge for Bonus")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Challenge for Bonus found",
+                    content = { @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = Sport.class))}),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @GetMapping(path = "/{id}/challenge/" , produces = "application/json")
+    public ResponseEntity<ChallengeDTO> getChallengeForBonus(@PathVariable("id") long id, HttpServletRequest request) {
+        if (saml2Service.isLoggedIn(request)){
+            return new ResponseEntity<>(bonusService.getChallengeForBonus(id), HttpStatus.OK);
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }

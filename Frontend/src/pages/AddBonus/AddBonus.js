@@ -8,9 +8,15 @@ import { showErrorMessage, showSuccessMessage } from "../../components/form/Info
 /**
  * Fetch needed data for the input components
  */
-export async function fetchFormData() {
+export async function fetchFormData(challengeID) {
   let apiResponse, challengeDropdownResData;
-  apiResponse = await apiFetch("/challenges/?type=current", "GET", {}, null);
+
+  if (challengeID === 0) {
+    apiResponse = await apiFetch("/challenges/?type=current", "GET", {}, null);
+  } else {
+    apiResponse = await apiFetch("/challenges/" + challengeID + "/", "GET", {}, null);
+    apiResponse.resData = [apiResponse.resData]; //Array needed to map in Dropdown
+  }
 
   if (apiResponse.error === false) {
     challengeDropdownResData = apiResponse.resData;
@@ -26,14 +32,25 @@ export async function fetchFormData() {
  * @param challengeID ID of the Challenge
  * @returns a obj array with challengeSportID and sportName coresponding to the given ChallengeID
  */
-export async function fetchsportTable(challengeID) {
-  let apiResponse, challengeSportResData;
+export async function fetchSportTable(bonusID, challengeID) {
+  if (challengeID === 0 || bonusID === 0) return;
+
+  let apiResponse, challengeSportResData, challengeSportCheckedResData;
   let sportTableResData = [];
 
   apiResponse = await apiFetch("/challenge-sports/challenges/" + challengeID + "/", "GET", {}, null);
 
   if (apiResponse.error === false) {
     challengeSportResData = apiResponse.resData;
+  } else {
+    showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+    return;
+  }
+
+  apiResponse = await apiFetch("/challenge-sport-bonuses/bonuses/" + bonusID + "/", "GET", {}, null);
+
+  if (apiResponse.error === false) {
+    challengeSportCheckedResData = apiResponse.resData;
   } else {
     showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
     return;
@@ -48,6 +65,15 @@ export async function fetchsportTable(challengeID) {
         name: apiResponse.resData.name,
       };
 
+      for (const challengeSportChecked of challengeSportCheckedResData) {
+        if (challengeSportChecked.id === challengeSport.id) {
+          tableObj.checked = true;
+          break;
+        } else {
+          tableObj.checked = false;
+        }
+      }
+
       sportTableResData.push(tableObj);
     } else {
       showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
@@ -56,6 +82,42 @@ export async function fetchsportTable(challengeID) {
   }
 
   return sportTableResData;
+}
+
+/**
+ * @param bonusID ID of the Bonus
+ * @returns Data of the Challenge coresponding to the given bonusID
+ */
+export async function fetchBonusChallengeData(bonusID) {
+  let apiResponse, challengeResData;
+
+  apiResponse = await apiFetch("/bonuses/" + bonusID + "/challenge/", "GET", {}, null);
+
+  if (apiResponse.error === false) {
+    challengeResData = apiResponse.resData;
+  } else {
+    showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+    return;
+  }
+  return challengeResData;
+}
+
+/**
+ * @param bonusID ID of the Bonus
+ * @returns Data of the Bonus coresponding to the given bonusID
+ */
+export async function fetchBonusData(bonusID) {
+  let apiResponse, bonusResData;
+
+  apiResponse = await apiFetch("/bonuses/" + bonusID + "/", "GET", {}, null);
+
+  if (apiResponse.error === false) {
+    bonusResData = apiResponse.resData;
+  } else {
+    showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+    return;
+  }
+  return bonusResData;
 }
 
 /**
@@ -123,7 +185,7 @@ export async function saveBonus(bonusObj, challengeSportIDs) {
   for (let i = 1; i < challengeSportIDs.length; i++) {
     query += "&challengesportID=" + challengeSportIDs[i];
   }
-  
+
   console.log(query);
 
   apiResponse = await apiFetch("/bonuses/" + query, "POST", { Accept: "application/json", "Content-Type": "application/json" }, JSON.stringify(bonusObj));

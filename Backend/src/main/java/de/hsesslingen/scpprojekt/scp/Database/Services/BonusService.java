@@ -1,8 +1,10 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportBonusDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
@@ -43,6 +45,9 @@ public class BonusService {
     @Autowired
     @Lazy
     ChallengeSportConverter challengeSportConverter;
+    @Autowired
+    @Lazy
+    ChallengeConverter challengeConverter;
 
     @Autowired
     EmailService emailService;
@@ -235,5 +240,14 @@ public class BonusService {
      */
     public List<Sport> getSportsForBonus(long bonusID){
         return bonusRepository.findSportsForBonus(bonusID);
+    }
+
+    /**
+     * Returns the challenge associated to a given bonus
+     * @param bonusID ID of bonus for which the challenge should be retrieved
+     * @return Challenge for bonus
+     */
+    public ChallengeDTO getChallengeForBonus(long bonusID){
+        return challengeConverter.convertEntityToDto(bonusRepository.findChallengeForBonus(bonusID));
     }
 }

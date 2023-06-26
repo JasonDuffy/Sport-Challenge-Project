@@ -2,6 +2,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Repositories;
 
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,7 +19,7 @@ import java.util.List;
  * @author Tom Nguyen Dinh, Mason Schönherr, Jason Patrick Duffy
  */
 @Repository
-public interface BonusRepository extends JpaRepository<Bonus,Long> {
+public interface BonusRepository extends JpaRepository<Bonus, Long> {
     @Transactional
     @Query("SELECT b FROM Bonus b JOIN ChallengeSportBonus csb on csb.bonus.id = b.id  join ChallengeSport cs on cs.id = csb.challengeSport.id where cs.challenge.id = :challengeID")
     public List<Bonus> findBonusesByChallengeID(@Param("challengeID") long challengeID);
@@ -67,7 +68,7 @@ public interface BonusRepository extends JpaRepository<Bonus,Long> {
             "join ChallengeSport cs on cs.id=csb.challengeSport.id " +
             "where cs.sport.id = :sportID and cs.challenge.id = :challengeID " +
             "and b.endDate > :dateTime and b.startDate <= :dateTime")
-    public List<Bonus> findBonusesByChallengeIDAndSportIDAtSpecificTime(@Param("challengeID") long challengeID, @Param("sportID") long sportID, @Param("dateTime")LocalDateTime time);
+    public List<Bonus> findBonusesByChallengeIDAndSportIDAtSpecificTime(@Param("challengeID") long challengeID, @Param("sportID") long sportID, @Param("dateTime") LocalDateTime time);
 
     @Transactional
     @Query("select s from Sport s " +
@@ -76,4 +77,8 @@ public interface BonusRepository extends JpaRepository<Bonus,Long> {
             "join Bonus b on b.id=csb.bonus.id " +
             "where b.id=:bonusID")
     public List<Sport> findSportsForBonus(@Param("bonusID") long bonusID);
+
+    @Transactional
+    @Query("select distinct c from Challenge c join ChallengeSport cs on cs.challenge.id = c.id join ChallengeSportBonus csb on cs.id = csb.challengeSport.id where csb.bonus.id=:bonusID")
+    public Challenge findChallengeForBonus(@Param("bonusID") long bonusID);
 }

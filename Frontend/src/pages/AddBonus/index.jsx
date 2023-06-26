@@ -1,6 +1,6 @@
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { checkBonusInput, fetchBonusChallengeData, fetchBonusData, fetchFormData, fetchSportTable, saveBonus } from "./AddBonus.js";
+import { checkBonusInput, fetchBonusChallengeData, fetchBonusData, fetchFormData, fetchSportTable, saveOrUpdateBonus } from "./AddBonus.js";
 import "./AddBonus.css";
 import AddHeading from "../../components/AddHeading/AddHeading";
 import InfoMessage, { hideInfoMessage } from "../../components/form/InfoMessage/InfoMessage";
@@ -17,8 +17,6 @@ import Button from "../../components/ui/button/Button";
  */
 
 function AddBonus() {
-  const BONUSID = 1;
-
   const action = useParams().action.toLocaleLowerCase();
   const navigate = useNavigate();
   const location = useLocation();
@@ -99,7 +97,7 @@ function AddBonus() {
       bonusObj.name = bonusName;
       bonusObj.description = bonusDescription;
 
-      await saveBonus(bonusObj, challengeSportIDs);
+      await saveOrUpdateBonus(location.state.id, bonusObj, challengeSportIDs);
     }
 
     setLoading(false);

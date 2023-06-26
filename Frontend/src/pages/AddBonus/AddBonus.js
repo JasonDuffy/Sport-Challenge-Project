@@ -33,12 +33,12 @@ export async function fetchFormData(challengeID) {
  * @returns a obj array with challengeSportID and sportName coresponding to the given ChallengeID
  */
 export async function fetchSportTable(bonusID, challengeID) {
-  if (challengeID === 0 || bonusID === 0) return;
-
+  if (challengeID == 0) return [];
+  
   let apiResponse, challengeSportResData, challengeSportCheckedResData;
   let sportTableResData = [];
 
-  apiResponse = await apiFetch("/challenge-sports/challenges/" + challengeID + "/", "GET", {}, null);
+  apiResponse = await apiFetch("/challenges/" + challengeID + "/challenge-sports/", "GET", {}, null);
 
   if (apiResponse.error === false) {
     challengeSportResData = apiResponse.resData;
@@ -175,20 +175,15 @@ export function checkBonusInput(bonusName, bonusDescription, challengeID, bonusF
  * @param challengeSportIDs all challengeSportIDs which should be effected by the Bonus
  * @returns //If successfull data of the saved bonus otherwise nothing
  */
-export async function saveBonus(bonusObj, challengeSportIDs) {
+export async function saveOrUpdateBonus(bonusID, bonusObj, challengeSportIDs) {
   let apiResponse, bonusResData;
-  let query = "?challengesportID=" + challengeSportIDs[0];
-
-  console.log(bonusObj);
-  console.log(challengeSportIDs);
+  let query = "?challengeSportID=" + challengeSportIDs[0];
 
   for (let i = 1; i < challengeSportIDs.length; i++) {
-    query += "&challengesportID=" + challengeSportIDs[i];
+    query += "&challengeSportID=" + challengeSportIDs[i];
   }
 
-  console.log(query);
-
-  apiResponse = await apiFetch("/bonuses/" + query, "POST", { Accept: "application/json", "Content-Type": "application/json" }, JSON.stringify(bonusObj));
+  apiResponse = await apiFetch("/bonuses/" + bonusID + "/" + query, "PUT", { Accept: "application/json", "Content-Type": "application/json" }, JSON.stringify(bonusObj));
 
   if (apiResponse.error === false) {
     bonusResData = apiResponse.resData;

@@ -163,7 +163,7 @@ public class ChallengeService {
             updatedChallenge.setEndDate(convertedChallenge.getEndDate());
             updatedChallenge.setTargetDistance(convertedChallenge.getTargetDistance());
 
-            if (imageID != null) {
+            if (imageID != null && imageID != 0) {
                 Image image = imageStorageService.get(imageID);
                 updatedChallenge.setImage(image);
             } else {

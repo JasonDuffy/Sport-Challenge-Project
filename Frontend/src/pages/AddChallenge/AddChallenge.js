@@ -63,6 +63,9 @@ export async function fetchChallengeData(challengeID) {
     showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
     return;
   }
+
+  if(challengeResData.imageID === null) challengeResData.imageID = 0;
+
   return challengeResData;
 }
 

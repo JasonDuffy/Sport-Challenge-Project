@@ -47,7 +47,7 @@ function AddChallenge() {
         setChallengeDistanceGoal(pageData.targetDistance);
 
         //Use defualt image if no image was set
-        if(pageData.imageID === null){
+        if(pageData.imageID === null || pageData.imageID === 0){
           setChallengeImageSource(require("../../assets/images/Default-Challenge.png"));
         }else{
           pageData = await fetchImageData(pageData.imageID);

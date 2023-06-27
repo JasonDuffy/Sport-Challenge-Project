@@ -46,7 +46,7 @@ public class ImageController {
     @Operation(summary = "Stores the given file(image)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "File successfully stored", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Something went wrong storing the file", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Uploaded file is not an image", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PostMapping(path = "/", consumes = "multipart/form-data")
@@ -54,8 +54,8 @@ public class ImageController {
         if (saml2Service.isLoggedIn(request)){
             try {
                 return new ResponseEntity<>(imageStorageService.store(file), HttpStatus.CREATED);
-            }catch (Exception e){
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }catch (IOException e){
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

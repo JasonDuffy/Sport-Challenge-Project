@@ -14,6 +14,8 @@ import AddBonus from "./pages/AddBonus";
 import Sports from "./pages/Sports";
 
 function App() {
+  document.title = "Slash Challenge"; // Default title
+
   return (
     <>
       <Navbar />

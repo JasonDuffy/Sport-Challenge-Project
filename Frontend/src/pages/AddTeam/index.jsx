@@ -11,6 +11,8 @@ class AddTeam extends Component {
   constructor(props) {
     super(props);
 
+    document.title = "Slash Challenge - MISSING_DESC";
+
     this.state = {
       teamName: "",
       teamNameHeading: "",

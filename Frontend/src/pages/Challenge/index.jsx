@@ -65,6 +65,8 @@ class Challenge extends Component {
         date = challengeResData.endDate.match(dateRegex);
         challengeResData.endDate = new Date(date[3], date[2] - 1, date[1]); // Only date not time needed
 
+        document.title = "Slash Challenge - " + challengeResData.name;
+
         this.setState({ challenge: challengeResData }, () => {
             this.setState({ challengeLoaded: true });
         });
@@ -362,7 +364,7 @@ class Challenge extends Component {
                                 <div className="textContainer">
                                     <div className="challengeName">
                                         {this.state.challenge.name + " "}
-                                        <Link to="/challenge/edit" state={{ challengeID: this.state.challengeID }}>
+                                        <Link to="/challenge/edit" state={{ id: this.state.challengeID }}>
                                             <FontAwesomeIcon icon={faPencil} />
                                         </Link>
 

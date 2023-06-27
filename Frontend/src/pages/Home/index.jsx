@@ -15,6 +15,8 @@ class Home extends Component {
   constructor(props) {
     super(props);
     this.state = { currentChallenge: [], pastChallenge: [], futureChallenge: [] };
+
+    document.title = "Slash Challenge";
   }
 
   async componentDidMount() {

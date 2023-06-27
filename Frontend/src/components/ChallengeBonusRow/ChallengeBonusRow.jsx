@@ -56,7 +56,7 @@ class ChallengeBonusRow extends Component {
                 {(this.state.type === "current" || this.state.type === "future") && (
                     <td>
                         <div className="row_edit_icon icon_faPencil">
-                            <Link to="/bonus/edit" state={{ bonusID: this.state.bonus.id }}>
+                            <Link to="/bonus/edit" state={{ id: this.state.bonus.id }}>
                                 <FontAwesomeIcon icon={faPencil} />
                             </Link>
                         </div>

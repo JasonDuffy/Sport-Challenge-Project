@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
-import "./components/css/Index.css";
+import "./assets/css/Index.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 

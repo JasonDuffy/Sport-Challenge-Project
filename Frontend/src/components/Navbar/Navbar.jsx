@@ -49,7 +49,7 @@ function Navbar() {
               <span>Management</span>
               <FontAwesomeIcon className="nav_dropdown_icon" icon={faCaretDown} />
               <AnimateHeight duration={200} height={height} className="top_nav_dropdown_menu">
-                <Link className="top_nav_dropdown_item" to="/challenge/add" state={{ id: 0 }}>
+                <Link className="top_nav_dropdown_item" to="/challenge/edit" state={{ id: 2 }}>
                   Neue Challenge
                 </Link>
                 <Link className="top_nav_dropdown_item" to="/team/add" state={{ id: 0 }}>

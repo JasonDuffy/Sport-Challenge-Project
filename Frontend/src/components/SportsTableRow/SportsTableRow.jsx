@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
-import "../form/Form.css";
+import "../../assets/css/form.css";
 import GlobalVariables from "../../GlobalVariables.js"
 
 class SportsTableRow extends Component {

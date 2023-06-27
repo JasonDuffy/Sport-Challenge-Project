@@ -1,20 +1,8 @@
-/*Author: Robin Hackh*/
-
-.form_input_container {
-    background-color: var(--doubleslash-lightblue);
+.preview_image_container > img{
+    object-fit: cover;
 }
 
-.form_input_description {
-    color: var(--doubleslash-text-grey);
-    font-size: 14px;
-    font-weight: bold;
-}
-
-.form_input_description_content {
-    display: flex;
-}
-
-input[type="file"]{
+.scp_image_input{
     width: 350px;
     color: var(--doubleslash-text-grey);
     font-family: 'Segoe UI', sans-serif;
@@ -22,7 +10,7 @@ input[type="file"]{
     font-weight: bold;
 }
 
-input[type="file"]::file-selector-button{
+.scp_image_input::file-selector-button{
     display: inline-block;
     color: white;
     font-weight: bold;
@@ -38,7 +26,7 @@ input[type="file"]::file-selector-button{
     outline-offset: -2px;
 }
 
-input[type="file"]:hover::file-selector-button{
+.scp_image_input:hover::file-selector-button{
     background-color: white;
     color: var(--doubleslash-blue);
 }

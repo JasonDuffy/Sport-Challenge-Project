@@ -13,14 +13,19 @@ function NumberInput({ id, className, value, setValue, min, max, step }) {
     setValue(Number(event.target.value));
   }
 
-  return <input id={id} className={"scp_number_input " + className} type="number" value={value} onChange={handleChange} step={step}></input>;
+  if(value != null && setValue != null){
+    return <input id={id} className={"scp_number_input " + className} type="number" value={value} onChange={handleChange} step={step}></input>;
+  }else{
+    return <input id={id} className={"scp_number_input " + className} type="number" min={min} max={max} defaultValue={value} step={step}></input>;
+  }
+  
 }
 
 NumberInput.propTypes = {
   id: PropTypes.string,
   className: PropTypes.string,
-  value: PropTypes.number.isRequired,
-  setValue: PropTypes.func.isRequired,
+  value: PropTypes.number,
+  setValue: PropTypes.func,
   min: PropTypes.number,
   max: PropTypes.number,
   step: PropTypes.number,

@@ -2,6 +2,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { checkBonusInput, fetchBonusChallengeData, fetchBonusData, fetchFormData, fetchSportTable, saveOrUpdateBonus } from "./AddBonus.js";
 import "./AddBonus.css";
+import "../../assets/css/form.css";
 import AddHeading from "../../components/AddHeading/AddHeading";
 import InfoMessage, { hideInfoMessage } from "../../components/form/InfoMessage/InfoMessage";
 import TextInput from "../../components/form/TextInput/TextInput";
@@ -30,7 +31,7 @@ function AddBonus() {
   const [challengeID, setchallengeID] = useState("0");
   const [challengeDropdownData, setChallengeDropdownData] = useState([]);
   const [sportTableData, setSportTableData] = useState([]);
-  const [loading, setLoading] = useState();
+  const [loading, setLoading] = useState(false);
 
   //Load Component
   useEffect(() => {

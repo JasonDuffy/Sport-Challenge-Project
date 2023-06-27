@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleDown, faGripVertical } from "@fortawesome/free-solid-svg-icons";
-import "../../components/form/Form.css";
+import "../../assets/css/form.css";
 import "./AddTeam.css";
 import Button from "../../components/ui/button/Button";
 import withRouter from "../withRouter";

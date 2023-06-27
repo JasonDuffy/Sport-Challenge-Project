@@ -182,11 +182,10 @@ public class ImageController {
             @ApiResponse(responseCode = "417", description = "Something went wrong updating the image", content = @Content)
     })
     @PutMapping(path= "/{id}/",consumes = "multipart/form-data",produces= "application/json")
-    public ResponseEntity<Void> updateImage(@PathVariable("id") long id, @RequestParam("file") MultipartFile file, HttpServletRequest request){
+    public ResponseEntity<Image> updateImage(@PathVariable("id") long id, @RequestParam("file") MultipartFile file, HttpServletRequest request){
         if (saml2Service.isLoggedIn(request)){
             try {
-                imageStorageService.update(id, file);
-                return new ResponseEntity<>(HttpStatus.OK);
+                return new ResponseEntity<>( imageStorageService.update(id, file), HttpStatus.OK);
             }catch (IOException e){
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

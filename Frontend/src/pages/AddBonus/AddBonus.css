@@ -5,8 +5,3 @@
     white-space: nowrap;
     max-width: 200px;
 }
-
-.form_sport_table th:last-child,
-.form_sport_table td:last-child{
-    border-right: none !important;
-}

@@ -1,7 +1,10 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportBonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportBonusConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSportBonus;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportBonusRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
@@ -25,6 +28,9 @@ public class ChallengeSportBonusService {
     @Autowired
     @Lazy
     ChallengeSportBonusConverter challengeSportBonusConverter;
+    @Autowired
+    @Lazy
+    ChallengeSportConverter challengeSportConverter;
 
     /**
      * Returns all ChallengeSportBonus in database
@@ -106,5 +112,10 @@ public class ChallengeSportBonusService {
     public List<ChallengeSportBonusDTO> findCSBByBonusID(long bonusID) {
         List<ChallengeSportBonus> csblist = challengeSportBonusRepository.findAllByBonusId(bonusID);
         return challengeSportBonusConverter.convertEntityToDtoList(csblist);
+    }
+
+    public List<ChallengeSportDTO> findCSbyBonusID(long bonusID) {
+        List<ChallengeSport> csList = challengeSportBonusRepository.findChallengeSportForBonus(bonusID);
+        return challengeSportConverter.convertEntityListToDtoList(csList);
     }
 }

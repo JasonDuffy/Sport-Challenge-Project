@@ -1,0 +1,73 @@
+/*Author: Robin Hackh*/
+
+.form_input_container {
+    background-color: var(--doubleslash-lightblue);
+}
+
+.form_input_description {
+    color: var(--doubleslash-text-grey);
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.form_input_description_content {
+    display: flex;
+}
+
+.form_input_date_container{
+    display: flex;
+}
+
+/*table*/
+table {
+    border-spacing: 0;
+    width: 100%;
+    color: var(--doubleslash-text-grey);
+    font-size: 14px;
+    font-weight: bold;
+    border: 2px var(--doubleslash-text-grey) solid;
+}
+
+table>tbody>tr:nth-child(odd) {
+    background-color: white;
+}
+
+table>tbody>tr:nth-child(even) {
+    background-color: var(--doubleslash-lightblue);
+}
+
+table>thead>tr {
+    color: white;
+    background-color: var(--doubleslash-blue);
+}
+
+table>thead>tr>th {
+    padding: 5px;
+    width: 22.5%;
+}
+
+table>thead>tr>th:last-child {
+    padding: 5px;
+    width: 10%;
+}
+
+table>tbody>tr>td {
+    text-align: center;
+    padding: 5px;
+}
+
+table>tbody>tr>td:nth-child(odd),
+table>thead>tr>th:nth-child(odd) {
+    border-left: 2px var(--doubleslash-text-grey) solid;
+    border-right: 2px var(--doubleslash-text-grey) solid;
+}
+
+table th:last-child,
+table td:last-child{
+    border-right: none !important;
+}
+
+table th:first-child,
+table td:first-child{
+    border-left: none !important;
+}

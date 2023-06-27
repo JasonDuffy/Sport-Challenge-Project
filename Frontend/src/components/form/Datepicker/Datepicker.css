@@ -1,0 +1,46 @@
+.scp_datepicker_content {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+  padding: 0.5rem;
+  border: 2px solid var(--doubleslash-text-grey);
+  border-radius: 5px;
+  background-color: var(--doubleslash-lightblue);
+}
+
+.scp_datepicker_separator {
+  color: var(--doubleslash-text-grey);
+  font-weight: 1000;
+  letter-spacing: -3px;
+}
+
+.scp_datepicker {
+  color: var(--doubleslash-text-grey);
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 0.5rem 1rem;
+  background-color: var(--doubleslash-lightblue);
+  border: 0;
+  outline: 0;
+}
+
+.scp_datepicker_mobile_description {
+  display: none;
+  font-weight: bold;
+}
+
+@media (max-width: 550px) {
+  .scp_datepicker_separator {
+    display: none;
+  }
+
+  .scp_datepicker_content {
+    flex-direction: column;
+  }
+
+  .scp_datepicker_mobile_description {
+    display: inline-block;
+  }
+}

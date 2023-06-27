@@ -19,15 +19,15 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/Login" element={<Login />} />
-        <Route path="/Challenge" element={<Challenge />} />
-        <Route path="/My-Challenges" element={<MyChallenges />} />
-        <Route path="/Profile" element={<Userprofile />} />
-        <Route path="/Sports" element={<Sports />} />
-        <Route path="/Challenge/:action" element={<AddChallenge />} />
-        <Route path="/Team/:action" element={<AddTeam />} />
-        <Route path="/Bonus/:action" element={<AddBonus />} />
-        <Route path="/Sport/:action" element={<AddSport />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/challenge" element={<Challenge />} />
+        <Route path="/my-challenges" element={<MyChallenges />} />
+        <Route path="/profile" element={<Userprofile />} />
+        <Route path="/sports" element={<Sports />} />
+        <Route path="/challenge/:action" element={<AddChallenge />} />
+        <Route path="/team/:action" element={<AddTeam />} />
+        <Route path="/bonus/:action" element={<AddBonus />} />
+        <Route path="/sport/:action" element={<AddSport />} />
       </Routes>
     </>
   );

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import Button from "../../components/ui/button/Button";
-import "../../components/form/Form.css";
+import "../../assets/css/form.css";
 import "./Profile.css";
 import GlobalVariables from "../../GlobalVariables.js"
 /**

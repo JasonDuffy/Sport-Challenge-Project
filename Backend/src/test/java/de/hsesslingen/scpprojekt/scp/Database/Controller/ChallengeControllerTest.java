@@ -1000,49 +1000,6 @@ public class ChallengeControllerTest {
     }
 
     /**
-     * Test if challengeID is correctly thrown for a member
-     * @throws Exception by mockMvc
-     */
-    @Test
-    @WithMockUser
-    public void getChallengeIDsByMemberIDTestSuccess()throws Exception{
-        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-
-        List<Long> challengeID = new ArrayList<>();
-        challengeID.add(1L);
-        challengeID.add(5L);
-        challengeID.add(9L);
-
-        when(challengeService.getChallengeIDsByMemberID(1L)).thenReturn(challengeID);
-
-        RequestBuilder request = MockMvcRequestBuilders
-                .get("/challenges/members/1/").accept(MediaType.APPLICATION_JSON);
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isOk())
-                .andReturn();
-
-        String content = res.getResponse().getContentAsString();
-        String expectedResponseBody = "[1,5,9]";
-        assertEquals(expectedResponseBody, content);
-
-        verify(challengeService).getChallengeIDsByMemberID(1L);
-    }
-
-    /**
-     *  Test if Unknown user is thrown 403
-     * @throws Exception by mockMvc
-     */
-    @Test
-    @WithAnonymousUser
-    public void getChallengeIDsByMemberIDTestNotLoggedIn()throws Exception{
-        RequestBuilder request = MockMvcRequestBuilders
-                .get("/challenges/members/1/").accept(MediaType.APPLICATION_JSON);
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isForbidden())
-                .andReturn();
-    }
-
-    /**
      *  Test if Bonuses are correctly thrown for challenge
      * @throws Exception by mockMvc
      */
@@ -1189,6 +1146,73 @@ public class ChallengeControllerTest {
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isForbidden())
                 .andReturn();
+    }
+
+
+    /**
+     * Test if all ChallengeSport form a Challenge are returned correctly
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void getALLChallengeSportForChallengeTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+        ChallengeSportDTO Cs1 = new ChallengeSportDTO();
+        Cs1.setId(1);
+        Cs1.setChallengeID(1);
+        ChallengeSportDTO Cs2 = new ChallengeSportDTO();
+        Cs2.setId(2);
+        Cs2.setChallengeID(1);
+        List<ChallengeSportDTO> aList = new ArrayList<>();
+        aList.add(Cs1); aList.add(Cs2);
+
+        when(challengeSportService.getAllChallengeSportsOfChallenge(any(long.class))).thenReturn(aList);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/challenges/1/challenge-sports/").accept(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        String content = res.getResponse().getContentAsString();
+
+        Pattern pattern = Pattern.compile("\\{\"id\":(\\d),");
+        Matcher matcher = pattern.matcher(content);
+
+        matcher.find();
+        assertEquals(matcher.group(1), "1");
+        matcher.find();
+        assertEquals(matcher.group(1), "2");
+        assertFalse(matcher.find());
+
+        Mockito.verify(challengeSportService).getAllChallengeSportsOfChallenge(any(long.class));
+    }
+
+    /**
+     * Test if Unknown user thrown
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void getALLChallengeSportForChallengeTestNotLoggedIn() throws Exception {
+        ChallengeSportDTO Cs1 = new ChallengeSportDTO();
+        Cs1.setId(1);
+        Cs1.setChallengeID(1);
+        ChallengeSportDTO Cs2 = new ChallengeSportDTO();
+        Cs2.setId(2);
+        Cs2.setChallengeID(1);
+        List<ChallengeSportDTO> aList = new ArrayList<>();
+        aList.add(Cs1); aList.add(Cs2);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/challenges/1/challenge-sports/").accept(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+
     }
 
 

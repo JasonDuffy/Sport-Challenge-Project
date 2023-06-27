@@ -198,26 +198,4 @@ public class ChallengeSportController {
         }
     }
 
-    /**
-     * REST API for returning all Challenge-Sports for the given Challenge ID
-     *
-     * @param ChallengeID ID of the Challenge where all challenge-sports should be returned
-     * @param request automatically filled by browser
-     * @return A 200 Code if it worked
-     */
-    @Operation(summary = "Get all Challenge-Sport for a Challenge")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Search successful",
-                    content = {@Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = ChallengeSportDTO.class)))}),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
-    })
-    @GetMapping(path = "/challenges/{id}/", produces = "application/json")
-    public ResponseEntity<List<ChallengeSportDTO>> getAllChallengeSportsForChallenge(@PathVariable("id") long ChallengeID, HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)){
-            return new ResponseEntity<>(challengeSportService.getAllChallengeSportsOfChallenge(ChallengeID), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-    }
 }

@@ -151,36 +151,6 @@ public class ChallengeController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
-
-    /**
-     * REST API for returning ChallengeID's where the given MemberID is part of
-     *
-     * @param memberID memberID that should return all ChallengeID's the member is part of
-     * @param request automatically filled by browser
-     * @return ChallengeID's corresponding to the given memberID 404 otherwise
-     */
-    @Operation(summary = "Get all Challenge for the Member")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "No ChallengeID's found for the MemberID",
-                    content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = Long.class))}),
-            @ApiResponse(responseCode = "404", description = "No ChallengeID's found for the MemberID", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
-    })
-    @GetMapping(path = "/members/{id}/" , produces = "application/json")
-    public ResponseEntity<List<Long>> getChallengeIDsByMemberID(@PathVariable("id") long memberID, HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)){
-            try {
-                return new ResponseEntity<>(challengeService.getChallengeIDsByMemberID(memberID), HttpStatus.OK);
-            } catch (NotFoundException e){
-                System.out.println(e.getMessage());
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-    }
-
     /**
      * Internal Problem of Swagger Ui/ Spring to upload a file and a json object
      * creates a Converter for the  Mediatype which allows octet stream,
@@ -548,4 +518,28 @@ public class ChallengeController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
+    /**
+     * REST API for returning all Challenge-Sports for the given Challenge ID
+     *
+     * @param ChallengeID ID of the Challenge where all challenge-sports should be returned
+     * @param request automatically filled by browser
+     * @return A 200 Code if it worked
+     */
+    @Operation(summary = "Get all Challenge-Sport for a Challenge")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Search successful",
+                    content = {@Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = ChallengeSportDTO.class)))}),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @GetMapping(path = "/{id}/challenge-sports/", produces = "application/json")
+    public ResponseEntity<List<ChallengeSportDTO>> getAllChallengeSportsForChallenge(@PathVariable("id") long ChallengeID, HttpServletRequest request) {
+        if (saml2Service.isLoggedIn(request)){
+            return new ResponseEntity<>(challengeSportService.getAllChallengeSportsOfChallenge(ChallengeID), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
 }

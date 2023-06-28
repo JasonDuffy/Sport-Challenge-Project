@@ -141,4 +141,14 @@ public class ChallengeSportService {
 
         return thisChallengeSport.getFactor() * bonusMultiplier;
     }
+
+    /**
+     * Return all Challenge Sports for a given bonus ID
+     * @param bonusID Bonus ID for which Challenge Sports should be returned
+     * @return List of all Challenge Sports for given Bonus ID
+     */
+    public List<ChallengeSportDTO> getAllChallengeSportsForBonusID(long bonusID){
+        List<ChallengeSport> csList = challengeSportRepository.findChallengeSportByBonusID(bonusID);
+        return challengeSportConverter.convertEntityListToDtoList(csList);
+    }
 }

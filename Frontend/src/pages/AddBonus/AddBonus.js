@@ -47,7 +47,7 @@ export async function fetchSportTable(bonusID, challengeID) {
     return;
   }
 
-  apiResponse = await apiFetch("/challenge-sport-bonuses/bonuses/" + bonusID + "/", "GET", {}, null);
+  apiResponse = await apiFetch("/bonuses/" + bonusID + "/challenge-sports/", "GET", {}, null);
 
   if (apiResponse.error === false) {
     challengeSportCheckedResData = apiResponse.resData;

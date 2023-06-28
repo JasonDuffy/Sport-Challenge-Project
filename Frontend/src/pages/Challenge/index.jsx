@@ -431,7 +431,7 @@ class Challenge extends Component {
                                 {this.bonusTableMaker("current")}
                             </div>
                             <div className="center_content mg_t_2">
-                                <Link to="/bonus/add" state={{ challengeID: this.state.challengeID }}>
+                                <Link to="/bonus/add" state={{ id: this.state.challengeID }}>
                                     <Button color="orange" txt="Neuen Bonus erstellen" />
                                 </Link>
                             </div>

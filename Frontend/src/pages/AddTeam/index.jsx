@@ -11,6 +11,7 @@ import { checkTeamInput, fetchAvailableMembers, fetchFormData, fetchImageData, f
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleDown, faGripVertical } from "@fortawesome/free-solid-svg-icons";
 import Button from "../../components/ui/button/Button";
+import { act } from "@testing-library/react";
 
 /**
  * @author Robin Hackh
@@ -76,8 +77,8 @@ function AddTeam() {
 
       setChallengeDropdownData(pageData.challengeDropdownResData);
 
-      if (location.state.challengeID !== null) {
-        setChallengeID(location.state.challengeID);
+      if (location.state.challengeID !== null && action === "add") {
+        setChallengeID(String(location.state.challengeID));
       }
     }
 

@@ -18,14 +18,19 @@ export async function fetchUserData() {
     return;
   }
 
-  apiResponse = await apiFetch("/images/" + memberResData.imageID + "/", "GET", {}, null);
+  if(memberResData.imageID !== 0){
+    apiResponse = await apiFetch("/images/" + memberResData.imageID + "/", "GET", {}, null);
 
-  if (apiResponse.error === false) {
-    imageResData = apiResponse.resData;
+    if (apiResponse.error === false) {
+      imageResData = apiResponse.resData;
+    } else {
+      showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+      return;
+    }
   } else {
-    showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
-    return;
+    imageResData = null;
   }
+
 
   return { memberResData, imageResData };
 }

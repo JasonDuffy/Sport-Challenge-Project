@@ -4,10 +4,8 @@ import TextInput from "../../components/form/TextInput/TextInput";
 import Button from "../../components/ui/button/Button";
 import Checkbox from "../../components/form/Checkbox/Checkbox";
 import ImageSelecter from "../../components/form/ImageSelecter/ImageSelecter";
-import InfoMessage from "../../components/form/InfoMessage/InfoMessage";
+import InfoMessage, { hideInfoMessage } from "../../components/form/InfoMessage/InfoMessage";
 import { checkUserInput, fetchUserData, saveUser } from "./Profile";
-import { eventWrapper } from "@testing-library/user-event/dist/utils";
-import { faColumns } from "@fortawesome/free-solid-svg-icons";
 
 function Profile() {
   const navigate = useNavigate();
@@ -34,8 +32,13 @@ function Profile() {
       setCommunication(pageData.memberResData.communication);
       document.getElementById("user_communication_checkbox").checked = pageData.memberResData.communication;
       setUserImageID(pageData.memberResData.imageID);
-      setUserImageSource("data:" + pageData.imageResData.type + ";base64, " + pageData.imageResData.data);
       document.getElementById("headingText").innerText = "Willkommen zurück, " + pageData.memberResData.firstName + " " + pageData.memberResData.lastName;
+
+      if(pageData.imageResData !== null){
+        setUserImageSource("data:" + pageData.imageResData.type + ";base64, " + pageData.imageResData.data);
+      } else {
+        setUserImageSource(require("../../assets/images/Default-User.png"));
+      }
     }
 
     load();
@@ -52,7 +55,9 @@ function Profile() {
 
   async function submitHandle(event) {
     event.preventDefault();
+
     setLoading(true);
+    hideInfoMessage();
 
     if (checkUserInput(firstName, lastName, userImage)) {
       let userObj = {};

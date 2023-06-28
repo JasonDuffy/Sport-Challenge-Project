@@ -2,6 +2,7 @@ import { Component, React } from "react";
 import SportsTableRow from "../../components/SportsTableRow/SportsTableRow";
 import Button from "../../components/ui/button/Button";
 import GlobalVariables from "../../GlobalVariables.js";
+import "../../assets/css/form.css";
 import { Link } from "react-router-dom";
 
 /**

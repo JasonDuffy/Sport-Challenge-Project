@@ -13,6 +13,10 @@ import NumberInput from "../../components/form/NumberInput/NumberInput";
 import ImageSelecter from "../../components/form/ImageSelecter/ImageSelecter";
 import { checkChallengeInput, fetchChallengeData, fetchImageData, fetchSportTable, saveOrUpdateChallenge } from "./AddChallenge";
 
+/**
+ * @author Robin Hackh
+ */
+
 function AddChallenge() {
   const action = useParams().action.toLocaleLowerCase();
   const navigate = useNavigate();

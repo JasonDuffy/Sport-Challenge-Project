@@ -63,8 +63,8 @@ function AddBonus() {
 
       setChallengeDropdownData(pageData.challengeDropdownResData);
 
-      if (location.state.challengeID !== null) {
-        setchallengeID(location.state.challengeID);
+      if (location.state.challengeID !== null && action === "add") {
+        setchallengeID(String(location.state.challengeID));
       }
     }
 

@@ -115,9 +115,13 @@ class AddSport extends Component {
       this.setState({ sportFactor: sportResData.factor });
     }
 
-    const pageLoading = document.getElementById("page_loading");
-    pageLoading.parentNode.removeChild(pageLoading);
+    document.getElementById("page_loading").style.display = "none";
     document.getElementById("page").style.display = "block";
+  }
+
+  componentWillUnmount(){
+    document.getElementById("page_loading").style.display = "flex";
+    document.getElementById("page").style.display = "none";
   }
 
   render() {

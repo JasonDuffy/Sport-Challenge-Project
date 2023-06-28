@@ -32,9 +32,13 @@ class MyChallenges extends Component {
     this.setState({ activityIDs: activitiesResData })
     this.setState({ challengeIDs: challengeIDsResData });
 
-    const pageLoading = document.getElementById("page_loading");
-    pageLoading.parentNode.removeChild(pageLoading);
+    document.getElementById("page_loading").style.display = "none";
     document.getElementById("page").style.display = "block";
+  }
+
+  componentWillUnmount() {
+    document.getElementById("page_loading").style.display = "flex";
+    document.getElementById("page").style.display = "none";
   }
 
   render() {

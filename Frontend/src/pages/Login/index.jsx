@@ -14,6 +14,16 @@ class Login extends Component {
     window.open(GlobalVariables.serverURL + "/saml/login/", "_self");
   }
 
+  componentDidMount(){
+    document.getElementById("page_loading").style.display = "none";
+    document.getElementById("page").style.display = "block";
+  }
+
+  componentWillUnmount(){
+    document.getElementById("page_loading").style.display = "flex";
+    document.getElementById("page").style.display = "none";
+  }
+
   render() {
     return (
       <section className="background_white">

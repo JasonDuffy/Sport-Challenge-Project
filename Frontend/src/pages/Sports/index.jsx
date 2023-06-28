@@ -1,7 +1,8 @@
 import { Component, React } from "react";
 import SportsTableRow from "../../components/SportsTableRow/SportsTableRow";
 import Button from "../../components/ui/button/Button";
-import GlobalVariables from "../../GlobalVariables.js"
+import GlobalVariables from "../../GlobalVariables.js";
+import { Link } from "react-router-dom";
 
 /**
  * Page providing an overview of all available sports and allowing edit and add of sports
@@ -14,7 +15,7 @@ class Sports extends Component {
     document.title = "Slash Challenge - Sportarten";
 
     this.state = {
-      sports: []
+      sports: [],
     };
   }
 
@@ -22,11 +23,15 @@ class Sports extends Component {
     let sportsResponse = await fetch(GlobalVariables.serverURL + "/sports/", { method: "GET", credentials: "include" });
     let sportsResData = await sportsResponse.json();
 
-    this.setState({ sports: sportsResData })
+    this.setState({ sports: sportsResData });
 
-    const pageLoading = document.getElementById("page_loading");
-    pageLoading.parentNode.removeChild(pageLoading);
+    document.getElementById("page_loading").style.display = "none";
     document.getElementById("page").style.display = "block";
+  }
+
+  componentWillUnmount() {
+    document.getElementById("page_loading").style.display = "flex";
+    document.getElementById("page").style.display = "none";
   }
 
   render() {
@@ -49,7 +54,7 @@ class Sports extends Component {
                   </thead>
                   <tbody>
                     {this.state.sports.map((item) => (
-                      <SportsTableRow key={item.id} id={item.id}/>
+                      <SportsTableRow key={item.id} id={item.id} />
                     ))}
                   </tbody>
                 </table>
@@ -59,9 +64,9 @@ class Sports extends Component {
         </section>
         <section>
           <div className="center_content mg_t_2">
-            <a href={'Add/Sport/0'} style={{ color: "#ffeeee" }}>
+            <Link to="/sport/add" state={{ id: 0 }}>
               <Button color="orange" txt="Neue Sportart" />
-            </a>
+            </Link>
           </div>
         </section>
       </>

@@ -49,9 +49,9 @@ function AddChallenge() {
         document.title = "Slash Challenge - " + pageData.name + " bearbeiten";
 
         //Use default image if no image was set
-        if(pageData.imageID === null || pageData.imageID === 0){
+        if (pageData.imageID === null || pageData.imageID === 0) {
           setChallengeImageSource(require("../../assets/images/Default-Challenge.png"));
-        }else{
+        } else {
           pageData = await fetchImageData(pageData.imageID);
           setChallengeImageSource("data:" + pageData.type + "; base64, " + pageData.data);
         }
@@ -64,7 +64,17 @@ function AddChallenge() {
     }
 
     load();
+    document.getElementById("page_loading").style.display = "none";
+    document.getElementById("page").style.display = "block";
   }, [action]);
+
+  //Component unmount
+  useEffect(() => {
+    return () => {
+      document.getElementById("page_loading").style.display = "flex";
+      document.getElementById("page").style.display = "none";
+    };
+  }, []);
 
   async function submitHandle(event) {
     event.preventDefault();
@@ -119,7 +129,13 @@ function AddChallenge() {
                     Es sollte quadratisch sein.
                   </span>
                   <br />
-                  <ImageSelecter className="mg_t_2" value={challengeImage} setValue={setChallengeImage} alt="Aktuelles Bild der Challenge" source={challengeImageSource}/>
+                  <ImageSelecter
+                    className="mg_t_2"
+                    value={challengeImage}
+                    setValue={setChallengeImage}
+                    alt="Aktuelles Bild der Challenge"
+                    source={challengeImageSource}
+                  />
                 </div>
               </div>
               <div className="form_input_container pd_1 mg_t_2">

@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import Button from "../../components/ui/button/Button";
 import "../../assets/css/form.css";
 import "./Profile.css";
-import GlobalVariables from "../../GlobalVariables.js"
+import GlobalVariables from "../../GlobalVariables.js";
 /**
  * Page that shows the user profile of the current user and allows editing
  *
@@ -79,9 +79,13 @@ class Userprofile extends Component {
         console.log("Something went wrong");
       });
 
-    const pageLoading = document.getElementById("page_loading");
-    pageLoading.parentNode.removeChild(pageLoading);
+    document.getElementById("page_loading").style.display = "none";
     document.getElementById("page").style.display = "block";
+  }
+
+  componentWillUnmount() {
+    document.getElementById("page_loading").style.display = "flex";
+    document.getElementById("page").style.display = "none";
   }
 
   // Loads image from given ID and places it in state variable

@@ -3,11 +3,12 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import reportWebVitals from "./reportWebVitals";
-import "./assets/css/Index.css";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
-/*    <div id="page_loading" className="page_loading_container" style={{ display: "flex" }}>
+root.render(
+  <>
+    <div id="page_loading" className="page_loading_container" style={{ display: "flex" }}>
       <div className="page_loading_ring">
         <div></div>
         <div></div>
@@ -15,11 +16,7 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
         <div></div>
       </div>
     </div>
-*/
-
-root.render(
-  <>
-    <div id="page" style={{ display: "block" }}>
+    <div id="page" style={{ display: "none" }}>
       <BrowserRouter>
         <App />
       </BrowserRouter>

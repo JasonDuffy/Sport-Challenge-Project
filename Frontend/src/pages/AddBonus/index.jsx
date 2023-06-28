@@ -63,7 +63,17 @@ function AddBonus() {
     }
 
     load();
+    document.getElementById("page_loading").style.display = "none";
+    document.getElementById("page").style.display = "block";
   }, [action]);
+
+  //Component unmount
+  useEffect(() => {
+    return () => {
+      document.getElementById("page_loading").style.display = "flex";
+      document.getElementById("page").style.display = "none";
+    }
+}, [])
 
   //If the challegneID changes update the sportTable
   useEffect(() => {

@@ -79,7 +79,17 @@ function AddTeam() {
 
     load();
     dragHandler();
+    document.getElementById("page_loading").style.display = "none";
+    document.getElementById("page").style.display = "block";
   }, [action]);
+
+  //Component unmount
+  useEffect(() => {
+    return () => {
+      document.getElementById("page_loading").style.display = "flex";
+      document.getElementById("page").style.display = "none";
+    };
+  }, []);
 
   //Update Refs on state change
   useEffect(() => {

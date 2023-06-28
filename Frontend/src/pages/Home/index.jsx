@@ -34,6 +34,11 @@ class Home extends Component {
     document.getElementById("page").style.display = "block";
   }
 
+  componentWillUnmount(){
+    document.getElementById("page_loading").style.display = "flex";
+    document.getElementById("page").style.display = "none";
+  }
+
   render() {
     return (
       <>

@@ -60,10 +60,13 @@ class Challenge extends Component {
     const dateRegex = "(\\d{2})\\.(\\d{2})\\.(\\d{4})\\,(\\d{2})\\:(\\d{2})";
 
     // Convert string date into JS date and add correctly formatted string to object
+    challengeResData.rawStartDate = challengeResData.startDate; // Save for later use
+    challengeResData.rawEndDate = challengeResData.endDate;
+
     let date = challengeResData.startDate.match(dateRegex);
-    challengeResData.startDate = new Date(date[3], date[2] - 1, date[1]); // Only date not time needed
+    challengeResData.startDate = new Date(date[3], date[2] - 1, date[1]); // Separate date and time
     date = challengeResData.endDate.match(dateRegex);
-    challengeResData.endDate = new Date(date[3], date[2] - 1, date[1]); // Only date not time needed
+    challengeResData.endDate = new Date(date[3], date[2] - 1, date[1]);
 
     document.title = "Slash Challenge - " + challengeResData.name;
 
@@ -353,7 +356,7 @@ class Challenge extends Component {
    */
   distanceDisplay() {
     let percentage = ((this.state.distance * 100) / this.state.challenge.targetDistance).toFixed(2);
-    let distanceString = this.state.distance + " / " + this.state.challenge.targetDistance + "; " + percentage + "%";
+    let distanceString = this.state.distance + " / " + this.state.challenge.targetDistance + " (" + percentage + "%)";
     return distanceString;
   }
 
@@ -386,6 +389,12 @@ class Challenge extends Component {
                     <Link to="/challenge/edit" state={{ id: this.state.challengeID }}>
                       <FontAwesomeIcon icon={faPencil} />
                     </Link>
+                  </div>
+                  <div className="challengeTime">
+                    <span>
+                      {this.state.challenge.rawStartDate.split(",")[0] + ", " + this.state.challenge.rawStartDate.split(",")[1] + " Uhr "}
+                      - {this.state.challenge.rawEndDate.split(",")[0] + ", " + this.state.challenge.rawEndDate.split(",")[1] + " Uhr"}
+                    </span>
                   </div>
                   <div className="challengeProgress">
                     <this.distanceDisplay />

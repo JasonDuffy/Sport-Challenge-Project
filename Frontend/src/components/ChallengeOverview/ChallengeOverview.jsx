@@ -20,6 +20,8 @@ function ChallengeOverview(props) {
   const [challengeName, setChallengeName] = useState("");
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
+  const [startTime, setStartTime] = useState("");
+  const [endTime, setEndTime] = useState("");
   const [distanceDone, setDistanceDone] = useState(0);
   const [distanceGoal, setDistanceGoal] = useState(0);
   const [challengeInfo, setChallengeInfo] = useState("");
@@ -51,6 +53,8 @@ function ChallengeOverview(props) {
       setChallengeName(challengeResData.name);
       setStartDate(challengeResData.startDate.split(",")[0]);
       setEndDate(challengeResData.endDate.split(",")[0]);
+      setStartTime(challengeResData.startDate.split(",")[1]);
+      setEndTime(challengeResData.endDate.split(",")[1]);
       setDistanceGoal(challengeResData.targetDistance);
       setChallengeInfo(challengeResData.description);
       setDistanceDone(challengeDistanceResData);
@@ -70,7 +74,7 @@ function ChallengeOverview(props) {
       <div className="challenge_wrap">
         <h1 className="challenge_title">{challengeName}</h1>
         <div className="challenge_date">
-          {startDate}-{endDate}
+          {startDate}, {startTime} Uhr - {endDate}, {endTime} Uhr
         </div>
         <div className="challenge_distance">
           {distanceDone}/{distanceGoal}

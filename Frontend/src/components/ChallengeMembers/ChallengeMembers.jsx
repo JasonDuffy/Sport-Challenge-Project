@@ -19,15 +19,14 @@ class ChallengeMembers extends Component {
     }
 
     async componentDidMount() {
-        try{
+        if (this.state.team.imageID != 0 && this.state.team.imageID != null) {
             let teamImage = await fetch(GlobalVariables.serverURL + "/images/" + this.state.team.imageID + "/", { method: "GET", credentials: "include" });
             let teamImageResData = await teamImage.json();
 
             this.setState({ image: "data:" + teamImageResData.type + ";base64, " + teamImageResData.data }, () => {
                 this.setState({ imageLoaded: true });
             })
-        } catch (error){ // Handle teams without image
-            console.log("Team " + this.state.team.name + " does not have an image.");
+        } else { // Handle teams without image
             this.setState({ image: require(`../../assets/images/Default-Team.png`) }, () => {
                 this.setState({ imageLoaded: true });
             })

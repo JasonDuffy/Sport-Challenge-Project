@@ -101,17 +101,7 @@ class ChallengeTeamPanelBarGraph extends Component {
             );
         }
         else {
-            return (
-                <ResponsiveContainer width={this.state.width} aspect={this.state.aspect}>
-                    <BarChart data={data}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="dateString" interval="preserveStartEnd" />
-                        <YAxis />
-                        <Tooltip />
-                        <Bar type="monotone" dataKey="totalDistance" name="Insgesamt gesammelte Punkte" stroke={this.state.lineColor} fill={this.state.fillColor} />
-                    </BarChart>
-                </ResponsiveContainer>
-            );
+            return;
         }
     }
 

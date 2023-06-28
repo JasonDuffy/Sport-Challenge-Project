@@ -135,17 +135,7 @@ class ChallengeTeamPanelAreaGraph extends Component {
             );
         }
         else {
-            return (
-                <ResponsiveContainer width={this.state.width} aspect={this.state.aspect}>
-                    <AreaChart data={data}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="dateString" interval="preserveStartEnd" />
-                        <YAxis />
-                        <Tooltip />
-                        <Area type="monotone" dataKey="totalDistance" name="Insgesamt gesammelte Punkte" stroke={this.state.lineColor} fill={this.state.fillColor} />
-                    </AreaChart>
-                </ResponsiveContainer>
-            );
+            return;
         }
     }
 

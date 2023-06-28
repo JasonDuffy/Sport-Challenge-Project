@@ -89,11 +89,11 @@ class ChallengeTeamPanel extends Component {
                     </span>
                 </div>
                 <div className="center_content mg_t_5">
-                    <div className="row_edit_icon icon_faPencil">
-                        <Link to="/team/edit" state={{ id: this.props.id }}>
+                    <Link to="/team/edit" state={{ id: this.props.id }}>
+                        <div className="row_edit_icon icon_faPencil">
                             <FontAwesomeIcon icon={faPencil} />
-                        </Link>
-                    </div>
+                        </div>
+                    </Link>
                 </div>
                 {this.state.teamActivities.length > 0 && this.state.teamMembers.length > 0 && (
                     <div className="graphContainer">

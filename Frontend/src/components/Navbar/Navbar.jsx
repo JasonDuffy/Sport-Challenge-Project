@@ -1,13 +1,52 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Navbar.css";
 import AnimateHeight from "react-animate-height";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import apiFetch from "../../utils/api";
 
 function Navbar() {
-  const [height, setHeight] = useState(0);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const [height, setHeight] = useState(0);
+  const [navbarMemberName, setNavbarMemberName] = useState("");
+  const [navbarMemberImageSource, setNavbarMemberImageSource] = useState("");
+
+  useEffect(() => {
+    async function fetchMemberData() {
+      let apiResponse, memberResData, memberImageResData;
+
+      apiResponse = await apiFetch("/members/loggedIn/", "GET", {}, null);
+
+      if (apiResponse.error === false) {
+        memberResData = apiResponse.resData;
+      } else {
+        setNavbarMemberName("");
+        setNavbarMemberImageSource(require("../../assets/images/Default-User.png"));
+        return;
+      }
+
+      if (memberResData.imageID !== 0 && memberResData.imageID !== null) {
+        apiResponse = await apiFetch("/images/" + memberResData.imageID + "/", "GET", {}, null);
+
+        if (apiResponse.error === false) {
+          memberImageResData = apiResponse.resData;
+        } else {
+          return;
+        }
+
+        setNavbarMemberImageSource("data:" + memberImageResData.type + ";base64, " + memberImageResData.data);
+      } else {
+        setNavbarMemberImageSource(require("../../assets/images/Default-User.png"));
+      }
+
+      setNavbarMemberName(memberResData.firstName);
+    }
+
+    fetchMemberData();
+  }, [location.pathname]);
 
   function changeDropDownState() {
     if (height === 0) {
@@ -61,13 +100,16 @@ function Navbar() {
                 <Link className="top_nav_dropdown_item" to="/sports">
                   Sportarten
                 </Link>
-                <Link className="top_nav_dropdown_item" to="/profile">
-                  Benutzerprofil
-                </Link>
               </AnimateHeight>
             </div>
           </li>
         </ul>
+        <div className="top_nav_user_container">
+          {navbarMemberName !== "" && <span className="top_nav_user_name">{"Hallo, " + navbarMemberName}</span>}
+          <Link to="/profile">
+            <img className="top_nav_user_image" src={navbarMemberImageSource}></img>
+          </Link>
+        </div>
       </nav>
       <nav className="mobile_nav" id="mobile_nav">
         <div className="mobile_nav_list">
@@ -101,9 +143,6 @@ function Navbar() {
                 </li>
                 <li>
                   <Link to="/sports">Sportarten</Link>
-                </li>
-                <li>
-                  <Link to="/profile">Benutzerprofil</Link>
                 </li>
               </ul>
             </AnimateHeight>

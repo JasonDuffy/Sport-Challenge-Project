@@ -84,6 +84,26 @@ header.top_nav {
   background-color: var(--doubleslash-lightblue);
 }
 
+.top_nav_user_container{
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  right: 50px;
+}
+
+.top_nav_user_image{
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+}
+
+.top_nav_user_name{
+  font-weight: 500;
+  font-size: 16px;
+  margin-right: 10px;
+}
+
 /*Mobile Nav*/
 
 @media screen and (min-width: 830px) {

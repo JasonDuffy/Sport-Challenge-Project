@@ -40,6 +40,11 @@ public class SecurityConfig {
         DefaultRelyingPartyRegistrationResolver relyingPartyRegistrationResolver = new DefaultRelyingPartyRegistrationResolver(this.relyingPartyRegistrationRepository);
         Saml2MetadataFilter filter = new Saml2MetadataFilter(relyingPartyRegistrationResolver, new OpenSamlMetadataResolver());
 
+        // Allows setting of frontend IP via environment variable
+        String frontendURL = System.getenv("SCP_Frontend_URL");
+        if (frontendURL == null)
+            frontendURL = "http://localhost:3000";
+
         http.authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/saml/login/").authenticated()
                         .anyRequest().permitAll())
@@ -47,6 +52,7 @@ public class SecurityConfig {
                 .saml2Logout(withDefaults())
                 .addFilterBefore(filter, Saml2WebSsoAuthenticationFilter.class);
 
+        http.logout().logoutSuccessUrl(frontendURL + "/login");
         http.csrf().disable();
 
         return http.build();

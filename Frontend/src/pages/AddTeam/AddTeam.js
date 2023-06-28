@@ -58,7 +58,7 @@ export async function fetchAvailableMembers(challengeID) {
   if (apiResponse.error === false) {
     memberResData = apiResponse.resData;
   } else {
-    showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+    showErrorMessage("Beim Laden der Seite ist ein Fehler aufgetreten!");
     return;
   }
 
@@ -175,7 +175,7 @@ export async function saveOrUpdateTeam(teamID, teamObj, memberData, image, image
     if (apiResponse.error === false) {
       imageResData = apiResponse.resData;
     } else {
-      showErrorMessage("Beim Speichern des Teams ist ein fehler aufgetreten! " + apiResponse.status);
+      showErrorMessage("Beim Speichern des Teams ist ein Fehler aufgetreten! " + apiResponse.status);
       return;
     }
   } else {
@@ -193,9 +193,9 @@ export async function saveOrUpdateTeam(teamID, teamObj, memberData, image, image
 
   if (apiResponse.error === false) {
     teamResData = apiResponse.resData;
-    showSuccessMessage("Die Challenge wurde erfolgreich gespeichert.");
+    showSuccessMessage("Das Team wurde erfolgreich gespeichert.");
   } else {
-    showErrorMessage("Beim Speichern der Challenge ist ein Fehler aufgetreten! " + apiResponse.status);
+    showErrorMessage("Beim Speichern des Teams ist ein Fehler aufgetreten! " + apiResponse.status);
     return;
   }
 

@@ -113,9 +113,4 @@ public class ChallengeSportBonusService {
         List<ChallengeSportBonus> csblist = challengeSportBonusRepository.findAllByBonusId(bonusID);
         return challengeSportBonusConverter.convertEntityToDtoList(csblist);
     }
-
-    public List<ChallengeSportDTO> findCSbyBonusID(long bonusID) {
-        List<ChallengeSport> csList = challengeSportBonusRepository.findChallengeSportForBonus(bonusID);
-        return challengeSportConverter.convertEntityListToDtoList(csList);
-    }
 }

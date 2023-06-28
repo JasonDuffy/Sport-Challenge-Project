@@ -84,30 +84,6 @@ public class ChallengeSportBonusController {
     }
 
     /**
-     * REST API for returning ChallengeSport data of a given bonusID
-     *
-     * @param bonusID ID of the bonus that should be returned
-     * @param request automatically filled by browser
-     * @return ChallengeSport data corresponding for the given bonusID
-     */
-    @Operation(summary = "Get ChallengeSport by bonusID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "ChallengeSport found",
-                    content = { @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = ChallengeSportDTO.class))}),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
-    })
-    @GetMapping(path ="/bonuses/{id}/", produces = "application/json")
-    public ResponseEntity<List<ChallengeSportDTO>> getChallengeSportByBonusID(@PathVariable("id") long bonusID, HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)){
-                return new ResponseEntity<>(challengeSportBonusService.findCSbyBonusID(bonusID), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-    }
-
-
-    /**
      * REST API for adding a new ChallengeSportBonus
      *
      * @param challengeSportBonusDTO ChallengeSportBonus data for the new ChallengeSportBonus

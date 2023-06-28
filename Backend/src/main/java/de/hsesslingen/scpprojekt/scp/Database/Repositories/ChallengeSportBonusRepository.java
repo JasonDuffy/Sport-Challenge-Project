@@ -21,8 +21,4 @@ public interface ChallengeSportBonusRepository extends JpaRepository<ChallengeSp
 
     @Transactional
     public List<ChallengeSportBonus> findAllByBonusId(long bonusID);
-
-    @Transactional
-    @Query("select cs from ChallengeSport cs join ChallengeSportBonus csb on csb.challengeSport.id  = cs.id where csb.bonus.id=:bonusID")
-    public List<ChallengeSport> findChallengeSportForBonus(long bonusID);
 }

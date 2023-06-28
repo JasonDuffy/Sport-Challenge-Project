@@ -5,6 +5,7 @@ import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
 import de.hsesslingen.scpprojekt.scp.Database.Services.BonusService;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import jakarta.servlet.ServletException;
@@ -49,6 +50,8 @@ public class BonusControllerTest {
 
     @MockBean
     BonusService bonusService;
+    @MockBean
+    ChallengeSportService challengeSportService;
 
     @MockBean
     SAML2Service saml2Service;

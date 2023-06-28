@@ -21,7 +21,7 @@ export async function fetchFormData(challengeID) {
   if (apiResponse.error === false) {
     challengeDropdownResData = apiResponse.resData;
   } else {
-    showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+    showErrorMessage("Beim Laden der Seite ist ein Fehler aufgetreten!");
     return;
   }
 

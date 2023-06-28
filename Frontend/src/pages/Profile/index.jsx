@@ -10,6 +10,8 @@ import { checkUserInput, fetchUserData, saveUser } from "./Profile";
 function Profile() {
   const navigate = useNavigate();
 
+  document.title = "Slash Challenge - Benutzerprofil";
+
   const [userID, setUserID] = useState(0);
   const [email, setEmail] = useState("");
   const [firstName, setFirstName] = useState("");

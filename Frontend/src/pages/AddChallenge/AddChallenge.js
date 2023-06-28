@@ -149,11 +149,11 @@ export function checkChallengeInput(
  * @param action add or edit
  * @returns If successfull data of the saved challenge otherwise nothing
  */
-export async function saveOrUpdateBonus(challengeID, challengeObj, sportIDs, sportFactors, image, imageID, action) {
+export async function saveOrUpdateChallenge(challengeID, challengeObj, sportIDs, sportFactors, image, imageID, action) {
   let apiResponse, challengeResData, imageResData;
   let imageFetchBodyData = new FormData();
 
-  if (image != null) {
+  if (image != null) { // An image was selected
     imageFetchBodyData.append("file", image);
     if (action === "add") {
       apiResponse = await apiFetch("/images/", "POST", {}, imageFetchBodyData);
@@ -164,7 +164,7 @@ export async function saveOrUpdateBonus(challengeID, challengeObj, sportIDs, spo
     if (apiResponse.error === false) {
       imageResData = apiResponse.resData;
     } else {
-      showErrorMessage("Beim speichern der Challenge ist ein fehler aufgetreten! " + apiResponse.status);
+      showErrorMessage("Beim Speichern der Challenge ist ein Fehler aufgetreten! " + apiResponse.status);
       return;
     }
   } else {
@@ -179,7 +179,7 @@ export async function saveOrUpdateBonus(challengeID, challengeObj, sportIDs, spo
     query += "&sportFactor=" + sportFactors[i];
   }
 
-  apiResponse = await apiFetch(
+  apiResponse = await apiFetch( // Call to backend
     "/challenges/" + challengeID + "/" + query,
     "PUT",
     { Accept: "application/json", "Content-Type": "application/json" },
@@ -190,7 +190,7 @@ export async function saveOrUpdateBonus(challengeID, challengeObj, sportIDs, spo
     challengeResData = apiResponse.resData;
     showSuccessMessage("Die Challenge wurde erfolgreich gespeichert.");
   } else {
-    showErrorMessage("Beim speichern der Challenge ist ein fehler aufgetreten! " + apiResponse.status);
+    showErrorMessage("Beim Speichern der Challenge ist ein Fehler aufgetreten! " + apiResponse.status);
     return;
   }
 

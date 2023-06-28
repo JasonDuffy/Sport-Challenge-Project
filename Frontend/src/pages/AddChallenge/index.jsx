@@ -11,7 +11,7 @@ import TextInput from "../../components/form/TextInput/TextInput";
 import TextareaInput from "../../components/form/TextareaInput/TextareaInput";
 import NumberInput from "../../components/form/NumberInput/NumberInput";
 import ImageSelecter from "../../components/form/ImageSelecter/ImageSelecter";
-import { checkChallengeInput, fetchChallengeData, fetchImageData, fetchSportTable, saveOrUpdateBonus } from "./AddChallenge";
+import { checkChallengeInput, fetchChallengeData, fetchImageData, fetchSportTable, saveOrUpdateChallenge } from "./AddChallenge";
 
 function AddChallenge() {
   const action = useParams().action.toLocaleLowerCase();
@@ -86,6 +86,7 @@ function AddChallenge() {
     let sportFactors = [];
     let challengeObj = {};
 
+    // Get all sports that were checked and their factors
     const tableCells = document.getElementsByClassName("form_table_sport_checked");
     for (const tableCell of tableCells) {
       if (tableCell.getElementsByTagName("Input")[0].checked === true) {
@@ -94,6 +95,7 @@ function AddChallenge() {
       }
     }
 
+    // Check every challenge input for validity (i.e. challenge has a name, image smaller than 10mb, etc.)
     if (checkChallengeInput(challengeName, challengeImage, challengeDescription, challengeDistanceGoal, sportIDs.length, challengeStartDate, challengeEndDate)) {
       challengeObj.name = challengeName;
       challengeObj.description = challengeDescription;
@@ -101,7 +103,7 @@ function AddChallenge() {
       challengeObj.endDate = challengeEndDate;
       challengeObj.targetDistance = challengeDistanceGoal;
 
-      await saveOrUpdateBonus(location.state.id, challengeObj, sportIDs, sportFactors, challengeImage, challengeImageID, action);
+      await saveOrUpdateChallenge(location.state.id, challengeObj, sportIDs, sportFactors, challengeImage, challengeImageID, action);
     }
 
     setLoading(false);

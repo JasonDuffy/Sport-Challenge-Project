@@ -14,7 +14,7 @@ export async function fetchUserData() {
   if (apiResponse.error === false) {
     memberResData = apiResponse.resData;
   } else {
-    showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+    showErrorMessage("Beim Laden der Seite ist ein Fehler aufgetreten!");
     return;
   }
 
@@ -24,7 +24,7 @@ export async function fetchUserData() {
     if (apiResponse.error === false) {
       imageResData = apiResponse.resData;
     } else {
-      showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+      showErrorMessage("Beim Laden der Seite ist ein Fehler aufgetreten!");
       return;
     }
   } else {
@@ -52,7 +52,7 @@ export function checkUserInput(firstName, lastName, userImage) {
       showErrorMessage("Das Bild darf nicht größer als 10Mb sein.");
       return false;
     } else if (/^image/.test(userImage.type) === false) {
-      showErrorMessage("Es sind nur Bilder zum hochladen erlaubt.");
+      showErrorMessage("Es sind nur Bilder zum Hochladen erlaubt.");
       return false;
     }
   }
@@ -75,7 +75,7 @@ export async function saveUser(userID, userObj, userImage, userImageID) {
     if (apiResponse.error === false) {
       imageResData = apiResponse.resData;
     } else {
-      showErrorMessage("Beim speichern deines Profiels ist ein fehler aufgetreten! " + apiResponse.status);
+      showErrorMessage("Beim Speichern deines Profils ist ein Fehler aufgetreten! " + apiResponse.status);
       return;
     }
   } else {
@@ -90,7 +90,7 @@ export async function saveUser(userID, userObj, userImage, userImageID) {
     memberResData.image = imageResData;
     showSuccessMessage("Dein Profil wurde erfolgreich gespeichert.");
   } else {
-    showErrorMessage("Beim speichern deines Profils ist ein fehler aufgetreten! " + apiResponse.status);
+    showErrorMessage("Beim Speichern deines Profils ist ein Fehler aufgetreten! " + apiResponse.status);
     return;
   }
 

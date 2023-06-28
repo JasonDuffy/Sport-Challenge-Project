@@ -17,7 +17,7 @@ export async function fetchFormData(challengeID) {
     if (apiResponse.error === false) {
       challengeDropdownResData = apiResponse.resData;
     } else {
-      showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+      showErrorMessage("Beim Laden der Seite ist ein Fehler aufgetreten!");
       return;
     }
 
@@ -26,7 +26,7 @@ export async function fetchFormData(challengeID) {
     if (apiResponse.error === false) {
       challengeDropdownResData = challengeDropdownResData.concat(apiResponse.resData);
     } else {
-      showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+      showErrorMessage("Beim Laden der Seite ist ein Fehler aufgetreten!");
       return;
     }
   } else {
@@ -35,7 +35,7 @@ export async function fetchFormData(challengeID) {
     if (apiResponse.error === false) {
       challengeDropdownResData = [apiResponse.resData];
     } else {
-      showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+      showErrorMessage("Beim Laden der Seite ist ein Fehler aufgetreten!");
       return;
     }
   }
@@ -86,18 +86,18 @@ export async function fetchTeamData(teamID) {
   if (apiResponse.error === false) {
     teamResData = apiResponse.resData;
   } else {
-    showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+    showErrorMessage("Beim Laden der Seite ist ein Fehler aufgetreten!");
     return;
   }
 
   if (teamResData.imageID === null) teamResData.imageID = 0;
 
-  apiResponse = await apiFetch("/teamMembers/teams/" + teamID + "/members/", "GET", {}, null);
+  apiResponse = await apiFetch("/teams/" + teamID + "/members/", "GET", {}, null);
 
   if (apiResponse.error === false) {
     memberResData = apiResponse.resData;
   } else {
-    showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+    showErrorMessage("Beim Laden der Seite ist ein Fehler aufgetreten!");
     return;
   }
 
@@ -124,7 +124,7 @@ export async function fetchImageData(imageID) {
   if (apiResponse.error === false) {
     imageResData = apiResponse.resData;
   } else {
-    showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+    showErrorMessage("Beim Laden der Seite ist ein Fehler aufgetreten!");
     return;
   }
   return imageResData;
@@ -147,13 +147,13 @@ export function checkTeamInput(teamName, challengeID, teamImage, teamMemberLengt
       showErrorMessage("Das Bild darf nicht größer als 10Mb sein.");
       return false;
     } else if (/^image/.test(teamImage.type) === false) {
-      showErrorMessage("Es sind nur Bilder zum hochladen erlaubt.");
+      showErrorMessage("Es sind nur Bilder zum Hochladen erlaubt.");
       return false;
     }
   }
 
   if (teamMemberLength === 0) {
-    showErrorMessage("Du musst mindestens eine Member für dein Team auswählen.");
+    showErrorMessage("Du musst mindestens ein Mitglied für dein Team auswählen.");
     return false;
   }
 
@@ -175,7 +175,7 @@ export async function saveOrUpdateTeam(teamID, teamObj, memberData, image, image
     if (apiResponse.error === false) {
       imageResData = apiResponse.resData;
     } else {
-      showErrorMessage("Beim speichern des Teams ist ein fehler aufgetreten! " + apiResponse.status);
+      showErrorMessage("Beim Speichern des Teams ist ein fehler aufgetreten! " + apiResponse.status);
       return;
     }
   } else {
@@ -195,7 +195,7 @@ export async function saveOrUpdateTeam(teamID, teamObj, memberData, image, image
     teamResData = apiResponse.resData;
     showSuccessMessage("Die Challenge wurde erfolgreich gespeichert.");
   } else {
-    showErrorMessage("Beim speichern der Challenge ist ein fehler aufgetreten! " + apiResponse.status);
+    showErrorMessage("Beim Speichern der Challenge ist ein Fehler aufgetreten! " + apiResponse.status);
     return;
   }
 

@@ -58,28 +58,6 @@ public class TeamMemberController {
     }
 
     /**
-     * Returns all team members for a challenge
-     * @param ChallengeID ID of the challenge
-     * @param request Automatically filled by browser
-     * @return All team members in challenge
-     */
-    @Operation(summary = "Get all Team-Member for a Challenge")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Search successful", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = TeamMemberDTO.class)) }),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
-    })
-    @GetMapping(path = "/challenges/{id}/", produces = "application/json")
-    public ResponseEntity<List<TeamMemberDTO>> getALLTeamMembersForChallenge(@PathVariable("id") long ChallengeID,
-                                                                             HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)) {
-            return new ResponseEntity<>(teamMemberService.getAllTeamOfChallenge(ChallengeID), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-    }
-
-    /**
      * Returns a Team Member for the given ID
      * @param id ID of the team member
      * @param request Automatically filled by browser
@@ -97,56 +75,6 @@ public class TeamMemberController {
         if (saml2Service.isLoggedIn(request)) {
             try {
                 return new ResponseEntity<>(teamMemberService.get(id), HttpStatus.OK);
-            } catch (NotFoundException e) {
-                System.out.println(e.getMessage());
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-    }
-
-    /**
-     * Returns the Members with the given teamID
-     *
-     * @param teamID teamID that the Member should be part of
-     * @param request Automatically filled by browser
-     * @return Members that are part of the given teamID
-     */
-    @Operation(summary = "Returns all Members for the given teamID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Search successful", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = MemberDTO.class)) }),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
-    })
-    @GetMapping(path = "/teams/{id}/members/", produces = "application/json")
-    public ResponseEntity<List<MemberDTO>> getALLTeamMembers(@PathVariable("id") long teamID, HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)) {
-            return new ResponseEntity<>(teamMemberService.getMemberByTeamId(teamID), HttpStatus.OK);
-        } else {
-            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
-        }
-    }
-
-    /**
-     * Returns a TeamMember with the given teamID and memberID
-     * @param teamID  teamID that the TeamMember should contain
-     * @param memberID memberID that the TeamMember should contain
-     * @param request Automatically filled by browser
-     * @return TeamMemberDTO with given teamID and memberID
-     */
-    @Operation(summary = "Returns a Team Member for the given teamID and memberID")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Search successful", content = {
-                    @Content(mediaType = "application/json", schema = @Schema(implementation = TeamMemberDTO.class)) }),
-            @ApiResponse(responseCode = "404", description = "Team member not found", content = @Content),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
-    })
-    @GetMapping(path = "/teams/{tid}/members/{mid}/", produces = "application/json")
-    public ResponseEntity<TeamMemberDTO> getTeamMemberByTeamIdAndMemberId(@PathVariable("tid") long teamID, @PathVariable("mid") long memberID, HttpServletRequest request) {
-        if (saml2Service.isLoggedIn(request)) {
-            try {
-                return new ResponseEntity<>(teamMemberService.getTeamMemberByTeamIdAndMemberId(teamID, memberID), HttpStatus.OK);
             } catch (NotFoundException e) {
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.NOT_FOUND);

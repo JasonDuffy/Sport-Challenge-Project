@@ -216,7 +216,7 @@ function AddTeam() {
           <div className="form_container">
             <form onSubmit={submitHandle}>
               <div className="form_input_container pd_1">
-                <h2>Gib deinem Team einen Namen</h2>
+                <h2>Gebe deinem Team einen Namen</h2>
                 <TextInput className="mg_t_2" value={teamName} setValue={setTeamName} maxLength={15} placeholder="Team Name" />
               </div>
               <div className="form_input_container pd_1 mg_t_2">
@@ -230,7 +230,7 @@ function AddTeam() {
                     Das Bild repräsentiert dein Team in Challenges.
                     <br />
                     <br />
-                    Das Bild sollte quadratisch sein.
+                    Es sollte quadratisch sein.
                   </span>
                   <br />
                   <ImageSelecter className={"mg_t_2"} value={teamImage} setValue={setTeamImage} alt="Aktuelles Bild des Teams" source={teamImageSource} />
@@ -240,7 +240,7 @@ function AddTeam() {
                 <h2>Wähle deine Teammitglieder aus</h2>
                 <div className="team_member_container mg_t_3">
                   <div className="team_member_content">
-                    <input id="member_search_input" className="scp_text_input" type="text" placeholder="Suche Teilnehmer" onChange={searchMember}></input>
+                    <input id="member_search_input" className="scp_text_input" type="text" placeholder="Suche nach Teilnehmern" onChange={searchMember}></input>
                     <div id="member_available_dropzone" className="member_available mg_t_1">
                       <div id="member_available_dropzone_overlay"></div>
                       {displayAvailableMembersData.map((item, index) => (
@@ -264,7 +264,7 @@ function AddTeam() {
                       {selectedMembersData.length === 0 && (
                         <div id="drag_target_overlay">
                           <FontAwesomeIcon icon={faCircleDown} size="3x" />
-                          <p>Drop Teilnehmer hier</p>
+                          <p>Ziehe Teilnehmer hier rein</p>
                         </div>
                       )}
                     </div>

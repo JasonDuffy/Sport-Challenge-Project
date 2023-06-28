@@ -36,13 +36,11 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     @Transactional
     @Query("select m from Member m " +
-            "join TeamMember tm on m.id=tm.member.id " +
-            "join Team t on tm.team.id=t.id " +
             "where m not in (" +
             "select m2 from Member m2 " +
-            "join TeamMember tm2 on tm2.member.id=m2.id " +
-            "join Team t2 on tm2.team.id=t2.id " +
-            "where t2.challenge.id=:challengeID" +
+            "join TeamMember tm on tm.member.id=m2.id " +
+            "join Team t on tm.team.id=t.id " +
+            "where t.challenge.id=:challengeID" +
             ")")
     List<Member> findNonMembersByChallenge_ID(@Param("challengeID") long challengeID);
 

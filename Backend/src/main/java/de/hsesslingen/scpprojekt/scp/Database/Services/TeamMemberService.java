@@ -92,16 +92,6 @@ public class TeamMemberService {
     }
 
     /**
-     * Returns the Members with the given teamID
-     *
-     * @param teamID teamID that the Member should be part of
-     * @return Members that are part of the given teamID
-     */
-    public List<MemberDTO> getMemberByTeamId(long teamID){
-        return memberConverter.convertEntityListToDtoList(teamMemberRepository.findMembersByTeamId(teamID));
-    }
-
-    /**
      * Adds a given TeamMember to the DB
      *
      * @param teamMemberDTO  TeamMemberDTO object to be added to DB

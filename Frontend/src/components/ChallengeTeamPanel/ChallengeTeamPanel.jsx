@@ -90,7 +90,7 @@ class ChallengeTeamPanel extends Component {
                 </div>
                 <div className="center_content mg_t_5">
                     <div className="row_edit_icon icon_faPencil">
-                        <Link to="/team/edit" state={{ teamID: this.props.id }}>
+                        <Link to="/team/edit" state={{ id: this.props.id }}>
                             <FontAwesomeIcon icon={faPencil} />
                         </Link>
                     </div>

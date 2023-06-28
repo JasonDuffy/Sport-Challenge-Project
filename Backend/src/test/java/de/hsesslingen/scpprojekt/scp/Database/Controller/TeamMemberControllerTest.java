@@ -121,66 +121,6 @@ public class TeamMemberControllerTest {
                 .andExpect(status().isForbidden())
                 .andReturn();
     }
-    /**
-     * Test Success for getting all TeamMembers of a challenge
-     *
-     * @throws Exception by mockMvc
-     */
-    @Test
-    @WithMockUser
-    public void getAllTeamMemberChallengesSuccess()throws Exception{
-
-        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-
-        ChallengeDTO challengeDTO=new ChallengeDTO();
-        challengeDTO.setId(1);
-        TeamDTO teamDTO = new TeamDTO();
-        teamDTO.setId(1);
-        TeamMemberDTO t1 = new TeamMemberDTO();
-        t1.setId(1);
-        t1.setTeamID(1L);
-        TeamMemberDTO t2 = new TeamMemberDTO();
-        t2.setId(2);
-        t2.setTeamID(1L);
-        List<TeamMemberDTO> tList = new ArrayList<>();
-        tList.add(t1); tList.add(t2);
-
-        when(teamMemberService.getAllTeamOfChallenge(1L)).thenReturn(tList);
-        RequestBuilder request = MockMvcRequestBuilders
-                .get("/teamMembers/challenges/1/").accept(MediaType.APPLICATION_JSON);
-
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andReturn();
-
-        String content = res.getResponse().getContentAsString();
-
-        Pattern pattern = Pattern.compile("\\{\"id\":(\\d),");
-        Matcher matcher = pattern.matcher(content);
-
-        matcher.find();
-        assertEquals(matcher.group(1), "1");
-        matcher.find();
-        assertEquals(matcher.group(1), "2");
-        assertFalse(matcher.find());
-        Mockito.verify(teamMemberService).getAllTeamOfChallenge(1L);
-    }
-
-    /**
-     * Test not Logged in for getting all TeamMembers of a challenge
-     * @throws Exception by mockvc
-     */
-    @Test
-    @WithAnonymousUser
-    public void getAllTeamMemberChallengesNotLoggedIn()throws Exception{
-        RequestBuilder request = MockMvcRequestBuilders
-                .get("/teamMembers/challenges/1/").accept(MediaType.APPLICATION_JSON);
-
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isForbidden())
-                .andReturn();
-    }
 
     /**
      * Test if teamMember is returned correctly
@@ -540,50 +480,4 @@ public class TeamMemberControllerTest {
                 .andExpect(status().isForbidden())
                 .andReturn();
     }
-
-    /**
-     * Test if TeamMember correctly thrown
-     * @throws Exception  by mockMvc
-     */
-    @Test
-    @WithMockUser
-    public void getTeamMemberByTeamIdAndMemberIdTestSuccess() throws Exception {
-        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-
-        TeamMemberDTO teamMemberDTO = new TeamMemberDTO(1,1);
-        teamMemberDTO.setId(2);
-        when(teamMemberService.getTeamMemberByTeamIdAndMemberId(1,1)).thenReturn(teamMemberDTO);
-        RequestBuilder request = MockMvcRequestBuilders
-                .get("/teamMembers/teams/1/members/1/").accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON);
-
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isOk())
-                .andReturn();
-
-        String content = res.getResponse().getContentAsString();
-        assertEquals("{\"id\":2,\"teamID\":1,\"memberID\":1}",content);
-
-        Mockito.verify(teamMemberService).getTeamMemberByTeamIdAndMemberId(any(Long.class),any(Long.class));
-
-    }
-
-    /**
-     * Test if Unknown user is thrown
-     * @throws Exception  by mockMvc
-     */
-    @Test
-    @WithAnonymousUser
-    public void getTeamMemberByTeamIdAndMemberIdTestNotLoggedINn() throws Exception {
-        RequestBuilder request = MockMvcRequestBuilders
-                .get("/teamMembers/teams/1/members/1/").accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON);
-
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isForbidden())
-                .andReturn();
-    }
-
-
-
 }

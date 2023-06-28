@@ -147,7 +147,7 @@ function AddChallenge() {
               <div className="form_input_container pd_1 mg_t_2">
                 <h2>Beschreibe deine Challenge</h2>
                 <div className="form_input_description_content">
-                  <TextareaInput className="mg_t_2" value={challengeDescription} setValue={setChallengeDescription} placeholder="Beschreibe deine Challenge" />
+                  <TextareaInput className="mg_t_2" maxLength={400} value={challengeDescription} setValue={setChallengeDescription} placeholder="Beschreibe deine Challenge" />
                 </div>
               </div>
               <div className="form_input_container pd_1 mg_t_2">

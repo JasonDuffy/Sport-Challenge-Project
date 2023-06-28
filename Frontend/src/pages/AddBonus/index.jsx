@@ -42,6 +42,8 @@ function AddBonus() {
         pageData = await fetchBonusChallengeData(location.state.id);
         setchallengeID(pageData.id.toString());
 
+        let challengeIDBuffer = pageData.id;
+
         pageData = await fetchBonusData(location.state.id);
         setBonusHeadingName(pageData.name);
         setBonusName(pageData.name);
@@ -52,7 +54,7 @@ function AddBonus() {
 
         document.title = "Slash Challenge - " + pageData.name + " bearbeiten";
 
-        pageData = await fetchFormData(pageData.id);
+        pageData = await fetchFormData(challengeIDBuffer);
       } else {
         document.title = "Slash Challenge - Neuen Bonus erstellen";
 
@@ -128,11 +130,11 @@ function AddBonus() {
             <form onSubmit={submitHandle}>
               <div className="form_input_container pd_1">
                 <h2>Gebe dem Bonus einen Namen</h2>
-                <TextInput className="mg_t_2" value={bonusName} setValue={setBonusName} maxLength={15} placeholder="Bonus Name" />
+                <TextInput className="mg_t_2" value={bonusName} setValue={setBonusName} maxLength={32} placeholder="Bonus Name" />
               </div>
               <div className="form_input_container pd_1 mg_t_2">
                 <h2>Was ist der Anlass des Bonuses?</h2>
-                <TextareaInput className="mg_t_2" value={bonusDescription} setValue={setBonusDescription} placeholder="Beschreibe den Bonus" />
+                <TextareaInput className="mg_t_2" maxLength={128} value={bonusDescription} setValue={setBonusDescription} placeholder="Beschreibe den Bonus" />
               </div>
               <div className="form_input_container pd_1 mg_t_2">
                 <h2>Wähle eine Challenge für den Bonus aus</h2>

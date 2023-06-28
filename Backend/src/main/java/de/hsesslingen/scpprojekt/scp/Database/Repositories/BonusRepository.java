@@ -29,8 +29,8 @@ public interface BonusRepository extends JpaRepository<Bonus, Long> {
             "JOIN ChallengeSportBonus csb ON csb.bonus.id=b.id " +
             "JOIN ChallengeSport cs ON csb.challengeSport.id=cs.id " +
             "WHERE cs.challenge.id = :challengeID " +
-            "and b.startDate <= current date " +
-            "and b.endDate > current date " +
+            "and b.startDate <= current timestamp " +
+            "and b.endDate > current timestamp " +
             "order by b.startDate asc")
     public List<Bonus> findCurrentBonusesByChallengeID(@Param("challengeID") long challengeID);
 
@@ -39,8 +39,8 @@ public interface BonusRepository extends JpaRepository<Bonus, Long> {
             "JOIN ChallengeSportBonus csb ON csb.bonus.id=b.id " +
             "JOIN ChallengeSport cs ON csb.challengeSport.id=cs.id " +
             "WHERE cs.challenge.id = :challengeID " +
-            "and b.startDate <= current date " +
-            "and b.endDate <= current date " +
+            "and b.startDate <= current timestamp " +
+            "and b.endDate <= current timestamp " +
             "order by b.startDate asc")
     public List<Bonus> findPastBonusesByChallengeID(@Param("challengeID") long challengeID);
 
@@ -49,8 +49,8 @@ public interface BonusRepository extends JpaRepository<Bonus, Long> {
             "JOIN ChallengeSportBonus csb ON csb.bonus.id=b.id " +
             "JOIN ChallengeSport cs ON csb.challengeSport.id=cs.id " +
             "WHERE cs.challenge.id = :challengeID " +
-            "and b.startDate > current date " +
-            "and b.endDate > current date " +
+            "and b.startDate > current timestamp " +
+            "and b.endDate > current timestamp " +
             "order by b.startDate asc")
     public List<Bonus> findFutureBonusesByChallengeID(@Param("challengeID") long challengeID);
 
@@ -59,7 +59,7 @@ public interface BonusRepository extends JpaRepository<Bonus, Long> {
             "join ChallengeSportBonus csb on csb.bonus.id=b.id " +
             "join ChallengeSport cs on cs.id=csb.challengeSport.id " +
             "where cs.sport.id = :sportID and cs.challenge.id = :challengeID " +
-            "and b.endDate > current date and b.startDate <= current date")
+            "and b.endDate > current timestamp and b.startDate <= current timestamp")
     public List<Bonus> findCurrentBonusesByChallengeIDAndSportID(@Param("challengeID") long challengeID, @Param("sportID") long sportID);
 
     @Transactional

@@ -15,6 +15,9 @@ let sportNameHeading = "";
 class AddSport extends Component {
   constructor(props) {
     super(props);
+
+    document.title = "Slash Challenge - MISSING_DESC";
+
     //state for the input elements
     this.state = {
       sportName: "",

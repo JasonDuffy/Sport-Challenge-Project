@@ -50,8 +50,12 @@ function AddBonus() {
         setBonusStartDate(pageData.startDate);
         setBonusEndDate(pageData.endDate);
 
+        document.title = "Slash Challenge - " + pageData.name + " bearbeiten";
+
         pageData = await fetchFormData(pageData.id);
       } else {
+        document.title = "Slash Challenge - Neuen Bonus erstellen";
+
         pageData = await fetchFormData(0);
       }
 
@@ -108,12 +112,12 @@ function AddBonus() {
     <section className="background_white">
       <div className="section_container">
         <div className="section_content">
-          <AddHeading action={action} entitie="Bonus" name={bonusHeadingName} />
+          <AddHeading action={action} entity="Bonus" name={bonusHeadingName} />
           <InfoMessage />
           <div className="form_container">
             <form onSubmit={submitHandle}>
               <div className="form_input_container pd_1">
-                <h2>Gib dem Bonus einen Namen</h2>
+                <h2>Gebe dem Bonus einen Namen</h2>
                 <TextInput className="mg_t_2" value={bonusName} setValue={setBonusName} maxLength={15} placeholder="Bonus Name" />
               </div>
               <div className="form_input_container pd_1 mg_t_2">
@@ -134,7 +138,7 @@ function AddBonus() {
                   <thead>
                     <tr>
                       <th>Sportart</th>
-                      <th>Select</th>
+                      <th>Auswahl</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -156,7 +160,7 @@ function AddBonus() {
                 </div>
               </div>
               <div className="center_content mg_t_2">
-                {action === "edit" && <Button color="orange" txt="Bonus editieren" type="submit" loading={loading} />}
+                {action === "edit" && <Button color="orange" txt="Bonus bearbeiten" type="submit" loading={loading} />}
                 {action === "add" && <Button color="orange" txt="Bonus hinzufügen" type="submit" loading={loading} />}
               </div>
             </form>

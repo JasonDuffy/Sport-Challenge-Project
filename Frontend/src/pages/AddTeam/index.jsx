@@ -65,6 +65,8 @@ function AddTeam() {
           setTeamImageSource("data:" + pageData.type + "; base64, " + pageData.data);
         }
 
+    document.title = "Slash Challenge - MISSING_DESC";
+
         pageData = await fetchFormData(teamData.challengeID);
       } else {
         pageData = await fetchFormData(0);

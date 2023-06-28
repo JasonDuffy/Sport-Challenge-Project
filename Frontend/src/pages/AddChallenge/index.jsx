@@ -46,14 +46,17 @@ function AddChallenge() {
         setChallengeEndDate(pageData.endDate);
         setChallengeDistanceGoal(pageData.targetDistance);
 
-        //Use defualt image if no image was set
+        document.title = "Slash Challenge - " + pageData.name + " bearbeiten";
+
+        //Use default image if no image was set
         if(pageData.imageID === null || pageData.imageID === 0){
           setChallengeImageSource(require("../../assets/images/Default-Challenge.png"));
         }else{
           pageData = await fetchImageData(pageData.imageID);
           setChallengeImageSource("data:" + pageData.type + "; base64, " + pageData.data);
         }
-
+      } else {
+        document.title = "Slash Challenge - Neue Challenge erstellen";
       }
 
       pageData = await fetchSportTable(location.state.id);
@@ -98,12 +101,12 @@ function AddChallenge() {
     <section className="background_white">
       <div className="section_container">
         <div className="section_content">
-          <AddHeading action={action} entitie="Challenge" name={challengeHeadingName} />
+          <AddHeading action={action} entity="Challenge" name={challengeHeadingName} />
           <InfoMessage />
           <div className="form_container">
             <form onSubmit={submitHandle}>
               <div className="form_input_container pd_1">
-                <h2>Gib der Challenge einen Namen</h2>
+                <h2>Gebe der Challenge einen Namen</h2>
                 <TextInput className="mg_t_2" value={challengeName} setValue={setChallengeName} maxLength={64} placeholder="Challenge Name" />
               </div>
               <div className="form_input_container pd_1 mg_t_2">
@@ -113,7 +116,7 @@ function AddChallenge() {
                     Das Bild repräsentiert deine Challenge auf der Startseite.
                     <br />
                     <br />
-                    Das Bild sollte quadratisch sein.
+                    Es sollte quadratisch sein.
                   </span>
                   <br />
                   <ImageSelecter className="mg_t_2" value={challengeImage} setValue={setChallengeImage} alt="Aktuelles Bild der Challenge" source={challengeImageSource}/>
@@ -139,8 +142,8 @@ function AddChallenge() {
                   <thead>
                     <tr>
                       <th>Sportart</th>
-                      <th>Multiplier</th>
-                      <th>Select</th>
+                      <th>Faktor</th>
+                      <th>Auswahl</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -165,7 +168,7 @@ function AddChallenge() {
                 </div>
               </div>
               <div className="center_content mg_t_2">
-                {action === "edit" && <Button color="orange" txt="Challenge editieren" type="submit" loading={loading} />}
+                {action === "edit" && <Button color="orange" txt="Challenge bearbeiten" type="submit" loading={loading} />}
                 {action === "add" && <Button color="orange" txt="Challenge hinzufügen" type="submit" loading={loading} />}
               </div>
             </form>

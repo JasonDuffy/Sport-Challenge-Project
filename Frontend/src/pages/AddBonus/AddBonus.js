@@ -43,7 +43,7 @@ export async function fetchSportTable(bonusID, challengeID) {
   if (apiResponse.error === false) {
     challengeSportResData = apiResponse.resData;
   } else {
-    showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+    showErrorMessage("Beim Laden der Seite ist ein Fehler aufgetreten!");
     return;
   }
 
@@ -52,7 +52,7 @@ export async function fetchSportTable(bonusID, challengeID) {
   if (apiResponse.error === false) {
     challengeSportCheckedResData = apiResponse.resData;
   } else {
-    showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+    showErrorMessage("Beim Laden der Seite ist ein Fehler aufgetreten!");
     return;
   }
 
@@ -76,7 +76,7 @@ export async function fetchSportTable(bonusID, challengeID) {
 
       sportTableResData.push(tableObj);
     } else {
-      showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+      showErrorMessage("Beim Laden der Seite ist ein Fehler aufgetreten!");
       return;
     }
   }
@@ -96,7 +96,7 @@ export async function fetchBonusChallengeData(bonusID) {
   if (apiResponse.error === false) {
     challengeResData = apiResponse.resData;
   } else {
-    showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+    showErrorMessage("Beim Laden der Seite ist ein Fehler aufgetreten!");
     return;
   }
   return challengeResData;
@@ -114,7 +114,7 @@ export async function fetchBonusData(bonusID) {
   if (apiResponse.error === false) {
     bonusResData = apiResponse.resData;
   } else {
-    showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+    showErrorMessage("Beim Laden der Seite ist ein Fehler aufgetreten!");
     return;
   }
   return bonusResData;
@@ -138,7 +138,7 @@ export function checkBonusInput(bonusName, bonusDescription, challengeID, bonusF
   }
 
   if (bonusDescription === "") {
-    showErrorMessage("Bitte gebe deinem Bonus einen Beschreibung.");
+    showErrorMessage("Bitte gebe deinem Bonus eine Beschreibung.");
     return false;
   }
 
@@ -158,12 +158,12 @@ export function checkBonusInput(bonusName, bonusDescription, challengeID, bonusF
   }
 
   if (bonusStartDate === "") {
-    showErrorMessage("Bitte wähle ein start Datum für deinen Bonus aus.");
+    showErrorMessage("Bitte wähle ein Startdatum für deinen Bonus aus.");
     return false;
   }
 
   if (bonusEndDate === "") {
-    showErrorMessage("Bitte wähle ein end Datum für deinen Bonus aus.");
+    showErrorMessage("Bitte wähle ein Enddatum für deinen Bonus aus.");
     return false;
   }
 

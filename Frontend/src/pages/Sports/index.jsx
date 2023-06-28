@@ -11,6 +11,8 @@ class Sports extends Component {
   constructor(props) {
     super(props);
 
+    document.title = "Slash Challenge - Sportarten";
+
     this.state = {
       sports: []
     };

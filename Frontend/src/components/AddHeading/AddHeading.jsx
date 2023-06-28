@@ -4,18 +4,18 @@ import PropTypes from "prop-types";
  * @author Robin Hackh
  */
 
-function AddHeading({ action, entitie, name }) {
+function AddHeading({ action, entity, name }) {
   if (action === "add") {
     return (
       <div className="heading_underline_center mg_b_10">
-        <span className="underline_center">{entitie} hinzufügen</span>
+        <span className="underline_center">{entity} hinzufügen</span>
       </div>
     );
   } else {
     return (
       <div className="heading_underline_center mg_b_10">
         <span className="underline_center">
-          {entitie} {name} editieren
+          {entity} {name} bearbeiten
         </span>
       </div>
     );
@@ -24,7 +24,7 @@ function AddHeading({ action, entitie, name }) {
 
 AddHeading.propTypes = {
   action: PropTypes.string.isRequired,
-  entitie: PropTypes.string.isRequired,
+  entity: PropTypes.string.isRequired,
   name: PropTypes.string,
 };
 

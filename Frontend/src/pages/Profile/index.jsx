@@ -12,6 +12,8 @@ class Userprofile extends Component {
   constructor(props) {
     super(props);
 
+    document.title = "Slash Challenge - Mein Profil";
+
     //state for the input elements
     this.state = {
       userID: 0,

@@ -13,6 +13,8 @@ class MyChallenges extends Component {
       activityIDs: [],
       loggedInID: 0,
     };
+
+    document.title = "Slash Challenge - Meine Challenges";
   }
 
   async componentDidMount() {
@@ -64,7 +66,7 @@ class MyChallenges extends Component {
                 <table className="last_activites_table">
                   <thead>
                     <tr>
-                      <th>Challenge Name</th>
+                      <th>Name der Challenge</th>
                       <th>Sportart</th>
                       <th>Distanz</th>
                       <th>Eingetragen am</th>

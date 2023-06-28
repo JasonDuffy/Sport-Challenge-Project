@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
-import "../../assets/css/form.css";
 import GlobalVariables from "../../GlobalVariables.js"
+import "./SportsTableRow.css";
+import { Link } from "react-router-dom";
 
 class SportsTableRow extends Component {
   constructor(props) {
@@ -18,9 +19,11 @@ class SportsTableRow extends Component {
   }
 
   async deleteRow(event) {
-    const sportsResponse = await fetch(GlobalVariables.serverURL + "/sports/" + this.props.id + "/", { method: "DELETE", credentials: "include" });
-    if (sportsResponse.ok) {
-      this.setState({ deleted: true });
+    if(window.confirm("Möchtest du die Sportart " + this.state.sportsName + " wirklich löschen?") === true){
+      const sportsResponse = await fetch(GlobalVariables.serverURL + "/sports/" + this.props.id + "/", { method: "DELETE", credentials: "include" });
+      if (sportsResponse.ok) {
+        this.setState({ deleted: true });
+      }
     }
   }
 
@@ -42,9 +45,9 @@ class SportsTableRow extends Component {
         <td>{this.state.sportsFactor}</td>
         <td>
           <div className="row_edit_icon icon_faPencil">
-            <a href={'Edit/Sport/' + this.props.id} style={{ color: "#ffeeee"}}>
+            <Link to="/sport/edit" state={{id: this.props.id}}>
               <FontAwesomeIcon icon={faPencil} />
-            </a>
+            </Link>
           </div>
           <div className="row_edit_icon icon_faXmark" onClick={this.deleteRow}>
             <FontAwesomeIcon icon={faXmark} size="lg" />

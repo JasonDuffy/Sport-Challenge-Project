@@ -75,6 +75,10 @@ function AddTeam() {
       }
 
       setChallengeDropdownData(pageData.challengeDropdownResData);
+
+      if (location.state.challengeID !== null) {
+        setChallengeID(location.state.challengeID);
+      }
     }
 
     load();

@@ -10,7 +10,12 @@ function NumberInput({ id, className, value, setValue, min, max, step }) {
   value = value > max ? max : value;
 
   function handleChange(event) {
-    setValue(Number(event.target.value));
+    let inputValue = Number(event.target.value);
+
+    inputValue = inputValue < min ? min : inputValue;
+    inputValue = inputValue > max ? max : inputValue;
+
+    setValue(inputValue);
   }
 
   if(value != null && setValue != null){

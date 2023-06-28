@@ -136,9 +136,11 @@ class ChallengeTeamPanelTable extends Component {
                             this.rowMaker(position++, item)
                         ))}
                         {formattedDataArray.length === 0 && (
-                            <td colSpan={3}>
-                                <span>Das Team besitzt aktuell keine Mitglieder.</span>
-                            </td>
+                            <tr>
+                                <td colSpan={3}>
+                                    <span>Das Team besitzt aktuell keine Mitglieder.</span>
+                                </td>
+                            </tr>
                         )}
                     </tbody>
                 </table>

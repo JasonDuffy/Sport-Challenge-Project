@@ -1,10 +1,13 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamMemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.TeamMemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.TeamMember;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.TeamMemberRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,9 @@ public class TeamMemberService {
     @Autowired
     @Lazy
     TeamMemberConverter teamMemberConverter;
+    @Autowired
+    @Lazy
+    MemberConverter memberConverter;
 
     /**
      *  Return all TeamMembers
@@ -83,6 +89,16 @@ public class TeamMemberService {
         if(teamMember.isPresent())
             return teamMemberConverter.convertEntityToDto(teamMember.get());
         throw new NotFoundException("TeamMember with the teamID " + teamID + " and the memberID " + memberID + " is not present in DB.");
+    }
+
+    /**
+     * Returns the Members with the given teamID
+     *
+     * @param teamID teamID that the Member should be part of
+     * @return Members that are part of the given teamID
+     */
+    public List<MemberDTO> getMemberByTeamId(long teamID){
+        return memberConverter.convertEntityListToDtoList(teamMemberRepository.findMembersByTeamId(teamID));
     }
 
     /**

@@ -3,7 +3,9 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.TeamMemberConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamMemberDTO;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.TeamMember;
 import de.hsesslingen.scpprojekt.scp.Database.Services.TeamMemberService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
@@ -103,6 +105,29 @@ public class TeamMemberController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
+    /**
+     * Returns the Members with the given teamID
+     *
+     * @param teamID teamID that the Member should be part of
+     * @param request Automatically filled by browser
+     * @return Members that are part of the given teamID
+     */
+    @Operation(summary = "Returns all Members for the given teamID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Search successful", content = {
+                    @Content(mediaType = "application/json", schema = @Schema(implementation = MemberDTO.class)) }),
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
+    })
+    @GetMapping(path = "/teams/{id}/members/", produces = "application/json")
+    public ResponseEntity<List<MemberDTO>> getALLTeamMembers(@PathVariable("id") long teamID, HttpServletRequest request) {
+        if (saml2Service.isLoggedIn(request)) {
+            return new ResponseEntity<>(teamMemberService.getMemberByTeamId(teamID), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+    }
+
     /**
      * Returns a TeamMember with the given teamID and memberID
      * @param teamID  teamID that the TeamMember should contain

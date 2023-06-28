@@ -1,0 +1,144 @@
+/*
+  author: Robin Hackh
+*/
+
+.error_container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.error_content {
+  display: flex;
+  align-items: center;
+}
+
+.error_text_container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.error_text_container > span:nth-child(1) {
+  font-size: 1.6vw;
+  font-weight: bold;
+  color: var(--doubleslash-text-white);
+}
+
+.error_text_container > span:nth-child(2) {
+  margin-top: -4.8vw;
+  font-size: 16vw;
+  font-weight: bold;
+  color: var(--doubleslash-orange);
+}
+
+.error_text_container > span:nth-child(3) {
+  margin-top: -3.2vw;
+  margin-bottom: 30px;
+  font-size: 2.8vw;
+  font-weight: bold;
+  color: var(--doubleslash-text-white);
+}
+
+@media screen and (min-width: 1250px) {
+  .error_text_container > span:nth-child(1) {
+    font-size: 20px !important;
+  }
+
+  .error_text_container > span:nth-child(2) {
+    margin-top: -60px !important;
+    font-size: 200px !important;
+  }
+
+  .error_text_container > span:nth-child(3) {
+    font-size: 35px !important;
+    margin-top: -40px !important;
+  }
+}
+
+@media screen and (max-width: 650px) {
+  .error_content {
+    flex-direction: column-reverse;
+  }
+
+  .error_image {
+    margin-right: 40px;
+    margin-bottom: 20px;
+  }
+
+  .error_text_container > span:nth-child(1) {
+    font-size: 15px;
+  }
+
+  .error_text_container > span:nth-child(2) {
+    margin-top: -45px;
+    font-size: 150px;
+  }
+
+  .error_text_container > span:nth-child(3) {
+    font-size: 26px;
+    margin-top: -30px;
+  }
+}
+
+.error_image {
+  width: 40vw;
+  max-width: 500px;
+}
+
+.error_background_image {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("../../assets/images/Background_Error_Page.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position-y: 0;
+}
+
+.error_image_credits {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  font-size: 17px;
+  justify-content: center;
+  margin-bottom: 30px;
+  color: var(--doubleslash-text-white);
+}
+
+.error_image_credits a {
+  color: var(--doubleslash-blue);
+  margin-right: 5px;
+}
+
+.error_home_button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 60%;
+  border-radius: 21px;
+  height: 42px;
+  outline-offset: -2px;
+  margin: 0 auto;
+  background-color: var(--doubleslash-orange);
+  color: var(--doubleslash-text-white);
+  border: none;
+  transition: background-color 0.3s ease;
+  font-weight: bold;
+  font-size: 15px;
+}
+
+.error_home_button:hover {
+  cursor: pointer;
+  background-color: transparent;
+  outline: 2px solid var(--doubleslash-orange);
+}

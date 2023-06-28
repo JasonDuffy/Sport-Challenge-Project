@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import AddChallenge from "./pages/AddChallenge";
 import AddTeam from "./pages/AddTeam";
@@ -14,43 +14,32 @@ import AddSport from "./pages/AddSport";
 import AddBonus from "./pages/AddBonus";
 import Sports from "./pages/Sports";
 import apiFetch from "./utils/api";
-import { useState } from "react";
-import { useEffect } from "react";
+import NotFound from "./pages/NotFound";
 
 function App() {
   document.title = "Slash Challenge"; // Default title
 
-  const[isLoggedIn, setIsLoggedIn] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
   useEffect(() => {
-    checkLogin();
-    updateLoginState();
-  }, [location.pathname, isLoggedIn]);
+    async function checkLogin() {
+      let response = await apiFetch("/saml/", "GET", {}, null);
 
-  async function updateLoginState() {
-    let response = await apiFetch("/saml/", "GET", {}, null);
-  
-    if(response.status === 403){
-      setIsLoggedIn(false);
-    } else {
-      setIsLoggedIn(true);
-    }
-  }
-  
-  function checkLogin(){
-    if(isLoggedIn === false){
-      if(window.location.pathname !== "/login"){
-        navigate("/login");
-        window.location.reload()
-      }
-    } else {
-      if(window.location.pathname === "/login"){
-        navigate("/");
+      if (response.status === 403) {
+        if (location.pathname !== "/login") {
+          navigate("/login");
+          window.location.reload();
+        }
+      } else {
+        if (location.pathname === "/login") {
+          navigate("/");
+        }
       }
     }
-  }
+
+    checkLogin();
+  }, [location.pathname]);
 
   return (
     <>
@@ -66,6 +55,7 @@ function App() {
         <Route path="/team/:action" element={<AddTeam />} />
         <Route path="/bonus/:action" element={<AddBonus />} />
         <Route path="/sport/:action" element={<AddSport />} />
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   );

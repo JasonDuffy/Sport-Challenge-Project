@@ -11,7 +11,7 @@ import TextInput from "../../components/form/TextInput/TextInput";
 import TextareaInput from "../../components/form/TextareaInput/TextareaInput";
 import NumberInput from "../../components/form/NumberInput/NumberInput";
 import ImageSelecter from "../../components/form/ImageSelecter/ImageSelecter";
-import { checkChallengeInput, fetchChallengeData, fetchImageData, fetchSportTable, saveOrUpdateChallenge } from "./AddChallenge";
+import { checkChallengeInput, fetchChallengeData, fetchDeleteChallenge, fetchImageData, fetchSportTable, saveOrUpdateChallenge } from "./AddChallenge";
 
 /**
  * @author Robin Hackh
@@ -113,6 +113,17 @@ function AddChallenge() {
     setLoading(false);
   }
 
+  async function deleteChallenge(event){
+    event.preventDefault();
+
+    if (window.confirm("Möchten Sie die Challenge " + challengeName + " wirklich löschen?")) {
+      //if delete was successfully
+      if (await fetchDeleteChallenge(location.state.id)) {
+        navigate("/");
+      }
+    }
+  }
+
   return (
     <section className="background_white">
       <div className="section_container">
@@ -147,7 +158,13 @@ function AddChallenge() {
               <div className="form_input_container pd_1 mg_t_2">
                 <h2>Beschreibe deine Challenge</h2>
                 <div className="form_input_description_content">
-                  <TextareaInput className="mg_t_2" maxLength={400} value={challengeDescription} setValue={setChallengeDescription} placeholder="Beschreibe deine Challenge" />
+                  <TextareaInput
+                    className="mg_t_2"
+                    maxLength={400}
+                    value={challengeDescription}
+                    setValue={setChallengeDescription}
+                    placeholder="Beschreibe deine Challenge"
+                  />
                 </div>
               </div>
               <div className="form_input_container pd_1 mg_t_2">
@@ -190,7 +207,12 @@ function AddChallenge() {
                 </div>
               </div>
               <div className="center_content mg_t_2">
-                {action === "edit" && <Button color="orange" txt="Challenge bearbeiten" type="submit" loading={loading} />}
+                {action === "edit" && (
+                  <>
+                    <Button color="orange" txt="Challenge bearbeiten" type="submit" loading={loading} />{" "}
+                    <Button className="mg_l_2" action={deleteChallenge} color="red" txt="Challenge Löschen" loading={loading} />
+                  </>
+                )}
                 {action === "add" && <Button color="orange" txt="Challenge hinzufügen" type="submit" loading={loading} />}
               </div>
             </form>

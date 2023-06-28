@@ -30,7 +30,7 @@ function Button(props) {
   }
 
   return (
-    <button className={buttonClass} type={props.type} onClick={props.action}>
+    <button className={buttonClass + " " + props.className} type={props.type} onClick={props.action}>
       <span>{props.txt}</span>
       {loadingAnimation}
     </button>
@@ -38,9 +38,10 @@ function Button(props) {
 }
 
 Button.propTypes = {
+  className: PropTypes.string,
   color: PropTypes.string.isRequired,
   txt: PropTypes.string.isRequired,
-  acttion: PropTypes.func,
+  action: PropTypes.func,
   type: PropTypes.string,
   loading: PropTypes.bool,
 };

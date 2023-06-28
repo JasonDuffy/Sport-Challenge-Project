@@ -196,3 +196,16 @@ export async function saveOrUpdateChallenge(challengeID, challengeObj, sportIDs,
 
   return challengeResData;
 }
+
+export async function fetchDeleteChallenge(challengeID){
+  let apiResponse;
+
+  apiResponse = await apiFetch("/challenges/" + challengeID + "/", "DELETE", {}, null);
+
+  if (apiResponse.error === false) {
+    return true;
+  } else {
+    showErrorMessage("Beim löschen der Challenge ist ein fehler aufgetreten! " + apiResponse.status);
+    return false;
+  }
+}

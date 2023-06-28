@@ -1,6 +1,6 @@
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { checkBonusInput, fetchBonusChallengeData, fetchBonusData, fetchFormData, fetchSportTable, saveOrUpdateBonus } from "./AddBonus.js";
+import { checkBonusInput, fetchBonusChallengeData, fetchBonusData, fetchDeleteBonus, fetchFormData, fetchSportTable, saveOrUpdateBonus } from "./AddBonus.js";
 import "./AddBonus.css";
 import "../../assets/css/form.css";
 import AddHeading from "../../components/AddHeading/AddHeading";
@@ -124,6 +124,17 @@ function AddBonus() {
     setLoading(false);
   }
 
+  async function deleteBonus(event) {
+    event.preventDefault();
+
+    if (window.confirm("Möchten Sie den Bonus " + bonusName + " wirklich löschen?")) {
+      //if delete was successfully
+      if (await fetchDeleteBonus(location.state.id)) {
+        navigate("/");
+      }
+    }
+  }
+
   return (
     <section className="background_white">
       <div className="section_container">
@@ -176,7 +187,12 @@ function AddBonus() {
                 </div>
               </div>
               <div className="center_content mg_t_2">
-                {action === "edit" && <Button color="orange" txt="Bonus bearbeiten" type="submit" loading={loading} />}
+                {action === "edit" && (
+                  <>
+                    <Button color="orange" txt="Bonus bearbeiten" type="submit" loading={loading} />
+                    <Button className="mg_l_2" action={deleteBonus} color="red" txt="Bonus Löschen" loading={loading} />
+                  </>
+                )}
                 {action === "add" && <Button color="orange" txt="Bonus hinzufügen" type="submit" loading={loading} />}
               </div>
             </form>

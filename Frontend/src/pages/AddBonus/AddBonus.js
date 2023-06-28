@@ -195,3 +195,16 @@ export async function saveOrUpdateBonus(bonusID, bonusObj, challengeSportIDs) {
 
   return bonusResData;
 }
+
+export async function fetchDeleteBonus(bonusID){
+  let apiResponse;
+
+  apiResponse = await apiFetch("/bonuses/" + bonusID + "/", "DELETE", {}, null);
+
+  if (apiResponse.error === false) {
+    return true;
+  } else {
+    showErrorMessage("Beim löschen des Bonuses ist ein fehler aufgetreten! " + apiResponse.status);
+    return false;
+  }
+}

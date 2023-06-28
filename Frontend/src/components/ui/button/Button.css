@@ -37,6 +37,12 @@
   outline-offset: -2px;
 }
 
+.button_red {
+  background-color: #d2253b;
+  outline: solid 2px #d2253b;
+  outline-offset: -2px;
+}
+
 .button_white:hover {
   background-color: white;
   color: var(--doubleslash-text-grey);
@@ -50,6 +56,11 @@
 .button_blue:hover {
   background-color: white;
   color: var(--doubleslash-blue);
+}
+
+.button_red:hover {
+  background-color: white;
+  color: #d2253b;
 }
 
 .disabled {

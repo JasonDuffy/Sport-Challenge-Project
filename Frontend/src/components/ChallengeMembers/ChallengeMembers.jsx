@@ -41,7 +41,7 @@ class ChallengeMembers extends Component {
         return (
             <div className="teamContainer">
                 <div className="teamContainerImage">
-                    <img src={this.state.image} alt={"Bild des Teams " + this.state.team.name} className="challengeImage"></img>
+                    <img src={this.state.image} alt={"Bild des Teams " + this.state.team.name} className="teamImage"></img>
                 </div>
                 <div className="teamContainerName">
                     {this.state.team.name}

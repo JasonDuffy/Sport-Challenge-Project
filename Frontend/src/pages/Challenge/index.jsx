@@ -96,7 +96,7 @@ class Challenge extends Component {
         }
 
         // CHALLENGE IMAGE FETCH --------------------------------------
-        if(this.state.challenge.imageID != null){
+        if (this.state.challenge.imageID != null) {
             let image = await fetch(GlobalVariables.serverURL + "/images/" + this.state.challenge.imageID + "/", { method: "GET", credentials: "include" });
             let imageResData = await image.json();
 
@@ -228,6 +228,13 @@ class Challenge extends Component {
                         {data.map((item) => (
                             this.teamRowMaker(position++, item)
                         ))}
+                        {data.length === 0 && (
+                            <tr>
+                                <td colSpan={3}>
+                                    <span>Zur Zeit nehmen keine Teams teil.</span>
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -280,6 +287,13 @@ class Challenge extends Component {
                             {this.state.currentBonuses.map((item) => (
                                 <ChallengeBonusRow key={item.id} type={type} bonus={structuredClone(item)} />
                             ))}
+                            {this.state.currentBonuses.length === 0 && (
+                                <tr>
+                                    <td colSpan={7}>
+                                        <span>Zur Zeit läuft keine Bonusaktion.</span>
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
@@ -401,6 +415,9 @@ class Challenge extends Component {
                                         <ChallengeMembers key={item.id} team={structuredClone(item)} />
                                     ))}
                                 </div>
+                                {this.state.teams.length === 0 && (
+                                    <span>Zur Zeit nehmen keine Teams teil.</span>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -467,38 +484,42 @@ class Challenge extends Component {
                         <div className="teamTable">
                             <this.teamTableMaker />
                         </div>
-                        <div className="graphContainer mg_t_3">
-                            <ChallengeTeamPanelAreaGraph key="challengeArea"
-                                activities={structuredClone(this.state.activities)}
-                                width="50%" aspect={1} lineColor="#C63328" fillColor="#ff9f00"
-                                startDate={structuredClone(this.state.challenge.startDate)}
-                                endDate={structuredClone(this.state.challenge.endDate)} />
+                        {this.state.activities.length > 0 && this.state.teams.length > 0 && (
+                            <div className="graphContainer mg_t_3">
+                                <ChallengeTeamPanelAreaGraph key="challengeArea"
+                                    activities={structuredClone(this.state.activities)}
+                                    width="50%" aspect={1} lineColor="#C63328" fillColor="#ff9f00"
+                                    startDate={structuredClone(this.state.challenge.startDate)}
+                                    endDate={structuredClone(this.state.challenge.endDate)} />
 
-                            <ChallengeTeamBarGraph key={"challengeBar"}
-                                teams={structuredClone(this.state.teams)}
-                                width="50%" aspect={1} lineColor="#C63328" fillColor="#ff9f00" />
+                                <ChallengeTeamBarGraph key={"challengeBar"}
+                                    teams={structuredClone(this.state.teams)}
+                                    width="50%" aspect={1} lineColor="#C63328" fillColor="#ff9f00" />
+                            </div>
+                        )}
+                    </div>
+
+                    {this.state.teams.length > 0 && (
+                        <div>
+                            <form>
+                                <select className="mg_t_1" value={this.state.teamID} onChange={this.teamChange}>
+                                    {this.state.teams.map((item) => (
+                                        <option key={item.id} value={item.id}>
+                                            {item.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </form>
+
+                            <div className="section_content">
+                                <div className="teamPanel">
+                                    < ChallengeTeamPanel key="teamPanel"
+                                        id={this.state.teamID} challenge={structuredClone(this.state.challenge)}
+                                        width="100%" height={400} lineColor="#00ff00" fillColor="#ff0000" />
+                                </div>
+                            </div>
                         </div>
-                    </div>
-
-                    <div>
-                        <form>
-                            <select className="mg_t_1" value={this.state.teamID} onChange={this.teamChange}>
-                                {this.state.teams.map((item) => (
-                                    <option key={item.id} value={item.id}>
-                                        {item.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </form>
-                    </div>
-
-                    <div className="section_content">
-                        <div className="teamPanel">
-                            < ChallengeTeamPanel key="teamPanel"
-                                id={this.state.teamID} challenge={structuredClone(this.state.challenge)}
-                                width="100%" height={400} lineColor="#00ff00" fillColor="#ff0000" />
-                        </div>
-                    </div>
+                    )}
                 </section>
             </div>
 

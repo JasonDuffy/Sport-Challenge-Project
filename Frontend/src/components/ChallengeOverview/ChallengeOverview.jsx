@@ -27,7 +27,7 @@ function ChallengeOverview(props) {
   const [bonusData, setBonusData] = useState("");
 
   function openChallenge() {
-    navigate("/Challenge/", { state: { challengeID: props.id}});
+    navigate("/challenge/", { state: { challengeID: props.id}});
   }
 
   useEffect(() => {

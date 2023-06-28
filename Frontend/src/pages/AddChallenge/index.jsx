@@ -99,6 +99,8 @@ function AddChallenge() {
       }
     }
 
+    let resData;
+
     // Check every challenge input for validity (i.e. challenge has a name, image smaller than 10mb, etc.)
     if (checkChallengeInput(challengeName, challengeImage, challengeDescription, challengeDistanceGoal, sportIDs.length, challengeStartDate, challengeEndDate)) {
       challengeObj.name = challengeName;
@@ -107,7 +109,11 @@ function AddChallenge() {
       challengeObj.endDate = challengeEndDate;
       challengeObj.targetDistance = challengeDistanceGoal;
 
-      await saveOrUpdateChallenge(location.state.id, challengeObj, sportIDs, sportFactors, challengeImage, challengeImageID, action);
+      resData = await saveOrUpdateChallenge(location.state.id, challengeObj, sportIDs, sportFactors, challengeImage, challengeImageID, action);
+    }
+
+    if (resData != null) {
+      navigate("/challenge", { state: { challengeID: resData.id } });
     }
 
     setLoading(false);

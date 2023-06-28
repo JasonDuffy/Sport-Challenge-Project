@@ -47,19 +47,21 @@ function AddSport() {
     event.preventDefault();
     setLoading(true);
 
-    let newSportResData;
+    let sportResData;
 
     if (checkSportInput(sportName, sportFactor)) {
       let sportObj = {};
       sportObj.name = sportName;
       sportObj.factor = sportFactor;
 
-      newSportResData = await saveOrUpdateSport(location.state.id, sportObj, action);
+      sportResData = await saveOrUpdateSport(location.state.id, sportObj, action);
+    }
+
+    if(sportResData != null){
+      navigate("/sports");
     }
 
     setLoading(false);
-
-    if(newSportResData !== undefined) navigate("/sports");
   }
 
   return (

@@ -215,12 +215,20 @@ function AddTeam() {
     setLoading(true);
     hideInfoMessage();
 
+    let resData;
+
     let teamObj = {};
     if (checkTeamInput(teamName, challengeID, teamImage, selectedMembersData.length)) {
       teamObj.name = teamName;
       teamObj.challengeID = Number(challengeID);
 
-      await saveOrUpdateTeam(location.state.id, teamObj, selectedMembersData, teamImage, teamImageID, action);
+      resData = await saveOrUpdateTeam(location.state.id, teamObj, selectedMembersData, teamImage, teamImageID, action);
+    }
+
+    if ((challengeID == 0 || challengeID == null) && resData != null) {
+      navigate("/");
+    } else if (resData != null) {
+      navigate("/challenge", { state: { challengeID: challengeID } });
     }
 
     setLoading(false);

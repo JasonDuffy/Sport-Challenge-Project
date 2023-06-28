@@ -111,6 +111,8 @@ function AddBonus() {
       }
     }
 
+    let resData;
+
     if (checkBonusInput(bonusName, bonusDescription, challengeID, bonusFactor, challengeSportIDs.length, bonusStartDate, bonusEndDate)) {
       bonusObj.startDate = bonusStartDate;
       bonusObj.endDate = bonusEndDate;
@@ -118,7 +120,13 @@ function AddBonus() {
       bonusObj.name = bonusName;
       bonusObj.description = bonusDescription;
 
-      await saveOrUpdateBonus(location.state.id, bonusObj, challengeSportIDs);
+      resData = await saveOrUpdateBonus(location.state.id, bonusObj, challengeSportIDs);
+    }
+
+    if ((challengeID == 0 || challengeID == null) && resData != null) {
+      navigate("/");
+    } else if (resData != null) {
+      navigate("/challenge", { state: { challengeID: challengeID } });
     }
 
     setLoading(false);

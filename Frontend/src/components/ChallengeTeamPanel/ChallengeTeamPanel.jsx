@@ -95,17 +95,19 @@ class ChallengeTeamPanel extends Component {
                         </Link>
                     </div>
                 </div>
-                <div className="graphContainer">
-                    <ChallengeTeamPanelAreaGraph key={"area" + this.state.teamID}
-                        activities={structuredClone(this.state.teamActivities)}
-                        width="50%" aspect={1} lineColor="#C63328" fillColor="#ff9f00"
-                        endDate={structuredClone(this.state.challenge.endDate)} />
+                {this.state.teamActivities.length > 0 && this.state.teamMembers.length > 0 && (
+                    <div className="graphContainer">
+                        <ChallengeTeamPanelAreaGraph key={"area" + this.state.teamID}
+                            activities={structuredClone(this.state.teamActivities)}
+                            width="50%" aspect={1} lineColor="#C63328" fillColor="#ff9f00"
+                            endDate={structuredClone(this.state.challenge.endDate)} />
 
-                    <ChallengeTeamPanelBarGraph key={"bar" + this.state.teamID}
-                        activities={structuredClone(this.state.teamActivities)}
-                        members={structuredClone(this.state.teamMembers)}
-                        width="50%" aspect={1} lineColor="#C63328" fillColor="#ff9f00" />
-                </div>
+                        <ChallengeTeamPanelBarGraph key={"bar" + this.state.teamID}
+                            activities={structuredClone(this.state.teamActivities)}
+                            members={structuredClone(this.state.teamMembers)}
+                            width="50%" aspect={1} lineColor="#C63328" fillColor="#ff9f00" />
+                    </div>
+                )}
 
                 <div className="otherContainer">
                     <ChallengeTeamPanelTable key={"table" + this.state.teamID} id={this.state.teamID}

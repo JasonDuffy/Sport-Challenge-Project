@@ -122,7 +122,7 @@ class ChallengeTeamPanelTable extends Component {
         let position = 1;
 
         return (
-            <div>
+            <div className="mg_t_1">
                 <table className="last_activites_table">
                     <thead>
                         <tr>
@@ -135,6 +135,11 @@ class ChallengeTeamPanelTable extends Component {
                         {formattedDataArray.map((item) => (
                             this.rowMaker(position++, item)
                         ))}
+                        {formattedDataArray.length === 0 && (
+                            <td colSpan={3}>
+                                <span>Das Team besitzt aktuell keine Mitglieder.</span>
+                            </td>
+                        )}
                     </tbody>
                 </table>
             </div>

@@ -62,10 +62,6 @@ function Navbar() {
     document.getElementById("mobile_nav_close").classList.toggle("mobile_nav_close_show");
   }
 
-  function test() {
-    navigate("/Bonus/add", { state: { id: 5 } });
-  }
-
   return (
     <header className="top_nav">
       <nav className="top_nav_item_container">
@@ -88,13 +84,13 @@ function Navbar() {
               <span>Management</span>
               <FontAwesomeIcon className="nav_dropdown_icon" icon={faCaretDown} />
               <AnimateHeight duration={200} height={height} className="top_nav_dropdown_menu">
-                <Link className="top_nav_dropdown_item" to="/challenge/edit" state={{ id: 2 }}>
+                <Link className="top_nav_dropdown_item" to="/challenge/add" state={{ id: 0 }}>
                   Neue Challenge
                 </Link>
-                <Link className="top_nav_dropdown_item" to="/team/edit" state={{ id: 2 }}>
+                <Link className="top_nav_dropdown_item" to="/team/add" state={{ id: 0, challengeID: 0 }}>
                   Neues Team
                 </Link>
-                <Link className="top_nav_dropdown_item" to="/bonus/edit" state={{ id: 2 }}>
+                <Link className="top_nav_dropdown_item" to="/bonus/add" state={{ id: 0, challengeID: 0 }}>
                   Neuer Bonus
                 </Link>
                 <Link className="top_nav_dropdown_item" to="/sports">

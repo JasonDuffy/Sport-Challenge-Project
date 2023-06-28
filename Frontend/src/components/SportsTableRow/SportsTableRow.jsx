@@ -5,6 +5,10 @@ import GlobalVariables from "../../GlobalVariables.js"
 import "./SportsTableRow.css";
 import { Link } from "react-router-dom";
 
+/**
+ * @author Jason Patrick Duffy
+ */
+
 class SportsTableRow extends Component {
   constructor(props) {
     super(props);
@@ -42,7 +46,7 @@ class SportsTableRow extends Component {
     return (
       <tr>
         <td>{this.state.sportsName}</td>
-        <td>{this.state.sportsFactor}</td>
+        <td>{this.state.sportsFactor.toFixed(2)}</td>
         <td>
           <div className="row_edit_icon icon_faPencil">
             <Link to="/sport/edit" state={{id: this.props.id}}>

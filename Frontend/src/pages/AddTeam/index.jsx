@@ -252,7 +252,7 @@ function AddTeam() {
               </div>
               <div className="form_input_container pd_1 mg_t_2">
                 <div>
-                  <h2>Wähle ein Bild für dein Team</h2>
+                  <h2>Wähle ein Bild für dein Team (Optional)</h2>
                   <span className="form_input_description">
                     Das Bild repräsentiert dein Team in Challenges.
                     <br />

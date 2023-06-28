@@ -100,7 +100,7 @@ function Profile() {
               </div>
               <InfoMessage />
               <div className="form_input_container pd_1">
-                <h2>Wähle ein Profilbild aus.</h2>
+                <h2>Wähle ein Profilbild aus (Optional)</h2>
                 <span className="form_input_description">Das Bild sollte quadratisch sein.</span>
                 <br />
                 <ImageSelecter className="mg_t_2" value={userImage} setValue={setUserImage} alt="Profilbild" source={userImageSource} />
@@ -116,7 +116,7 @@ function Profile() {
               <div className="form_input_container pd_1 mg_t_1">
                 <label className="checkbox">
                   <Checkbox id="user_communication_checkbox" checked={communication} slider={true} />
-                  <a className="mg_l_1">Ich möchte bei neuen Challenges, Boni und Inaktivität per E-Mail kontaktiert werden.</a>
+                  <a className="mg_l_1">Ich möchte bei neuen Challenges und Boni sowie bei Inaktivität per E-Mail kontaktiert werden.</a>
                 </label>
               </div>
               <div className="center_content mg_t_2">

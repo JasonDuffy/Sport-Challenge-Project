@@ -144,7 +144,7 @@ function AddChallenge() {
               </div>
               <div className="form_input_container pd_1 mg_t_2">
                 <div>
-                  <h2>Wähle ein Bild für deine Challenge</h2>
+                  <h2>Wähle ein Bild für deine Challenge (Optional)</h2>
                   <span className="form_input_description">
                     Das Bild repräsentiert deine Challenge auf der Startseite.
                     <br />

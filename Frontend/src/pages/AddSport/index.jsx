@@ -73,8 +73,8 @@ function AddSport() {
           <div className="form_container">
             <form onSubmit={sumbitHandle}>
               <div className="form_input_container pd_1">
-                <h2>Gib deiner Sportart einen Namen</h2>
-                <TextInput className="mg_t_2" value={sportName} setValue={setSportName} maxLength={15} placeholder="Sport Name" />
+                <h2>Gebe deiner Sportart einen Namen</h2>
+                <TextInput className="mg_t_2" value={sportName} setValue={setSportName} maxLength={32} placeholder="Sportname" />
               </div>
               <div className="form_input_container pd_1 mg_t_2">
                 <h2>Lege einen Faktor für deine Sportart fest</h2>
@@ -82,7 +82,7 @@ function AddSport() {
                   Die mit deiner Sportart zurückgelegten Kilometer werden mit diesem Faktor multipliziert.
                   <br />
                   <br />
-                  Dies ist der Standart Faktor, er kann beim erstellen einer Challenge spezifisch für diese angepasst werden.
+                  Dies ist der Standardfaktor, er kann beim Erstellen einer Challenge spezifisch für diese angepasst werden und dient nur der Orientierung.
                 </span>
                 <br />
                 <NumberInput className="mg_t_2" value={sportFactor} setValue={setSportFactor} min={0.1} step={0.1} />

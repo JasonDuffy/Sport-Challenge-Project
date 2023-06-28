@@ -12,7 +12,7 @@ export async function fetchSportData(sportID) {
   if (apiResponse.error === false) {
     sportResData = apiResponse.resData;
   } else {
-    showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+    showErrorMessage("Beim Laden der Seite ist ein Fehler aufgetreten!");
     return;
   }
 

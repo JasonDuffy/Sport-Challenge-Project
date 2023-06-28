@@ -62,6 +62,10 @@ function AddBonus() {
       }
 
       setChallengeDropdownData(pageData.challengeDropdownResData);
+
+      if (location.state.challengeID !== null) {
+        setchallengeID(location.state.challengeID);
+      }
     }
 
     load();
@@ -74,8 +78,8 @@ function AddBonus() {
     return () => {
       document.getElementById("page_loading").style.display = "flex";
       document.getElementById("page").style.display = "none";
-    }
-}, [])
+    };
+  }, []);
 
   //If the challegneID changes update the sportTable
   useEffect(() => {

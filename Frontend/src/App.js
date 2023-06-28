@@ -1,5 +1,5 @@
 import React from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom";
 import AddChallenge from "./pages/AddChallenge";
 import AddTeam from "./pages/AddTeam";
 import Challenge from "./pages/Challenge";
@@ -13,9 +13,44 @@ import Userprofile from "./pages/Profile";
 import AddSport from "./pages/AddSport";
 import AddBonus from "./pages/AddBonus";
 import Sports from "./pages/Sports";
+import apiFetch from "./utils/api";
+import { useState } from "react";
+import { useEffect } from "react";
 
 function App() {
   document.title = "Slash Challenge"; // Default title
+
+  const[isLoggedIn, setIsLoggedIn] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    checkLogin();
+    updateLoginState();
+  }, [location.pathname, isLoggedIn]);
+
+  async function updateLoginState() {
+    let response = await apiFetch("/saml/", "GET", {}, null);
+  
+    if(response.status === 403){
+      setIsLoggedIn(false);
+    } else {
+      setIsLoggedIn(true);
+    }
+  }
+  
+  function checkLogin(){
+    if(isLoggedIn === false){
+      if(window.location.pathname !== "/login"){
+        navigate("/login");
+        window.location.reload()
+      }
+    } else {
+      if(window.location.pathname === "/login"){
+        navigate("/");
+      }
+    }
+  }
 
   return (
     <>

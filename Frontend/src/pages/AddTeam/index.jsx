@@ -231,7 +231,7 @@ function AddTeam() {
             <form onSubmit={submitHandle}>
               <div className="form_input_container pd_1">
                 <h2>Gebe deinem Team einen Namen</h2>
-                <TextInput className="mg_t_2" value={teamName} setValue={setTeamName} maxLength={15} placeholder="Team Name" />
+                <TextInput className="mg_t_2" value={teamName} setValue={setTeamName} maxLength={32} placeholder="Team Name" />
               </div>
               <div className="form_input_container pd_1 mg_t_2">
                 <h2>Wähle eine Challenge aus, der das Team angehören soll</h2>

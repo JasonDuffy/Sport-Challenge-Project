@@ -399,7 +399,7 @@ class Challenge extends Component {
               </div>
 
               <div className="center_content mg_t_2">
-                <Link to="/team/add" state={{ challengeID: this.state.challengeID }}>
+                <Link to="/team/add" state={{ id: 0, challengeID: this.state.challengeID }}>
                   <Button color="orange" txt="Challenge beitreten" />
                 </Link>
               </div>
@@ -429,7 +429,7 @@ class Challenge extends Component {
               </span>
               <div className="mg_t_6">{this.bonusTableMaker("current")}</div>
               <div className="center_content mg_t_2">
-                <Link to="/bonus/add" state={{ id: this.state.challengeID }}>
+                <Link to="/bonus/add" state={{ id: 0, challengeID: this.state.challengeID }}>
                   <Button color="orange" txt="Neuen Bonus erstellen" />
                 </Link>
               </div>

@@ -65,10 +65,12 @@ function AddTeam() {
           setTeamImageSource("data:" + pageData.type + "; base64, " + pageData.data);
         }
 
-    document.title = "Slash Challenge - MISSING_DESC";
+        document.title = "Slash Challenge - " + teamData.name + " bearbeiten";
 
         pageData = await fetchFormData(teamData.challengeID);
       } else {
+        document.title = "Slash Challenge - Neues Team erstellen";
+
         pageData = await fetchFormData(0);
       }
 
@@ -213,7 +215,7 @@ function AddTeam() {
     <section className="background_white">
       <div className="section_container">
         <div className="section_content">
-          <AddHeading action={action} entitie="Team" name={teamHeadingName} />
+          <AddHeading action={action} entity="Team" name={teamHeadingName} />
           <InfoMessage />
           <div className="form_container">
             <form onSubmit={submitHandle}>

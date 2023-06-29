@@ -96,16 +96,16 @@ class ChallengeTeamPanel extends Component {
                     </Link>
                 </div>
                 {this.state.teamActivities.length > 0 && this.state.teamMembers.length > 0 && (
-                    <div className="graphContainer">
+                    <div className="graph_container">
                         <ChallengeTeamPanelAreaGraph key={"area" + this.state.teamID}
                             activities={structuredClone(this.state.teamActivities)}
-                            width="50%" aspect={1} lineColor="#C63328" fillColor="#ff9f00"
+                            width="50%" lineColor="#C63328" fillColor="#ff9f00"
                             endDate={structuredClone(this.state.challenge.endDate)} />
 
                         <ChallengeTeamPanelBarGraph key={"bar" + this.state.teamID}
                             activities={structuredClone(this.state.teamActivities)}
                             members={structuredClone(this.state.teamMembers)}
-                            width="50%" aspect={1} lineColor="#C63328" fillColor="#ff9f00" />
+                            width="50%" lineColor="#C63328" fillColor="#ff9f00" />
                     </div>
                 )}
 

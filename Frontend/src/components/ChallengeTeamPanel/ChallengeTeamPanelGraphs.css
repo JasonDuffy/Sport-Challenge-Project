@@ -4,11 +4,6 @@
  * @author Jason Patrick Duffy
  */
 
-.graphContainer{
-    display: flex;
-    flex-direction: row;
-}
-
 .otherContainer{
     width: 100%;
 }

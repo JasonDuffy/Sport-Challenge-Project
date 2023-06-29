@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
 import ChallengeTeamPanel from "../../components/ChallengeTeamPanel/ChallengeTeamPanel";
 import withRouter from "../withRouter";
@@ -46,6 +46,7 @@ class Challenge extends Component {
     this.teamTableMaker = this.teamTableMaker.bind(this);
     this.bonusTableMaker = this.bonusTableMaker.bind(this);
     this.distanceDisplay = this.distanceDisplay.bind(this);
+    this.distanceDisplayPercentage = this.distanceDisplayPercentage.bind(this);
 
     this.teamChange = this.teamChange.bind(this);
   }
@@ -78,7 +79,7 @@ class Challenge extends Component {
     let teams = await fetch(GlobalVariables.serverURL + "/challenges/" + this.state.challengeID + "/teams/", { method: "GET", credentials: "include" });
     let teamsResData = await teams.json();
 
-    // Add avgDistance to each team
+    // Add avgDistance and image to each team
     if (teamsResData.length > 0) {
       for (const team of teamsResData) {
         let avg = await fetch(GlobalVariables.serverURL + "/teams/" + team.id + "/avgDistance/", { method: "GET", credentials: "include" });
@@ -86,6 +87,14 @@ class Challenge extends Component {
         team.avgDistance = parseFloat(avgResData).toFixed(2);
         if (isNaN(team.avgDistance)) {
           team.avgDistance = (0).toFixed(2);
+        }
+
+        if (team.imageID !== 0) {
+          let imageResponse = await fetch(GlobalVariables.serverURL + "/images/" + team.imageID + "/", { method: "GET", credentials: "include" });
+          let imageResData = await imageResponse.json();
+          team.imageSource = "data:" + imageResData.type + ";base64, " + imageResData.data;
+        } else {
+          team.imageSource = require("../../assets/images/Default-Team.png");
         }
       }
 
@@ -160,6 +169,9 @@ class Challenge extends Component {
     let challengeDistanceResData = await challengeDistance.json();
 
     this.setState({ distance: challengeDistanceResData });
+
+    //Select first teamTab
+    document.querySelector('[data-team-id="' + this.state.teamID + '"]').classList.add("selected_panel_tab");
 
     // REMOVE LOADING ICON  --------------------------------------
     document.getElementById("page_loading").style.display = "none";
@@ -355,13 +367,23 @@ class Challenge extends Component {
    * @returns Computed distance in string
    */
   distanceDisplay() {
-    let percentage = ((this.state.distance * 100) / this.state.challenge.targetDistance).toFixed(2);
-    let distanceString = this.state.distance + " / " + this.state.challenge.targetDistance + " (" + percentage + "%)";
+    let distanceString = this.state.distance + " / " + this.state.challenge.targetDistance;
     return distanceString;
   }
 
+  distanceDisplayPercentage() {
+    let percentage = ((this.state.distance * 100) / this.state.challenge.targetDistance).toFixed(2);
+    return percentage + " %";
+  }
+
   teamChange(event) {
-    this.setState({ teamID: event.target.value });
+    let targetEl = event.target;
+    if (targetEl.tagName === "IMG") targetEl = targetEl.parentNode;
+
+    document.querySelector('[data-team-id="' + this.state.teamID + '"]').classList.remove("selected_panel_tab");
+    targetEl.classList.add("selected_panel_tab");
+
+    this.setState({ teamID: targetEl.dataset.teamId });
   }
 
   render() {
@@ -378,35 +400,43 @@ class Challenge extends Component {
       return;
 
     return (
-      <div>
-        <section className="section_container">
-          <div className="section_content">
-            <div className="centered mg_t_5">
-              <div className="imageContainer">
-                <div className="textContainer">
-                  <div className="challengeName">
-                    {this.state.challenge.name + " "}
-                    <Link to="/challenge/edit" state={{ id: this.state.challengeID }}>
-                      <FontAwesomeIcon icon={faPencil} />
-                    </Link>
+      <>
+        <section className="background_white">
+          <div className="section_container">
+            <div className="section_content">
+              <div className="challenge_image_centered mg_t_5">
+                <div className="challenge_image_container">
+                  <div className="challenge_image_overlay">
+                    <div className="challenge_overlay_edit">
+                      <Link to="/challenge/edit" state={{ id: this.state.challengeID }}>
+                        <FontAwesomeIcon icon={faPencil} size="2x" />
+                      </Link>
+                    </div>
+                    <div className="challenge_overlay_heading mg_b_2">
+                      <div className="challenge_overlay_name">{this.state.challenge.name}</div>
+                      <div className="challenge_overlay_date">
+                        <span>
+                          {this.state.challenge.rawStartDate.split(",")[0] + ", " + this.state.challenge.rawStartDate.split(",")[1] + " Uhr "}-{" "}
+                          {this.state.challenge.rawEndDate.split(",")[0] + ", " + this.state.challenge.rawEndDate.split(",")[1] + " Uhr"}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="challenge_overlay_distance mg_b_2">
+                      <div className="challenge_percentage">
+                        <this.distanceDisplayPercentage />
+                      </div>
+                      <this.distanceDisplay />
+                      <br />
+                      Kilometer
+                    </div>
+                    <div className="challenge_overlay_description">{this.state.challenge.description}</div>
                   </div>
-                  <div className="challengeTime">
-                    <span>
-                      {this.state.challenge.rawStartDate.split(",")[0] + ", " + this.state.challenge.rawStartDate.split(",")[1] + " Uhr "}
-                      - {this.state.challenge.rawEndDate.split(",")[0] + ", " + this.state.challenge.rawEndDate.split(",")[1] + " Uhr"}
-                    </span>
+                  <div className="challenge_image">
+                    <img src={this.state.image} alt="Bild der Challenge"></img>
                   </div>
-                  <div className="challengeProgress">
-                    <this.distanceDisplay />
-                  </div>
-                  <div className="challengeDescription">{this.state.challenge.description}</div>
-                </div>
-                <div className="challengeImageContainer">
-                  <div className="imageOverlay"></div>
-                  <img src={this.state.image} alt="Bild der Challenge" className="challengeImage"></img>
                 </div>
               </div>
-
               <div className="center_content mg_t_2">
                 <Link to="/team/add" state={{ id: 0, challengeID: this.state.challengeID }}>
                   <Button color="orange" txt="Challenge beitreten" />
@@ -414,124 +444,144 @@ class Challenge extends Component {
               </div>
             </div>
           </div>
+        </section>
 
-          <div className="section_content">
-            <div className="heading_underline_center">
-              <span className="underline_center" id="memberText">
-                Teilnehmende Teams
-              </span>
-              <div className="mg_t_6">
-                <div className="challengeMembers">
-                  {this.state.teams.map((item) => (
-                    <ChallengeMembers key={item.id} team={structuredClone(item)} />
-                  ))}
+        <section className="background_lightblue">
+          <div className="section_container">
+            <div className="section_content">
+              <div className="heading_underline_center">
+                <span className="underline_center" id="memberText">
+                  Teilnehmende Teams
+                </span>
+                <div className="mg_t_6">
+                  <div className="challengeMembers">
+                    {this.state.teams.map((item) => (
+                      <ChallengeMembers key={item.id} team={structuredClone(item)} />
+                    ))}
+                  </div>
+                  {this.state.teams.length === 0 && <span>Zur Zeit nehmen keine Teams teil.</span>}
                 </div>
-                {this.state.teams.length === 0 && <span>Zur Zeit nehmen keine Teams teil.</span>}
               </div>
             </div>
           </div>
+        </section>
 
-          <div className="section_content">
-            <div className="heading_underline_center">
-              <span className="underline_center" id="bonusText">
-                Laufende Bonusaktionen
-              </span>
-              <div className="mg_t_6">{this.bonusTableMaker("current")}</div>
-              <div className="center_content mg_t_2">
-                <Link to="/bonus/add" state={{ id: 0, challengeID: this.state.challengeID }}>
-                  <Button color="orange" txt="Neuen Bonus erstellen" />
-                </Link>
-              </div>
-            </div>
-          </div>
-
-          {this.state.futureBonuses.length > 0 && (
+        <section className="background_white">
+          <div className="section_container">
             <div className="section_content">
               <div className="heading_underline_center">
-                <span className="underline_center" id="futureBonusText">
-                  Zukünftige Bonusaktionen
+                <span className="underline_center" id="bonusText">
+                  Laufende Bonusaktionen
                 </span>
-                <div className="mg_t_6">{this.bonusTableMaker("future")}</div>
+                <div className="mg_t_6">{this.bonusTableMaker("current")}</div>
+                <div className="center_content mg_t_2">
+                  <Link to="/bonus/add" state={{ id: 0, challengeID: this.state.challengeID }}>
+                    <Button color="orange" txt="Neuen Bonus erstellen" />
+                  </Link>
+                </div>
               </div>
             </div>
-          )}
 
-          {this.state.pastBonuses.length > 0 && (
-            <div className="section_content">
-              <div className="heading_underline_center">
-                <span className="underline_center" id="pastBonusText">
-                  Vorherige Bonusaktionen
-                </span>
-                <div className="mg_t_6">{this.bonusTableMaker("past")}</div>
+            {this.state.futureBonuses.length > 0 && (
+              <div className="section_content">
+                <div className="heading_underline_center">
+                  <span className="underline_center" id="futureBonusText">
+                    Zukünftige Bonusaktionen
+                  </span>
+                  <div className="mg_t_6">{this.bonusTableMaker("future")}</div>
+                </div>
               </div>
-            </div>
-          )}
+            )}
 
-          <div className="section_content">
-            <div className="heading_underline_center">
-              <span className="underline_center" id="sportText">
-                Sportarten dieser Challenge
-              </span>
-              <div className="mg_t_6">{this.sportTableMaker()}</div>
-            </div>
-          </div>
-
-          <div className="section_content">
-            <div className="heading_underline_center mg_b_7">
-              <span className="underline_center" id="statsText">
-                Statistiken
-              </span>
-            </div>
-            <div className="teamTable">
-              <this.teamTableMaker />
-            </div>
-            {this.state.activities.length > 0 && this.state.teams.length > 0 && (
-              <div className="graphContainer mg_t_3">
-                <ChallengeTeamPanelAreaGraph
-                  key="challengeArea"
-                  activities={structuredClone(this.state.activities)}
-                  width="50%"
-                  aspect={1}
-                  lineColor="#C63328"
-                  fillColor="#ff9f00"
-                  startDate={structuredClone(this.state.challenge.startDate)}
-                  endDate={structuredClone(this.state.challenge.endDate)}
-                />
-
-                <ChallengeTeamBarGraph key={"challengeBar"} teams={structuredClone(this.state.teams)} width="50%" aspect={1} lineColor="#C63328" fillColor="#ff9f00" />
+            {this.state.pastBonuses.length > 0 && (
+              <div className="section_content">
+                <div className="heading_underline_center">
+                  <span className="underline_center" id="pastBonusText">
+                    Vorherige Bonusaktionen
+                  </span>
+                  <div className="mg_t_6">{this.bonusTableMaker("past")}</div>
+                </div>
               </div>
             )}
           </div>
+        </section>
 
-          {this.state.teams.length > 0 && (
-            <div>
-              <form>
-                <select className="mg_t_1" value={this.state.teamID} onChange={this.teamChange}>
-                  {this.state.teams.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.name}
-                    </option>
-                  ))}
-                </select>
-              </form>
-
-              <div className="section_content">
-                <div className="teamPanel">
-                  <ChallengeTeamPanel
-                    key="teamPanel"
-                    id={this.state.teamID}
-                    challenge={structuredClone(this.state.challenge)}
-                    width="100%"
-                    height={400}
-                    lineColor="#00ff00"
-                    fillColor="#ff0000"
-                  />
-                </div>
+        <section className="background_lightblue">
+          <div className="section_container">
+            <div className="section_content">
+              <div className="heading_underline_center">
+                <span className="underline_center" id="sportText">
+                  Sportarten dieser Challenge
+                </span>
+                <div className="mg_t_6">{this.sportTableMaker()}</div>
               </div>
             </div>
-          )}
+          </div>
         </section>
-      </div>
+
+        <section className="background_white">
+          <div className="section_container">
+            <div className="section_content">
+              <div className="heading_underline_center mg_b_7">
+                <span className="underline_center" id="statsText">
+                  Statistiken
+                </span>
+              </div>
+              <div className="teamTable">
+                <this.teamTableMaker />
+              </div>
+              {this.state.activities.length > 0 && this.state.teams.length > 0 && (
+                <div className="graph_container mg_t_3">
+                  <ChallengeTeamPanelAreaGraph
+                    key="challengeArea"
+                    activities={structuredClone(this.state.activities)}
+                    width="50%"
+                    lineColor="#C63328"
+                    fillColor="#ff9f00"
+                    startDate={structuredClone(this.state.challenge.startDate)}
+                    endDate={structuredClone(this.state.challenge.endDate)}
+                  />
+
+                  <ChallengeTeamBarGraph key={"challengeBar"} teams={structuredClone(this.state.teams)} width="50%" lineColor="#C63328" fillColor="#ff9f00" />
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        <section className="background_white">
+          <div className="section_container">
+            {this.state.teams.length > 0 && (
+              <div>
+                <div className="section_content">
+                  <div className="team_panel_container">
+                    <div className="team_pnael_tab_row">
+                      {this.state.teams.map((item) => (
+                        <Fragment key={item.id}>
+                          <div className="team_panel_tab" data-team-id={item.id} onClick={this.teamChange}>
+                            <img src={item.imageSource} alt="Team Logo"></img>
+                          </div>
+                        </Fragment>
+                      ))}
+                    </div>
+                    <div className="team_panel">
+                      <ChallengeTeamPanel
+                        key="teamPanel"
+                        id={this.state.teamID}
+                        challenge={structuredClone(this.state.challenge)}
+                        width="100%"
+                        height={400}
+                        lineColor="#00ff00"
+                        fillColor="#ff0000"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      </>
     );
   }
 }

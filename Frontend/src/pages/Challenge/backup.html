@@ -1,0 +1,30 @@
+<div className="imageContainer">
+    <div className="textContainer">
+      <div className="challengeName">
+        {this.state.challenge.name + " "}
+        <Link to="/challenge/edit" state={{ id: this.state.challengeID }}>
+          <FontAwesomeIcon icon={faPencil} />
+        </Link>
+      </div>
+      <div className="challengeTime">
+        <span>
+          {this.state.challenge.rawStartDate.split(",")[0] + ", " + this.state.challenge.rawStartDate.split(",")[1] + " Uhr "}-{" "}
+          {this.state.challenge.rawEndDate.split(",")[0] + ", " + this.state.challenge.rawEndDate.split(",")[1] + " Uhr"}
+        </span>
+      </div>
+      <div className="challengeProgress">
+        <this.distanceDisplay />
+      </div>
+      <div className="challengeDescription">{this.state.challenge.description}</div>
+    </div>
+    <div className="challengeImageContainer">
+      <div className="imageOverlay"></div>
+      <img src={this.state.image} alt="Bild der Challenge" className="challengeImage"></img>
+    </div>
+  </div>
+
+  <div className="center_content mg_t_2">
+    <Link to="/team/add" state={{ id: 0, challengeID: this.state.challengeID }}>
+      <Button color="orange" txt="Challenge beitreten" />
+    </Link>
+  </div>

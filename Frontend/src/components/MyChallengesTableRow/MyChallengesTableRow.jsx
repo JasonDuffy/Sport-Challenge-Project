@@ -1,157 +1,110 @@
-import React, { Component } from "react";
+import { useEffect, useState } from "react";
+import "./MyChallengesTableRow.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheck, faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
-import "./MyChallengesTableRow.css";
-import "../../assets/css/form.css";
-import GlobalVariables from "../../GlobalVariables.js"
+import NumberInput from "../form/NumberInput/NumberInput";
+import Dropdown from "../form/Dropdown/Dropdown";
+import { fetchActivityData, fetchActivitySports, fetchDeleteActivity, updateActivity } from "./MyChallengesTableRow";
 
-class MyChallengesTableRow extends Component {
-  constructor(props) {
-    super(props);
+/**
+ * @author Robin Hackh
+ */
 
-    this.state = {
-      challengeName: "",
-      selectedSport: 0,
-      distance: 0,
-      activitieSaveDate: "",
-      sportName: "",
-      challengeId: 0,
-      allSports: [],
-      editMode: false,
-      deleted: false,
-    };
+function MyChallengesTableRow({ activityID }) {
+  const [challengeName, setChallengeName] = useState("");
+  const [sportName, setSportName] = useState("");
+  const [distance, setDistance] = useState(0);
+  const [memberID, setMemberID] = useState(0);
+  const [activitieSaveDate, setActivitieSaveDate] = useState("");
+  const [selectedSport, setSelectedSport] = useState("0");
+  const [challengeID, setChallengeID] = useState(0);
+  const [allSports, setAllSports] = useState([]);
+  const [editMode, setEditMode] = useState(false);
+  const [deleted, setDeleted] = useState(false);
 
-    this.selectedSportChange = this.selectedSportChange.bind(this);
-    this.distanceChange = this.distanceChange.bind(this);
-    this.editRow = this.editRow.bind(this);
-    this.saveChangedRow = this.saveChangedRow.bind(this);
-    this.deleteRow = this.deleteRow.bind(this);
-  }
+  useEffect(() => {
+    async function load() {
+      let pageData;
+      pageData = await fetchActivityData(activityID);
 
-  selectedSportChange(event){
-    this.setState({ selectedSport: event.target.value });
-    this.setState({ sportName: event.target.options[event.target.selectedIndex].text });
-  }
-
-  distanceChange(event){
-    if (event.target.value >= 1) {
-        this.setState({ distance: event.target.value });
-        //If the user tries to write 0 in the Input field it will be turned to 1
-      } else if (event.target.value === 0) {
-        this.setState({ distance: 1 });
-      }
-  }
-
-
-  async editRow() {
-    let allChallengeSportResponse = await fetch(GlobalVariables.serverURL + "/challenge-sports/challenges/" + this.state.challengeId + "/", { method: "GET", credentials: "include" });
-    let allChallengeSportResData = await allChallengeSportResponse.json();
-    let allSportsHelper = [];
-
-    for (const challengeSport of allChallengeSportResData) {
-        let sportResponse = await fetch(GlobalVariables.serverURL + "/sports/" + challengeSport.sportID + "/", { method: "GET", credentials: "include" });
-        let sportResData = await sportResponse.json();
-        sportResData.id = challengeSport.id;
-        allSportsHelper.push(sportResData);
+      setChallengeName(pageData.challengeResData.name);
+      setSelectedSport(String(pageData.challengeSportResData.id));
+      setDistance(pageData.activityResData.distance);
+      setActivitieSaveDate(pageData.activityResData.date);
+      setSportName(pageData.sportResData.name);
+      setChallengeID(pageData.challengeResData.id);
+      setMemberID(pageData.activityResData.memberID);
     }
 
-    this.setState({ editMode: true });
-    this.setState({ allSports: allSportsHelper });
-  }
+    load();
+  }, [activitieSaveDate]);
 
-  async saveChangedRow() {
-    let activitieResponse = await fetch(GlobalVariables.serverURL + "/activities/" + this.props.id + "/", { method: "GET", credentials: "include" });
-    let activitieResData = await activitieResponse.json();
-
+  async function saveChangedActivity(event) {
     const dateOptions = {day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit"};
-    let activityJsonObj = {};
-    activityJsonObj.challengeSportID = this.state.selectedSport;
-    activityJsonObj.memberID = activitieResData.memberID;
-    activityJsonObj.distance = this.state.distance;
-    activityJsonObj.date = new Date().toLocaleDateString("de-GE", dateOptions).replace(" ", "");
 
-    const activityResponse = await fetch(GlobalVariables.serverURL + "/activities/" + this.props.id + "/", {
-      method: "PUT",
-      headers: { Accept: "application/json", "Content-Type": "application/json" }, //Needed: Backend will not accept without
-      body: JSON.stringify(activityJsonObj),
-      credentials: "include",
-    });
+    let activityObj = {};
+    activityObj.challengeSportID = Number(selectedSport);
+    activityObj.memberID = memberID;
+    activityObj.distance = distance;
+    activityObj.date = new Date().toLocaleDateString("de-GE", dateOptions).replace(" ", "");
 
-    this.setState({ activitieSaveDate: activityJsonObj.date});
-    this.setState({ editMode: false });
-  }
-
-  async deleteRow(event) {
-    const activityResponse = await fetch(GlobalVariables.serverURL + "/activities/" + this.props.id + "/", { method: "DELETE", credentials: "include" });
-    if(activityResponse.ok){
-        this.setState({ deleted: true });
+    if(await updateActivity(activityID, activityObj) === true){
+        setActivitieSaveDate(activityObj.date);
+        setEditMode(false);
     }
   }
 
-  async componentDidMount() {
-    let activityResponse = await fetch(GlobalVariables.serverURL + "/activities/" + this.props.id + "/", { method: "GET", credentials: "include" });
-    let activityResData = await activityResponse.json();
-    let challengeSportResponse = await fetch(GlobalVariables.serverURL + "/challenge-sports/" + activityResData.challengeSportID + "/", {
-      method: "GET",
-      credentials: "include",
-    });
-    let challengeSportResData = await challengeSportResponse.json();
-    let challengeResponse = await fetch(GlobalVariables.serverURL + "/challenges/" + challengeSportResData.challengeID + "/", { method: "GET", credentials: "include" });
-    let challengeResData = await challengeResponse.json();
-    let sportResponse = await fetch(GlobalVariables.serverURL + "/sports/" + challengeSportResData.sportID + "/", { method: "GET", credentials: "include" });
-    let sportResData = await sportResponse.json();
+  async function editActivity(event) {
+    let sportsResData = await fetchActivitySports(challengeID);
 
-    this.setState({ challengeName: challengeResData.name });
-    this.setState({ selectedSport: challengeSportResData.id });
-    this.setState({ distance: activityResData.distance });
-    this.setState({ activitieSaveDate: activityResData.date });
-    this.setState({ sportName: sportResData.name });
-    this.setState({ challengeId: challengeResData.id });
+    setAllSports(sportsResData);
+    setEditMode(true);
   }
 
-  render() {
-    if(this.state.deleted === true){
-        return;
+  async function deleteActivity(event) {
+    if (window.confirm("Möchtest du die Aktivität wirklich löschen?") === true) {
+      if ((await fetchDeleteActivity(activityID)) === true) {
+        setDeleted(true);
+      }
     }
-    if (this.state.editMode === true) {
-        return (
-            <tr>
-              <td>{this.state.challengeName}</td>
-              <td>
-                <select className="activity_sport_select" value={this.state.selectedSport} onChange={this.selectedSportChange}>
-                    <option value={0} disabled>Sportart wählen</option>
-                    {this.state.allSports.map((item) => (
-                        <option key={item.id} value={item.id}>{item.name}</option>
-                    ))}
-                </select>
-              </td>
-              <td><input className="activity_distance_input" type="number" step={0.1} value={this.state.distance} onChange={this.distanceChange}></input></td>
-              <td>{this.state.activitieSaveDate.split(",")[0] + " um " + this.state.activitieSaveDate.split(",")[1] + " Uhr"}</td>
-              <td>
-                <div className="row_edit_icon icon_faCheck" onClick={this.saveChangedRow}>
-                  <FontAwesomeIcon icon={faCheck} size="lg" />
-                </div>
-              </td>
-            </tr>
-          );
-    } else {
-      return (
-        <tr>
-          <td>{this.state.challengeName}</td>
-          <td>{this.state.sportName}</td>
-          <td>{this.state.distance + " Km"}</td>
-          <td>{this.state.activitieSaveDate.split(",")[0] + " um " + this.state.activitieSaveDate.split(",")[1] + " Uhr"}</td>
-          <td>
-            <div className="row_edit_icon icon_faPencil" onClick={this.editRow}>
-              <FontAwesomeIcon icon={faPencil} />
-            </div>
-            <div className="row_edit_icon icon_faXmark" onClick={this.deleteRow}>
-              <FontAwesomeIcon icon={faXmark} size="lg" />
-            </div>
-          </td>
-        </tr>
-      );
-    }
+  }
+
+  if (deleted === true) return;
+  if (editMode === true) {
+    return (
+      <tr>
+        <td>{challengeName}</td>
+        <td>
+          <Dropdown className="activity_sport_select" value={selectedSport} setValue={setSelectedSport} options={allSports} defaultOption="Sportart wählen" />
+        </td>
+        <td>
+          <NumberInput className="activity_distance_input" value={distance} setValue={setDistance} min={0.1} step={0.1} />
+        </td>
+        <td>{activitieSaveDate.split(",")[0] + " um " + activitieSaveDate.split(",")[1] + " Uhr"}</td>
+        <td>
+          <div className="row_edit_icon icon_faCheck" onClick={saveChangedActivity}>
+            <FontAwesomeIcon icon={faCheck} size="lg" />
+          </div>
+        </td>
+      </tr>
+    );
+  } else {
+    return (
+      <tr>
+        <td>{challengeName}</td>
+        <td>{sportName}</td>
+        <td>{distance + " Km"}</td>
+        <td>{activitieSaveDate.split(",")[0] + " um " + activitieSaveDate.split(",")[1] + " Uhr"}</td>
+        <td>
+          <div className="row_edit_icon icon_faPencil" onClick={editActivity}>
+            <FontAwesomeIcon icon={faPencil} />
+          </div>
+          <div className="row_edit_icon icon_faXmark" onClick={deleteActivity}>
+            <FontAwesomeIcon icon={faXmark} size="lg" />
+          </div>
+        </td>
+      </tr>
+    );
   }
 }
 

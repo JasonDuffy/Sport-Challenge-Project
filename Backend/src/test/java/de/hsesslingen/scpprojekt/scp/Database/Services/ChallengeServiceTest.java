@@ -451,16 +451,6 @@ public class ChallengeServiceTest {
     }
 
     /**
-     * Test Not Found for current challenges for memberId is correctly handled
-     */
-    @Test
-    public void currentChallengesMemberIDTestNotFound(){
-        assertThrows(NotFoundException.class, () -> {
-            challengeService.getCurrentChallengeMemberID(1);
-        });
-    }
-
-    /**
      * Test for getChallengeTeamsTest success
      */
     @Test

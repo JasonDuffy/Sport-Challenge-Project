@@ -793,31 +793,6 @@ public class MemberControllerTest {
     }
 
     /**
-     *  Test if  Not Found  is correct
-     * @throws Exception by mockMvc
-     */
-    @Test
-    @WithMockUser
-    public void GetCurrentChallengeNotFound() throws Exception {
-        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-        MemberDTO memberDTO = new MemberDTO();
-        memberDTO.setUserID(1);
-        memberDTO.setEmail("max@example.com");
-
-        when(memberService.get(1)).thenReturn(memberDTO);
-        when(challengeService.getCurrentChallengeMemberID(1)).thenThrow(NotFoundException.class);
-
-        RequestBuilder request = MockMvcRequestBuilders
-                .get("/members/1/challenges/current/").accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON);
-
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isNotFound())
-                .andReturn();
-        verify(challengeService).getCurrentChallengeMemberID(1);
-    }
-
-    /**
      *  Test if Unknown user is thrown correct
      * @throws Exception by mockMvc
      */

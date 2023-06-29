@@ -1,173 +1,140 @@
-import React, { Component } from "react";
-import "./MyChallengeOverview.css";
-import "../../assets/css/form.css";
+/**
+ * @author Robin Hackh
+ */
+
+import { useEffect, useState } from "react";
+import NumberInput from "../form/NumberInput/NumberInput";
 import Button from "../ui/button/Button";
-import GlobalVariables from "../../GlobalVariables.js"
+import Dropdown from "../form/Dropdown/Dropdown";
+import "./MyChallengeOverview.css";
+import { fetchChallengeData, saveActivity } from "./MyChallengeOverview";
+import { Link } from "react-router-dom";
 
-class MyChallengeOverview extends Component {
-  constructor(props) {
-    super(props);
+function MyChallengeOverview({ challengeID, memberID, activityIDArray, setActivityIDArray }) {
+  //Challenge
+  const [challengeName, setChallengeName] = useState("");
+  const [challengeStartDate, setChallengeStartDate] = useState("");
+  const [challengeEndDate, setChallengeEndDate] = useState("");
+  const [challengeDistanceGoal, setChallengeDistanceGoal] = useState(0);
+  const [challengeDistanceDone, setChallengeDistanceDone] = useState(0);
+  const [challengeDescription, setChallengeDescription] = useState("");
+  const [challengeImageSource, setChallengeImageSource] = useState("");
+  const [challengeSports, setChallengeSports] = useState([]);
 
-    //state for the input elements
-    this.state = {
-      challengeName: "",
-      challengeStartDate: "",
-      challengeEndDate: "",
-      challengeDistanceGoal: 0,
-      challengeDistanceDone: 0,
-      challengeDescription: "",
-      challengeImageSource: "",
-      challengeSports: [],
-      activityDistance: 1,
-      activitySportId: 0,
-      loading: false,
-    };
+  //Input
+  const [activityDistance, setActivityDistance] = useState(0);
+  const [activitySportID, setActivitySportID] = useState("0");
+  const [loading, setLoading] = useState(false);
 
-    //bind is needed for changing the state
-    this.activityDistanceChange = this.activityDistanceChange.bind(this);
-    this.activitySportIdChange = this.activitySportIdChange.bind(this);
-    this.openChallenge = this.openChallenge.bind(this);
-    this.submitHandle = this.submitHandle.bind(this);
-  }
+  useEffect(() => {
+    async function load() {
+      let pageData = await fetchChallengeData(challengeID);
 
-  activityDistanceChange(event) {
-    if (event.target.value >= 1) {
-      this.setState({ activityDistance: event.target.value });
-      //If the user tries to write 0 in the Input field it will be turned to 1
-    } else if (event.target.value === 0) {
-      this.setState({ activityDistance: 1 });
+      setChallengeName(pageData.challengeResData.name);
+      setChallengeStartDate(pageData.challengeResData.startDate.split(",")[0]);
+      setChallengeEndDate(pageData.challengeResData.endDate.split(",")[0]);
+      setChallengeDistanceGoal(pageData.challengeResData.targetDistance);
+      setChallengeDescription(pageData.challengeResData.description);
+      setChallengeImageSource("data:" + pageData.imageResData.type + ";base64, " + pageData.imageResData.data);
+      setChallengeDistanceDone(pageData.distanceResData);
+      setChallengeSports(pageData.challengeSportResData);
+    }
+
+    load();
+  }, []);
+
+  function showChallengeInfoMessage(message, error) {
+    const infoContainerEl = document.getElementById("form_info_container_" + challengeID);
+    const infoMessageEl = document.getElementById("form_info_message_" + challengeID);
+    infoMessageEl.innerText = message;
+  
+    if (error === true) {
+      infoContainerEl.classList.remove("success");
+      infoContainerEl.classList.add("error");
+    } else {
+      infoContainerEl.classList.remove("error");
+      infoContainerEl.classList.add("success");
     }
   }
-
-  activitySportIdChange(event) {
-    this.setState({ activitySportId: event.target.value });
-  }
-
-  openChallenge() {
-    window.location.href = "/Challenge/" + this.props.id;
-  }
-
-  showInputErrorMessage(message) {
-    const infoContainerEl = document.getElementById("form_info_container_" + this.props.id);
-    const infoMessageEl = document.getElementById("form_info_message_" + this.props.id);
-    infoContainerEl.classList.add("error");
-    infoMessageEl.innerText = message;
-  }
-
-  showInputSuccesMessage(message) {
-    const infoContainerEl = document.getElementById("form_info_container_" + this.props.id);
-    const infoMessageEl = document.getElementById("form_info_message_" + this.props.id);
+  
+  function hideChallengeInfoMessage() {
+    const infoContainerEl = document.getElementById("form_info_container_" + challengeID);
+    const infoMessageEl = document.getElementById("form_info_message_" + challengeID);
     infoContainerEl.classList.remove("error");
-    infoContainerEl.classList.add("success");
-    infoMessageEl.innerText = message;
+    infoContainerEl.classList.remove("success");
+    infoMessageEl.innerText = "";
   }
 
-  async submitHandle(event) {
+  async function submitHandle(event) {
     event.preventDefault();
+    setLoading(true);
+    hideChallengeInfoMessage();
 
-    //Deactivate Button and add the loading circle
-    this.setState({ loading: true });
-
-    if (this.state.activitySportId === 0) {
-      this.showInputErrorMessage("Bitte wähle eine Sportart aus!");
+    if (Number(activitySportID) < 0.1) {
+        showChallengeInfoMessage("Bitte wähle eine Sportart aus!", true);
       return;
     }
 
     const dateOptions = {day: "2-digit", month: "2-digit", year: "numeric", hour: "2-digit", minute: "2-digit"};
-    let activityJsonObj = {};
-    activityJsonObj.challengeSportID = this.state.activitySportId;
-    activityJsonObj.memberID = this.props.memberId;
-    activityJsonObj.distance = this.state.activityDistance;
-    activityJsonObj.date = new Date().toLocaleDateString("de-GE", dateOptions).replace(" ", "");
 
-    const activityResponse = await fetch(GlobalVariables.serverURL + "/activities/", {
-      method: "POST",
-      headers: { Accept: "application/json", "Content-Type": "application/json" }, //Needed: Backend will not accept without
-      body: JSON.stringify(activityJsonObj),
-      credentials: "include",
-    });
-    if(activityResponse.ok){
-      this.showInputSuccesMessage("Deine Aktivität wurde erfolgreich zur Challenge hinzugefügt!");
-    }else{
-      this.showInputErrorMessage("Beim hinzufügen deiner Aktivität ist ein Fehler aufgetreten: " + activityResponse.status + " " + activityResponse.statusText + "!");
+    let activityObj = {};
+    activityObj.challengeSportID = activitySportID;
+    activityObj.memberID = memberID;
+    activityObj.distance = activityDistance;
+    activityObj.date = new Date().toLocaleDateString("de-GE", dateOptions).replace(" ", "");
+
+    let activityResData = await saveActivity(activityObj);
+    if(activityResData !== null){
+        let updatetActivityIDArray = [...activityIDArray];
+        updatetActivityIDArray.push(activityResData.id);
+        setActivityIDArray(updatetActivityIDArray);
+        showChallengeInfoMessage("Deine Aktivität wurde erfolgreich zur Challenge hinzugefügt!", false);
+    } else {
+        showChallengeInfoMessage("Beim hinzufügen deiner Aktivität ist ein Fehler aufgetreten!", true);
     }
 
-    //Activates the again Button and removes the loading circle
-    this.setState({ loading: false });
+    setLoading(false);
   }
 
-  async componentDidMount() {
-    let challengeResponse = await fetch(GlobalVariables.serverURL + "/challenges/" + this.props.id + "/", { method: "GET", credentials: "include" });
-    let challengeResData = await challengeResponse.json();
-    let imageResponse = await fetch(GlobalVariables.serverURL + "/images/" + challengeResData.imageID + "/", { method: "GET", credentials: "include" });
-    let imageResData = await imageResponse.json();
-    let distanceResponse = await fetch(GlobalVariables.serverURL + "/challenges/" + this.props.id + "/distance/", { method: "GET", credentials: "include" });
-    let distanceResData = await distanceResponse.json();
-    let challengeSportResponse = await fetch(GlobalVariables.serverURL + "/challenges/" + this.props.id + "/challenge-sports/", { method: "GET", credentials: "include" });
-    let challengeSportResData = await challengeSportResponse.json();
-
-    for (let i = 0; i < challengeSportResData.length; i++) {
-      let sportResponse = await fetch(GlobalVariables.serverURL + "/sports/" + challengeSportResData[i].sportID + "/", { method: "GET", credentials: "include" });
-      let sportResData = await sportResponse.json();
-      challengeSportResData[i].sportName = sportResData.name;
-    }
-
-    this.setState({ challengeName: challengeResData.name });
-    this.setState({ challengeStartDate: challengeResData.startDate.split(",")[0] });
-    this.setState({ challengeEndDate: challengeResData.endDate.split(",")[0] });
-    this.setState({ challengeDistanceGoal: challengeResData.targetDistance });
-    this.setState({ challengeDescription: challengeResData.description });
-    this.setState({ challengeImageSource: "data:" + imageResData.type + ";base64, " + imageResData.data });
-    this.setState({ challengeDistanceDone: distanceResData });
-    this.setState({ challengeSports: challengeSportResData });
-  }
-
-  render() {
-    return (
-      <div className="my_challenge_container">
-        <div className="my_challenge_bg">
-          <img src={this.state.challengeImageSource} alt="Challenge-Image" className="challenge_bg_image"></img>
-          <div className="my_challenge_bg_color"></div>
+  return (
+    <div className="my_challenge_container">
+      <div className="my_challenge_bg">
+        <img src={challengeImageSource} alt="Challenge-Image" className="challenge_bg_image"></img>
+        <div className="my_challenge_bg_color"></div>
+      </div>
+      <div className="my_challenge_wrap">
+        <h1 className="my_challenge_title">{challengeName}</h1>
+        <div className="my_challenge_date">
+          {challengeStartDate}-{challengeEndDate}
         </div>
-        <div className="my_challenge_wrap">
-          <h1 className="my_challenge_title">{this.state.challengeName}</h1>
-          <div className="my_challenge_date">
-            {this.state.challengeStartDate}-{this.state.challengeEndDate}
-          </div>
-          <div className="my_challenge_distance">
-            {this.state.challengeDistanceDone}/{this.state.challengeDistanceGoal}
-          </div>
-          <div className="my_challenge_info">{this.state.challengeDescription}</div>
-          <div className="my_challenge_btns">
-            <Button color="white" txt="Infos anzeigen" action={this.openChallenge} />
-          </div>
+        <div className="my_challenge_distance">
+          {challengeDistanceDone}/{challengeDistanceGoal}
         </div>
-        <div className="my_challenge_form_container pd_1">
-          <div id={"form_info_container_" + this.props.id} className="pd_1 mg_b_2 form_info_container">
-            <span id={"form_info_message_" + this.props.id} className="form_info_message"></span>
-          </div>
-          <form onSubmit={this.submitHandle}>
-            <h2>Wie viel Kilometer hast du zurückgelegt?</h2>
-            <input className="mg_t_1" type="number" step={0.1} value={this.state.activityDistance} onChange={this.activityDistanceChange}></input>
-            <div className="mg_t_2">
-              <h2>Sportart auswählen</h2>
-              <select className="mg_t_1" value={this.state.activitySportId} onChange={this.activitySportIdChange}>
-                <option value={0} disabled>Sportart wählen</option>
-                {this.state.challengeSports.map((item) => (
-                  <option key={item.id} value={item.id}>
-                    {item.sportName}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div className="center_content mg_t_2">
-              <Button color="orange" txt="Aktivität hinzufügen" type="submit" loading={this.state.loading} />
-            </div>
-          </form>
+        <div className="my_challenge_info">{challengeDescription}</div>
+        <div className="my_challenge_btns">
+          <Link to="/challenge" state={{ challengeID: challengeID }}>
+            <Button color="white" txt="Infos anzeigen" />
+          </Link>
         </div>
       </div>
-    );
-  }
+      <div className="my_challenge_form_container pd_1">
+        <div id={"form_info_container_" + challengeID} className="pd_1 mg_b_2 form_info_container">
+          <span id={"form_info_message_" + challengeID} className="form_info_message"></span>
+        </div>
+        <form onSubmit={submitHandle}>
+          <h2>Wie viel Kilometer hast du zurückgelegt?</h2>
+          <NumberInput className="mg_t_1" value={activityDistance} setValue={setActivityDistance} min={0.1} step={0.1} />
+          <div className="mg_t_2">
+            <h2>Sportart auswählen</h2>
+            <Dropdown className="mg_t_1" value={activitySportID} setValue={setActivitySportID} options={challengeSports} defaultOption="Sportart wählen" />
+          </div>
+          <div className="center_content mg_t_2">
+            <Button color="orange" txt="Aktivität hinzufügen" type="submit" loading={loading} />
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 }
 
 export default MyChallengeOverview;

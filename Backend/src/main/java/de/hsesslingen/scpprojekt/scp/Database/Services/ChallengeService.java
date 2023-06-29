@@ -305,14 +305,9 @@ public class ChallengeService {
      *  ChallengeList where Member is registered
      * @param memberID ID of Member
      * @return List of Challenges where Member is in
-     * @throws NotFoundException No challenges Found for USer
      */
-    public List<ChallengeDTO> getCurrentChallengeMemberID(long memberID) throws NotFoundException {
+    public List<ChallengeDTO> getCurrentChallengeMemberID(long memberID) {
         List<Challenge> challengeList = challengeRepository.findChallengesByMemberIDAndDate(memberID, LocalDateTime.now());
-        if (!challengeList.isEmpty()) {
-            return challengeConverter.convertEntityListToDtoList(challengeList);
-        } else {
-            throw new NotFoundException("No current challenges for this user");
-        }
+        return challengeConverter.convertEntityListToDtoList(challengeList);
     }
 }

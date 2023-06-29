@@ -363,20 +363,12 @@ public class MemberController {
             @ApiResponse(responseCode = "200", description = "Search successful.",
                     content = {@Content(mediaType = "application/json",
                             array = @ArraySchema(schema = @Schema(implementation = ChallengeDTO.class)))}),
-            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
-            @ApiResponse(responseCode = "404", description = "No current challenges for this user", content = @Content)
+            @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @GetMapping(path = "/{id}/challenges/current/", produces = "application/json")
     public ResponseEntity<List<ChallengeDTO>> getCurrentChallengesByMemberDate(@PathVariable("id") long memberID, HttpServletRequest request) {
         if (saml2Service.isLoggedIn(request)) {
-            List<ChallengeDTO> challengeList = new ArrayList<>();
-            try {
-                challengeList = challengeService.getCurrentChallengeMemberID(memberID);
-            } catch (NotFoundException e) {
-                System.out.println(e.getMessage());
-                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-            }
-            return new ResponseEntity<>(challengeList, HttpStatus.OK);
+            return new ResponseEntity<>(challengeService.getCurrentChallengeMemberID(memberID), HttpStatus.OK);
 
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);

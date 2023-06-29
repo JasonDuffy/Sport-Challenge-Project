@@ -2,11 +2,8 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.*;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeConverter;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
@@ -15,23 +12,12 @@ import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportReposit
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.SportRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Services.*;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
-import org.junit.jupiter.api.Test;
-import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
-import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeService;
-import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
-import jakarta.servlet.http.HttpServletRequest;
-import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -50,9 +36,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -91,7 +75,11 @@ public class ChallengeControllerTest {
     @MockBean
     SportService sportService;
     @MockBean
+    BonusService bonusService;
+    @MockBean
     SAML2Service saml2Service;
+    @MockBean
+    ChallengeSportService challengeSportService;
 
 
     @Test
@@ -370,6 +358,25 @@ public class ChallengeControllerTest {
     }
 
     /**
+     * Test if bad Request correctly thrown
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void addChallengeTestBadRequest() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+        MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
+        MockMultipartFile jsonFile = new MockMultipartFile("json", "", "application/json", "{\"imageID\": \"1\"}".getBytes());
+        RequestBuilder request =
+                MockMvcRequestBuilders.multipart("/challenges/?sportId=2&sportId=2&sportFactor=2")
+                        .file(file)
+                        .file(jsonFile);
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isBadRequest())
+                .andReturn();
+    }
+
+    /**
      * InternalServerError Exception works
      *
      * @throws Exception by mockMvc
@@ -420,11 +427,10 @@ public class ChallengeControllerTest {
         ChallengeDTO c1 = new ChallengeDTO();
         c1.setId(1);
 
-        when(challengeService.update(any(Long.class), any(Long.class), any(ChallengeDTO.class))).thenReturn(c1);
+        when(challengeService.update(any(Long.class), any(Long.class), any(ChallengeDTO.class), any(long[].class), any(float[].class))).thenReturn(c1);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .put("/challenges/1/").accept(MediaType.APPLICATION_JSON)
-                .param("imageId", "1")
+                .put("/challenges/1/?imageId=1&sportId=1&sportFactor=1").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(c1));
 
@@ -441,7 +447,7 @@ public class ChallengeControllerTest {
         assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(challengeService).update(any(Long.class), any(Long.class), any(ChallengeDTO.class));
+        Mockito.verify(challengeService).update(any(Long.class), any(Long.class), any(ChallengeDTO.class), any(), any());
     }
 
     /**
@@ -456,17 +462,16 @@ public class ChallengeControllerTest {
         ChallengeDTO c1 = new ChallengeDTO();
         c1.setId(1);
 
-        when(challengeService.update(any(Long.class), any(Long.class), any(ChallengeDTO.class))).thenThrow(NotFoundException.class);
+        when(challengeService.update(any(Long.class), any(Long.class), any(ChallengeDTO.class), any(long[].class), any(float[].class))).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .put("/challenges/1/").accept(MediaType.APPLICATION_JSON)
-                .param("imageId", "1")
+                .put("/challenges/1/?imageId=1&sportId=1&sportFactor=1").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(c1));
 
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isNotFound())
-                .andReturn();
+        assertThrows(ServletException.class, () -> {
+            mockMvc.perform(request);
+        });
     }
 
     /**
@@ -479,8 +484,7 @@ public class ChallengeControllerTest {
         ChallengeDTO c1 = new ChallengeDTO();
         c1.setId(1);
         RequestBuilder request = MockMvcRequestBuilders
-                .put("/challenges/1/").accept(MediaType.APPLICATION_JSON)
-                .param("imageId", "1")
+                .put("/challenges/1/?imageId=1&sportId=1&sportFactor=1").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(c1));
 
@@ -648,25 +652,6 @@ public class ChallengeControllerTest {
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isForbidden())
                 .andReturn();
-    }
-
-    /**
-     * Test if 404 is correctly returned when no activities are found
-     * @throws Exception by mockMvc
-     */
-    @Test
-    @WithMockUser
-    public void getAllActivitiesForChallengeTestNotFound() throws Exception {
-        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-
-        RequestBuilder request = MockMvcRequestBuilders
-                .get("/challenges/1/activities/").accept(MediaType.APPLICATION_JSON);
-
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isNotFound())
-                .andReturn();
-
-        verify(challengeService).getActivitiesForChallenge(1L);
     }
 
     /**
@@ -883,28 +868,6 @@ public class ChallengeControllerTest {
     }
 
     /**
-     * Test if not found is returned correctly
-     * @throws Exception by mockMvc
-     */
-    @Test
-    @WithMockUser
-    public void getAllTeamsForChallengeTestNotFound() throws Exception {
-        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-
-        List<TeamDTO> tList = new ArrayList<>();
-        when(challengeService.getChallengeTeams(1L)).thenReturn(tList);
-
-        RequestBuilder request = MockMvcRequestBuilders
-                .get("/challenges/1/teams/").accept(MediaType.APPLICATION_JSON);
-
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isNotFound())
-                .andReturn();
-
-        verify(challengeService).getChallengeTeams(1L);
-    }
-
-    /**
      * Test if all teams are deleted
      * @throws Exception by mockMvc
      */
@@ -1037,25 +1000,220 @@ public class ChallengeControllerTest {
     }
 
     /**
-     * Test if not found is returned correctly
+     *  Test if Bonuses are correctly thrown for challenge
      * @throws Exception by mockMvc
      */
     @Test
     @WithMockUser
-    public void getMembersForChallengeTestNotFound() throws Exception {
+    public void getBonusesForChallengeTestSuccess()throws Exception{
         when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
 
-        List<MemberDTO> mList = new ArrayList<>();
-        when(challengeService.getChallengeMembers(1L)).thenReturn(mList);
+        BonusDTO bonusDTO = new BonusDTO();
+        bonusDTO.setId(1);
+
+        BonusDTO bonusDTO2 = new BonusDTO();
+        bonusDTO2.setId(4);
+        BonusDTO bonusDTO3 = new BonusDTO();
+        bonusDTO3.setId(8);
+
+        List<BonusDTO> bonusDTOS = new ArrayList<>();
+        bonusDTOS.add(bonusDTO);
+        bonusDTOS.add(bonusDTO2);
+        bonusDTOS.add(bonusDTO3);
+
+        when(bonusService.getChallengeBonuses(any(Long.class),any(String.class))).thenReturn(bonusDTOS);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .get("/challenges/1/members/").accept(MediaType.APPLICATION_JSON)
-                .param("type", "all");;
-
+                .get("/challenges/1/bonuses/").accept(MediaType.APPLICATION_JSON)
+                .param("type", "past");;
         MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isNotFound())
+                .andExpect(status().isOk())
                 .andReturn();
 
-        verify(challengeService).getChallengeMembers(1L);
+        String content = res.getResponse().getContentAsString();
+
+        Pattern pattern = Pattern.compile("\"id\":(\\d)");
+        Matcher matcher = pattern.matcher(content);
+
+        matcher.find();
+        assertEquals(matcher.group(1), "1");
+        matcher.find();
+        assertEquals(matcher.group(1), "4");
+        matcher.find();
+        assertEquals(matcher.group(1), "8");
+        assertFalse(matcher.find());
+
+        verify(bonusService).getChallengeBonuses(any(Long.class),any(String.class));
     }
+
+    /**
+     * Test if Unknown user is thrown 403
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void getBonusesForChallengeTestNotLoggedIn()throws Exception{
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/challenges/1/bonuses/").accept(MediaType.APPLICATION_JSON)
+                .param("type", "past");;
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+
+    }
+
+    @Test
+    @WithMockUser
+    public void getSportsForChallengeTestSuccess()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
+        Sport sport = new Sport();
+        sport.setId(1);
+        Sport sport2 = new Sport();
+        sport2.setId(4);
+
+        List<Sport> sports = new ArrayList<>();
+        sports.add(sport);
+        sports.add(sport2);
+        when(sportService.getSportsForChallenge(any(Long.class))).thenReturn(sports);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/challenges/1/sports/").accept(MediaType.APPLICATION_JSON);
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String content = res.getResponse().getContentAsString();
+
+        Pattern pattern = Pattern.compile("\"id\":(\\d)");
+        Matcher matcher = pattern.matcher(content);
+
+        matcher.find();
+        assertEquals(matcher.group(1), "1");
+        matcher.find();
+        assertEquals(matcher.group(1), "4");
+        assertFalse(matcher.find());
+
+        verify(sportService).getSportsForChallenge(any(Long.class));
+    }
+
+    /**
+     * Test if Unknown user is thrown 403
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void getSportsForChallengeTestNotLoggedIn()throws Exception{
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/challenges/1/sports/").accept(MediaType.APPLICATION_JSON);
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+
+    }
+
+    /**
+     *  Test if effective Factor for the sport in the Challenge is thrown
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void getEffectiveFactorForSportInChallengeTestSuccess()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+        when(challengeSportService.getEffectiveFactorForSportInChallenge(any(Long.class),any(Long.class))).thenReturn(5f);
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/challenges/1/sports/1/effective/").accept(MediaType.APPLICATION_JSON);
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+        String content = res.getResponse().getContentAsString();
+
+        assertEquals("5.0",content);
+
+        verify(challengeSportService).getEffectiveFactorForSportInChallenge(any(Long.class),any(Long.class));
+
+    }
+
+    /**
+     * Test if Unknown user is thrown 403
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void getEffectiveFactorForSportInChallengeTestNotLoggedIn()throws Exception{
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/challenges/1/sports/1/effective/").accept(MediaType.APPLICATION_JSON);
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
+
+    /**
+     * Test if all ChallengeSport form a Challenge are returned correctly
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void getALLChallengeSportForChallengeTestSuccess() throws Exception {
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+        ChallengeSportDTO Cs1 = new ChallengeSportDTO();
+        Cs1.setId(1);
+        Cs1.setChallengeID(1);
+        ChallengeSportDTO Cs2 = new ChallengeSportDTO();
+        Cs2.setId(2);
+        Cs2.setChallengeID(1);
+        List<ChallengeSportDTO> aList = new ArrayList<>();
+        aList.add(Cs1); aList.add(Cs2);
+
+        when(challengeSportService.getAllChallengeSportsOfChallenge(any(long.class))).thenReturn(aList);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/challenges/1/challenge-sports/").accept(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andReturn();
+
+        String content = res.getResponse().getContentAsString();
+
+        Pattern pattern = Pattern.compile("\\{\"id\":(\\d),");
+        Matcher matcher = pattern.matcher(content);
+
+        matcher.find();
+        assertEquals(matcher.group(1), "1");
+        matcher.find();
+        assertEquals(matcher.group(1), "2");
+        assertFalse(matcher.find());
+
+        Mockito.verify(challengeSportService).getAllChallengeSportsOfChallenge(any(long.class));
+    }
+
+    /**
+     * Test if Unknown user thrown
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void getALLChallengeSportForChallengeTestNotLoggedIn() throws Exception {
+        ChallengeSportDTO Cs1 = new ChallengeSportDTO();
+        Cs1.setId(1);
+        Cs1.setChallengeID(1);
+        ChallengeSportDTO Cs2 = new ChallengeSportDTO();
+        Cs2.setId(2);
+        Cs2.setChallengeID(1);
+        List<ChallengeSportDTO> aList = new ArrayList<>();
+        aList.add(Cs1); aList.add(Cs2);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/challenges/1/challenge-sports/").accept(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+
+    }
+
+
 }

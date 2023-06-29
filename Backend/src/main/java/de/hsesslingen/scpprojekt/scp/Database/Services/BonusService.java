@@ -1,10 +1,12 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportBonusDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.BonusConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Activity;
-import de.hsesslingen.scpprojekt.scp.Database.Entities.Bonus;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.*;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ActivityRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.BonusRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
@@ -14,14 +16,12 @@ import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Service of the Bonus entity
@@ -43,6 +43,9 @@ public class BonusService {
     @Autowired
     @Lazy
     ChallengeSportConverter challengeSportConverter;
+    @Autowired
+    @Lazy
+    ChallengeConverter challengeConverter;
 
     @Autowired
     EmailService emailService;
@@ -54,6 +57,10 @@ public class BonusService {
     @Autowired
     @Lazy
     ActivityService activityService;
+
+    @Autowired
+    @Lazy
+    ChallengeSportBonusService challengeSportBonusService;
 
 
     /**
@@ -86,11 +93,22 @@ public class BonusService {
      * @param bonus            Bonus object to be added to DB
      * @return Added bonus object
      */
-    public BonusDTO add(BonusDTO bonus) throws NotFoundException {
+    public BonusDTO add(BonusDTO bonus, long[] challengeSportID) throws NotFoundException, InvalidActivitiesException {
         Bonus b = bonusConverter.convertDtoToEntity(bonus);
         Bonus savedBonus = bonusRepository.save(b);
-
-        try {
+        for (int i = 0; i < challengeSportID.length; i++) {
+            ChallengeSportBonusDTO csb = new ChallengeSportBonusDTO();
+            csb.setBonusID(b.getId());
+            csb.setChallengeSportID(challengeSportID[i]);
+            challengeSportBonusService.add(csb);
+        }
+        List<ChallengeSportBonusDTO> csbList = challengeSportBonusService.findCSBByBonusID(b.getId());
+        for (ChallengeSportBonusDTO cb : csbList){
+            List<Activity> a = activityRepository.findActivitiesByChallengeSport_Id(cb.getChallengeSportID());
+            activityService.calcTotalDistanceList(a);
+        }
+        
+       try {
             emailService.sendBonusMail(savedBonus);
         } catch (MessagingException e) {
             System.out.println("Bonus mail for bonus " + bonus.getName() + " could not be sent!");
@@ -100,13 +118,14 @@ public class BonusService {
     }
 
     /**
-     * Updates a bonus
+     * Updates or adds a bonus
      *
      * @param bonusID ID of the bonus to be updated
-     * @param bonus   Bonus object that overwrites the old bonus
-     * @return Updated bonus object
+     * @param challengeSportID Array of ChallengeSport IDs for which the bonus should be applied
+     * @param bonus Bonus object that overwrites the old bonus
+     * @return Updated or added bonus object
      */
-    public BonusDTO update(Long bonusID, BonusDTO bonus) throws NotFoundException, InvalidActivitiesException {
+    public BonusDTO update(Long bonusID, BonusDTO bonus, long[] challengeSportID) throws NotFoundException, InvalidActivitiesException {
         Optional<Bonus> optionalBonus = bonusRepository.findById(bonusID);
         Bonus convertedBonus = bonusConverter.convertDtoToEntity(bonus);
 
@@ -118,18 +137,32 @@ public class BonusService {
             newBonus.setDescription(convertedBonus.getDescription());
             newBonus.setEndDate(convertedBonus.getEndDate());
             newBonus.setStartDate(convertedBonus.getStartDate());
-            newBonus.setChallengeSport(convertedBonus.getChallengeSport());
 
-            List<Activity> a = activityRepository.findActivitiesByChallengeSport_Id(newBonus.getChallengeSport().getId());
-            activityService.calcTotalDistanceList(a);
+            List<ChallengeSportBonusDTO> csbList = challengeSportBonusService.findCSBByBonusID(newBonus.getId());
+            List<Long> existingCSs = new ArrayList<>();
+            for (ChallengeSportBonusDTO cb : csbList) { // Delete all old challenge sport bonuses
+                if (!(Arrays.stream(challengeSportID).boxed().toList()).contains(cb.getChallengeSportID())){
+                    challengeSportBonusService.delete(cb.getId());
+                }
+                else{
+                    existingCSs.add(cb.getChallengeSportID());
+                }
+            }
+
+            for (long id : challengeSportID){
+                if (!existingCSs.contains(id)){
+                    challengeSportBonusService.add(new ChallengeSportBonusDTO(id, newBonus.getId()));
+                }
+                List<Activity> a = activityRepository.findActivitiesByChallengeSport_Id(id);
+                activityService.calcTotalDistanceList(a);
+            }
 
             Bonus savedBonus = bonusRepository.save(newBonus);
             return bonusConverter.convertEntityToDto(savedBonus);
+        } else { // Add if bonus not found
+            return add(bonus, challengeSportID);
         }
-
-        throw new NotFoundException("Bonus with ID " + bonusID + " is not present in DB.");
     }
-
 
     /**
      * Deletes a specific bonus from the DB
@@ -166,5 +199,66 @@ public class BonusService {
             return 1.0f; //If no bonuses are applied, return factor as 1
 
         return factor;
+    }
+
+    /**
+     * Returns all bonuses for the given challenge
+     * @param challengeID ID of the challenge for which the bonuses should be returned
+     * @param type "past" for past bonuses, "current" for current bonuses, "future" for future bonuses and anything else for all
+     * @return List of BonusDTO objects corresponding to the given options
+     */
+    public List<BonusDTO> getChallengeBonuses(long challengeID, String type){
+        switch(type){
+            case "past":
+                return bonusConverter.convertEntityListToDtoList(bonusRepository.findPastBonusesByChallengeID(challengeID));
+            case "current":
+                return bonusConverter.convertEntityListToDtoList(bonusRepository.findCurrentBonusesByChallengeID(challengeID));
+            case "future":
+                return bonusConverter.convertEntityListToDtoList(bonusRepository.findFutureBonusesByChallengeID(challengeID));
+            default:
+                return bonusConverter.convertEntityListToDtoList(bonusRepository.findBonusesByChallengeID(challengeID));
+        }
+    }
+
+    /**
+     * Returns multiplier for given challenges and sport at this time
+     * @param challengeID The challengeID for which multiplier should be returned
+     * @param sportID The sportsID for which the multiplier should be returned
+     * @return The calculated multiplier at this moment
+     */
+    public float getCurrentMultiplierFromBonusesForChallengeAndSport(long challengeID, long sportID){
+        List<Bonus> bonuses = bonusRepository.findCurrentBonusesByChallengeIDAndSportID(challengeID, sportID);
+        return getMultiplierFromBonuses(bonuses, LocalDateTime.now());
+    }
+
+
+    /**
+     * Returns multiplier for given challenges and sport at the given date
+     * @param challengeID The challengeID for which multiplier should be returned
+     * @param sportID The sportsID for which the multiplier should be returned
+     * @param time The time for which the factor should be calculated
+     * @return The calculated multiplier at the given time
+     */
+    public float getMultiplierFromBonusesForChallengeAndSportAndSpecificTime(long challengeID, long sportID, LocalDateTime time){
+        List<Bonus> bonuses = bonusRepository.findBonusesByChallengeIDAndSportIDAtSpecificTime(challengeID, sportID, time);
+        return getMultiplierFromBonuses(bonuses, time);
+    }
+
+    /**
+     * Returns the sports associated to a given bonus
+     * @param bonusID ID of bonus for which the sports should be retrieved
+     * @return List of Sports for bonus
+     */
+    public List<Sport> getSportsForBonus(long bonusID){
+        return bonusRepository.findSportsForBonus(bonusID);
+    }
+
+    /**
+     * Returns the challenge associated to a given bonus
+     * @param bonusID ID of bonus for which the challenge should be retrieved
+     * @return Challenge for bonus
+     */
+    public ChallengeDTO getChallengeForBonus(long bonusID){
+        return challengeConverter.convertEntityToDto(bonusRepository.findChallengeForBonus(bonusID));
     }
 }

@@ -32,7 +32,6 @@ public class BonusConverter {
         bonusDTO.setFactor(bonus.getFactor());
         bonusDTO.setId(bonus.getId());
         bonusDTO.setName(bonus.getName());
-        bonusDTO.setChallengeSportID(bonus.getChallengeSport().getId());
 
         return bonusDTO;
     }
@@ -54,8 +53,6 @@ public class BonusConverter {
         bonus.setFactor(bonusDTO.getFactor());
         bonus.setId(bonusDTO.getId());
         bonus.setName(bonusDTO.getName());
-        bonus.setChallengeSport(challengeSportConverter.convertDtoToEntity(challengeSportService.get(bonusDTO.getChallengeSportID())));
-
         return bonus;
     }
 

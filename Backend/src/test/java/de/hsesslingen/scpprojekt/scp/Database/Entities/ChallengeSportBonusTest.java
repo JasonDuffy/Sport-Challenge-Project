@@ -27,7 +27,7 @@ public class ChallengeSportBonusTest {
     private ChallengeSport challengeSport = new ChallengeSport(3,challenge,sport);
     @Test
     void ChallengeSportBonusTest(){
-        Bonus b = new Bonus(challengeSport,Bonusstartdate,Bonusenddate,10.0f,"Jahresfeier","Zur Feier unseren Jahres Tages");
+        Bonus b = new Bonus(Bonusstartdate,Bonusenddate,10.0f,"Jahresfeier","Zur Feier unseren Jahres Tages");
         ChallengeSportBonus csb = new ChallengeSportBonus(challengeSport,b);
         assertEquals(challengeSport,csb.getChallengeSport());
         assertEquals(b,csb.getBonus());

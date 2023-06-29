@@ -46,7 +46,7 @@ public class ImageController {
     @Operation(summary = "Stores the given file(image)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "File successfully stored", content = @Content),
-            @ApiResponse(responseCode = "500", description = "Something went wrong storing the file", content = @Content),
+            @ApiResponse(responseCode = "400", description = "Uploaded file is not an image", content = @Content),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content)
     })
     @PostMapping(path = "/", consumes = "multipart/form-data")
@@ -54,8 +54,8 @@ public class ImageController {
         if (saml2Service.isLoggedIn(request)){
             try {
                 return new ResponseEntity<>(imageStorageService.store(file), HttpStatus.CREATED);
-            }catch (Exception e){
-                return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            }catch (IOException e){
+                return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
             }
         } else {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -182,11 +182,10 @@ public class ImageController {
             @ApiResponse(responseCode = "417", description = "Something went wrong updating the image", content = @Content)
     })
     @PutMapping(path= "/{id}/",consumes = "multipart/form-data",produces= "application/json")
-    public ResponseEntity<Void> updateImage(@PathVariable("id") long id, @RequestParam("file") MultipartFile file, HttpServletRequest request){
+    public ResponseEntity<Image> updateImage(@PathVariable("id") long id, @RequestParam("file") MultipartFile file, HttpServletRequest request){
         if (saml2Service.isLoggedIn(request)){
             try {
-                imageStorageService.update(id, file);
-                return new ResponseEntity<>(HttpStatus.OK);
+                return new ResponseEntity<>( imageStorageService.update(id, file), HttpStatus.OK);
             }catch (IOException e){
                 System.out.println(e.getMessage());
                 return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);

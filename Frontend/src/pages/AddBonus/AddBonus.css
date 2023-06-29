@@ -1,0 +1,7 @@
+.form_sport_table th:first-child,
+.form_sport_table td:first-child{
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    max-width: 200px;
+}

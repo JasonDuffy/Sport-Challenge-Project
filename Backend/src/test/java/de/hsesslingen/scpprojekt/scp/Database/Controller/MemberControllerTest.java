@@ -7,8 +7,10 @@ import de.hsesslingen.scpprojekt.scp.Database.DTOs.ActivityDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ActivityConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Challenge;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Team;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.MemberRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ActivityService;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeService;
@@ -70,6 +72,73 @@ public class MemberControllerTest {
     ActivityService activityService;
     @MockBean
     ChallengeService challengeService;
+
+    /**
+     * Test for getAll Members
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void getAllMembersTestSuccess()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+        MemberDTO member = new MemberDTO();
+        member.setUserID(1L);
+        member.setFirstName("Max");
+        member.setLastName("Mustermann");
+        member.setCommunication(true);
+
+        MemberDTO member2 = new MemberDTO();
+        member2.setUserID(2L);
+        member2.setFirstName("Janik");
+        member2.setLastName("Hansen");
+        member2.setCommunication(false);
+        List<MemberDTO> memberDTOList = new ArrayList<>();
+        memberDTOList.add(member);
+        memberDTOList.add(member2);
+        when(memberService.getAll()).thenReturn(memberDTOList);
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/members/")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+        String content = res.getResponse().getContentAsString();
+
+        Pattern pattern = Pattern.compile("\\{\"email\":null,\"firstName\":\"(.*?)\",\"lastName\":\"(.*?)\",\"userID\":(.*?),\"imageID\":null,\"communication\":(.*?)}");
+        Matcher matcher = pattern.matcher(content);
+
+        matcher.find();
+        assertEquals(matcher.group(1), "Max");
+        assertEquals(matcher.group(2), "Mustermann");
+        assertEquals(matcher.group(3), "1");
+        assertEquals(matcher.group(4), "true");
+
+        matcher.find();
+        assertEquals(matcher.group(1), "Janik");
+        assertEquals(matcher.group(2), "Hansen");
+        assertEquals(matcher.group(3), "2");
+        assertEquals(matcher.group(4), "false");
+
+        verify(memberService).getAll();
+    }
+
+    /**
+     * Test if Unknown User os thrown
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void getAllMembersTestNotLoggedIn()throws Exception{
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/members/")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
 
     /**
      *Test for Successfully creating a member
@@ -724,31 +793,6 @@ public class MemberControllerTest {
     }
 
     /**
-     *  Test if  Not Found  is correct
-     * @throws Exception by mockMvc
-     */
-    @Test
-    @WithMockUser
-    public void GetCurrentChallengeNotFound() throws Exception {
-        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
-        MemberDTO memberDTO = new MemberDTO();
-        memberDTO.setUserID(1);
-        memberDTO.setEmail("max@example.com");
-
-        when(memberService.get(1)).thenReturn(memberDTO);
-        when(challengeService.getCurrentChallengeMemberID(1)).thenThrow(NotFoundException.class);
-
-        RequestBuilder request = MockMvcRequestBuilders
-                .get("/members/1/challenges/current/").accept(MediaType.APPLICATION_JSON)
-                .contentType(MediaType.APPLICATION_JSON);
-
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isNotFound())
-                .andReturn();
-        verify(challengeService).getCurrentChallengeMemberID(1);
-    }
-
-    /**
      *  Test if Unknown user is thrown correct
      * @throws Exception by mockMvc
      */
@@ -763,6 +807,112 @@ public class MemberControllerTest {
                 .andExpect(status().isForbidden())
                 .andReturn();
     }
+
+    /**
+     * Test for getting all teams for a Member
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void getTeamByMemberIDTestSuccess()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
+        TeamDTO team = new TeamDTO();
+        team.setId(1);
+        team.setName("Red");
+        team.setChallengeID(1);
+        TeamDTO team2 = new TeamDTO();
+        team2.setId(2);
+        team2.setName("Blue");
+        team2.setChallengeID(3);
+        List<TeamDTO> teamDTOList = new ArrayList<>();
+        teamDTOList.add(team);teamDTOList.add(team2);
+
+        when(memberService.getAllTeamsForMember(1)).thenReturn(teamDTOList);
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/members/1/teams/")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+        String content = res.getResponse().getContentAsString();
+
+        Pattern pattern = Pattern.compile("\\{\"id\":(.*?),\"name\":\"(.*?)\",\"imageID\":0,\"challengeID\":(.*?)\\}");
+        Matcher matcher = pattern.matcher(content);
+
+        matcher.find();
+        assertEquals(matcher.group(1), "1");
+        assertEquals(matcher.group(2), "Red");
+        assertEquals(matcher.group(3), "1");
+
+        matcher.find();
+        assertEquals(matcher.group(1), "2");
+        assertEquals(matcher.group(2), "Blue");
+        assertEquals(matcher.group(3), "3");
+
+        verify(memberService).getAllTeamsForMember(any(long.class));
+    }
+
+    /**
+     *  Test for Unknown User
+     * @throws Exception
+     */
+    @Test
+    @WithMockUser
+    public void getTeamByMemberIDTestNotLoggedIn()throws Exception{
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/members/1/teams/")
+                .accept(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
+    /**
+     * Test if challengeID is correctly thrown for a member
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithMockUser
+    public void getChallengeIDsByMemberIDTestSuccess()throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+
+        List<Long> challengeID = new ArrayList<>();
+        challengeID.add(1L);
+        challengeID.add(5L);
+        challengeID.add(9L);
+
+        when(challengeService.getChallengeIDsByMemberID(1L)).thenReturn(challengeID);
+
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/members/1/challenges/").accept(MediaType.APPLICATION_JSON);
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String content = res.getResponse().getContentAsString();
+        String expectedResponseBody = "[1,5,9]";
+        assertEquals(expectedResponseBody, content);
+
+        verify(challengeService).getChallengeIDsByMemberID(1L);
+    }
+
+    /**
+     *  Test if Unknown user is thrown 403
+     * @throws Exception by mockMvc
+     */
+    @Test
+    @WithAnonymousUser
+    public void getChallengeIDsByMemberIDTestNotLoggedIn()throws Exception{
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/members/1/challenges/").accept(MediaType.APPLICATION_JSON);
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
 
 }
 

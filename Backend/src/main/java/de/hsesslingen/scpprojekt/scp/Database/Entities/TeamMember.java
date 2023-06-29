@@ -15,7 +15,7 @@ import org.hibernate.annotations.OnDeleteAction;
  * @author Robin Hackh, Tom Nguyen Dinh
  */
 @Entity
-@Table(name = "TeamMember")
+@Table(name = "TeamMember", uniqueConstraints = @UniqueConstraint(columnNames = {"team_id", "member_id"}))
 public class TeamMember {
 
     @Id

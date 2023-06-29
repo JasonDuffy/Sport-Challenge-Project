@@ -3,8 +3,12 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.BonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Sport;
 import de.hsesslingen.scpprojekt.scp.Database.Services.BonusService;
+import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportService;
+import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -35,7 +39,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 /**
  * Tests for Bonus Controller REST API
- * @author Jason Patrick Duffy
+ * @author Jason Patrick Duffy, Tom Nguyen Dinh
  */
 @ActiveProfiles("test")
 @WebMvcTest(BonusController.class)
@@ -46,6 +50,8 @@ public class BonusControllerTest {
 
     @MockBean
     BonusService bonusService;
+    @MockBean
+    ChallengeSportService challengeSportService;
 
     @MockBean
     SAML2Service saml2Service;
@@ -183,12 +189,10 @@ public class BonusControllerTest {
         when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
 
         BonusDTO b1 = new BonusDTO();
-        b1.setChallengeSportID(2L);
-
-        when(bonusService.add(any(BonusDTO.class))).thenReturn(b1);
+        when(bonusService.add(any(BonusDTO.class), any(long[].class))).thenReturn(b1);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .post("/bonuses/").accept(MediaType.APPLICATION_JSON)
+                .post("/bonuses/?challengesportID=1&challengesportID=2").accept(MediaType.APPLICATION_JSON)
                 .param("challengeSportID", "2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(b1));
@@ -201,9 +205,7 @@ public class BonusControllerTest {
 
         BonusDTO result = new ObjectMapper().readValue(content, BonusDTO.class);
 
-        assertEquals(result.getChallengeSportID(), 2L);
-
-        Mockito.verify(bonusService).add(any(BonusDTO.class));
+        Mockito.verify(bonusService).add(any(BonusDTO.class),any(long[].class));
     }
 
     /**
@@ -217,12 +219,11 @@ public class BonusControllerTest {
 
         BonusDTO b1 = new BonusDTO();
         b1.setId(1);
-        b1.setChallengeSportID(2L);
 
-        when(bonusService.add(any(BonusDTO.class))).thenThrow(NotFoundException.class);
+        when(bonusService.add(any(BonusDTO.class),any(long[].class))).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .post("/bonuses/").accept(MediaType.APPLICATION_JSON)
+                .post("/bonuses/?challengesportID=1&challengesportID=2").accept(MediaType.APPLICATION_JSON)
                 .param("challengeSportID", "2")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(b1));
@@ -231,7 +232,7 @@ public class BonusControllerTest {
                 .andExpect(status().isNotFound())
                 .andReturn();
 
-        Mockito.verify(bonusService).add(any(BonusDTO.class));
+        Mockito.verify(bonusService).add(any(BonusDTO.class),any(long[].class));
     }
 
     /**
@@ -245,9 +246,7 @@ public class BonusControllerTest {
         b1.setId(1);
 
         RequestBuilder request = MockMvcRequestBuilders
-                .post("/bonuses/").accept(MediaType.APPLICATION_JSON)
-                .param("challengeSportID", "1")
-                .param("memberID", "1")
+                .post("/bonuses/?challengesportID=1&challengesportID=2").accept(MediaType.APPLICATION_JSON)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(b1));
 
@@ -268,7 +267,7 @@ public class BonusControllerTest {
         BonusDTO b1 = new BonusDTO();
         b1.setId(1);
 
-        when(bonusService.update(any(Long.class), any(BonusDTO.class))).thenReturn(b1);
+        when(bonusService.update(any(Long.class), any(BonusDTO.class), any())).thenReturn(b1);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/bonuses/1/").accept(MediaType.APPLICATION_JSON)
@@ -289,7 +288,7 @@ public class BonusControllerTest {
         assertEquals(matcher.group(1), "1");
         assertFalse(matcher.find());
 
-        Mockito.verify(bonusService).update(any(Long.class), any(BonusDTO.class));
+        Mockito.verify(bonusService).update(any(Long.class), any(BonusDTO.class), any());
     }
 
     /**
@@ -304,7 +303,7 @@ public class BonusControllerTest {
         BonusDTO b1 = new BonusDTO();
         b1.setId(1);
 
-        when(bonusService.update(any(Long.class), any(BonusDTO.class))).thenThrow(NotFoundException.class);
+        when(bonusService.update(any(Long.class), any(BonusDTO.class), any())).thenThrow(NotFoundException.class);
 
         RequestBuilder request = MockMvcRequestBuilders
                 .put("/bonuses/1/").accept(MediaType.APPLICATION_JSON)
@@ -312,11 +311,11 @@ public class BonusControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsString(b1));
 
-        MvcResult res = mockMvc.perform(request)
-                .andExpect(status().isNotFound())
-                .andReturn();
+        assertThrows(ServletException.class, () -> {
+            mockMvc.perform(request);
+        });
 
-        Mockito.verify(bonusService).update(any(Long.class), any(BonusDTO.class));
+        Mockito.verify(bonusService).update(any(Long.class), any(BonusDTO.class), any());
     }
 
     /**
@@ -432,6 +431,45 @@ public class BonusControllerTest {
         MvcResult res = mockMvc.perform(request)
                 .andExpect(status().isForbidden())
                 .andReturn();
+    }
+
+    @Test
+    @WithMockUser
+    public void getSportsForBonusTestSuccess() throws Exception{
+        when(saml2Service.isLoggedIn(any(HttpServletRequest.class))).thenReturn(true);
+        Sport sport = new Sport("Laufen",1);
+        List<Sport> sports = new ArrayList<>();
+        sports.add(sport);
+        when(bonusService.getSportsForBonus(1)).thenReturn(sports);
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/bonuses/1/sports/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String content = res.getResponse().getContentAsString();
+
+        Pattern pattern = Pattern.compile("\"name\":\"(.*?)\"");
+        Matcher matcher = pattern.matcher(content);
+
+        matcher.find();
+        assertEquals(matcher.group(1), "Laufen");
+        assertFalse(matcher.find());
+
+    }
+    @Test
+    @WithAnonymousUser
+    public void getSportsForBonusTestNotLoggedIn() throws Exception{
+        RequestBuilder request = MockMvcRequestBuilders
+                .get("/bonuses/1/sports/").accept(MediaType.APPLICATION_JSON)
+                .contentType(MediaType.APPLICATION_JSON);
+
+        MvcResult res = mockMvc.perform(request)
+                .andExpect(status().isForbidden())
+                .andReturn();
+
     }
 
 }

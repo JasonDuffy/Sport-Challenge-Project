@@ -1,7 +1,7 @@
 package de.hsesslingen.scpprojekt.scp.Authentication.Controller;
 
-import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Authentication.SAML2User;
+import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -65,7 +66,12 @@ public class SAML2Controller {
     public ResponseEntity<Void> login(){
         saml2Service.loginUser();
         HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(URI.create("http://localhost:3000"));
+
+        String frontendURL = System.getenv("SCP_Frontend_URL"); // Read address from environment variable
+        if (frontendURL == null) // Default to localhost if not set
+            frontendURL = "http://localhost:3000";
+
+        headers.setLocation(URI.create(frontendURL));
         return new ResponseEntity<>(headers, HttpStatus.PERMANENT_REDIRECT);
     }
 }

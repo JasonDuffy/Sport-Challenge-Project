@@ -1,0 +1,29 @@
+.my_challenge_list{
+    gap: 1rem;
+    display: grid;
+}
+
+.col{
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+@media (min-width: 780px) and (max-width: 1154px){
+    .col{
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 779px){
+    .col{
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
+}
+
+.my_challenge_list_item{
+    position: relative;
+    overflow: hidden;
+    list-style: none;
+    width: 100%;
+    border-top-right-radius: 16px;
+    border-top-left-radius: 16px;
+}

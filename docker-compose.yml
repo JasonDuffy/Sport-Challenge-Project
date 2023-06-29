@@ -18,7 +18,12 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=password
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SCP_Frontend_URL=http://localhost:3000
       - SPRING_SECURITY_SAML2_RELYINGPARTY_REGISTRATION_KEYCLOAK_ASSERTINGPARTY_METADATA-URI=http://kubernetes.docker.internal:8080/realms/SportChallenge/protocol/saml/descriptor
+      - SPRING_MAIL_HOST=smtp.gmail.com
+      - SPRING_MAIL_PORT=587
+      - SPRING_MAIL_USERNAME=slashchallengescp@gmail.com
+      - SPRING_MAIL_PASSWORD=kpcxvrxxjxoemqvy
     networks:
       - main_net
       
@@ -32,6 +37,8 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: scp
       PGUSER: postgres
+      TZ: 'Europe/Berlin'
+      PGTZ: 'Europe/Berlin'
     healthcheck:
       test: ["CMD-SHELL", "pg_isready", "-d", "scp"]
       interval: 10s
@@ -48,6 +55,7 @@ services:
     environment:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
+      TZ: 'Europe/Berlin'
     ports:
       - 8080:8080
     restart: always
@@ -61,6 +69,10 @@ services:
     build:
       context: .
     container_name: frontend
+    environment:
+      - REACT_APP_SERVERNAME=localhost
+      - REACT_APP_SERVERPORT=8081
+      - REACT_APP_SERVERPROTOCOL=http
     ports:
       - 3000:3000
     networks:

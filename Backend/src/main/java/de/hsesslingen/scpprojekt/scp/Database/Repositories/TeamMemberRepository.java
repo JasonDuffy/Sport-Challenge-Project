@@ -1,5 +1,6 @@
 package de.hsesslingen.scpprojekt.scp.Database.Repositories;
 
+import de.hsesslingen.scpprojekt.scp.Database.Entities.Member;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.TeamMember;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;

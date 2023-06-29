@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -88,5 +89,16 @@ public class SportService {
     public void deleteAll() {
         sportRepository.deleteAll();
     }
+
+    /**
+     *  Get all Sports for a Challenge with challenge specific factors already applied.
+     * @param challengeID ID of Chalenge
+     * @return List of Sports
+     */
+    public List<Sport> getSportsForChallenge(long challengeID){
+        return sportRepository.findSportsForChallenge(challengeID);
+    }
+
+
 }
 

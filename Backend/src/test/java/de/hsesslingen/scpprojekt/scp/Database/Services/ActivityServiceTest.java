@@ -359,14 +359,12 @@ public class ActivityServiceTest {
         challengeSport.setSport(sport);
 
         Bonus b1 = new Bonus();
-        b1.setChallengeSport(challengeSport);
         b1.setId(1);
         b1.setStartDate(LocalDateTime.of(2023, 4, 10, 8, 0));
         b1.setEndDate(LocalDateTime.of(2023, 6, 4, 10, 0));
         b1.setFactor(2.0f);
 
         Bonus b2 = new Bonus();
-        b2.setChallengeSport(challengeSport);
         b2.setId(2);
         b2.setStartDate(LocalDateTime.of(2023, 4, 10, 8, 0));
         b2.setEndDate(LocalDateTime.of(2023, 6, 4, 10, 0));
@@ -420,14 +418,12 @@ public class ActivityServiceTest {
         challengeSport.setSport(sport);
 
         Bonus b1 = new Bonus();
-        b1.setChallengeSport(challengeSport);
         b1.setId(1);
         b1.setStartDate(LocalDateTime.of(2023, 4, 10, 8, 0));
         b1.setEndDate(LocalDateTime.of(2023, 6, 4, 10, 0));
         b1.setFactor(2.0f);
 
         Bonus b2 = new Bonus();
-        b2.setChallengeSport(challengeSport);
         b2.setId(2);
         b2.setStartDate(LocalDateTime.of(2023, 4, 10, 8, 0));
         b2.setEndDate(LocalDateTime.of(2023, 6, 4, 10, 0));
@@ -459,7 +455,7 @@ public class ActivityServiceTest {
             distance += a.getDistance() * a.getChallengeSport().getFactor() * bonusfactor;
         }
 
-        assertEquals(distance, activityService.getAVGDistanceForActivities(challenge1Acts));
+        assertEquals(distance, activityService.getAVGDistanceForActivities(10, challenge1Acts));
     }
 
     /**
@@ -481,14 +477,12 @@ public class ActivityServiceTest {
         challengeSport.setFactor(1);
 
         Bonus b1 = new Bonus();
-        b1.setChallengeSport(challengeSport);
         b1.setId(1);
         b1.setStartDate(LocalDateTime.of(2023, 4, 10, 8, 0));
         b1.setEndDate(LocalDateTime.of(2023, 6, 4, 10, 0));
         b1.setFactor(2.0f);
 
         Bonus b2 = new Bonus();
-        b2.setChallengeSport(challengeSport);
         b2.setId(2);
         b2.setStartDate(LocalDateTime.of(2023, 4, 10, 8, 0));
         b2.setEndDate(LocalDateTime.of(2023, 6, 4, 10, 0));
@@ -507,9 +501,9 @@ public class ActivityServiceTest {
 
         when(challengeService.getChallengeBonuses(1L)).thenReturn(bonusList);
         when(challengeSportService.get(1L)).thenReturn(csConverter.convertEntityToDto(challengeSport));
-        when(bonusService.getMultiplierFromBonuses(bonusConverter.convertDtoListToEntityList(anyList()),any(LocalDateTime.class))).thenReturn(6f);
+        when(bonusService.getMultiplierFromBonusesForChallengeAndSportAndSpecificTime(anyLong(), anyLong(), any())).thenReturn(5f);
         float distance = activityService.calcTotalDistance(activity);
-        assertEquals(60,distance);
+        assertEquals(50,distance);
     }
 
     /**
@@ -531,14 +525,12 @@ public class ActivityServiceTest {
         challengeSport.setFactor(1);
 
         Bonus b1 = new Bonus();
-        b1.setChallengeSport(challengeSport);
         b1.setId(1);
         b1.setStartDate(LocalDateTime.of(2023, 4, 10, 8, 0));
         b1.setEndDate(LocalDateTime.of(2023, 6, 4, 10, 0));
         b1.setFactor(2.0f);
 
         Bonus b2 = new Bonus();
-        b2.setChallengeSport(challengeSport);
         b2.setId(2);
         b2.setStartDate(LocalDateTime.of(2023, 4, 10, 8, 0));
         b2.setEndDate(LocalDateTime.of(2023, 6, 4, 10, 0));
@@ -564,11 +556,11 @@ public class ActivityServiceTest {
 
         when(challengeService.getChallengeBonuses(1L)).thenReturn(bonusList);
         when(challengeSportService.get(1L)).thenReturn(csConverter.convertEntityToDto(challengeSport));
-        when(bonusService.getMultiplierFromBonuses(bonusConverter.convertDtoListToEntityList(anyList()),any(LocalDateTime.class))).thenReturn(6f);
+        when(bonusService.getMultiplierFromBonusesForChallengeAndSportAndSpecificTime(anyLong(), anyLong(), any())).thenReturn(5f);
         activityService.calcTotalDistanceList(aList);
 
-        assertEquals(60,activity.getTotalDistance());
-        assertEquals(30,activity1.getTotalDistance());
+        assertEquals(50,activity.getTotalDistance());
+        assertEquals(25,activity1.getTotalDistance());
     }
 
     /**

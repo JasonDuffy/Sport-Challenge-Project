@@ -1,0 +1,7 @@
+.icon_faPencil > *{
+    color: var(--doubleslash-lightblue);
+}
+
+.icon_faPencil:hover > *{
+    color: var(--doubleslash-blue);
+}

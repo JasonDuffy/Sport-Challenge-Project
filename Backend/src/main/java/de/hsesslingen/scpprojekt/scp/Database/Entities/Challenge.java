@@ -39,7 +39,7 @@ public class Challenge {
     @Column(name = "end_date", nullable = false)
     private LocalDateTime endDate;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "image_id")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -55,6 +55,15 @@ public class Challenge {
         this.startDate = startDate;
         this.endDate = endDate;
         this.image = image;
+        this.targetDistance = targetDistance;
+    }
+
+    public Challenge(String name, String description, LocalDateTime startDate, LocalDateTime endDate, float targetDistance) {
+        this.name = name;
+        this.description = description;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.image = null;
         this.targetDistance = targetDistance;
     }
 

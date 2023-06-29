@@ -2,6 +2,7 @@ package de.hsesslingen.scpprojekt.scp.Database.Controller;
 
 import de.hsesslingen.scpprojekt.scp.Authentication.Services.SAML2Service;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportBonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportDTO;
 import de.hsesslingen.scpprojekt.scp.Database.Services.ChallengeSportBonusService;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -152,7 +153,6 @@ public class ChallengeSportBonusController {
             @ApiResponse(responseCode = "200", description = "ChallengeSportBonus successfully deleted"),
             @ApiResponse(responseCode = "403", description = "Not logged in", content = @Content),
             @ApiResponse(responseCode = "404", description = "ChallengeSportBonus not found", content = @Content)
-
     })
     @DeleteMapping(path = "/{id}/", produces = "application/json")
     public ResponseEntity<Void> deleteChallengeSportBonus(@PathVariable("id") long id, HttpServletRequest request) {

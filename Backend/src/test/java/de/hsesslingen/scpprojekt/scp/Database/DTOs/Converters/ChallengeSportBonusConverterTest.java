@@ -53,7 +53,6 @@ public class ChallengeSportBonusConverterTest {
         challengeSport.setSport(sport);
 
         bonus = new Bonus();
-        bonus.setChallengeSport(challengeSport);
         bonus.setId(1);
 
         challengeSportBonus = new ChallengeSportBonus();

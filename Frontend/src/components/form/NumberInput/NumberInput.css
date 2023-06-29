@@ -1,0 +1,13 @@
+.scp_number_input{
+    border: 0;
+    border-bottom: 2px var(--doubleslash-text-grey) solid;
+    color: var(--doubleslash-text-grey);
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 14px;
+    font-weight: bold;
+    background-color: var(--doubleslash-lightblue);
+}
+
+.scp_number_input:focus{
+    outline: 0;
+}

@@ -22,8 +22,7 @@ public class BonusDTOTest {
 
     @Test
     void BonusDTO_Test(){
-        BonusDTO bonusDTO = new BonusDTO(1,1L,a,b,10f,"hi","hallo");
-        assertEquals(1,bonusDTO.getChallengeSportID());
+        BonusDTO bonusDTO = new BonusDTO(1L,a,b,10f,"hi","hallo");
         assertEquals(a,bonusDTO.getStartDate());
         assertEquals(b,bonusDTO.getEndDate());
         assertEquals(10f, bonusDTO.getFactor());

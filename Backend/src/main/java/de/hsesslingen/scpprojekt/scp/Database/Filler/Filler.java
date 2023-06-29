@@ -45,6 +45,8 @@ public class Filler {
     private ActivityRepository activityRepository;
     @Autowired
     private BonusRepository bonusRepository;
+    @Autowired
+    private ChallengeSportBonusRepository challengeSportBonusRepository;
 
     @Autowired
     @Lazy
@@ -292,110 +294,119 @@ public class Filler {
     Activity act54 = new Activity(cp8, helene, 1, date54);
 
 
-    Bonus doubA = new Bonus(cp1a, date1Start, date1End, 2, "DoubleXP Weekend", "Doppelte Kilomete übers Wochenende");
-    Bonus doubB = new Bonus(cp1b, date1Start, date1End, 2, "DoubleXP Weekend", "Doppelte Kilomete übers Wochenende");
-    Bonus doubC = new Bonus(cp1c, date1Start, date1End, 2, "DoubleXP Weekend", "Doppelte Kilomete übers Wochenende");
+    Bonus doubA = new Bonus(date1Start, date1End, 2, "DoubleXP Weekend", "Doppelte Kilomete übers Wochenende");
+    Bonus doubB = new Bonus(date1Start, date1End, 2, "DoubleXP Weekend", "Doppelte Kilomete übers Wochenende");
+    Bonus doubC = new Bonus(date1Start, date1End, 2, "DoubleXP Weekend", "Doppelte Kilomete übers Wochenende");
 
-    Bonus anniA = new Bonus(cp2a, date2Start, date2End, 3, "Anniversary", "Wegen Anniversary gibt es mehr Kilometer!");
-    Bonus anniB = new Bonus(cp2b, date2Start, date2End, 3, "Anniversary", "Wegen Anniversary gibt es mehr Kilometer!");
+    Bonus anniA = new Bonus(date2Start, date2End, 3, "Anniversary", "Wegen Anniversary gibt es mehr Kilometer!");
+    Bonus anniB = new Bonus(date2Start, date2End, 3, "Anniversary", "Wegen Anniversary gibt es mehr Kilometer!");
 
-    Bonus holi = new Bonus(cp3, date3Start, date3End, 4, "Holiday Event", "Während den Ferien gibt es mehr KM!");
+    Bonus doub = new Bonus(date1Start, date1End, 2, "DoubleXP Weekend", "Doppelte Kilomete übers Wochenende");
+    Bonus anni = new Bonus(date2Start, date2End, 3, "Anniversary", "Wegen Anniversary gibt es mehr Kilometer!");
+    Bonus holi = new Bonus(date3Start, date3End, 4, "Holiday Event", "Während den Ferien gibt es mehr KM!");
+    Bonus finish = new Bonus(date4Start, date4End, 2, "Finished Project", "Aufgrund des beendeten Projekts gibt es mehr Kilometeer für alle!");
+    Bonus lucky = new Bonus(date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
 
-    Bonus finishA = new Bonus(cp4a, date4Start, date4End, 2, "Finished Project", "Aufgrund des beendeten Projekts gibt es mehr Kilometeer für alle!");
-    Bonus finishB = new Bonus(cp4b, date4Start, date4End, 2, "Finished Project", "Aufgrund des beendeten Projekts gibt es mehr Kilometeer für alle!");
-    Bonus finishC = new Bonus(cp4c, date4Start, date4End, 2, "Finished Project", "Aufgrund des beendeten Projekts gibt es mehr Kilometeer für alle!");
-    Bonus finishD = new Bonus(cp4d, date4Start, date4End, 2, "Finished Project", "Aufgrund des beendeten Projekts gibt es mehr Kilometeer für alle!");
-    Bonus finishE = new Bonus(cp4e, date4Start, date4End, 2, "Finished Project", "Aufgrund des beendeten Projekts gibt es mehr Kilometeer für alle!");
+    Bonus luckyA = new Bonus(date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
+    Bonus luckyB = new Bonus(date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
+    Bonus luckyC = new Bonus(date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
 
-    Bonus luckyA = new Bonus(cp5a, date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
-    Bonus luckyB = new Bonus(cp5b, date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
-    Bonus luckyC = new Bonus(cp5c, date5Start, date5End, 3, "Lucky Day!", "Für heute gibt es mehr Kilometer!");
-
+    ChallengeSportBonus doubl = new ChallengeSportBonus(cp1a,doub);
+    ChallengeSportBonus anniv = new ChallengeSportBonus(cp2a,anni);
+    ChallengeSportBonus holid = new ChallengeSportBonus(cp3,holi);
+    ChallengeSportBonus finishe = new ChallengeSportBonus(cp4a,finish);
+    ChallengeSportBonus luckys = new ChallengeSportBonus(cp5a,lucky);
+    
     @EventListener(ApplicationReadyEvent.class)
     public void fillDb() throws NotFoundException {
-        try {
-            Image[] imgArray = {pic1, pic2, pic3, pic4, pic5};
+        String production = System.getenv("SCP_PRODUCTION"); // Only fill DB when not running in production environment
+        if(production == null){
+            try {
+                Image[] imgArray = {pic1, pic2, pic3, pic4, pic5};
 
-            for (int i = 0; i < imgArray.length; i++) {
-                InputStream ip = new FileInputStream("src/main/java/de/hsesslingen/scpprojekt/scp/Database/Filler/Images/image-" + (i + 1) + ".jpg");
-                BufferedImage bi = ImageIO.read(ip);
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                ImageIO.write(bi, "jpg", baos);
-                imgArray[i].setData(baos.toByteArray());
+                for (int i = 0; i < imgArray.length; i++) {
+                    InputStream ip = new FileInputStream("src/main/java/de/hsesslingen/scpprojekt/scp/Database/Filler/Images/image-" + (i + 1) + ".jpg");
+                    BufferedImage bi = ImageIO.read(ip);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    ImageIO.write(bi, "jpg", baos);
+                    imgArray[i].setData(baos.toByteArray());
+                }
+            } catch (Exception e){
+                System.out.println(e.getMessage());
             }
-        } catch (Exception e){
-            System.out.println(e.getMessage());
+
+            memberRepository.saveAll(Arrays.asList(
+                    joe,
+                    hanna,
+                    jack,
+                    kevin,
+                    darth,
+                    ryu,
+                    crash,
+                    vergil,
+                    cloud,
+                    aerith,
+                    donald,
+                    zack,
+                    ryan,
+                    dan,
+                    luke,
+                    arnold,
+                    elon,
+                    minnie,
+                    davis,
+                    jim,
+                    terry,
+                    jeeper,
+                    felix,
+                    optimus,
+                    helene
+            ));
+
+            imageRepository.saveAll(Arrays.asList(
+                    pic1, pic2, pic3, pic4, pic5
+            ));
+
+            sportRepository.saveAll(Arrays.asList(
+                    laufen, radfahren, pogo, kanoo, skaten, rodeln
+            ));
+
+            challengeRepository.saveAll(Arrays.asList(
+                    hustle, bustle, anniversary, one, summer, ps5, spaceday, winter
+            ));
+
+            challengeSportRepository.saveAll(Arrays.asList(
+                    cp1a, cp1b, cp1c, cp2a, cp2b, cp3, cp4a, cp4b, cp4c, cp4d, cp4e, cp5a, cp5b,
+                    cp5c, cp6a, cp6b, cp7, cp8
+            ));
+
+            teamRepository.saveAll(Arrays.asList(
+                    red, blue, blueHater, besten, polka, antiSocial, anderen, chase, musketiere,
+                    dynamite, gamer, autobots, metalheads
+            ));
+
+            teamMemberRepository.saveAll(Arrays.asList(
+                    tm1, tm2, tm3, tm4, tm5, tm6, tm7, tm8, tm9, tm10, tm11, tm12, tm13, tm14, tm15,
+                    tm16, tm17, tm18, tm19, tm20, tm21, tm22, tm23, tm24, tm25
+            ));
+
+            activityRepository.saveAll(Arrays.asList(
+                    act1, act2, act3, act4, act5, act6, act7, act8, act9, act10, act11, act12, act13,
+                    act14, act15, act16, act17, act18, act19, act20, act21, act22, act23, act24, act25,
+                    act26, act27, act28, act29, act30, act31, act32, act33, act34, act35, act36, act37,
+                    act38, act39, act40, act41, act42, act43, act44, act45, act46, act47, act48, act49,
+                    act50, act51, act52, act53, act54
+            ));
+
+            bonusRepository.saveAll(Arrays.asList(
+                    doub, anni, holi, finish, lucky
+            ));
+            challengeSportBonusRepository.saveAll(Arrays.asList(
+                    doubl, anniv, holid, finishe, luckys
+            ));
+
+            activityService.totalDistanceAll();
         }
-
-        memberRepository.saveAll(Arrays.asList(
-                joe,
-                hanna,
-                jack,
-                kevin,
-                darth,
-                ryu,
-                crash,
-                vergil,
-                cloud,
-                aerith,
-                donald,
-                zack,
-                ryan,
-                dan,
-                luke,
-                arnold,
-                elon,
-                minnie,
-                davis,
-                jim,
-                terry,
-                jeeper,
-                felix,
-                optimus,
-                helene
-        ));
-
-        imageRepository.saveAll(Arrays.asList(
-                pic1, pic2, pic3, pic4, pic5
-        ));
-
-        sportRepository.saveAll(Arrays.asList(
-                laufen, radfahren, pogo, kanoo, skaten, rodeln
-        ));
-
-        challengeRepository.saveAll(Arrays.asList(
-                hustle, bustle, anniversary, one, summer, ps5, spaceday, winter
-        ));
-
-        challengeSportRepository.saveAll(Arrays.asList(
-                cp1a, cp1b, cp1c, cp2a, cp2b, cp3, cp4a, cp4b, cp4c, cp4d, cp4e, cp5a, cp5b,
-                cp5c, cp6a, cp6b, cp7, cp8
-        ));
-
-        teamRepository.saveAll(Arrays.asList(
-                red, blue, blueHater, besten, polka, antiSocial, anderen, chase, musketiere,
-                dynamite, gamer, autobots, metalheads
-        ));
-
-        teamMemberRepository.saveAll(Arrays.asList(
-                tm1, tm2, tm3, tm4, tm5, tm6, tm7, tm8, tm9, tm10, tm11, tm12, tm13, tm14, tm15,
-                tm16, tm17, tm18, tm19, tm20, tm21, tm22, tm23, tm24, tm25
-        ));
-
-        activityRepository.saveAll(Arrays.asList(
-                act1, act2, act3, act4, act5, act6, act7, act8, act9, act10, act11, act12, act13,
-                act14, act15, act16, act17, act18, act19, act20, act21, act22, act23, act24, act25,
-                act26, act27, act28, act29, act30, act31, act32, act33, act34, act35, act36, act37,
-                act38, act39, act40, act41, act42, act43, act44, act45, act46, act47, act48, act49,
-                act50, act51, act52, act53, act54
-        ));
-
-        bonusRepository.saveAll(Arrays.asList(
-                doubA, doubB, doubC, anniA, anniB, holi, finishA, finishB, finishC, finishD, finishE,
-                luckyA, luckyB, luckyC
-        ));
-
-        activityService.totalDistanceAll();
     }
 }
 

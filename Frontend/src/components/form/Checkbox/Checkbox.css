@@ -1,0 +1,66 @@
+/*checkbox*/
+.scp_checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  border: 2px solid var(--doubleslash-text-grey);
+  background-color: var(--doubleslash-text-white);
+}
+
+.scp_checkbox:checked {
+  box-shadow: inset 0px 0px 0px 2px var(--doubleslash-text-white);
+  background-color: var(--doubleslash-blue);
+}
+
+/*slider*/
+.scp_switch {
+  position: relative;
+  display: inline-block;
+  width: 30px;
+  height: 17px;
+}
+
+.scp_switch_input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.scp_switch_input:checked + .scp_slider {
+  background-color: var(--doubleslash-blue);
+}
+
+.scp_switch_input:focus + .scp_slider {
+  box-shadow: 0 0 1px var(--doubleslash-blue);
+}
+
+.scp_switch_input:checked + .scp_slider:before {
+  -webkit-transform: translateX(13px);
+  -ms-transform: translateX(13px);
+  transform: translateX(13px);
+}
+
+.scp_slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--doubleslash-text-grey);
+  transition: 0.3s;
+  border-radius: 17px;
+}
+
+.scp_slider:before {
+  position: absolute;
+  content: "";
+  height: 13px;
+  width: 13px;
+  left: 2px;
+  bottom: 2px;
+  border-radius: 50%;
+  background-color: var(--doubleslash-text-white);
+  transition: 0.3s;
+}

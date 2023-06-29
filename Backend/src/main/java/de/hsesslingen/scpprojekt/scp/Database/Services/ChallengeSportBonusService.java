@@ -1,7 +1,10 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportBonusDTO;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.ChallengeSportDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportBonusConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeSportConverter;
+import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSportBonus;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportBonusRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
@@ -25,6 +28,9 @@ public class ChallengeSportBonusService {
     @Autowired
     @Lazy
     ChallengeSportBonusConverter challengeSportBonusConverter;
+    @Autowired
+    @Lazy
+    ChallengeSportConverter challengeSportConverter;
 
     /**
      * Returns all ChallengeSportBonus in database
@@ -95,5 +101,16 @@ public class ChallengeSportBonusService {
     public void delete(long challengeSportBonusID) throws NotFoundException {
         get(challengeSportBonusID);
         challengeSportBonusRepository.deleteById(challengeSportBonusID);
+    }
+
+    /**
+     * Get all ChallengeSportBonus by BonusID
+     *
+     * @param bonusID ID of Bonus
+     * @return List of ChallengeSportBonus
+     */
+    public List<ChallengeSportBonusDTO> findCSBByBonusID(long bonusID) {
+        List<ChallengeSportBonus> csblist = challengeSportBonusRepository.findAllByBonusId(bonusID);
+        return challengeSportBonusConverter.convertEntityToDtoList(csblist);
     }
 }

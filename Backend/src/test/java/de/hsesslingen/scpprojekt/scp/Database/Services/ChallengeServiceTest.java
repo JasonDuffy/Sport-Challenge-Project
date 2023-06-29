@@ -11,11 +11,14 @@ import de.hsesslingen.scpprojekt.scp.Database.Repositories.*;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.ChallengeConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
+import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import de.hsesslingen.scpprojekt.scp.Mail.Services.EmailService;
+import jakarta.mail.MessagingException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.AdditionalAnswers;
+import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,8 +35,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests for Challenge service functions
@@ -124,6 +126,7 @@ public class ChallengeServiceTest {
         ch1.setImage(image);
         ch1.setStartDate(LocalDateTime.now().minusDays(2));
         ch1.setEndDate(LocalDateTime.now().plusDays(1));
+        ch1.setName("Hi");
         Challenge ch2 = new Challenge();
         ch2.setId(2);
         ch2.setImage(image);
@@ -162,13 +165,11 @@ public class ChallengeServiceTest {
         challengeSportList.add(cs1); challengeSportList.add(cs2); challengeSportList.add(cs3); challengeSportList.add(cs4);
 
         Bonus b1 = new Bonus();
-        b1.setChallengeSport(cs1);
         b1.setId(1);
         b1.setStartDate(LocalDateTime.of(2023, 4, 10, 8, 0));
         b1.setEndDate(LocalDateTime.of(2023, 6, 4, 10, 0));
         b1.setFactor(2.0f);
         Bonus b2 = new Bonus();
-        b2.setChallengeSport(cs1);
         b2.setId(2);
         b2.setStartDate(LocalDateTime.of(2023, 4, 10, 8, 0));
         b2.setEndDate(LocalDateTime.of(2023, 6, 4, 10, 0));
@@ -229,7 +230,6 @@ public class ChallengeServiceTest {
         when(bonusRepository.findBonusesByChallengeID(1L)).thenAnswer(a -> {
             List<Bonus> bList = new ArrayList<>();
             for(Bonus bon : bonusList)
-                if (bon.getChallengeSport().getChallenge().getId() == 1L)
                     bList.add(bon);
             return bList;
         });
@@ -329,23 +329,7 @@ public class ChallengeServiceTest {
     @Test
     public void getChallengeBonusesTest() throws NotFoundException {
         List<BonusDTO> bonuses = challengeService.getChallengeBonuses(challengeList.get(0).getId());
-
-        int counter = 0;
-
-        for(BonusDTO b : bonuses){
-            assertEquals(1L, bonusConverter.convertDtoToEntity(b).getChallengeSport().getChallenge().getId());
-            counter++;
-        }
-
-        int realCounter = 0;
-
-        for(Bonus b : bonusList){
-            if (b.getChallengeSport().getChallenge().getId() == 1)
-                realCounter++;
-        }
-
-        assertEquals(counter, realCounter);
-
+        assertEquals(1,bonuses.get(0).getId());
         Mockito.verify(bonusRepository).findBonusesByChallengeID(1L);
     }
 
@@ -391,17 +375,33 @@ public class ChallengeServiceTest {
         verify(challengeRepository).save(any(Challenge.class));
 
     }
+
+    /**
+     *  Test if by add the EmailExceptions is thrown as an example NotFoundException
+     */
+    @Test
+    public void addTestEmailFail() throws MessagingException, NotFoundException, IOException {
+        MockMultipartFile file = new MockMultipartFile("file", "file.png", String.valueOf(MediaType.IMAGE_PNG), "Test123".getBytes());
+        doThrow(NotFoundException.class).when(emailService).sendChallengeMail(any(Challenge.class));
+        try {
+            challengeService.add(file, new long[]{1L}, new float[]{10F}, challengeConverter.convertEntityToDto(challengeList.get(0)));
+        }catch (NotFoundException e ){
+            verify(emailService).sendChallengeMail(any(Challenge.class));
+        }
+        verify(challengeRepository).save(any(Challenge.class));
+    }
+
     /**
      * Test is update works correctly
      * @throws NotFoundException Should never be thrown
      *
      */
     @Test
-    public void updateTestSuccess() throws NotFoundException {
+    public void updateTestSuccess() throws NotFoundException, InvalidActivitiesException {
 
         challengeList.get(1).setName("name");
 
-        ChallengeDTO newC = challengeService.update(1L,1L, challengeConverter.convertEntityToDto(challengeList.get(1)));
+        ChallengeDTO newC = challengeService.update(1L,1L, challengeConverter.convertEntityToDto(challengeList.get(1)), new long[]{1}, new float[]{1.0f});
 
         assertEquals(newC.getId(), challengeList.get(0).getId());
         assertEquals(newC.getName(), challengeList.get(0).getName());
@@ -410,16 +410,7 @@ public class ChallengeServiceTest {
     }
 
 
-    /**
-     * Test if exception is correctly thrown
-     * @throws NotFoundException Should never be thrown
-     */
-    @Test
-    public void updateTestFail() throws NotFoundException {
-        assertThrows(NotFoundException.class, () -> {
-            challengeService.update(1,20L, challengeConverter.convertEntityToDto(challengeList.get(0)));
-        });
-    }
+
     /**
      * Test if delete works correctly
      * @throws NotFoundException Should never be thrown
@@ -460,12 +451,59 @@ public class ChallengeServiceTest {
     }
 
     /**
-     * Test Not Found for current challenges for memberId is correctly handled
+     * Test for getChallengeTeamsTest success
      */
     @Test
-    public void currentChallengesMemberIDTestNotFound(){
+    public void getChallengeTeamsTest(){
+        when(teamRepository.findTeamsByChallenge_Id(any(Long.class))).thenReturn(teamList);
+        challengeService.getChallengeTeams(1);
+        verify(teamRepository).findTeamsByChallenge_Id(any(Long.class));
+    }
+
+    /**
+     * Test for getChallengeNonMembers success
+     */
+    @Test
+    public void getChallengeNonMembersTest(){
+        when(memberRepository.findNonMembersByChallenge_ID(any(Long.class))).thenReturn(memberList);
+        challengeService.getChallengeNonMembers(1);
+        verify(memberRepository).findNonMembersByChallenge_ID(any(Long.class));
+    }
+
+    /**
+     * Test for getChallengeMembersEmails success
+     */
+    @Test
+    public void getChallengeMembersEmailsTest(){
+        List <String> email = new ArrayList<>();
+        email.add("example@exam.com");
+        when(memberRepository.findMembersEmailByChallengeID(any(Long.class))).thenReturn(email);
+        challengeService.getChallengeMembersEmails(1);
+        verify(memberRepository).findMembersEmailByChallengeID(any(Long.class));
+    }
+
+    /**
+     * Test for getChallengeIDsByMemberID success
+     * @throws NotFoundException shouldn't be thrown;
+     */
+    @Test
+    public void getChallengeIDsByMemberID_TestSuccess() throws NotFoundException {
+        List <Long> challenge = new ArrayList<>();
+        challenge.add(1L);
+        when(challengeRepository.findChallengeIDsByMemberID(any(Long.class))).thenReturn(challenge);
+        challengeService.getChallengeIDsByMemberID(1L);
+        verify(challengeRepository).findChallengeIDsByMemberID(any(Long.class));
+    }
+
+    /**
+     * Test if NotFoundException been thrown
+     */
+    @Test
+    public void getChallengeIDsByMemberID_TestFail() {
         assertThrows(NotFoundException.class, () -> {
-            challengeService.getCurrentChallengeMemberID(1);
+            challengeService.getChallengeIDsByMemberID(1L);
         });
     }
+
+
 }

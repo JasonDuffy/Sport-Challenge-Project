@@ -25,7 +25,7 @@ public class Team {
     private long id;
     @Column(name = "name", nullable = false)
     private String name;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @OnDelete(action = OnDeleteAction.CASCADE)
     @JoinColumn(name = "image_id")
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -40,6 +40,12 @@ public class Team {
     public Team(String name, Image image, Challenge challenge) {
         this.name = name;
         this.image = image;
+        this.challenge = challenge;
+    }
+
+    public Team(String name, Challenge challenge) {
+        this.name = name;
+        this.image = null;
         this.challenge = challenge;
     }
 

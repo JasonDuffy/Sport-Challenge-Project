@@ -161,7 +161,6 @@ public class ActivityService {
                 sum += act.getDistance() * act.getChallengeSport().getFactor();
             }
         }
-
         return sum;
     }
 
@@ -188,9 +187,16 @@ public class ActivityService {
         return sum;
     }
 
-    public float getAVGDistanceForActivities(List<Activity> activities) throws InvalidActivitiesException, NotFoundException {
+    /**
+     *  Avg Distance for activities
+     * @param memberCount Count of Members in an activity
+     * @param activities List of activities
+     * @return Avg Distance
+     * @throws InvalidActivitiesException Invalid Activity
+     * @throws NotFoundException Challenge not Found
+     */
+    public float getAVGDistanceForActivities(int memberCount, List<Activity> activities) throws InvalidActivitiesException, NotFoundException {
         Float sum = 0.0f;
-        int i = 0;
 
         if(!activities.isEmpty()){
             Challenge challenge = activities.get(0).getChallengeSport().getChallenge();
@@ -200,11 +206,10 @@ public class ActivityService {
                     throw new InvalidActivitiesException("Activity by member " + act.getMember().getEmail() + " on " + act.getDate() + " in challenge "
                             + act.getChallengeSport().getChallenge().getName() + "is not part of Challenge " + challenge.getName());
                 sum += act.getTotalDistance();
-                i++;
             }
         }
 
-        return sum/i;
+        return sum/(float)memberCount;
     }
 
 
@@ -216,9 +221,7 @@ public class ActivityService {
     public void totalDistanceAll() throws NotFoundException {
         List<Activity> a = activityRepository.findAll();
         for(Activity as : a){
-            long challenge = as.getChallengeSport().getChallenge().getId();
-            List<Bonus> challengeBonuses = bonusConverter.convertDtoListToEntityList(challengeService.getChallengeBonuses(challenge));
-            as.setTotalDistance(as.getDistance() * as.getChallengeSport().getFactor() * bonusService.getMultiplierFromBonuses(challengeBonuses, as.getDate()));
+            as.setTotalDistance(calcTotalDistance(as));
             activityRepository.save(as);
         }
     }
@@ -227,13 +230,13 @@ public class ActivityService {
      * Calculates the totalDistance for an activity
      * @param activity which gets a totalDistance
      * @return float totalDistance
-     * @throws NotFoundException Challenge not found
      */
-    public float calcTotalDistance(Activity activity) throws NotFoundException {
+    public float calcTotalDistance(Activity activity) {
         float total = 0f;
-        long challenge = activity.getChallengeSport().getChallenge().getId();
-        List<Bonus> challengeBonuses = bonusConverter.convertDtoListToEntityList(challengeService.getChallengeBonuses(challenge));
-        total = activity.getDistance() * activity.getChallengeSport().getFactor() * bonusService.getMultiplierFromBonuses(challengeBonuses, activity.getDate());
+        long challengeId = activity.getChallengeSport().getChallenge().getId();
+        long sportId = activity.getChallengeSport().getSport().getId();
+        LocalDateTime time = activity.getDate();
+        total = activity.getDistance() * activity.getChallengeSport().getFactor() * bonusService.getMultiplierFromBonusesForChallengeAndSportAndSpecificTime(challengeId, sportId, time);
         return total;
     }
 

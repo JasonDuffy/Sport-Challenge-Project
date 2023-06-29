@@ -13,6 +13,7 @@ import de.hsesslingen.scpprojekt.scp.Database.Entities.ChallengeSport;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.Image;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeRepository;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.ChallengeSportRepository;
+import de.hsesslingen.scpprojekt.scp.Exceptions.InvalidActivitiesException;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
 import de.hsesslingen.scpprojekt.scp.Mail.Services.EmailService;
 import jakarta.mail.MessagingException;
@@ -23,9 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * Service of the Challenge
@@ -101,10 +100,9 @@ public class ChallengeService {
         if(!challengeIDs.isEmpty()){
             return challengeIDs;
         }else{
-            throw new NotFoundException("The member wit the ID " + memberID + " is not part of a Challenge");
+            throw new NotFoundException("The member with the ID " + memberID + " is not part of a Challenge");
         }
     }
-
 
     /**
      *  add Challenge
@@ -117,9 +115,13 @@ public class ChallengeService {
      * @throws NotFoundException Sport not found
      */
     public ChallengeDTO add(MultipartFile file, long sportId[], float sportFactor[], ChallengeDTO challenge) throws IOException, NotFoundException {
-        Image image = imageStorageService.store(file);
         Challenge newchallenge = challengeConverter.convertDtoToEntity(challenge);
-        newchallenge.setImage(image);
+
+        if (!file.isEmpty()){
+            Image image = imageStorageService.store(file);
+            newchallenge.setImage(image);
+        }
+
         Challenge savedChallenge = challengeRepository.save(newchallenge);
 
         for (int i = 0; i < sportId.length; i++) {
@@ -139,27 +141,89 @@ public class ChallengeService {
         return challengeConverter.convertEntityToDto(savedChallenge);
     }
 
-
-
-    public ChallengeDTO update(long imageID, long ChallengeID, ChallengeDTO challengeDTO) throws NotFoundException {
-        Optional<Challenge> challengeData = challengeRepository.findById(ChallengeID);
-        Challenge convertedChallenge = challengeConverter.convertDtoToEntity(challengeDTO) ;
+    /**
+     *  Update or add Challenge
+     * @param imageID ID of image to be selected
+     * @param challengeID ID of to be updated Challenge
+     * @param challengeDTO Data of the updated Challenge
+     * @param sportID Array of sport IDs to add to the challenge
+     * @param sportFactor Array of factors to add to the challenge
+     * @return updated or new Challenge
+     * @throws NotFoundException Challenge Not Found
+     */
+    public ChallengeDTO update(Long imageID, long challengeID, ChallengeDTO challengeDTO, long[] sportID, float[] sportFactor) throws NotFoundException, InvalidActivitiesException {
+        Optional<Challenge> challengeData = challengeRepository.findById(challengeID);
         if (challengeData.isPresent()){
-                Image image = imageStorageService.get(imageID);
-                Challenge updatedChallenge = challengeData.get();
-                updatedChallenge.setName(convertedChallenge.getName());
-                updatedChallenge.setImage(image);
-                updatedChallenge.setDescription(convertedChallenge.getDescription());
-                updatedChallenge.setStartDate(convertedChallenge.getStartDate());
-                updatedChallenge.setEndDate(convertedChallenge.getEndDate());
-                updatedChallenge.setTargetDistance(convertedChallenge.getTargetDistance());
+            Challenge convertedChallenge = challengeConverter.convertDtoToEntity(challengeDTO);
 
-                Challenge savedChallenge= challengeRepository.save(updatedChallenge);
-                return challengeConverter.convertEntityToDto(savedChallenge);
-        }throw  new NotFoundException("Challenge with ID " +ChallengeID+" is not present in DB.");
+            Challenge updatedChallenge = challengeData.get();
+            updatedChallenge.setName(convertedChallenge.getName());
+            updatedChallenge.setDescription(convertedChallenge.getDescription());
+            updatedChallenge.setStartDate(convertedChallenge.getStartDate());
+            updatedChallenge.setEndDate(convertedChallenge.getEndDate());
+            updatedChallenge.setTargetDistance(convertedChallenge.getTargetDistance());
+
+            if (imageID != null && imageID != 0) {
+                Image image = imageStorageService.get(imageID);
+                updatedChallenge.setImage(image);
+            } else {
+                updatedChallenge.setImage(null);
+            }
+
+            List<ChallengeSportDTO> csList = challengeSportService.getAllChallengeSportsOfChallenge(challengeID); // Get all Challenge Sports for this challenge
+
+            Map<Long, ChallengeSportDTO> existingSports = new HashMap<>(); // Save Challenge Sports with Sport as their key to identify
+            csList.forEach((cs) -> {
+                existingSports.put(cs.getSportID(), cs);
+            });
+
+            for (Long sport : existingSports.keySet()) { // Delete all old challenge sports
+                if (!(Arrays.stream(sportID).boxed().toList()).contains(sport)){
+                    challengeSportService.delete(existingSports.get(sport).getId());
+                    existingSports.remove(sport);
+                }
+            }
+
+            for (int i = 0; i < sportID.length; i++){ // Add or update new challenge sports
+                if (!existingSports.containsKey(sportID[i])){
+                    challengeSportService.add(new ChallengeSportDTO(sportFactor[i], challengeID, sportID[i]));
+                } else {
+                    ChallengeSportDTO changeCS = existingSports.get(sportID[i]);
+                    changeCS.setFactor(sportFactor[i]);
+                    challengeSportService.update(changeCS.getId(), changeCS);
+                }
+            }
+
+            Challenge savedChallenge= challengeRepository.save(updatedChallenge);
+            return challengeConverter.convertEntityToDto(savedChallenge);
+        } else {
+            challengeDTO.setImageID(imageID);
+            Challenge newchallenge = challengeConverter.convertDtoToEntity(challengeDTO);
+            Challenge savedChallenge = challengeRepository.save(newchallenge);
+
+            for (int i = 0; i < sportID.length; i++) {
+                ChallengeSportDTO cs = new ChallengeSportDTO();
+                cs.setChallengeID(newchallenge.getId());
+                cs.setFactor(sportFactor[i]);
+                cs.setSportID(sportID[i]);
+                challengeSportService.add(cs);
+            }
+
+            try {
+                emailService.sendChallengeMail(savedChallenge);
+            } catch (MessagingException | NotFoundException e) {
+                System.out.println("Could not send email for challenge " + savedChallenge.getName());
+            }
+
+            return challengeConverter.convertEntityToDto(savedChallenge);
+        }
     }
 
-
+    /**
+     *  delete Challenge
+     * @param ChallengeID ID of challenge to be deleted
+     * @throws NotFoundException Challenge Not Found
+     */
     public void delete(long ChallengeID) throws NotFoundException {
         Optional<Challenge> challenge = challengeRepository.findById(ChallengeID);
         if (challenge.isPresent()){
@@ -167,7 +231,10 @@ public class ChallengeService {
         }else throw  new NotFoundException("Challenge with ID " +ChallengeID+" is not present in DB.");
     }
 
-
+    /**
+     *  Delete all Challenges
+     *
+     */
     public void deleteAll() {
         challengeRepository.deleteAll();
     }
@@ -234,12 +301,13 @@ public class ChallengeService {
         return memberRepository.findMembersEmailByChallengeID(challengeID);
     }
 
-    public List<ChallengeDTO> getCurrentChallengeMemberID(long memberID) throws NotFoundException {
+    /**
+     *  ChallengeList where Member is registered
+     * @param memberID ID of Member
+     * @return List of Challenges where Member is in
+     */
+    public List<ChallengeDTO> getCurrentChallengeMemberID(long memberID) {
         List<Challenge> challengeList = challengeRepository.findChallengesByMemberIDAndDate(memberID, LocalDateTime.now());
-        if (!challengeList.isEmpty()) {
-            return challengeConverter.convertEntityListToDtoList(challengeList);
-        } else {
-            throw new NotFoundException("No current challenges for this user");
-        }
+        return challengeConverter.convertEntityListToDtoList(challengeList);
     }
 }

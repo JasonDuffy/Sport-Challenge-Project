@@ -1,0 +1,62 @@
+.row_edit_icon{
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-left: 2px;
+    margin-right: 2px;
+    padding: 2px;
+    border-radius: 5px;
+    outline-offset: -1px;
+}
+
+.row_edit_icon:hover{
+    cursor: pointer;
+}
+
+.icon_faPencil{
+    background-color: var(--doubleslash-blue);
+    color: var(--doubleslash-lightblue);
+    transition: all .3s ease;
+}
+
+.icon_faPencil:hover{
+    outline: 1px var(--doubleslash-blue) solid;
+    background-color: var(--doubleslash-lightblue);
+    color: var(--doubleslash-blue);
+}
+
+.icon_faCheck{
+    background-color: #64ac4a;
+    color: #e7ffe7;
+    transition: all .3s ease;
+}
+
+.icon_faCheck:hover{
+    outline: 1px #64ac4a solid;
+    background-color: #e7ffe7;
+    color: #64ac4a;
+}
+
+.icon_faXmark{
+    background-color: #d2253b;
+    color: #ffeeee;
+    transition: all .3s ease;
+}
+
+.icon_faXmark:hover{
+    outline: 1px #d2253b solid;
+    background-color: #ffeeee;
+    color: #d2253b;
+}
+
+.activity_distance_input{
+    text-align: center;
+    background-color: rgba(0, 0, 0, 0) !important;
+    border: 0 !important;
+    width: 100%;
+}
+
+.activity_sport_select{
+    background-color: transparent;
+    border: none;
+}

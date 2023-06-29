@@ -1,0 +1,176 @@
+@mixin mg-pd-classes {
+  @for $i from 0 through 10 {
+    $size: $i * 1rem;
+    /* margin #{$size} */
+    .mg_#{$i} {
+      margin: $size;
+    }
+    .mg_l_#{$i} {
+      margin-left: $size;
+    }
+    .mg_r_#{$i} {
+      margin-right: $size;
+    }
+    .mg_t_#{$i} {
+      margin-top: $size;
+    }
+    .mg_b_#{$i} {
+      margin-bottom: $size;
+    }
+    .mg_x_#{$i} {
+      margin-left: $size;
+      margin-right: $size;
+    }
+    .mg_y_#{$i} {
+      margin-top: $size;
+      margin-bottom: $size;
+    }
+
+    /* padding #{$size} */
+    .pd_#{$i} {
+      padding: $size;
+    }
+    .pd_l_#{$i} {
+      padding-left: $size;
+    }
+    .pd_r_#{$i} {
+      padding-right: $size;
+    }
+    .pd_t_#{$i} {
+      padding-top: $size;
+    }
+    .pd_b_#{$i} {
+      padding-bottom: $size;
+    }
+    .pd_x_#{$i} {
+      padding-left: $size;
+      padding-right: $size;
+    }
+    .pd_y_#{$i} {
+      padding-top: $size;
+      padding-bottom: $size;
+    }
+  }
+}
+@include mg-pd-classes;
+
+@mixin wd-classes {
+  @for $i from 1 through 20 {
+    $size: $i * 5%;
+    $sizeName: $i * 5;
+    .width_#{$sizeName} {
+      width: $size;
+    }
+  }
+}
+@include wd-classes;
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  scroll-behavior: smooth;
+  background-color: #fff;
+  font-weight: 400;
+  font-family: "Segoe UI", sans-serif;
+  font-size: 14px;
+  color: var(--doubleslash-text-grey);
+}
+
+html {
+  --doubleslash-blue: #00a5e1;
+  --doubleslash-lightblue: #d7e9f4;
+  --doubleslash-orange: #ff9f00;
+  --doubleslash-text-grey: #7a7a7a;
+  --doubleslash-text-white: #ffffff;
+  --doubleslash-darkgrey: #515151;
+  --doubleslash-lightgrey: #c6c6c6;
+  --doubleslash-accent-darkblue: #32547b;
+  --doubleslash-accent-green: #b9d478;
+  --doubleslash-accent-brown: #8b593e;
+  --doubleslash-accent-red: #c63328;
+}
+
+a {
+  cursor: pointer;
+  text-decoration: none;
+  color: var(--doubleslash-text-grey);
+  transition: color 0.15s ease;
+}
+
+a:hover {
+  color: var(--doubleslash-orange);
+}
+
+.center_content {
+  display: flex;
+  justify-content: center;
+}
+
+.visible {
+  visibility: visible !important;
+}
+
+.background_white {
+  background-color: #fff;
+}
+
+.background_lightblue {
+  background-color: var(--doubleslash-lightblue);
+}
+
+.section_container {
+  max-width: 88em;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+.section_content {
+  padding: 6rem 0;
+}
+
+.heading_underline_center {
+  text-align: center;
+}
+
+.underline_center {
+  font-size: 50px;
+  text-align: center;
+  font-weight: 700;
+  margin: 0 auto;
+  padding: 0;
+  position: relative;
+}
+
+.underline_center:after {
+  content: "____";
+  font-size: 100px;
+  letter-spacing: -2px;
+  font-family: "Segoe UI", sans-serif;
+  color: var(--doubleslash-orange);
+  display: block;
+  line-height: 0.01em;
+  margin-top: -40px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--doubleslash-lightgrey);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--doubleslash-text-grey);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--doubleslash-darkgrey);
+}

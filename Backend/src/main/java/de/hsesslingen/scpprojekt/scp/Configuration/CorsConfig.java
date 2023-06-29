@@ -1,5 +1,7 @@
 package de.hsesslingen.scpprojekt.scp.Configuration;
 
+import org.springframework.boot.autoconfigure.session.DefaultCookieSerializerCustomizer;
+import org.springframework.boot.web.servlet.server.CookieSameSiteSupplier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
@@ -20,10 +22,10 @@ public class CorsConfig {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
-                // Set to URL of frontend
-                final String frontendURL = "http://localhost:3000";
+                // Allows setting of frontend IP via environment variable
+                String frontendURL = System.getenv("SCP_Frontend_URL");
 
-                registry.addMapping("/**").allowedOrigins(frontendURL).allowedHeaders("*").allowCredentials(true).allowedMethods("*"); // Allows the frontend to access all of the server
+                registry.addMapping("/**").allowedOrigins("http://localhost:3000", "null", frontendURL).allowedHeaders("*").allowCredentials(true).allowedMethods("*"); // Always allow localhost, null and frontend access
             }
         };
     }

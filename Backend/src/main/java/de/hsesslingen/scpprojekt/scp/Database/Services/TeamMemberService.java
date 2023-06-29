@@ -1,10 +1,13 @@
 package de.hsesslingen.scpprojekt.scp.Database.Services;
 
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.MemberConverter;
+import de.hsesslingen.scpprojekt.scp.Database.DTOs.MemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.TeamMemberDTO;
 import de.hsesslingen.scpprojekt.scp.Database.DTOs.Converter.TeamMemberConverter;
 import de.hsesslingen.scpprojekt.scp.Database.Entities.TeamMember;
 import de.hsesslingen.scpprojekt.scp.Database.Repositories.TeamMemberRepository;
 import de.hsesslingen.scpprojekt.scp.Exceptions.NotFoundException;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -29,12 +32,25 @@ public class TeamMemberService {
     @Autowired
     @Lazy
     TeamMemberConverter teamMemberConverter;
+    @Autowired
+    @Lazy
+    MemberConverter memberConverter;
 
+    /**
+     *  Return all TeamMembers
+     * @return all TeamMembers
+     */
     public List<TeamMemberDTO> getAll()  {
         List<TeamMember> teamMembers = teamMemberRepository.findAll();
         return teamMemberConverter.convertEntityListToDtoList(teamMembers);
     }
 
+    /**
+     *  Returns List TeamMember for a Challenge
+     *
+     * @param ChallengeID ID of Challenge
+     * @return List of TeamMembers for the Challenge
+     */
     public List<TeamMemberDTO> getAllTeamOfChallenge(long ChallengeID)  {
         List<TeamMember> teamMembers = teamMemberRepository.findAll();
         List<TeamMember> teamMemberList = new ArrayList<>();
@@ -72,7 +88,7 @@ public class TeamMemberService {
         Optional<TeamMember> teamMember = teamMemberRepository.findTeamMemberByTeamIdAndMemberId(teamID, memberID);
         if(teamMember.isPresent())
             return teamMemberConverter.convertEntityToDto(teamMember.get());
-        throw new NotFoundException("TeamMember with the teamID " + teamID + " and the memberID " + memberID + "is not present in DB.");
+        throw new NotFoundException("TeamMember with the teamID " + teamID + " and the memberID " + memberID + " is not present in DB.");
     }
 
     /**

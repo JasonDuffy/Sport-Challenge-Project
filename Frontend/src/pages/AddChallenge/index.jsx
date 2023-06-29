@@ -216,7 +216,7 @@ function AddChallenge() {
                 {action === "edit" && (
                   <>
                     <Button color="orange" txt="Challenge bearbeiten" type="submit" loading={loading} />{" "}
-                    <Button className="mg_l_2" action={deleteChallenge} color="red" txt="Challenge Löschen" loading={loading} />
+                    <Button className="mg_l_2" action={deleteChallenge} color="red" txt="Challenge löschen" loading={loading} />
                   </>
                 )}
                 {action === "add" && <Button color="orange" txt="Challenge hinzufügen" type="submit" loading={loading} />}

@@ -201,3 +201,16 @@ export async function saveOrUpdateTeam(teamID, teamObj, memberData, image, image
 
   return teamResData;
 }
+
+export async function fetchDeleteTeam(teamID) {
+  let apiResponse;
+
+  apiResponse = await apiFetch("/teams/" + teamID + "/", "DELETE", {}, null);
+
+  if (apiResponse.error === false) {
+    return true;
+  } else {
+    showErrorMessage("Beim Löschen des Teams ist ein Fehler aufgetreten! " + apiResponse.status);
+    return false;
+  }
+}

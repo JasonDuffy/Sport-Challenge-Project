@@ -13,7 +13,7 @@ export async function fetchLoggedInMember() {
   if (apiResponse.error === false) {
     memberResData = apiResponse.resData;
   } else {
-    showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+    showErrorMessage("Beim Laden der Seite ist ein Fehler aufgetreten!");
     return;
   }
 
@@ -29,7 +29,7 @@ export async function fetchActivityIDs(userID) {
   if (apiResponse.error === false) {
     activitiesResData = apiResponse.resData;
   } else {
-    showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+    showErrorMessage("Beim Laden der Seite ist ein Fehler aufgetreten!");
     return;
   }
 
@@ -49,7 +49,7 @@ export async function fetchChallengeIDs(userID) {
     if (apiResponse.error === false) {
         challengesResData = apiResponse.resData;
     } else {
-      showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
+      showErrorMessage("Beim Laden der Seite ist ein Fehler aufgetreten!");
       return;
     }
   

@@ -28,6 +28,10 @@ function MyChallenges() {
         activityIDarray = await fetchActivityIDs(memberResData.userID);
         challengeIDarray = await fetchChallengeIDs(memberResData.userID);
 
+        activityIDarray.sort(function(a, b){ // Sort by latest entry
+          return b - a;
+        });
+
         setLoggedInID(memberResData.userID);
         setActivityIDs(activityIDarray);
         setChallengeIDs(challengeIDarray);

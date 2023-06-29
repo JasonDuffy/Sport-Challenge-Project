@@ -17,13 +17,15 @@ export async function fetchChallengeData(challengeID) {
     return;
   }
 
-  apiResponse = await apiFetch("/images/" + challengeResData.imageID + "/", "GET", {}, null);
+  if (challengeResData.imageID != 0 && challengeResData.imageID != null){
+    apiResponse = await apiFetch("/images/" + challengeResData.imageID + "/", "GET", {}, null);
 
-  if (apiResponse.error === false) {
-    imageResData = apiResponse.resData;
-  } else {
-    showErrorMessage("Beim laden der Seite ist ein Fehler aufgetreten!");
-    return;
+    if (apiResponse.error === false) {
+      imageResData = apiResponse.resData;
+    } else {
+      showErrorMessage("Beim Laden der Seite ist ein Fehler aufgetreten!");
+      return;
+    }
   }
 
   apiResponse = await apiFetch("/challenges/" + challengeID + "/distance/", "GET", {}, null);

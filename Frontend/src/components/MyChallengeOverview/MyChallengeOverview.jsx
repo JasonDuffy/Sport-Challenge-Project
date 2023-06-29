@@ -35,7 +35,12 @@ function MyChallengeOverview({ challengeID, memberID, activityIDArray, setActivi
       setChallengeEndDate(pageData.challengeResData.endDate.split(",")[0]);
       setChallengeDistanceGoal(pageData.challengeResData.targetDistance);
       setChallengeDescription(pageData.challengeResData.description);
+
+    if(pageData.imageResData == undefined){
+      setChallengeImageSource(require(`../../assets/images/Default-Challenge.png`));
+    } else {
       setChallengeImageSource("data:" + pageData.imageResData.type + ";base64, " + pageData.imageResData.data);
+    }
       setChallengeDistanceDone(pageData.distanceResData);
       setChallengeSports(pageData.challengeSportResData);
     }
@@ -72,6 +77,7 @@ function MyChallengeOverview({ challengeID, memberID, activityIDArray, setActivi
 
     if (Number(activitySportID) < 0.1) {
         showChallengeInfoMessage("Bitte wähle eine Sportart aus!", true);
+      setLoading(false);
       return;
     }
 
@@ -90,7 +96,7 @@ function MyChallengeOverview({ challengeID, memberID, activityIDArray, setActivi
         setActivityIDArray(updatetActivityIDArray);
         showChallengeInfoMessage("Deine Aktivität wurde erfolgreich zur Challenge hinzugefügt!", false);
     } else {
-        showChallengeInfoMessage("Beim hinzufügen deiner Aktivität ist ein Fehler aufgetreten!", true);
+        showChallengeInfoMessage("Beim Hinzufügen deiner Aktivität ist ein Fehler aufgetreten!", true);
     }
 
     setLoading(false);
@@ -122,7 +128,7 @@ function MyChallengeOverview({ challengeID, memberID, activityIDArray, setActivi
           <span id={"form_info_message_" + challengeID} className="form_info_message"></span>
         </div>
         <form onSubmit={submitHandle}>
-          <h2>Wie viel Kilometer hast du zurückgelegt?</h2>
+          <h2>Wie viele Kilometer hast du zurückgelegt?</h2>
           <NumberInput className="mg_t_1" value={activityDistance} setValue={setActivityDistance} min={0.1} step={0.1} />
           <div className="mg_t_2">
             <h2>Sportart auswählen</h2>

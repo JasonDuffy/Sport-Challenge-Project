@@ -205,7 +205,7 @@ export async function fetchDeleteChallenge(challengeID){
   if (apiResponse.error === false) {
     return true;
   } else {
-    showErrorMessage("Beim löschen der Challenge ist ein fehler aufgetreten! " + apiResponse.status);
+    showErrorMessage("Beim Löschen der Challenge ist ein Fehler aufgetreten! " + apiResponse.status);
     return false;
   }
 }

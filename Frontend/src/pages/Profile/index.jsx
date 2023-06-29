@@ -101,7 +101,7 @@ function Profile() {
               <InfoMessage />
               <div className="form_input_container pd_1">
                 <h2>Wähle ein Profilbild aus (Optional)</h2>
-                <span className="form_input_description">Das Bild sollte quadratisch sein.</span>
+                <span className="form_input_description">Es sollte quadratisch sein.</span>
                 <br />
                 <ImageSelecter className="mg_t_2" value={userImage} setValue={setUserImage} alt="Profilbild" source={userImageSource} />
               </div>

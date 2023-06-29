@@ -171,7 +171,9 @@ class Challenge extends Component {
     this.setState({ distance: challengeDistanceResData });
 
     //Select first teamTab
-    document.querySelector('[data-team-id="' + this.state.teamID + '"]').classList.add("selected_panel_tab");
+    if(this.state.teamID != null && this.state.teamID != 0){
+      document.querySelector('[data-team-id="' + this.state.teamID + '"]').classList.add("selected_panel_tab");
+    }
 
     // REMOVE LOADING ICON  --------------------------------------
     document.getElementById("page_loading").style.display = "none";
@@ -428,7 +430,7 @@ class Challenge extends Component {
                       </div>
                       <this.distanceDisplay />
                       <br />
-                      Kilometer
+                      Punkte
                     </div>
                     <div className="challenge_overlay_description">{this.state.challenge.description}</div>
                   </div>

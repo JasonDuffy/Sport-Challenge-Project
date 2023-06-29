@@ -198,7 +198,7 @@ function AddBonus() {
                 {action === "edit" && (
                   <>
                     <Button color="orange" txt="Bonus bearbeiten" type="submit" loading={loading} />
-                    <Button className="mg_l_2" action={deleteBonus} color="red" txt="Bonus Löschen" loading={loading} />
+                    <Button className="mg_l_2" action={deleteBonus} color="red" txt="Bonus löschen" loading={loading} />
                   </>
                 )}
                 {action === "add" && <Button color="orange" txt="Bonus hinzufügen" type="submit" loading={loading} />}

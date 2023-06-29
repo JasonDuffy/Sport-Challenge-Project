@@ -7,7 +7,7 @@ import "../../components/form/TextInput/TextInput.css";
 import TextInput from "../../components/form/TextInput/TextInput";
 import Dropdown from "../../components/form/Dropdown/Dropdown";
 import ImageSelecter from "../../components/form/ImageSelecter/ImageSelecter";
-import { checkTeamInput, fetchAvailableMembers, fetchFormData, fetchImageData, fetchTeamData, saveOrUpdateTeam } from "./AddTeam";
+import { checkTeamInput, fetchAvailableMembers, fetchDeleteTeam, fetchFormData, fetchImageData, fetchTeamData, saveOrUpdateTeam } from "./AddTeam";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleDown, faGripVertical } from "@fortawesome/free-solid-svg-icons";
 import Button from "../../components/ui/button/Button";
@@ -234,6 +234,17 @@ function AddTeam() {
     setLoading(false);
   }
 
+  async function deleteTeam(event) {
+    event.preventDefault();
+
+    if (window.confirm("Möchten Sie das Team " + teamName + " wirklich löschen?")) {
+      //if delete was successful
+      if (await fetchDeleteTeam(location.state.id)) {
+        navigate("/challenge", { state: { challengeID: challengeID } });
+      }
+    }
+  }
+
   return (
     <section className="background_white">
       <div className="section_container">
@@ -299,7 +310,12 @@ function AddTeam() {
                 </div>
               </div>
               <div className="center_content mg_t_2">
-                {action === "edit" && <Button color="orange" txt="Team editieren" type="submit" loading={loading} />}
+                {action === "edit" && (
+                  <>
+                    <Button color="orange" txt="Team bearbeiten" type="submit" loading={loading} />{" "}
+                    <Button className="mg_l_2" action={deleteTeam} color="red" txt="Team löschen" loading={loading} />
+                  </>
+                )}
                 {action === "add" && <Button color="orange" txt="Team hinzufügen" type="submit" loading={loading} />}
               </div>
             </form>

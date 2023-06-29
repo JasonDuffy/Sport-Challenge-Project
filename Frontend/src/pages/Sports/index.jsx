@@ -38,7 +38,7 @@ class Sports extends Component {
   render() {
     return (
       <>
-        <section className="background_lightblue">
+        <section className="background_white">
           <div className="section_container">
             <div className="section_content">
               <div className="heading_underline_center mg_b_8">
@@ -60,14 +60,12 @@ class Sports extends Component {
                   </tbody>
                 </table>
               </div>
+              <div className="center_content mg_t_2">
+                <Link to="/sport/add" state={{ id: 0 }}>
+                  <Button color="orange" txt="Neue Sportart" />
+                </Link>
+              </div>
             </div>
-          </div>
-        </section>
-        <section>
-          <div className="center_content mg_t_2">
-            <Link to="/sport/add" state={{ id: 0 }}>
-              <Button color="orange" txt="Neue Sportart" />
-            </Link>
           </div>
         </section>
       </>

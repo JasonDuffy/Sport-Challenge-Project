@@ -2,13 +2,13 @@
 
 **Important:** This repository acts as an archive of our work and we are thus not accepting any contributions. However, feel free to fork this repository and work on it on your own. Note that the frontend is kept in German.
 
-The Sport-Challenge-Project was conducted as part of our fourth semester class "Projekt Softwaretechnik". It was created for and under the guidance of doubleSlash Net-Business GmbH. We were tasked with creating a web plattform for their internal "Sport-Challenge" program where employees can group up in teams are rewarded for being active.
+The Sport-Challenge-Project was conducted as part of our fourth semester class "Projekt Softwaretechnik". It was created for and under the guidance of doubleSlash Net-Business GmbH. We were tasked with creating a web plattform for their internal "Sport-Challenge" program where employees can group up in teams and are rewarded for being active.
 
 Our platform uses a three tier architecture. It authenticates users via SAML and allows them to create and manage Challenges, Sports and timed Bonuses, as well as documenting their Activities for a specific challenge. The app uses no form of authorization, thus any user is permitted to do any action.
 
 It uses the following underlying technologies:
-- Spring Boot (Backend)
 - React (Frontend)
+- Spring Boot (Backend)
 - PostgreSQL (Backend Database)
 - Keycloak (SAML Provider - can be swapped out with any other correctly configured SAML provider)
 
@@ -34,9 +34,9 @@ This approach uses a publicly available Docker image of version 1.0 of our proje
 Navigate to the "Dokumente/Abgaben" folder and open the "docker-compose.yml" file using a text editor of your choice.
 If you just want everything to run locally, the only thing you need to change is the mail credentials in lines 23 to 26 respectively. 
 
-If you want the app to be visible on the internet (not recommended!), you need to change line 21 to point to your public frontend server address, line 22 to point to the metadata address of your SAML provider, line 18, 19, 36, 37 to secure DB credentials and lines 73, 74, and 75 to point to your public backend server address. 
+If you want the app to be visible on the internet (not recommended!), you need to change line 21 to point to your public frontend server address, line 22 to point to the metadata address of your SAML provider, lines 18, 19, 36 and 37 to secure DB credentials and lines 73, 74, and 75 to point to your public backend server address. 
 
-Remember that Keycloak needs to be configured to allow the app to connect using the "scp" Entity-ID and that SSL certificates are also required. For more information on this matter, refer to chapter 8.1.2 in the documentation.
+Remember that Keycloak needs to be configured to allow the app to connect using the "scp" entity-id and that SSL certificates are also required. For more information on this matter, refer to chapter 8.1.2 in the documentation.
 
 Afterwards, just open any terminal application while in the folder mentioned earlier and type "docker compose up". After initialization and Keycloak setup, the frontend is available under port 3000, the backend is available under port 8081 and Keycloak is available under port 8080.
 
@@ -45,7 +45,7 @@ Open the "docker-compose-yml" file in the root of the project using a text edito
 
 If you want the app to be visible on the internet (again, not recommended!), follow the steps described in the Docker Compose chapter.
 
-Run the "START.bat" file in the root of the project. This will build the backend and frontend locally from code and also build the docker containers. Afterwards everything is started. This approach comes with the benefit of a pre-configured Keycloak instance. (Username/Password: admin/admin, Test account is max/123).
+Run the "START.bat" file in the root of the project. This will build the backend and frontend locally from code and also build the docker containers. Afterwards everything is started. This approach comes with the added benefit of a pre-configured Keycloak instance. (Username/Password: admin/admin, Test account is max/123).
 
 As with the Docker Compose installation approach, the frontend is available under port 3000, the backend is available under port 8081 and Keycloak is available under port 8080.
 

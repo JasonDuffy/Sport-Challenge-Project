@@ -22,8 +22,8 @@ services:
       - SPRING_SECURITY_SAML2_RELYINGPARTY_REGISTRATION_KEYCLOAK_ASSERTINGPARTY_METADATA-URI=http://kubernetes.docker.internal:8080/realms/SportChallenge/protocol/saml/descriptor
       - SPRING_MAIL_HOST=smtp.gmail.com
       - SPRING_MAIL_PORT=587
-      - SPRING_MAIL_USERNAME=slashchallengescp@gmail.com
-      - SPRING_MAIL_PASSWORD=kpcxvrxxjxoemqvy
+      - SPRING_MAIL_USERNAME=CHANGE@ME.test
+      - SPRING_MAIL_PASSWORD=12345
     networks:
       - main_net
       
